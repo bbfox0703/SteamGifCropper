@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIF Arrange</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .gif-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .gif-item {
+            position: relative;
+            width: 150px;
+            cursor: move;
+            border: 2px solid transparent;
+        }
+        .gif-item.dragging {
+            opacity: 0.5;
+            border: 2px dashed #999;
+        }
+        .gif-item img {
+            width: 100%;
+            height: auto;
+        }
+        .gif-item input[type="file"] {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .file-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px;
+            border-radius: 5px;
+            pointer-events: none;
+            font-size: 12px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="replayAllGifs()">Replay all GIFs</button>
+    <div class="gif-container" id="gifContainer">
+        <div class="gif-item" draggable="true">
+            <label class="file-label">Upload GIF part</label>
+            <input type="file" accept="image/gif" onchange="updateGif(this)">
+            <img src="giffile_Part1.gif" alt="GIF 1">
+        </div>
+        <div class="gif-item" draggable="true">
+            <label class="file-label">Upload GIF part</label>
+            <input type="file" accept="image/gif" onchange="updateGif(this)">
+            <img src="giffile_Part2.gif" alt="GIF 2">
+        </div>
+        <div class="gif-item" draggable="true">
+            <label class="file-label">Upload GIF part</label>
+            <input type="file" accept="image/gif" onchange="updateGif(this)">
+            <img src="giffile_Part3.gif" alt="GIF 3">
+        </div>
+        <div class="gif-item" draggable="true">
+            <label class="file-label">Upload GIF part</label>
+            <input type="file" accept="image/gif" onchange="updateGif(this)">
+            <img src="giffile_Part4.gif" alt="GIF 4">
+        </div>
+        <div class="gif-item" draggable="true">
+            <label class="file-label">Upload GIF part</label>
+            <input type="file" accept="image/gif" onchange="updateGif(this)">
+            <img src="giffile_Part5.gif" alt="GIF 5">
+        </div>
+    </div>
+
+    <script>
+        function updateGif(input) {
+            const file = input.files[0];
+            if (file) {
+                const img = input.parentElement.querySelector("img");
+                img.src = URL.createObjectURL(file);
+            }
+        }
+
+        const container = document.getElementById("gifContainer");
+        let draggedItem = null;
+
+        container.addEventListener("dragstart", (e) => {
+            if (e.target.classList.contains("gif-item")) {
+                draggedItem = e.target;
+                draggedItem.classList.add("dragging");
+            }
+        });
+
+        container.addEventListener("dragend", (e) => {
+            if (draggedItem) {
+                draggedItem.classList.remove("dragging");
+                draggedItem = null;
+            }
+        });
+
+        container.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            const afterElement = getDragAfterElement(container, e.clientX);
+            const draggable = document.querySelector(".dragging");
+            if (afterElement == null) {
+                container.appendChild(draggable);
+            } else {
+                container.insertBefore(draggable, afterElement);
+            }
+        });
+
+        function getDragAfterElement(container, x) {
+            const draggableElements = [...container.querySelectorAll(".gif-item:not(.dragging)")];
+
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = x - box.left - box.width / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        function replayAllGifs() {
+            const gifItems = document.querySelectorAll(".gif-item img");
+            gifItems.forEach(gif => {
+                const currentSrc = gif.src; // 獲取目前的 GIF URL
+                gif.src = ""; // 清空 src 以強制重載
+                gif.src = currentSrc; // 重新設定 src，達到重播效果
+            });
+        }
+    </script>
+</body>
+</html>
