@@ -129,6 +129,8 @@ namespace GifProcessor
                         string outputDir = Path.GetDirectoryName(inputFilePath);
                         string outputPath = Path.Combine(outputDir, outputFileName);
                         partCollection.Write(outputPath);
+                        // Modify the saved GIF file
+                        ModifyGifFile(outputPath, (int)collection[0].Height - 100);
                     }
                 }
             }
