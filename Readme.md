@@ -27,11 +27,11 @@ SteamGifCropper 是一個設計為 **Steam Workshop 個人展示櫃** 開發的�
 ## 安裝與使用
 
 ### 1. 下載並運行工具
-下載 **SteamGifCropper.exe** 並雙擊運行。
+下載 **SteamGifCropper.exe** 並執行。
 
 ### 2. 選擇 GIF 文件
-- 點擊 **"Select a GIF file to process"** 按鈕，選擇寬度為 **766px** 的 GIF 文件。
-- 如果文件寬度不符合要求，工具會提示錯誤並退出。
+- 點擊 **"Select a GIF file to process"** 按鈕，選擇影像寬度為 **766px** 的 GIF 文件。
+- 如果GIF影像寬度不符合要求，工具會提示錯誤並退出。
 
 ### 3. 輸出文件位置
 - 點擊 **"Save the processed GIF file"**，選擇裁切後 GIF 文件的保存位置。
