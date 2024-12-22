@@ -406,3 +406,4 @@ CopilotIndices/
 *.pdb
 /obj/
 /.vs/
+.suo
