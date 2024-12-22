@@ -391,4 +391,5 @@ FodyWeavers.xsd
 *.sln.iml
 
 
-.vs/
+copilot-chat/
+CopilotIndices/
