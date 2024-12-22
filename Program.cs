@@ -44,12 +44,43 @@ namespace GifResizer
 
                                 MagickImage transparentLayer = new MagickImage(MagickColors.Transparent, targetWidth, 100);
                                 frame.Extent(new MagickGeometry(targetWidth, (targetHeight + 100)), Gravity.North);
+                                // 僅擴展圖片高度，不指定透明層
+                                //frame.Extent(new MagickGeometry(targetWidth, (targetHeight + 100)), Gravity.North);
                             }
 
                             collection.Write(outputFilePath);
                         }
 
-                        SplitGifIntoParts(outputFilePath);
+                        // 初始化進度條
+                        ProgressBar progressBar = new ProgressBar
+                        {
+                            Minimum = 0,
+                            Maximum = 100,
+                            Value = 0,
+                            Dock = DockStyle.None, // 禁用 Dock，允許自訂位置
+                            Width = 300,
+                            Height = 30
+                        };
+                        Form progressForm = new Form
+                        {
+                            Text = "Processing...",
+                            Width = 350,
+                            Height = 80,
+                            StartPosition = FormStartPosition.CenterScreen, // 表單置中
+                            FormBorderStyle = FormBorderStyle.FixedDialog,
+                            MaximizeBox = false,
+                            MinimizeBox = false
+                        };
+                        progressBar.Left = (progressForm.ClientSize.Width - progressBar.Width) / 2;
+                        progressBar.Top = (progressForm.ClientSize.Height - progressBar.Height) / 2;
+                        progressForm.Controls.Add(progressBar);
+                        progressForm.Shown += (s, e) => progressForm.Activate();
+                        progressForm.Show();
+
+                        // 執行 GIF 分割並更新進度
+                        SplitGifIntoParts(outputFilePath, progressBar);
+
+                        progressForm.Close();
                         MessageBox.Show("GIF processing and splitting completed successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     catch (Exception ex)
@@ -60,7 +91,7 @@ namespace GifResizer
             }
         }
 
-        static void SplitGifIntoParts(string inputFilePath)
+        static void SplitGifIntoParts(string inputFilePath, ProgressBar progressBar)
         {
             var ranges = new (int Start, int End)[]
             {
@@ -73,6 +104,9 @@ namespace GifResizer
 
             using (var collection = new MagickImageCollection(inputFilePath))
             {
+                int totalSteps = collection.Count * ranges.Length;
+                int currentStep = 0;
+
                 for (int i = 0; i < ranges.Length; i++)
                 {
                     using (var partCollection = new MagickImageCollection())
@@ -96,12 +130,17 @@ namespace GifResizer
 
                             // Add the new image to the collection
                             partCollection.Add(newImage);
+
+                            // 更新進度條並處理消息
+                            currentStep++;
+                            progressBar.Value = (int)((double)currentStep / totalSteps * 100);
+                            Application.DoEvents(); // 處理其他 UI 事件，保持界面響應
                         }
 
                         // Save the new GIF file
-                        string outputFileName = $"{System.IO.Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}.gif";
-                        string outputDir = System.IO.Path.GetDirectoryName(inputFilePath);
-                        string outputPath = System.IO.Path.Combine(outputDir, outputFileName);
+                        string outputFileName = $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}.gif";
+                        string outputDir = Path.GetDirectoryName(inputFilePath);
+                        string outputPath = Path.Combine(outputDir, outputFileName);
                         partCollection.Write(outputPath);
 
                         // Modify the saved GIF file
