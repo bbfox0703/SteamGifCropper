@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 using ImageMagick;
 
@@ -102,9 +103,28 @@ namespace GifResizer
                         string outputDir = System.IO.Path.GetDirectoryName(inputFilePath);
                         string outputPath = System.IO.Path.Combine(outputDir, outputFileName);
                         partCollection.Write(outputPath);
+
+                        // Modify the saved GIF file
+                        ModifyGifFile(outputPath, (int)collection[0].Height - 100);
                     }
                 }
             }
+        }
+
+        static void ModifyGifFile(string filePath, int adjustedHeight)
+        {
+            byte[] fileData = File.ReadAllBytes(filePath);
+
+            // Set the last byte to 0x21
+            fileData[fileData.Length - 1] = 0x21;
+
+            // Write the adjusted height at byte 8 (2 bytes, little-endian)
+            ushort heightValue = (ushort)adjustedHeight;
+            fileData[8] = (byte)(heightValue & 0xFF);        // Lower byte
+            fileData[9] = (byte)((heightValue >> 8) & 0xFF); // Higher byte
+
+            // Write the modified file back
+            File.WriteAllBytes(filePath, fileData);
         }
     }
 }
