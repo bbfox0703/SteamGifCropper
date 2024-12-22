@@ -71,3 +71,7 @@ SteamGifCropper 是一個設計為 **Steam Workshop 個人展示櫃** 開發的�
 4. **不是所有的GIF皆能順利處理**：我試過某些GIF製作程式，如果使用影像品質最佳的輸出方式，經本程式處理後，圖片會怪怪的。
 5. **執行中可能吃掉2G記憶體**：依來源檔不同，有時會吃到2GB記憶體。
 6. **只有試過長寛為 766px x 431px的GIF**
+
+## 備考
+1. 展示櫃上傳位址：https://steamcommunity.com/sharedfiles/edititem/767/3/
+2. 需在Browser console (F12 console) 輸入： $J('#ConsumerAppID').val(480),$J('[name=file_type]').val(0),$J('[name=visibility]').val(0);
