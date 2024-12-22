@@ -402,3 +402,4 @@ FodyWeavers.xsd
 copilot-chat/
 CopilotIndices/
 /bin/
+*.exe
