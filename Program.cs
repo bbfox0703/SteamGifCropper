@@ -3,7 +3,7 @@ using System.IO;
 using System.Windows.Forms;
 using ImageMagick;
 
-namespace GifResizer
+namespace GifProcessor
 {
     class Program
     {
@@ -20,35 +20,18 @@ namespace GifResizer
             {
                 string inputFilePath = openFileDialog.FileName;
 
-                SaveFileDialog saveFileDialog = new SaveFileDialog
+                try
                 {
-                    Filter = "GIF Files (*.gif)|*.gif",
-                    Title = "Save the processed GIF file"
-                };
-
-                if (saveFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    string outputFilePath = saveFileDialog.FileName;
-
-                    try
+                    using (var collection = new MagickImageCollection(inputFilePath))
                     {
-                        using (var collection = new MagickImageCollection(inputFilePath))
+                        // 確認所有幀的寬度是否一致且為 766
+                        foreach (var frame in collection)
                         {
-                            uint targetWidth = 767;
-                            foreach (var frame in collection)
+                            if (frame.Width != 766)
                             {
-                                double aspectRatio = (double)frame.Height / frame.Width;
-                                uint targetHeight = (uint)(targetWidth * aspectRatio);
-
-                                frame.Resize(targetWidth, targetHeight);
-
-                                MagickImage transparentLayer = new MagickImage(MagickColors.Transparent, targetWidth, 100);
-                                frame.Extent(new MagickGeometry(targetWidth, (targetHeight + 100)), Gravity.North);
-                                // 僅擴展圖片高度，不指定透明層
-                                //frame.Extent(new MagickGeometry(targetWidth, (targetHeight + 100)), Gravity.North);
+                                MessageBox.Show("The GIF width is not 766 pixels. Please provide a valid GIF.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return;
                             }
-
-                            collection.Write(outputFilePath);
                         }
 
                         // 初始化進度條
@@ -57,36 +40,38 @@ namespace GifResizer
                             Minimum = 0,
                             Maximum = 100,
                             Value = 0,
-                            Dock = DockStyle.None, // 禁用 Dock，允許自訂位置
+                            Dock = DockStyle.None,
                             Width = 300,
                             Height = 30
                         };
+
                         Form progressForm = new Form
                         {
                             Text = "Processing...",
                             Width = 350,
                             Height = 80,
-                            StartPosition = FormStartPosition.CenterScreen, // 表單置中
+                            StartPosition = FormStartPosition.CenterScreen,
                             FormBorderStyle = FormBorderStyle.FixedDialog,
                             MaximizeBox = false,
                             MinimizeBox = false
                         };
+
                         progressBar.Left = (progressForm.ClientSize.Width - progressBar.Width) / 2;
                         progressBar.Top = (progressForm.ClientSize.Height - progressBar.Height) / 2;
                         progressForm.Controls.Add(progressBar);
                         progressForm.Shown += (s, e) => progressForm.Activate();
                         progressForm.Show();
 
-                        // 執行 GIF 分割並更新進度
-                        SplitGifIntoParts(outputFilePath, progressBar);
+                        // 分割 GIF
+                        SplitGifIntoParts(inputFilePath, progressBar);
 
                         progressForm.Close();
                         MessageBox.Show("GIF processing and splitting completed successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -95,11 +80,11 @@ namespace GifResizer
         {
             var ranges = new (int Start, int End)[]
             {
-                (0, 149),   // First part
-                (153, 303), // Second part
-                (307, 457), // Third part
-                (461, 611), // Fourth part
-                (615, 765)  // Fifth part
+        (0, 149),   // First part
+        (153, 303), // Second part
+        (307, 457), // Third part
+        (461, 611), // Fourth part
+        (615, 765)  // Fifth part
             };
 
             using (var collection = new MagickImageCollection(inputFilePath))
@@ -113,42 +98,44 @@ namespace GifResizer
                     {
                         foreach (var frame in collection)
                         {
-                            // Create a new blank image with the range width and original height
+                            uint originalDelay = frame.AnimationDelay; // 保留原始幀延遲
                             int copyWidth = ranges[i].End - ranges[i].Start + 1;
-                            MagickImage newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, frame.Height);
 
-                            // Copy the range content to the new image
+                            // 創建新的圖像，寬度與範圍一致，高度為原高度 + 100px
+                            MagickImage newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, frame.Height + 100);
+
+                            // 複製原內容到新圖像
                             newImage.Composite(frame, -ranges[i].Start, 0, CompositeOperator.Copy);
 
-                            // Get the transparent color (pixel at (0, height - 1))
-                            using (var pixels = frame.GetPixels())
+                            // 設置透明色為新增區域的 (0, 新高度 - 1) 像素值
+                            newImage.Extent(new MagickGeometry((uint)copyWidth, frame.Height + 100), Gravity.North);
+                            using (var pixels = newImage.GetPixels())
                             {
-                                var pixel = pixels.GetPixel(0, (int)frame.Height - 1);
-                                var transparentColor = pixel.ToColor(); // Convert pixel to color
-                                newImage.Transparent(transparentColor);
+                                var transparentPixel = pixels.GetPixel(0, (int)newImage.Height - 1); // 新增高度的最後一行
+                                var transparentColor = transparentPixel.ToColor();
+                                newImage.Transparent(transparentColor); // 設定透明色
                             }
 
-                            // Add the new image to the collection
+                            newImage.AnimationDelay = originalDelay; // 恢復幀延遲
                             partCollection.Add(newImage);
 
-                            // 更新進度條並處理消息
+                            // 更新進度條
                             currentStep++;
                             progressBar.Value = (int)((double)currentStep / totalSteps * 100);
-                            Application.DoEvents(); // 處理其他 UI 事件，保持界面響應
+                            Application.DoEvents();
                         }
 
-                        // Save the new GIF file
                         string outputFileName = $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}.gif";
                         string outputDir = Path.GetDirectoryName(inputFilePath);
                         string outputPath = Path.Combine(outputDir, outputFileName);
                         partCollection.Write(outputPath);
 
-                        // Modify the saved GIF file
                         ModifyGifFile(outputPath, (int)collection[0].Height - 100);
                     }
                 }
             }
         }
+
 
         static void ModifyGifFile(string filePath, int adjustedHeight)
         {
@@ -162,7 +149,6 @@ namespace GifResizer
             fileData[8] = (byte)(heightValue & 0xFF);        // Lower byte
             fileData[9] = (byte)((heightValue >> 8) & 0xFF); // Higher byte
 
-            // Write the modified file back
             File.WriteAllBytes(filePath, fileData);
         }
     }
