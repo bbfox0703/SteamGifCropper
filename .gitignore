@@ -405,4 +405,4 @@ CopilotIndices/
 *.exe
 *.pdb
 /obj/
-/vs/
+/.vs/
