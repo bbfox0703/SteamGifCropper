@@ -404,3 +404,4 @@ CopilotIndices/
 /bin/
 *.exe
 *.pdb
+/obj/
