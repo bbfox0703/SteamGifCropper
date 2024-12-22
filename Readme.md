@@ -72,6 +72,14 @@ SteamGifCropper 是一個設計為 **Steam Workshop 個人展示櫃** 開發的�
 5. **執行中可能吃掉2G記憶體**：依來源檔不同，有時會吃到2GB記憶體。
 6. **只有試過長寛為 766px x 431px的GIF**
 
-## 備考
-1. 展示櫃上傳位址：https://steamcommunity.com/sharedfiles/edititem/767/3/
-2. 需在Browser console (F12 console) 輸入： $J('#ConsumerAppID').val(480),$J('[name=file_type]').val(0),$J('[name=visibility]').val(0);
+## 備考：轉檔方式
+1. 找到想要的影片源。
+1. 想辦法轉成 GIF 動畫格式，可以使用 [EZGif](https://ezgif.com/) 來做一些處理或是減少檔案大小的動作。
+1. 將原始 GIF 調成宽度 **766px** (150x5 + 4x4)，一般 16:9的影片，轉成的長寬是 **766px X 431px** 左右。
+1. 使用本工具將 **766px** 的 GIF 切成五等份。
+1. 檢查檔案有沒有問題、且不得超過 5MB
+1. 使用 Chrome / Brave 瀏覽器上傳檔案，展示櫃上傳位址：https://steamcommunity.com/sharedfiles/edititem/767/3/
+1. 要先在Browser console (按下F12後，在 console 頁) 輸入： $J('#ConsumerAppID').val(480),$J('[name=file_type]').val(0),$J('[name=visibility]').val(0);
+1. 輸入後上傳檔案、檔名記得編號、方便後續處理。
+1. 重覆上傳動作。
+1. 在Steam個人頁面中，新增工作坊展示欄，依序把上傳的 GIF 佈置好即OK
