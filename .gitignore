@@ -403,3 +403,4 @@ copilot-chat/
 CopilotIndices/
 /bin/
 *.exe
+*.pdb
