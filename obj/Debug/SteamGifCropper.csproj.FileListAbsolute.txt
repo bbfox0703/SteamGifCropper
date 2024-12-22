@@ -1,0 +1,17 @@
+D:\GitHub\SteamGifCropper\obj\Debug\SteamGifCropper.csproj.AssemblyReference.cache
+D:\GitHub\SteamGifCropper\obj\Debug\SteamGifCropper.Properties.Resources.resources
+D:\GitHub\SteamGifCropper\obj\Debug\SteamGifCropper.csproj.GenerateResource.cache
+D:\GitHub\SteamGifCropper\obj\Debug\SteamGifCropper.csproj.CoreCompileInputs.cache
+D:\GitHub\SteamGifCropper\bin\Debug\SteamGifCropper.exe.config
+D:\GitHub\SteamGifCropper\bin\Debug\SteamGifCropper.exe
+D:\GitHub\SteamGifCropper\bin\Debug\SteamGifCropper.pdb
+D:\GitHub\SteamGifCropper\bin\Debug\Magick.NET.Core.dll
+D:\GitHub\SteamGifCropper\bin\Debug\Magick.NET.Core.xml
+D:\GitHub\SteamGifCropper\obj\Debug\SteamGif.53DE9DC4.Up2Date
+D:\GitHub\SteamGifCropper\obj\Debug\SteamGifCropper.exe
+D:\GitHub\SteamGifCropper\obj\Debug\SteamGifCropper.pdb
+D:\GitHub\SteamGifCropper\bin\Debug\Magick.Native-Q16-arm64.dll
+D:\GitHub\SteamGifCropper\bin\Debug\Magick.Native-Q16-x64.dll
+D:\GitHub\SteamGifCropper\bin\Debug\Magick.Native-Q16-x86.dll
+D:\GitHub\SteamGifCropper\bin\Debug\Magick.NET-Q16-AnyCPU.dll
+D:\GitHub\SteamGifCropper\bin\Debug\Magick.NET-Q16-AnyCPU.xml
