@@ -140,6 +140,13 @@ namespace GifProcessor
                         string outputFileName = $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}.gif";
                         string outputDir = Path.GetDirectoryName(inputFilePath);
                         string outputPath = Path.Combine(outputDir, outputFileName);
+
+                        partCollection.Optimize(); // Frame optimize
+                        foreach (var frame in partCollection)
+                        {
+                            frame.Settings.SetDefine("compress", "LZW"); // 確保使用 LZW 壓縮
+                        }
+
                         partCollection.Write(outputPath);
 
                         // 修改分割出的 GIF 檔案位元
