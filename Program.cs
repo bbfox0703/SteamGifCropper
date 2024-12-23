@@ -81,7 +81,12 @@ namespace GifProcessor
         {
             using (var collection = new MagickImageCollection(inputFilePath))
             {
-                int totalWidth = (int)collection[0].Page.Width; // 假設所有幀的寬度一致
+                // 展開 GIF Frame以補全靜態區域
+                collection.Coalesce();
+
+                int canvasWidth = (int)collection[0].Page.Width;  // 取得畫布寬度
+                int canvasHeight = (int)collection[0].Page.Height; // 取得畫布高度
+                int newHeight = canvasHeight + 100; // 增加 100px 高度
 
                 // 定義分割範圍
                 var ranges = new (int Start, int End)[]
@@ -90,7 +95,7 @@ namespace GifProcessor
                     (154, 303),  // 第二部分
                     (308, 457),  // 第三部分
                     (462, 611),  // 第四部分
-                    (616, totalWidth - 1) // 第五部分，動態計算最後部分
+                    (616, canvasWidth - 1) // 第五部分
                 };
 
                 int totalSteps = collection.Count * ranges.Length;
@@ -102,14 +107,24 @@ namespace GifProcessor
                     {
                         foreach (var frame in collection)
                         {
-                            uint originalDelay = frame.AnimationDelay; // 保留原始幀延遲
+                            uint originalDelay = frame.AnimationDelay; // 保留原始Frame延遲
                             int copyWidth = ranges[i].End - ranges[i].Start + 1;
 
-                            // 建立新的圖像，寬度與範圍一致，高度與原幀一致
-                            MagickImage newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, frame.Page.Height);
+                            frame.ResetPage(); // 重置頁面
+                            frame.Extent(new MagickGeometry((uint)canvasWidth, (uint)canvasHeight), Gravity.Northwest);
 
-                            // 複製原內容到新圖像
-                            newImage.Composite(frame, -ranges[i].Start, 0, CompositeOperator.Copy);
+                            // 建立新圖像，寬度與範圍一致，高度為畫布高度 + 100px
+                            MagickImage newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight);
+
+                            // 計算範圍內內容的偏移
+                            int cropStartX = ranges[i].Start;
+                            if (cropStartX < 0) cropStartX = 0; // 防止負值
+
+                            // 複製內容到新圖像
+                            newImage.Composite(frame, -cropStartX, 0, CompositeOperator.Copy);
+
+                            // 增加高度並設定透明背景
+                            newImage.Extent(new MagickGeometry((uint)copyWidth, (uint)newHeight), Gravity.North);
 
                             // 保留延遲
                             newImage.AnimationDelay = originalDelay;
@@ -121,13 +136,14 @@ namespace GifProcessor
                             Application.DoEvents();
                         }
 
-                        // 儲存分割出的 GIF 
+                        // 儲存分割出的 GIF 檔案
                         string outputFileName = $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}.gif";
                         string outputDir = Path.GetDirectoryName(inputFilePath);
                         string outputPath = Path.Combine(outputDir, outputFileName);
                         partCollection.Write(outputPath);
-                        // Modify the saved GIF file
-                        ModifyGifFile(outputPath, (int)collection[0].Height - 100);
+
+                        // 修改分割出的 GIF 檔案位元
+                        ModifyGifFile(outputPath, canvasHeight);
                     }
                 }
             }
