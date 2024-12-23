@@ -24,18 +24,15 @@ namespace GifProcessor
                 {
                     using (var collection = new MagickImageCollection(inputFilePath))
                     {
-                        // 確認所有幀的寬度是否一致且為 766
-                        foreach (var frame in collection)
+                        // 獲取 GIF 整體畫布尺寸
+                        uint canvasWidth = collection[0].Page.Width;
+                        uint canvasHeight = collection[0].Page.Height;
+                        // 判斷畫布寬度是否為 766
+                        if (canvasWidth != 766)
                         {
-                            uint fWidth = frame.Width;
-                            uint fHeight = frame.Height;
-                            Console.WriteLine($"Source frame width: {fWidth}, Frame Height: {fHeight}");
-                            //if (fWidth < 765 || fWidth > 767)
-                            //{
-                            //    string message = $"The GIF width is not 766 pixels. Detected frame dimensions: Width={fWidth}, Height={fHeight}. Please provide a valid GIF.";
-                            //    MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            //    return;
-                            //}
+                            string message = $"The GIF canvas width is not 766 pixels. Detected canvas dimensions: Width={canvasWidth}, Height={canvasHeight}. Please provide a valid GIF.";
+                            MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
                         }
 
                         // 初始化進度條
@@ -84,16 +81,16 @@ namespace GifProcessor
         {
             using (var collection = new MagickImageCollection(inputFilePath))
             {
-                int totalWidth = (int)collection[0].Width; // 假設所有幀的寬度一致
+                int totalWidth = (int)collection[0].Page.Width; // 假設所有幀的寬度一致
 
                 // 定義分割範圍
                 var ranges = new (int Start, int End)[]
                 {
-            (0, 149),    // 第一部分
-            (154, 303),  // 第二部分
-            (308, 457),  // 第三部分
-            (462, 611),  // 第四部分
-            (616, totalWidth - 1) // 第五部分，動態計算最後部分
+                    (0, 149),    // 第一部分
+                    (154, 303),  // 第二部分
+                    (308, 457),  // 第三部分
+                    (462, 611),  // 第四部分
+                    (616, totalWidth - 1) // 第五部分，動態計算最後部分
                 };
 
                 int totalSteps = collection.Count * ranges.Length;
@@ -108,8 +105,8 @@ namespace GifProcessor
                             uint originalDelay = frame.AnimationDelay; // 保留原始幀延遲
                             int copyWidth = ranges[i].End - ranges[i].Start + 1;
 
-                            // 創建新的圖像，寬度與範圍一致，高度與原幀一致
-                            MagickImage newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, frame.Height);
+                            // 建立新的圖像，寬度與範圍一致，高度與原幀一致
+                            MagickImage newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, frame.Page.Height);
 
                             // 複製原內容到新圖像
                             newImage.Composite(frame, -ranges[i].Start, 0, CompositeOperator.Copy);
@@ -124,7 +121,7 @@ namespace GifProcessor
                             Application.DoEvents();
                         }
 
-                        // 儲存分割出的 GIF 文件
+                        // 儲存分割出的 GIF 
                         string outputFileName = $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}.gif";
                         string outputDir = Path.GetDirectoryName(inputFilePath);
                         string outputPath = Path.Combine(outputDir, outputFileName);
