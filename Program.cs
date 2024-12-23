@@ -81,22 +81,44 @@ namespace GifProcessor
         {
             using (var collection = new MagickImageCollection(inputFilePath))
             {
-                // 展開 GIF Frame以補全靜態區域
+                // Expand all GIF frames to complete static areas
                 collection.Coalesce();
 
-                int canvasWidth = (int)collection[0].Page.Width;  // 取得畫布寬度
-                int canvasHeight = (int)collection[0].Page.Height; // 取得畫布高度
-                int newHeight = canvasHeight + 100; // 增加 100px 高度
+                int canvasWidth = (int)collection[0].Page.Width;  // Get canvas width
+                int canvasHeight = (int)collection[0].Page.Height; // Get canvas height
+                int newHeight = canvasHeight + 100; // Increase height by 100px
 
-                // 定義分割範圍
-                var ranges = new (int Start, int End)[]
+                // Determine splitting ranges based on canvas width
+                (int Start, int End)[] ranges;
+
+                if (canvasWidth == 766)
                 {
-                    (0, 149),    // 第一部分
-                    (154, 303),  // 第二部分
-                    (308, 457),  // 第三部分
-                    (462, 611),  // 第四部分
-                    (616, canvasWidth - 1) // 第五部分
-                };
+                    ranges = new (int Start, int End)[]
+                    {
+                (0, 149),    // First part
+                (154, 303),  // Second part
+                (308, 457),  // Third part
+                (462, 611),  // Fourth part
+                (616, canvasWidth - 1) // Fifth part
+                    };
+                }
+                else if (canvasWidth == 774)
+                {
+                    ranges = new (int Start, int End)[]
+                    {
+                (0, 149),    // First part
+                (155, 305),  // Second part
+                (311, 461),  // Third part
+                (467, 617),  // Fourth part
+                (623, canvasWidth - 1) // Fifth part
+                    };
+                }
+                else
+                {
+                    string message = $"Unsupported GIF canvas width: {canvasWidth} pixels. Only 766px or 774px are supported.";
+                    MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
                 int totalSteps = collection.Count * ranges.Length;
                 int currentStep = 0;
@@ -107,49 +129,49 @@ namespace GifProcessor
                     {
                         foreach (var frame in collection)
                         {
-                            uint originalDelay = frame.AnimationDelay; // 保留原始Frame延遲
+                            uint originalDelay = frame.AnimationDelay; // Preserve the original frame delay
                             int copyWidth = ranges[i].End - ranges[i].Start + 1;
 
-                            frame.ResetPage(); // 重置頁面
+                            frame.ResetPage(); // Reset frame page offsets
                             frame.Extent(new MagickGeometry((uint)canvasWidth, (uint)canvasHeight), Gravity.Northwest);
 
-                            // 建立新圖像，寬度與範圍一致，高度為畫布高度 + 100px
+                            // Create a new image with the specified width and increased height
                             MagickImage newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight);
 
-                            // 計算範圍內內容的偏移
+                            // Calculate the X-axis offset for cropping
                             int cropStartX = ranges[i].Start;
-                            if (cropStartX < 0) cropStartX = 0; // 防止負值
+                            if (cropStartX < 0) cropStartX = 0; // Prevent negative values
 
-                            // 複製內容到新圖像
+                            // Copy the relevant content to the new image
                             newImage.Composite(frame, -cropStartX, 0, CompositeOperator.Copy);
 
-                            // 增加高度並設定透明背景
+                            // Extend the height with a transparent background
                             newImage.Extent(new MagickGeometry((uint)copyWidth, (uint)newHeight), Gravity.North);
 
-                            // 保留延遲
+                            // Retain the animation delay
                             newImage.AnimationDelay = originalDelay;
                             partCollection.Add(newImage);
 
-                            // 更新進度條
+                            // Update the progress bar
                             currentStep++;
                             progressBar.Value = (int)((double)currentStep / totalSteps * 100);
                             Application.DoEvents();
                         }
 
-                        // 儲存分割出的 GIF 檔案
+                        // Save the split GIF file
                         string outputFileName = $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}.gif";
                         string outputDir = Path.GetDirectoryName(inputFilePath);
                         string outputPath = Path.Combine(outputDir, outputFileName);
 
-                        partCollection.Optimize(); // Frame optimize
+                        partCollection.Optimize(); // Optimize frames
                         foreach (var frame in partCollection)
                         {
-                            frame.Settings.SetDefine("compress", "LZW"); // 確保使用 LZW 壓縮
+                            frame.Settings.SetDefine("compress", "LZW"); // Ensure LZW compression
                         }
 
                         partCollection.Write(outputPath);
 
-                        // 修改分割出的 GIF 檔案位元
+                        // Modify the saved GIF file to adjust metadata
                         ModifyGifFile(outputPath, canvasHeight);
                     }
                 }

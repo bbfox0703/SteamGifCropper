@@ -1,6 +1,6 @@
 # SteamGifCropper
 
-SteamGifCropper 是一個設計為 **Steam Workshop 個人展示櫃** 小工具，用於對 GIF 檔案進行裁切和處理。此程式可以快速將寬度為 766 像素的 GIF 動畫分割成多個部分。
+SteamGifCropper 是一個設計為 **Steam Workshop 個人展示櫃** 小工具，用於對 GIF 檔案進行裁切和處理。此程式可以快速將寬度為 766 / 774 像素的 GIF 動畫分割成多個部分。
 
 ---
 
@@ -30,7 +30,7 @@ SteamGifCropper 是一個設計為 **Steam Workshop 個人展示櫃** 小工具�
 下載 **SteamGifCropper.exe** 並執行。
 
 ### 2. 選擇 GIF 檔案
-- 跳出 **"Select a GIF file to process"** 視窗，選擇影像寬度為 **766px** 的 GIF 檔案。
+- 跳出 **"Select a GIF file to process"** 視窗，選擇影像寬度為 **766px** 或 **774px** 的 GIF 檔案。
 
 ### 3. 輸出文件位置
 - 跳出 **"Save the processed GIF file"** 視窗，選擇裁切後 GIF 檔案的存檔位置。
@@ -50,7 +50,8 @@ SteamGifCropper 是一個設計為 **Steam Workshop 個人展示櫃** 小工具�
 
 ---
 
-## 檔案裁切範圍定義
+## 檔案裁切範圍定義 -- **766px**
+### **150px** each, **4px** gap
 
 | 檔案部分   | X 座標範圍 |
 |------------|------------|
@@ -59,6 +60,17 @@ SteamGifCropper 是一個設計為 **Steam Workshop 個人展示櫃** 小工具�
 | Part 3     | 307 - 457  |
 | Part 4     | 461 - 611  |
 | Part 5     | 615 - 剩下  |
+
+## 檔案裁切範圍定義 -- **774px**
+### **150px** each, **6px** gap
+
+| 檔案部分   | X 座標範圍 |
+|------------|------------|
+| Part 1     | 0 - 149    |
+| Part 2     | 155 - 305  |
+| Part 3     | 311 - 461  |
+| Part 4     | 467 - 617  |
+| Part 5     | 623 - 剩下  |
 
 ---
 
@@ -89,7 +101,7 @@ SteamGifCropper 是一個設計為 **Steam Workshop 個人展示櫃** 小工具�
 1. 重覆上傳動作。
 1. 在Steam個人頁面中，新增工作坊展示欄，依序把上傳的 GIF 佈置好即OK
 
-註：
+註 **766px** 長寬參考：
 | **影片比例** | **轉成的長寬 (px)**     |
 |--------------|-----------------------|
 | 4:3          | 766px \* 575px        |
