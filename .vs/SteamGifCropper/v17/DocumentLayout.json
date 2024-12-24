@@ -3,24 +3,30 @@
   "WorkspaceRootPath": "G:\\Github\\SteamGifCropper\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|G:\\Github\\SteamGifCropper\\gtmainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|solutionrelative:gtmainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|G:\\Github\\SteamGifCropper\\gtmainform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|solutionrelative:gtmainform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00000000-0000-0000-0000-000000000000}|\u003CSolution\u003E|SteamGifCropper||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|g:\\github\\steamgifcropper\\gifprocessor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|solutionrelative:gifprocessor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|g:\\github\\steamgifcropper\\gtmainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|G:\\Github\\SteamGifCropper\\gtmainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|solutionrelative:gtmainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|g:\\github\\steamgifcropper\\gtmainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|solutionrelative:gtmainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|g:\\github\\steamgifcropper\\gtmainform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|solutionrelative:gtmainform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|g:\\github\\steamgifcropper\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|G:\\Github\\SteamGifCropper\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|g:\\github\\steamgifcropper\\||{B270807C-D8C6-49EB-8EBE-8E8D566637A1}|5e9a8ac2-4f34-4521-858f-4c248ba31532"
     }
   ],
   "DocumentGroupContainers": [
@@ -30,11 +36,23 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
+              "Title": "SteamGifCropper",
+              "DocumentMoniker": "G:\\Github\\SteamGifCropper\\SteamGifCropper.csproj",
+              "RelativeDocumentMoniker": "SteamGifCropper.csproj",
+              "ToolTip": "G:\\Github\\SteamGifCropper\\SteamGifCropper.csproj",
+              "RelativeToolTip": "SteamGifCropper.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2024-12-24T05:06:23.355Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "GTMainForm.cs",
               "DocumentMoniker": "G:\\Github\\SteamGifCropper\\GTMainForm.cs",
               "RelativeDocumentMoniker": "GTMainForm.cs",
@@ -47,7 +65,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 1,
               "Title": "GTMainForm.Designer.cs",
               "DocumentMoniker": "G:\\Github\\SteamGifCropper\\GTMainForm.Designer.cs",
               "RelativeDocumentMoniker": "GTMainForm.Designer.cs",
@@ -60,20 +78,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "GifProcessor.cs",
               "DocumentMoniker": "G:\\Github\\SteamGifCropper\\GifProcessor.cs",
               "RelativeDocumentMoniker": "GifProcessor.cs",
               "ToolTip": "G:\\Github\\SteamGifCropper\\GifProcessor.cs",
               "RelativeToolTip": "GifProcessor.cs",
-              "ViewState": "AgIAAIoAAAAAAAAAAAAIwFIAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAPAAAAAAAAAAAAAYwBYBAAAzAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-12-23T13:14:06.743Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "GTMainForm.cs [\u8A2D\u8A08]",
               "DocumentMoniker": "G:\\Github\\SteamGifCropper\\GTMainForm.cs",
               "RelativeDocumentMoniker": "GTMainForm.cs",
@@ -85,7 +103,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "Program.cs",
               "DocumentMoniker": "G:\\Github\\SteamGifCropper\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
@@ -93,8 +111,7 @@
               "RelativeToolTip": "Program.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-23T11:38:58.62Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-12-23T11:38:58.62Z"
             }
           ]
         }

@@ -240,7 +240,7 @@ namespace GifProcessorApp
                         using (var collection = new MagickImageCollection(inputFilePath))
                         {
                             // Ensure all frames are coalesced
-                            Application.DoEvents();
+                            
                             collection.Coalesce();
                             Application.DoEvents();
 
@@ -276,7 +276,7 @@ namespace GifProcessorApp
                             progressForm.Controls.Add(progressBar);
                             progressForm.Shown += (s, e) => progressForm.Activate();
                             progressForm.Show();
-
+                            Application.DoEvents();
                             // Resize each frame
                             foreach (var frame in collection)
                             {

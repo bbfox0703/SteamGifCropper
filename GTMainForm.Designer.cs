@@ -37,7 +37,7 @@
             // 
             this.btnSplitGif.Location = new System.Drawing.Point(12, 12);
             this.btnSplitGif.Name = "btnSplitGif";
-            this.btnSplitGif.Size = new System.Drawing.Size(247, 45);
+            this.btnSplitGif.Size = new System.Drawing.Size(372, 45);
             this.btnSplitGif.TabIndex = 0;
             this.btnSplitGif.Text = "Split Gif file into 5 parts";
             this.btnSplitGif.UseVisualStyleBackColor = true;
@@ -47,9 +47,9 @@
             // 
             this.btnResizeGif766.Location = new System.Drawing.Point(12, 63);
             this.btnResizeGif766.Name = "btnResizeGif766";
-            this.btnResizeGif766.Size = new System.Drawing.Size(247, 45);
+            this.btnResizeGif766.Size = new System.Drawing.Size(372, 45);
             this.btnResizeGif766.TabIndex = 1;
-            this.btnResizeGif766.Text = "Resize GIF file to 766px";
+            this.btnResizeGif766.Text = "Resize GIF file to 766px width";
             this.btnResizeGif766.UseVisualStyleBackColor = true;
             this.btnResizeGif766.Click += new System.EventHandler(this.btnResizeGif766_Click);
             // 
@@ -58,11 +58,12 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(168F, 168F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(270, 450);
+            this.ClientSize = new System.Drawing.Size(396, 450);
             this.Controls.Add(this.btnResizeGif766);
             this.Controls.Add(this.btnSplitGif);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "GifToolMainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Steam Gif tool";
