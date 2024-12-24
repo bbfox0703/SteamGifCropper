@@ -94,10 +94,11 @@ SteamGifCropper 是一個設計為 **Steam 工作坊個人展示櫃**的小工�
 
 ## 備考：藝術作品上傳 / 藝術作品展示櫃
 1. 上傳完圖像之後：
+
 var num= document.getElementsByName("image_width")[0].value;
 document.getElementsByName("image_height")[0].value = num-(num-1);document.getElementsByName("image_width")[0].value= num*100;
 
-## 備考：截圖展示櫃
+## 備考：螢幕擷圖展示櫃
 document.getElementsByName("file_type")[0].value= 5;
 var num= document.getElementsByName("image_width")[0].value;
 document.getElementsByName("image_height")[0].value = num-(num-1);
