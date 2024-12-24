@@ -105,7 +105,7 @@ document.getElementsByName("image_height")[0].value = num-(num-1);
 document.getElementsByName("image_width")[0].value= num\*100;
 
 
-註 **766px** 長寬參考：
+## 註 **766px** 長寬比參考：
 | **影片比例** | **轉成的長寬 (px)**     |
 |--------------|-----------------------|
 | 4:3          | 766px \* 575px        |
