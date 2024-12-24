@@ -65,7 +65,7 @@ namespace GifProcessorApp
         {
             using (var collection = new MagickImageCollection(inputFilePath))
             {
-                labelSt.Text = "Processing.....";
+                labelSt.Text = "Coalescing frames...";
                 Application.DoEvents();
                 collection.Coalesce();
                 Application.DoEvents();
@@ -110,6 +110,145 @@ namespace GifProcessorApp
                         }
 
                         string outputFile = $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}.gif";
+                        string outputDir = Path.GetDirectoryName(inputFilePath);
+                        string outputPath = Path.Combine(outputDir, outputFile);
+
+                        partCollection.Optimize();
+                        labelSt.Text = "Compressing...";
+                        Application.DoEvents();
+                        foreach (var frame in partCollection)
+                        {
+                            frame.Settings.SetDefine("compress", "LZW");
+                        }
+
+                        currentStep++;
+                        progressBar.Value = (int)((double)currentStep / totalSteps * 100);
+                        labelSt.Text = "Saving...";
+                        Application.DoEvents();
+
+                        partCollection.Write(outputPath);
+
+                        currentStep++;
+                        progressBar.Value = (int)((double)currentStep / totalSteps * 100);
+                        Application.DoEvents();
+
+                        ModifyGifFile(outputPath, canvasHeight);
+                    }
+                }
+            }
+        }
+
+        public static void SplitGifWithReducedPalette(GifToolMainForm mainForm)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "GIF Files (*.gif)|*.gif",
+                Title = "Select a GIF file to process"
+            };
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string inputFilePath = openFileDialog.FileName;
+
+                try
+                {
+                    using (var collection = new MagickImageCollection(inputFilePath))
+                    {
+                        uint canvasWidth = collection[0].Page.Width;
+                        uint canvasHeight = collection[0].Page.Height;
+
+                        if (canvasWidth != 766 && canvasWidth != 774)
+                        {
+                            string message = $"Unsupported GIF canvas width: {canvasWidth}px. Only 766px and 774px are supported.";
+                            MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
+                        int paletteSize = (int)mainForm.numUpDownPalette.Value; // Get palette size from numericUpDown
+                        if (paletteSize < 32 || paletteSize > 256)
+                        {
+                            MessageBox.Show("Palette size must be between 32 and 256.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
+                        mainForm.lblStatus.Text = "Processing with reduced palette...";
+                        mainForm.pBarTaskStatus.Minimum = 0;
+                        mainForm.pBarTaskStatus.Maximum = 100;
+                        mainForm.pBarTaskStatus.Value = 0;
+                        Application.DoEvents();
+
+                        ReducePaletteAndSplitGif(inputFilePath, mainForm.pBarTaskStatus, (int)canvasWidth, (int)canvasHeight, paletteSize, mainForm.lblStatus);
+                        mainForm.lblStatus.Text = "Done.";
+                        MessageBox.Show("GIF processing with reduced palette completed successfully!",
+                                        "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    mainForm.lblStatus.Text = "Error.";
+                    MessageBox.Show($"An error occurred: {ex.Message}",
+                                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    mainForm.pBarTaskStatus.Value = 0;
+                    mainForm.lblStatus.Text = "Idle.";
+                }
+            }
+        }
+
+        private static void ReducePaletteAndSplitGif(string inputFilePath, ProgressBar progressBar, int canvasWidth, int canvasHeight, int paletteSize, Label labelSt)
+        {
+            using (var collection = new MagickImageCollection(inputFilePath))
+            {
+                labelSt.Text = "Coalescing frames...";
+                Application.DoEvents();
+                collection.Coalesce();
+                Application.DoEvents();
+
+                int newHeight = canvasHeight + 100;
+
+                (int Start, int End)[] ranges = canvasWidth == 766
+                    ? new (int Start, int End)[] { (0, 149), (154, 303), (308, 457), (462, 611), (616, canvasWidth - 1) }
+                    : new (int Start, int End)[] { (0, 149), (155, 305), (311, 461), (467, 617), (623, canvasWidth - 1) };
+
+                int totalSteps = (collection.Count * ranges.Length) + (ranges.Length * 3); // Processing + Palette reduction + LZW compression
+                int currentStep = 0;
+
+                for (int i = 0; i < ranges.Length; i++)
+                {
+                    using (var partCollection = new MagickImageCollection())
+                    {
+                        foreach (var frame in collection)
+                        {
+                            uint originalDelay = frame.AnimationDelay;
+                            int copyWidth = ranges[i].End - ranges[i].Start + 1;
+
+                            frame.ResetPage();
+                            frame.Extent(new MagickGeometry((uint)canvasWidth, (uint)canvasHeight), Gravity.Northwest);
+
+                            labelSt.Text = "Splitting...";
+                            Application.DoEvents();
+                            MagickImage newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight);
+
+                            int cropStartX = ranges[i].Start;
+                            newImage.Composite(frame, -cropStartX, 0, CompositeOperator.Copy);
+
+                            newImage.Extent(new MagickGeometry((uint)copyWidth, (uint)newHeight), Gravity.North);
+                            newImage.AnimationDelay = originalDelay;
+
+                            labelSt.Text = "Reducing palette...";
+                            Application.DoEvents();
+                            newImage.Quantize(new QuantizeSettings { Colors = (uint)paletteSize }); // Reduce palette size
+
+                            partCollection.Add(newImage);
+
+                            currentStep++;
+                            progressBar.Value = (int)((double)currentStep / totalSteps * 100);
+                            Application.DoEvents();
+                        }
+
+                        string outputFile = $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}_Palette{paletteSize}.gif";
                         string outputDir = Path.GetDirectoryName(inputFilePath);
                         string outputPath = Path.Combine(outputDir, outputFile);
 

@@ -49,5 +49,18 @@ namespace GifProcessorApp
                                 "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void btnSplitGIFWithReducedPalette_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                GifProcessor.SplitGifWithReducedPalette(this);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, $"An error occurred: {ex.Message}",
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }

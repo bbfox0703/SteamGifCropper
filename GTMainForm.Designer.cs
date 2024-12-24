@@ -73,7 +73,7 @@
             // pBarTaskStatus
             // 
             this.pBarTaskStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pBarTaskStatus.Location = new System.Drawing.Point(0, 327);
+            this.pBarTaskStatus.Location = new System.Drawing.Point(0, 369);
             this.pBarTaskStatus.Name = "pBarTaskStatus";
             this.pBarTaskStatus.Size = new System.Drawing.Size(396, 36);
             this.pBarTaskStatus.TabIndex = 3;
@@ -82,7 +82,7 @@
             // 
             this.lblStatus.AutoSize = true;
             this.lblStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.lblStatus.Location = new System.Drawing.Point(0, 306);
+            this.lblStatus.Location = new System.Drawing.Point(0, 348);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(46, 21);
             this.lblStatus.TabIndex = 4;
@@ -94,8 +94,9 @@
             this.btnSplitGIFWithReducedPalette.Name = "btnSplitGIFWithReducedPalette";
             this.btnSplitGIFWithReducedPalette.Size = new System.Drawing.Size(372, 45);
             this.btnSplitGIFWithReducedPalette.TabIndex = 5;
-            this.btnSplitGIFWithReducedPalette.Text = "Split Gif file into 5 parts with palette";
+            this.btnSplitGIFWithReducedPalette.Text = "Split Gif file into 5 parts w/ # of palette";
             this.btnSplitGIFWithReducedPalette.UseVisualStyleBackColor = true;
+            this.btnSplitGIFWithReducedPalette.Click += new System.EventHandler(this.btnSplitGIFWithReducedPalette_Click);
             // 
             // lblPaletteDesc
             // 
@@ -133,7 +134,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(168F, 168F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(396, 363);
+            this.ClientSize = new System.Drawing.Size(396, 405);
             this.Controls.Add(this.numUpDownPalette);
             this.Controls.Add(this.lblPaletteDesc);
             this.Controls.Add(this.btnSplitGIFWithReducedPalette);
