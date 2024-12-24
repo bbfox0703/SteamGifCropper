@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GifToolMainForm));
             this.btnSplitGif = new System.Windows.Forms.Button();
             this.btnResizeGif766 = new System.Windows.Forms.Button();
+            this.btnWriteTailByte = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnSplitGif
@@ -53,12 +54,23 @@
             this.btnResizeGif766.UseVisualStyleBackColor = true;
             this.btnResizeGif766.Click += new System.EventHandler(this.btnResizeGif766_Click);
             // 
+            // btnWriteTailByte
+            // 
+            this.btnWriteTailByte.Location = new System.Drawing.Point(12, 114);
+            this.btnWriteTailByte.Name = "btnWriteTailByte";
+            this.btnWriteTailByte.Size = new System.Drawing.Size(372, 45);
+            this.btnWriteTailByte.TabIndex = 2;
+            this.btnWriteTailByte.Text = "Write Gif files last byte as 0x21";
+            this.btnWriteTailByte.UseVisualStyleBackColor = true;
+            this.btnWriteTailByte.Click += new System.EventHandler(this.btnWriteTailByte_Click);
+            // 
             // GifToolMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(168F, 168F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(396, 450);
+            this.ClientSize = new System.Drawing.Size(396, 315);
+            this.Controls.Add(this.btnWriteTailByte);
             this.Controls.Add(this.btnResizeGif766);
             this.Controls.Add(this.btnSplitGif);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
@@ -75,5 +87,6 @@
 
         private System.Windows.Forms.Button btnSplitGif;
         private System.Windows.Forms.Button btnResizeGif766;
+        private System.Windows.Forms.Button btnWriteTailByte;
     }
 }

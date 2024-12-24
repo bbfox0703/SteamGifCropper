@@ -319,5 +319,76 @@ namespace GifProcessorApp
                 }
             }
         }
+        public static void WriteTailByteForMultipleGifs(Form parentForm)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "GIF Files (*.gif)|*.gif",
+                Title = "Select GIF files to process",
+                Multiselect = true // Enable multiple file selection
+            };
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string[] filePaths = openFileDialog.FileNames;
+
+                ProgressBar progressBar = new ProgressBar
+                {
+                    Minimum = 0,
+                    Maximum = filePaths.Length,
+                    Value = 0,
+                    Dock = DockStyle.None,
+                    Width = 300,
+                    Height = 30
+                };
+
+                Form progressForm = new Form
+                {
+                    Owner = parentForm,
+                    Text = "Processing GIF files...",
+                    Width = 350,
+                    Height = 100,
+                    StartPosition = FormStartPosition.CenterParent,
+                    FormBorderStyle = FormBorderStyle.FixedDialog,
+                    MaximizeBox = false,
+                    MinimizeBox = false
+                };
+
+                progressBar.Left = (progressForm.ClientSize.Width - progressBar.Width) / 2;
+                progressBar.Top = (progressForm.ClientSize.Height - progressBar.Height) / 2;
+                progressForm.Controls.Add(progressBar);
+                progressForm.Shown += (s, e) => progressForm.Activate();
+                progressForm.Show();
+
+                int processedFiles = 0;
+
+                foreach (string filePath in filePaths)
+                {
+                    try
+                    {
+                        byte[] fileData = File.ReadAllBytes(filePath);
+
+                        if (fileData.Length > 0 && fileData[fileData.Length - 1] == 0x3B) // Check if the last byte is 0x3B
+                        {
+                            fileData[fileData.Length - 1] = 0x21; // Replace the last byte with 0x21
+                            File.WriteAllBytes(filePath, fileData);
+                        }
+
+                        processedFiles++;
+                        progressBar.Value = processedFiles;
+                        Application.DoEvents();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(parentForm, $"Error processing file {filePath}:\n{ex.Message}",
+                                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+
+                progressForm.Close();
+                MessageBox.Show(parentForm, $"{processedFiles} GIF files processed successfully!",
+                                "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
     }
 }

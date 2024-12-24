@@ -36,5 +36,18 @@ namespace GifProcessorApp
                                 "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void btnWriteTailByte_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                GifProcessor.WriteTailByteForMultipleGifs(this); // Call the method and pass the current form
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, $"An error occurred: {ex.Message}",
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }
