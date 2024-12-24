@@ -1,6 +1,6 @@
 # SteamGifCropper
 
-SteamGifCropper 是一個設計為 **Steam Workshop 個人展示櫃** 小工具，用於對 GIF 檔案進行裁切和處理。此程式可以快速將寬度為 766 / 774 像素的 GIF 動畫分割成多個部分、將Gif寬度調整為 **766px** 、或是把GIF檔案最後一個位元組由0x3B改為0x21。
+SteamGifCropper 是一個設計為 **Steam 工作坊個人展示櫃**的小工具，用於對 GIF 檔案進行裁切和處理。此程式可以將寬度為 766 / 774 像素的 GIF 動畫分割成多個部分、將Gif寬度調整為 **766px** 、或是把GIF檔案最後一個位元組由0x3B改為0x21。
 
 ---
 
