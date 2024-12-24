@@ -407,3 +407,4 @@ CopilotIndices/
 /obj/
 /.vs/
 .suo
+*.bak
