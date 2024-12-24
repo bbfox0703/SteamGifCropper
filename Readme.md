@@ -78,7 +78,7 @@ SteamGifCropper 是一個設計為 **Steam 工作坊個人展示櫃**的小工�
 1. **無法卻認GIF製作程式相容性**：使用過Filmora和EZGif測試正常。
 1. **切出來的圖片可能邊緣會有條黑線**：懶得搞了，也不知是影片製作工具、還是程式問題?
 
-## 備考：轉檔方式
+## 備考：創意工作坊轉檔方式
 1. 找到想要的影片片源。
 1. 想辦法轉成 GIF 動畫格式，可以使用 [EZGif](https://ezgif.com/) 來做一些處理。
 1. 將原始 GIF 調成寬度 **766px** (150\*5個檔案、外加每個檔案有4px間隔、共4\*4=16)。
@@ -91,6 +91,18 @@ SteamGifCropper 是一個設計為 **Steam 工作坊個人展示櫃**的小工�
 1. 輸入後上傳檔案、檔名記得編號、方便後續處理。
 1. 重覆上傳動作。
 1. 在Steam個人頁面中，新增工作坊展示欄，依序把上傳的 GIF 佈置好即OK
+
+## 備考：藝術作品上傳 / 藝術作品展示櫃
+1. 上傳完圖像之後：
+var num= document.getElementsByName("image_width")[0].value;
+document.getElementsByName("image_height")[0].value = num-(num-1);document.getElementsByName("image_width")[0].value= num*100;
+
+## 備考：截圖展示櫃
+document.getElementsByName("file_type")[0].value= 5;
+var num= document.getElementsByName("image_width")[0].value;
+document.getElementsByName("image_height")[0].value = num-(num-1);
+document.getElementsByName("image_width")[0].value= num\*100;
+
 
 註 **766px** 長寬參考：
 | **影片比例** | **轉成的長寬 (px)**     |
