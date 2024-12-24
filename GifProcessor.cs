@@ -288,47 +288,6 @@ namespace GifProcessorApp
 
             File.WriteAllBytes(filePath, fileData);
         }
-
-        private static void ShowLoadingForm(Action action, Form parentForm)
-        {
-            Form loadingForm = new Form
-            {
-                Text = "Loading...",
-                Width = 300,
-                Height = 100,
-                StartPosition = FormStartPosition.CenterParent,
-                FormBorderStyle = FormBorderStyle.FixedDialog,
-                MaximizeBox = false,
-                MinimizeBox = false,
-                ControlBox = false, // Disable close button
-                Owner = parentForm
-            };
-
-            Label loadingLabel = new Label
-            {
-                Text = "Processing GIF file, please wait...",
-                AutoSize = false,
-                TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
-                Dock = DockStyle.Fill
-            };
-
-            loadingForm.Controls.Add(loadingLabel);
-
-            // Show the loading form and execute the action
-            loadingForm.Shown += (s, e) =>
-            {
-                try
-                {
-                    action.Invoke(); // Execute the provided action
-                }
-                finally
-                {
-                    loadingForm.Close(); // Close the loading form
-                }
-            };
-            Application.DoEvents();
-            loadingForm.ShowDialog(parentForm); // Show as modal
-        }
         public static void ResizeGifTo766(GifToolMainForm mainForm)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
