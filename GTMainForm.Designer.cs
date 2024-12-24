@@ -32,6 +32,8 @@
             this.btnSplitGif = new System.Windows.Forms.Button();
             this.btnResizeGif766 = new System.Windows.Forms.Button();
             this.btnWriteTailByte = new System.Windows.Forms.Button();
+            this.pBarTaskStatus = new System.Windows.Forms.ProgressBar();
+            this.lblStatus = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnSplitGif
@@ -64,12 +66,32 @@
             this.btnWriteTailByte.UseVisualStyleBackColor = true;
             this.btnWriteTailByte.Click += new System.EventHandler(this.btnWriteTailByte_Click);
             // 
+            // pBarTaskStatus
+            // 
+            this.pBarTaskStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pBarTaskStatus.Location = new System.Drawing.Point(0, 279);
+            this.pBarTaskStatus.Name = "pBarTaskStatus";
+            this.pBarTaskStatus.Size = new System.Drawing.Size(396, 36);
+            this.pBarTaskStatus.TabIndex = 3;
+            // 
+            // lblStatus
+            // 
+            this.lblStatus.AutoSize = true;
+            this.lblStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.lblStatus.Location = new System.Drawing.Point(0, 258);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(46, 21);
+            this.lblStatus.TabIndex = 4;
+            this.lblStatus.Text = "Idle.";
+            // 
             // GifToolMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(168F, 168F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(396, 315);
+            this.Controls.Add(this.lblStatus);
+            this.Controls.Add(this.pBarTaskStatus);
             this.Controls.Add(this.btnWriteTailByte);
             this.Controls.Add(this.btnResizeGif766);
             this.Controls.Add(this.btnSplitGif);
@@ -80,6 +102,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Steam Gif tool";
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -87,6 +110,8 @@
 
         private System.Windows.Forms.Button btnSplitGif;
         private System.Windows.Forms.Button btnResizeGif766;
+        public System.Windows.Forms.ProgressBar pBarTaskStatus;
         private System.Windows.Forms.Button btnWriteTailByte;
+        public System.Windows.Forms.Label lblStatus;
     }
 }
