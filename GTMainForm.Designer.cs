@@ -34,6 +34,10 @@
             this.btnWriteTailByte = new System.Windows.Forms.Button();
             this.pBarTaskStatus = new System.Windows.Forms.ProgressBar();
             this.lblStatus = new System.Windows.Forms.Label();
+            this.btnSplitGIFWithReducedPalette = new System.Windows.Forms.Button();
+            this.lblPaletteDesc = new System.Windows.Forms.Label();
+            this.numUpDownPalette = new System.Windows.Forms.NumericUpDown();
+            ((System.ComponentModel.ISupportInitialize)(this.numUpDownPalette)).BeginInit();
             this.SuspendLayout();
             // 
             // btnSplitGif
@@ -69,7 +73,7 @@
             // pBarTaskStatus
             // 
             this.pBarTaskStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pBarTaskStatus.Location = new System.Drawing.Point(0, 279);
+            this.pBarTaskStatus.Location = new System.Drawing.Point(0, 327);
             this.pBarTaskStatus.Name = "pBarTaskStatus";
             this.pBarTaskStatus.Size = new System.Drawing.Size(396, 36);
             this.pBarTaskStatus.TabIndex = 3;
@@ -78,18 +82,61 @@
             // 
             this.lblStatus.AutoSize = true;
             this.lblStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.lblStatus.Location = new System.Drawing.Point(0, 258);
+            this.lblStatus.Location = new System.Drawing.Point(0, 306);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(46, 21);
             this.lblStatus.TabIndex = 4;
             this.lblStatus.Text = "Idle.";
+            // 
+            // btnSplitGIFWithReducedPalette
+            // 
+            this.btnSplitGIFWithReducedPalette.Location = new System.Drawing.Point(12, 165);
+            this.btnSplitGIFWithReducedPalette.Name = "btnSplitGIFWithReducedPalette";
+            this.btnSplitGIFWithReducedPalette.Size = new System.Drawing.Size(372, 45);
+            this.btnSplitGIFWithReducedPalette.TabIndex = 5;
+            this.btnSplitGIFWithReducedPalette.Text = "Split Gif file into 5 parts with palette";
+            this.btnSplitGIFWithReducedPalette.UseVisualStyleBackColor = true;
+            // 
+            // lblPaletteDesc
+            // 
+            this.lblPaletteDesc.AutoSize = true;
+            this.lblPaletteDesc.Location = new System.Drawing.Point(12, 218);
+            this.lblPaletteDesc.Name = "lblPaletteDesc";
+            this.lblPaletteDesc.Size = new System.Drawing.Size(159, 21);
+            this.lblPaletteDesc.TabIndex = 6;
+            this.lblPaletteDesc.Text = "Number of palette:";
+            // 
+            // numUpDownPalette
+            // 
+            this.numUpDownPalette.Location = new System.Drawing.Point(172, 216);
+            this.numUpDownPalette.Maximum = new decimal(new int[] {
+            256,
+            0,
+            0,
+            0});
+            this.numUpDownPalette.Minimum = new decimal(new int[] {
+            32,
+            0,
+            0,
+            0});
+            this.numUpDownPalette.Name = "numUpDownPalette";
+            this.numUpDownPalette.Size = new System.Drawing.Size(80, 33);
+            this.numUpDownPalette.TabIndex = 8;
+            this.numUpDownPalette.Value = new decimal(new int[] {
+            256,
+            0,
+            0,
+            0});
             // 
             // GifToolMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(168F, 168F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(396, 315);
+            this.ClientSize = new System.Drawing.Size(396, 363);
+            this.Controls.Add(this.numUpDownPalette);
+            this.Controls.Add(this.lblPaletteDesc);
+            this.Controls.Add(this.btnSplitGIFWithReducedPalette);
             this.Controls.Add(this.lblStatus);
             this.Controls.Add(this.pBarTaskStatus);
             this.Controls.Add(this.btnWriteTailByte);
@@ -101,6 +148,7 @@
             this.Name = "GifToolMainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Steam Gif tool";
+            ((System.ComponentModel.ISupportInitialize)(this.numUpDownPalette)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -113,5 +161,8 @@
         public System.Windows.Forms.ProgressBar pBarTaskStatus;
         private System.Windows.Forms.Button btnWriteTailByte;
         public System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.Button btnSplitGIFWithReducedPalette;
+        private System.Windows.Forms.Label lblPaletteDesc;
+        public System.Windows.Forms.NumericUpDown numUpDownPalette;
     }
 }
