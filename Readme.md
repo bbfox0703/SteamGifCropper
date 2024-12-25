@@ -88,9 +88,9 @@ SteamGifCropper 是一個設計為 **Steam 工作坊個人展示櫃**的小工�
 1. 各別檔案不得超過 5MB。
 1. 使用 Chrome / Brave 瀏覽器上傳檔案，展示櫃上傳位址：https://steamcommunity.com/sharedfiles/edititem/767/3/
 1. 要先在Browser console (按下F12後，在 console 頁) 輸入： $J('#ConsumerAppID').val(480),$J('[name=file_type]').val(0),$J('[name=visibility]').val(0);
-1. 有的瀏覽器有安全措施，例如要先輸入 allow input 後，才能執行上述動作。
+1. 有的瀏覽器有安全措施，例如要先輸入 allow paste 後，才能執行上述動作。
 1. 輸入後上傳檔案、檔名記得編號、方便後續處理。
-1. 重覆上傳動作。
+1. 重覆上傳動作、沒問題的話檔案會上傳到工作坊。
 1. 在Steam個人頁面中，新增工作坊展示欄，依序把上傳的 GIF 佈置好即OK
 
 ## 備考：藝術作品上傳 / 藝術作品展示櫃
