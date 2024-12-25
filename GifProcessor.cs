@@ -130,7 +130,15 @@ namespace GifProcessorApp
                         {
                             mainForm.lblStatus.Text = "gifscile-ing...";
                             Application.DoEvents();
-                            GifsicleWrapper.OptimizeGif(outputPath, outputPath, (int)mainForm.numUpDownPaletteSicle.Value, (int)mainForm.numUpDownLossy.Value, (int)mainForm.numUpDownOptimize.Value, mainForm.ditherMethod);
+                            var options = new GifsicleWrapper.GifsicleOptions
+                            {
+                                Colors = (int)mainForm.numUpDownPaletteSicle.Value,
+                                Lossy = (int)mainForm.numUpDownLossy.Value,
+                                OptimizeLevel = (int)mainForm.numUpDownOptimize.Value,
+                                Dither = mainForm.ditherMethod
+                            };
+
+                            GifsicleWrapper.OptimizeGif(outputPath, outputPath, options);
                         }
 
                         currentStep++;

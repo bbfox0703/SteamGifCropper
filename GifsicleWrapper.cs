@@ -1,58 +1,83 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Windows.Forms;
+using System.IO;
+using System.Text;
 
 public class GifsicleWrapper
 {
-    public static void OptimizeGif(string inputPath, string outputPath, int colors = 256, int lossy = 0, int optim_level = 1, int dither = 0)
+    public class GifsicleOptions
     {
+        public int Colors { get; set; } = 256;
+        public int Lossy { get; set; } = 0;
+        public int OptimizeLevel { get; set; } = 1;
+        public int Dither { get; set; } = 0;
+    }
+
+    public static void OptimizeGif(string inputPath, string outputPath, GifsicleOptions options = null)
+    {
+        if (options == null) options = new GifsicleOptions();
+
         try
         {
-            // construct Gifsicle command
-            string args = args = $"--optimize={optim_level} --colors={colors} --lossy={lossy} \"{inputPath}\" -o \"{outputPath}\""; ;
-            if (dither == 0)
+            // Validate paths
+            if (!File.Exists(inputPath))
+                throw new FileNotFoundException("Input file does not exist.", inputPath);
+
+            if (string.IsNullOrWhiteSpace(outputPath))
+                throw new ArgumentException("Output path cannot be null or empty.");
+
+            // Construct command arguments
+            StringBuilder argsBuilder = new StringBuilder();
+            argsBuilder.Append($"--optimize={options.OptimizeLevel} ");
+            argsBuilder.Append($"--colors={options.Colors} ");
+            argsBuilder.Append($"--lossy={options.Lossy} ");
+
+            // Add dither options
+            switch (options.Dither)
             {
-                args = $"--optimize={optim_level} --colors={colors} --lossy={lossy} \"{inputPath}\" -o \"{outputPath}\"";
+                case 1:
+                    argsBuilder.Append("--dither=ro64 ");
+                    break;
+                case 2:
+                    argsBuilder.Append("--dither=o8 ");
+                    break;
+                case 3:
+                    argsBuilder.Append("-f ");
+                    break;
             }
-            else if (dither == 1)
+
+            argsBuilder.Append($"\"{inputPath}\" -o \"{outputPath}\"");
+
+            // Prepare and start the process
+            using (Process gifsicleProcess = new Process())
             {
-                args = $"--optimize={optim_level} --colors={colors} --lossy={lossy} --dither=ro64 \"{inputPath}\" -o \"{outputPath}\"";
-            }
-            else if (dither == 2)
-            {
-                args = $"--optimize={optim_level} --colors={colors} --lossy={lossy} --dither=o8 \"{inputPath}\" -o \"{outputPath}\"";
-            }
-            else if (dither == 3)
-            {
-                args = $"--optimize={optim_level} --colors={colors} --lossy={lossy} -f \"{inputPath}\" -o \"{outputPath}\"";
-            }
-            //MessageBox.Show(args, "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            Process gifsicleProcess = new Process
-            {
-                StartInfo = new ProcessStartInfo
+                gifsicleProcess.StartInfo = new ProcessStartInfo
                 {
-                    FileName = "gifsicle", // ensure gifsicle in system path
-                    Arguments = args,
+                    FileName = "gifsicle", // ensure gifsicle is in system PATH
+                    Arguments = argsBuilder.ToString(),
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true
+                };
+
+                gifsicleProcess.Start();
+
+                string output = gifsicleProcess.StandardOutput.ReadToEnd();
+                string error = gifsicleProcess.StandardError.ReadToEnd();
+
+                gifsicleProcess.WaitForExit();
+
+                if (!string.IsNullOrEmpty(error))
+                {
+                    throw new Exception($"Gifsicle Error: {error}");
                 }
-            };
-
-            gifsicleProcess.Start();
-            string output = gifsicleProcess.StandardOutput.ReadToEnd();
-            string error = gifsicleProcess.StandardError.ReadToEnd();
-            gifsicleProcess.WaitForExit();
-
-            if (!string.IsNullOrEmpty(error))
-            {
-                throw new Exception($"Gifsicle Error: {error}");
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error optimizing GIF: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
         }
     }
 }
