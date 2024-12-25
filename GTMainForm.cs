@@ -5,6 +5,7 @@ namespace GifProcessorApp
 {
     public partial class GifToolMainForm : Form
     {
+        public int ditherMethod = 0;
         public GifToolMainForm()
         {
             InitializeComponent();
@@ -61,6 +62,31 @@ namespace GifProcessorApp
                 MessageBox.Show(this, $"An error occurred: {ex.Message}",
                                 "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioBtnDNone_Click(object sender, EventArgs e)
+        {
+            ditherMethod = 0;
+        }
+
+        private void radioBtnDro64_Click(object sender, EventArgs e)
+        {
+            ditherMethod = 1;
+        }
+
+        private void radioBtnDo8_Click(object sender, EventArgs e)
+        {
+            ditherMethod = 2;
+        }
+
+        private void radioBtnDDefault_Click(object sender, EventArgs e)
+        {
+            ditherMethod = 3;
         }
     }
 }

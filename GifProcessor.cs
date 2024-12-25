@@ -1,7 +1,5 @@
 ﻿using System;
-using System.CodeDom;
 using System.IO;
-using System.Linq.Expressions;
 using System.Windows.Forms;
 using ImageMagick;
 
@@ -41,7 +39,7 @@ namespace GifProcessorApp
                         mainForm.pBarTaskStatus.Value = 0;
                         Application.DoEvents();
 
-                        SplitGif(inputFilePath, mainForm.pBarTaskStatus, (int)canvasWidth, (int)canvasHeight, mainForm.lblStatus);
+                        SplitGif(inputFilePath, mainForm.pBarTaskStatus, (int)canvasWidth, (int)canvasHeight, mainForm);
                         mainForm.lblStatus.Text = "Done.";
                         MessageBox.Show("GIF processing and splitting completed successfully!",
                                         "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -61,11 +59,11 @@ namespace GifProcessorApp
                 }
             }
         }
-        private static void SplitGif(string inputFilePath, ProgressBar progressBar, int canvasWidth, int canvasHeight, Label labelSt)
+        private static void SplitGif(string inputFilePath, ProgressBar progressBar, int canvasWidth, int canvasHeight, GifToolMainForm mainForm)
         {
             using (var collection = new MagickImageCollection(inputFilePath))
             {
-                labelSt.Text = "Coalescing frames...";
+                mainForm.lblStatus.Text = "Coalescing frames...";
                 Application.DoEvents();
                 collection.Coalesce();
                 Application.DoEvents();
@@ -89,7 +87,7 @@ namespace GifProcessorApp
                             frame.ResetPage();
                             frame.Extent(new MagickGeometry((uint)canvasWidth, (uint)canvasHeight), Gravity.Northwest);
 
-                            labelSt.Text = "Split...";
+                            mainForm.lblStatus.Text = "Split...";
                             Application.DoEvents();
                             MagickImage newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight);
                             int cropStartX = ranges[i].Start;
@@ -99,7 +97,7 @@ namespace GifProcessorApp
                             newImage.Extent(new MagickGeometry((uint)copyWidth, (uint)newHeight), Gravity.North);
 
                             newImage.AnimationDelay = originalDelay;
-                            labelSt.Text = "Add frame...";
+                            mainForm.lblStatus.Text = "Add frame...";
                             Application.DoEvents();
 
                             partCollection.Add(newImage);
@@ -114,7 +112,7 @@ namespace GifProcessorApp
                         string outputPath = Path.Combine(outputDir, outputFile);
 
                         partCollection.Optimize();
-                        labelSt.Text = "Compressing...";
+                        mainForm.lblStatus.Text = "Compressing...";
                         Application.DoEvents();
                         foreach (var frame in partCollection)
                         {
@@ -123,10 +121,17 @@ namespace GifProcessorApp
 
                         currentStep++;
                         progressBar.Value = (int)((double)currentStep / totalSteps * 100);
-                        labelSt.Text = "Saving...";
+                        mainForm.lblStatus.Text = "Saving...";
                         Application.DoEvents();
 
                         partCollection.Write(outputPath);
+
+                        if (mainForm.chkGifscile.Checked)
+                        {
+                            mainForm.lblStatus.Text = "gifscile-ing...";
+                            Application.DoEvents();
+                            GifsicleWrapper.OptimizeGif(outputPath, outputPath, (int)mainForm.numUpDownPaletteSicle.Value, (int)mainForm.numUpDownLossy.Value, (int)mainForm.numUpDownOptimize.Value, mainForm.ditherMethod);
+                        }
 
                         currentStep++;
                         progressBar.Value = (int)((double)currentStep / totalSteps * 100);

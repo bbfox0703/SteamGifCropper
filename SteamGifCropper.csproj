@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GifProcessor.cs" />
+    <Compile Include="GifsicleWrapper.cs" />
     <Compile Include="GTMainForm.cs">
       <SubType>Form</SubType>
     </Compile>
