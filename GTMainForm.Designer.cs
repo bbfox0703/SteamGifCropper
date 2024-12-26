@@ -38,6 +38,11 @@
             this.lblPaletteDesc = new System.Windows.Forms.Label();
             this.numUpDownPalette = new System.Windows.Forms.NumericUpDown();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.groupDither = new System.Windows.Forms.GroupBox();
+            this.radioBtnDDefault = new System.Windows.Forms.RadioButton();
+            this.radioBtnDo8 = new System.Windows.Forms.RadioButton();
+            this.radioBtnDro64 = new System.Windows.Forms.RadioButton();
+            this.radioBtnDNone = new System.Windows.Forms.RadioButton();
             this.numUpDownOptimize = new System.Windows.Forms.NumericUpDown();
             this.numUpDownPaletteSicle = new System.Windows.Forms.NumericUpDown();
             this.numUpDownLossy = new System.Windows.Forms.NumericUpDown();
@@ -46,17 +51,12 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.chkGifscile = new System.Windows.Forms.CheckBox();
-            this.groupDither = new System.Windows.Forms.GroupBox();
-            this.radioBtnDNone = new System.Windows.Forms.RadioButton();
-            this.radioBtnDro64 = new System.Windows.Forms.RadioButton();
-            this.radioBtnDo8 = new System.Windows.Forms.RadioButton();
-            this.radioBtnDDefault = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.numUpDownPalette)).BeginInit();
             this.panel1.SuspendLayout();
+            this.groupDither.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numUpDownOptimize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numUpDownPaletteSicle)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numUpDownLossy)).BeginInit();
-            this.groupDither.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSplitGif
@@ -168,6 +168,66 @@
             this.panel1.Size = new System.Drawing.Size(396, 264);
             this.panel1.TabIndex = 11;
             // 
+            // groupDither
+            // 
+            this.groupDither.Controls.Add(this.radioBtnDDefault);
+            this.groupDither.Controls.Add(this.radioBtnDo8);
+            this.groupDither.Controls.Add(this.radioBtnDro64);
+            this.groupDither.Controls.Add(this.radioBtnDNone);
+            this.groupDither.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.groupDither.Location = new System.Drawing.Point(0, 191);
+            this.groupDither.Name = "groupDither";
+            this.groupDither.Size = new System.Drawing.Size(396, 73);
+            this.groupDither.TabIndex = 19;
+            this.groupDither.TabStop = false;
+            this.groupDither.Text = "Dither";
+            // 
+            // radioBtnDDefault
+            // 
+            this.radioBtnDDefault.AutoSize = true;
+            this.radioBtnDDefault.Location = new System.Drawing.Point(234, 32);
+            this.radioBtnDDefault.Name = "radioBtnDDefault";
+            this.radioBtnDDefault.Size = new System.Drawing.Size(94, 25);
+            this.radioBtnDDefault.TabIndex = 3;
+            this.radioBtnDDefault.Text = "Default";
+            this.radioBtnDDefault.UseVisualStyleBackColor = true;
+            this.radioBtnDDefault.Click += new System.EventHandler(this.radioBtnDDefault_Click);
+            // 
+            // radioBtnDo8
+            // 
+            this.radioBtnDo8.AutoSize = true;
+            this.radioBtnDo8.Location = new System.Drawing.Point(173, 32);
+            this.radioBtnDo8.Name = "radioBtnDo8";
+            this.radioBtnDo8.Size = new System.Drawing.Size(55, 25);
+            this.radioBtnDo8.TabIndex = 2;
+            this.radioBtnDo8.Text = "o8";
+            this.radioBtnDo8.UseVisualStyleBackColor = true;
+            this.radioBtnDo8.Click += new System.EventHandler(this.radioBtnDo8_Click);
+            // 
+            // radioBtnDro64
+            // 
+            this.radioBtnDro64.AutoSize = true;
+            this.radioBtnDro64.Location = new System.Drawing.Point(95, 32);
+            this.radioBtnDro64.Name = "radioBtnDro64";
+            this.radioBtnDro64.Size = new System.Drawing.Size(72, 25);
+            this.radioBtnDro64.TabIndex = 1;
+            this.radioBtnDro64.Text = "ro64";
+            this.radioBtnDro64.UseVisualStyleBackColor = true;
+            this.radioBtnDro64.Click += new System.EventHandler(this.radioBtnDro64_Click);
+            // 
+            // radioBtnDNone
+            // 
+            this.radioBtnDNone.AutoSize = true;
+            this.radioBtnDNone.Checked = true;
+            this.radioBtnDNone.Location = new System.Drawing.Point(11, 32);
+            this.radioBtnDNone.Name = "radioBtnDNone";
+            this.radioBtnDNone.Size = new System.Drawing.Size(78, 25);
+            this.radioBtnDNone.TabIndex = 0;
+            this.radioBtnDNone.TabStop = true;
+            this.radioBtnDNone.Text = "None";
+            this.radioBtnDNone.UseVisualStyleBackColor = true;
+            this.radioBtnDNone.Click += new System.EventHandler(this.radioBtnDNone_Click);
+            // 
             // numUpDownOptimize
             // 
             this.numUpDownOptimize.Location = new System.Drawing.Point(101, 130);
@@ -275,66 +335,6 @@
             this.chkGifscile.Text = "Enable gifsicle optimization";
             this.chkGifscile.UseVisualStyleBackColor = true;
             // 
-            // groupDither
-            // 
-            this.groupDither.Controls.Add(this.radioBtnDDefault);
-            this.groupDither.Controls.Add(this.radioBtnDo8);
-            this.groupDither.Controls.Add(this.radioBtnDro64);
-            this.groupDither.Controls.Add(this.radioBtnDNone);
-            this.groupDither.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupDither.Location = new System.Drawing.Point(0, 191);
-            this.groupDither.Name = "groupDither";
-            this.groupDither.Size = new System.Drawing.Size(396, 73);
-            this.groupDither.TabIndex = 19;
-            this.groupDither.TabStop = false;
-            this.groupDither.Text = "Dither";
-            // 
-            // radioBtnDNone
-            // 
-            this.radioBtnDNone.AutoSize = true;
-            this.radioBtnDNone.Checked = true;
-            this.radioBtnDNone.Location = new System.Drawing.Point(11, 32);
-            this.radioBtnDNone.Name = "radioBtnDNone";
-            this.radioBtnDNone.Size = new System.Drawing.Size(78, 25);
-            this.radioBtnDNone.TabIndex = 0;
-            this.radioBtnDNone.TabStop = true;
-            this.radioBtnDNone.Text = "None";
-            this.radioBtnDNone.UseVisualStyleBackColor = true;
-            this.radioBtnDNone.Click += new System.EventHandler(this.radioBtnDNone_Click);
-            // 
-            // radioBtnDro64
-            // 
-            this.radioBtnDro64.AutoSize = true;
-            this.radioBtnDro64.Location = new System.Drawing.Point(95, 32);
-            this.radioBtnDro64.Name = "radioBtnDro64";
-            this.radioBtnDro64.Size = new System.Drawing.Size(72, 25);
-            this.radioBtnDro64.TabIndex = 1;
-            this.radioBtnDro64.Text = "ro64";
-            this.radioBtnDro64.UseVisualStyleBackColor = true;
-            this.radioBtnDro64.Click += new System.EventHandler(this.radioBtnDro64_Click);
-            // 
-            // radioBtnDo8
-            // 
-            this.radioBtnDo8.AutoSize = true;
-            this.radioBtnDo8.Location = new System.Drawing.Point(173, 32);
-            this.radioBtnDo8.Name = "radioBtnDo8";
-            this.radioBtnDo8.Size = new System.Drawing.Size(55, 25);
-            this.radioBtnDo8.TabIndex = 2;
-            this.radioBtnDo8.Text = "o8";
-            this.radioBtnDo8.UseVisualStyleBackColor = true;
-            this.radioBtnDo8.Click += new System.EventHandler(this.radioBtnDo8_Click);
-            // 
-            // radioBtnDDefault
-            // 
-            this.radioBtnDDefault.AutoSize = true;
-            this.radioBtnDDefault.Location = new System.Drawing.Point(234, 32);
-            this.radioBtnDDefault.Name = "radioBtnDDefault";
-            this.radioBtnDDefault.Size = new System.Drawing.Size(94, 25);
-            this.radioBtnDDefault.TabIndex = 3;
-            this.radioBtnDDefault.Text = "Default";
-            this.radioBtnDDefault.UseVisualStyleBackColor = true;
-            this.radioBtnDDefault.Click += new System.EventHandler(this.radioBtnDDefault_Click);
-            // 
             // GifToolMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(168F, 168F);
@@ -359,11 +359,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.numUpDownPalette)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.groupDither.ResumeLayout(false);
+            this.groupDither.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numUpDownOptimize)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numUpDownPaletteSicle)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numUpDownLossy)).EndInit();
-            this.groupDither.ResumeLayout(false);
-            this.groupDither.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
