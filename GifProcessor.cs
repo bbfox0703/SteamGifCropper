@@ -126,9 +126,9 @@ namespace GifProcessorApp
 
                         partCollection.Write(outputPath);
 
-                        if (mainForm.chkGifscile.Checked)
+                        if (mainForm.chkGifsicle.Checked)
                         {
-                            mainForm.lblStatus.Text = "gifscile-ing...";
+                            mainForm.lblStatus.Text = "gifsicle-ing...";
                             Application.DoEvents();
                             var options = new GifsicleWrapper.GifsicleOptions
                             {

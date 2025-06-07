@@ -50,7 +50,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.chkGifscile = new System.Windows.Forms.CheckBox();
+            this.chkGifsicle = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.numUpDownPalette)).BeginInit();
             this.panel1.SuspendLayout();
             this.groupDither.SuspendLayout();
@@ -161,7 +161,7 @@
             this.panel1.Controls.Add(this.label3);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.chkGifscile);
+            this.panel1.Controls.Add(this.chkGifsicle);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(0, 296);
             this.panel1.Name = "panel1";
@@ -325,15 +325,15 @@
             this.label1.TabIndex = 12;
             this.label1.Text = "Notice: gifsicle.exe must be in \"System Path\"";
             // 
-            // chkGifscile
+            // chkGifsicle
             // 
-            this.chkGifscile.AutoSize = true;
-            this.chkGifscile.Location = new System.Drawing.Point(12, 3);
-            this.chkGifscile.Name = "chkGifscile";
-            this.chkGifscile.Size = new System.Drawing.Size(257, 25);
-            this.chkGifscile.TabIndex = 11;
-            this.chkGifscile.Text = "Enable gifsicle optimization";
-            this.chkGifscile.UseVisualStyleBackColor = true;
+            this.chkGifsicle.AutoSize = true;
+            this.chkGifsicle.Location = new System.Drawing.Point(12, 3);
+            this.chkGifsicle.Name = "chkGifsicle";
+            this.chkGifsicle.Size = new System.Drawing.Size(257, 25);
+            this.chkGifsicle.TabIndex = 11;
+            this.chkGifsicle.Text = "Enable gifsicle optimization";
+            this.chkGifsicle.UseVisualStyleBackColor = true;
             // 
             // GifToolMainForm
             // 
@@ -381,7 +381,7 @@
         public System.Windows.Forms.NumericUpDown numUpDownPalette;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label1;
-        public System.Windows.Forms.CheckBox chkGifscile;
+        public System.Windows.Forms.CheckBox chkGifsicle;
         private System.Windows.Forms.Label label2;
         public System.Windows.Forms.NumericUpDown numUpDownOptimize;
         public System.Windows.Forms.NumericUpDown numUpDownPaletteSicle;
