@@ -4,7 +4,7 @@ SteamGifCropper 是一個設計為 **Steam 工作坊個人展示櫃**的小工�
 
 ---
 下圖是使用SteamGifCropper v0.2.1版切出來的五張GIF圖片  
-如果動畫圖片怪怪的，請重新整理網頁 (PC瀏覽器上按F5即可)  
+因為載入的時間差，在這看五張GIF動畫影片，可能會有點點怪怪的，會有點時間差，可以重新整理網頁看看 (PC瀏覽器上按F5即可)  
 
 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
   <img src="./res/new_shiny1_766px_Part1.gif" style="flex: 1 1 18%; height: auto;">
