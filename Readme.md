@@ -13,6 +13,15 @@ SteamGifCropper 是一個設計為 **Steam 工作坊個人展示櫃**的小工�
   </tr>
 </table>
 
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/new_shiny1_766px_Part1.gif" style="flex: 1 1 18%; height: auto;">
+  <img src="./res/new_shiny1_766px_Part2.gif" style="flex: 1 1 18%; height: auto;">
+  <img src="./res/new_shiny1_766px_Part3.gif" style="flex: 1 1 18%; height: auto;">
+  <img src="./res/new_shiny1_766px_Part4.gif" style="flex: 1 1 18%; height: auto;">
+  <img src="./res/new_shiny1_766px_Part5.gif" style="flex: 1 1 18%; height: auto;">
+</div>
+
+
 ---
 
 ## 功能
