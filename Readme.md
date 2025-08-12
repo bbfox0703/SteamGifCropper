@@ -5,11 +5,11 @@ SteamGifCropper 是一個設計為 **Steam 工作坊個人展示櫃**的小工�
 ---
 <table>
   <tr>
-    <td><img src="./res/1735022101_new_shiny1_766px_Part1.gif" width="150"></td>
-    <td><img src="./res/1735022101_new_shiny1_766px_Part2.gif" width="150"></td>
-    <td><img src="./res/1735022101_new_shiny1_766px_Part3.gif" width="150"></td>
-    <td><img src="./res/1735022101_new_shiny1_766px_Part4.gif" width="150"></td>
-    <td><img src="./res/1735022101_new_shiny1_766px_Part5.gif" width="150"></td>
+    <td><img src="./res/new_shiny1_766px_Part1.gif" width="150"></td>
+    <td><img src="./res/new_shiny1_766px_Part2.gif" width="150"></td>
+    <td><img src="./res/new_shiny1_766px_Part3.gif" width="150"></td>
+    <td><img src="./res/new_shiny1_766px_Part4.gif" width="150"></td>
+    <td><img src="./res/new_shiny1_766px_Part5.gif" width="150"></td>
   </tr>
 </table>
 
