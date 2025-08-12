@@ -3,13 +3,14 @@
 SteamGifCropper 是一個設計為 **Steam 工作坊個人展示櫃**的小工具，用於對 GIF 檔案進行裁切和處理。此程式可以將寬度為 766 / 774 像素的 GIF 動畫分割成多個部分、將Gif寬度調整為 **766px** 、或是把GIF檔案最後一個位元組由0x3B改為0x21。支援 gifsicle 後段處理。
 
 ---
-<div style="display: flex; flex-wrap: wrap; gap: 10px;">
-  <img src="./res/1735022101_new_shiny1_766px_Part1.gif" style="flex: 1 1 18%; height: auto;">
-  <img src="./res/1735022101_new_shiny1_766px_Part2.gif" style="flex: 1 1 18%; height: auto;">
-  <img src="./res/1735022101_new_shiny1_766px_Part3.gif" style="flex: 1 1 18%; height: auto;">
-  <img src="./res/1735022101_new_shiny1_766px_Part4.gif" style="flex: 1 1 18%; height: auto;">
-  <img src="./res/1735022101_new_shiny1_766px_Part5.gif" style="flex: 1 1 18%; height: auto;">
+<div style="display: flex; flex-wrap: wrap;">
+  <img src="./res/1735022101_new_shiny1_766px_Part1.gif" width="150" style="margin-right: 10px;">
+  <img src="./res/1735022101_new_shiny1_766px_Part2.gif" width="150" style="margin-right: 10px;">
+  <img src="./res/1735022101_new_shiny1_766px_Part3.gif" width="150" style="margin-right: 10px;">
+  <img src="./res/1735022101_new_shiny1_766px_Part4.gif" width="150" style="margin-right: 10px;">
+  <img src="./res/1735022101_new_shiny1_766px_Part5.gif" width="150">
 </div>
+
 
 ---
 
