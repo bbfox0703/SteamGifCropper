@@ -39,7 +39,7 @@ namespace GifProcessorApp
                         mainForm.pBarTaskStatus.Value = 0;
                         Application.DoEvents();
 
-                        SplitGif(inputFilePath, mainForm.pBarTaskStatus, (int)canvasWidth, (int)canvasHeight, mainForm);
+                        SplitGif(collection, inputFilePath, mainForm.pBarTaskStatus, (int)canvasWidth, (int)canvasHeight, mainForm);
                         mainForm.lblStatus.Text = "Done.";
                         MessageBox.Show("GIF processing and splitting completed successfully!",
                                         "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -59,15 +59,13 @@ namespace GifProcessorApp
                 }
             }
         }
-        private static void SplitGif(string inputFilePath, ProgressBar progressBar, int canvasWidth, int canvasHeight, GifToolMainForm mainForm)
+        private static void SplitGif(MagickImageCollection collection, string inputFilePath, ProgressBar progressBar, int canvasWidth, int canvasHeight, GifToolMainForm mainForm)
         {
-            using (var collection = new MagickImageCollection(inputFilePath))
-            {
-                mainForm.lblStatus.Text = "Coalescing frames...";
-                Application.DoEvents();
-                collection.Coalesce();
-                Application.DoEvents();
-                int newHeight = canvasHeight + 100;
+            mainForm.lblStatus.Text = "Coalescing frames...";
+            Application.DoEvents();
+            collection.Coalesce();
+            Application.DoEvents();
+            int newHeight = canvasHeight + 100;
 
                 (int Start, int End)[] ranges = canvasWidth == 766
                     ? new (int Start, int End)[] { (0, 149), (154, 303), (308, 457), (462, 611), (616, canvasWidth - 1) }
@@ -146,10 +144,9 @@ namespace GifProcessorApp
                         Application.DoEvents();
 
                         ModifyGifFile(outputPath, canvasHeight);
-                    }
-                }
-            }
-        }
+                  }
+              }
+          }
 
         public static void SplitGifWithReducedPalette(GifToolMainForm mainForm)
         {
