@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GifToolMainForm));
+            // Resource manager removed - icon loaded directly from file
             this.btnSplitGif = new System.Windows.Forms.Button();
             this.btnResizeGif766 = new System.Windows.Forms.Button();
             this.btnWriteTailByte = new System.Windows.Forms.Button();
@@ -351,7 +351,16 @@
             this.Controls.Add(this.btnResizeGif766);
             this.Controls.Add(this.btnSplitGif);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            // Load icon from file instead of embedded resource to avoid resource issues
+            try
+            {
+                this.Icon = new System.Drawing.Icon("icon.ico");
+            }
+            catch
+            {
+                // If icon file is not found, continue without icon
+                this.Icon = null;
+            }
             this.MaximizeBox = false;
             this.Name = "GifToolMainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

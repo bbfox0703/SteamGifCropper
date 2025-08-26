@@ -5,63 +5,63 @@ namespace GifProcessorApp
 {
     public partial class GifToolMainForm : Form
     {
-        public int ditherMethod = 0;
+        public int DitherMethod { get; private set; } = 0;
+        
         public GifToolMainForm()
-        {
-            InitializeComponent();
-        }
-
-        // Event handler for the button to start GIF processing
-        private void btnSplitGif_Click(object sender, EventArgs e)
         {
             try
             {
-                GifProcessor.StartProcessing(this); // Call the processing function
+                InitializeComponent();
+                
+                // Set initial state
+                lblStatus.Text = "Ready";
+                pBarTaskStatus.Visible = false;
+                
+                // Ensure proper form state
+                this.WindowState = FormWindowState.Normal;
+                this.StartPosition = FormStartPosition.CenterScreen;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred: {ex.Message}",
+                MessageBox.Show($"Failed to initialize form: {ex.Message}", 
+                                "Initialization Error", 
+                                MessageBoxButtons.OK, 
+                                MessageBoxIcon.Error);
+                throw;
+            }
+        }
+
+        private void ExecuteWithErrorHandling(Action action, string operationName)
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, $"An error occurred during {operationName}: {ex.Message}",
                                 "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void btnSplitGif_Click(object sender, EventArgs e)
+        {
+            ExecuteWithErrorHandling(() => GifProcessor.StartProcessing(this), "GIF splitting");
         }
 
         private void btnResizeGif766_Click(object sender, EventArgs e)
         {
-            try
-            {
-                GifProcessor.ResizeGifTo766(this); // Call the resize method and pass the current form
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, $"An error occurred: {ex.Message}",
-                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            ExecuteWithErrorHandling(() => GifProcessor.ResizeGifTo766(this), "GIF resizing");
         }
 
         private void btnWriteTailByte_Click(object sender, EventArgs e)
         {
-            try
-            {
-                GifProcessor.WriteTailByteForMultipleGifs(this); // Call the method and pass the current form
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, $"An error occurred: {ex.Message}",
-                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            ExecuteWithErrorHandling(() => GifProcessor.WriteTailByteForMultipleGifs(this), "tail byte modification");
         }
 
         private void btnSplitGIFWithReducedPalette_Click(object sender, EventArgs e)
         {
-            try
-            {
-                GifProcessor.SplitGifWithReducedPalette(this);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, $"An error occurred: {ex.Message}",
-                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            ExecuteWithErrorHandling(() => GifProcessor.SplitGifWithReducedPalette(this), "palette reduction and splitting");
         }
 
         private void label2_Click(object sender, EventArgs e)
@@ -69,24 +69,9 @@ namespace GifProcessorApp
 
         }
 
-        private void radioBtnDNone_Click(object sender, EventArgs e)
-        {
-            ditherMethod = 0;
-        }
-
-        private void radioBtnDro64_Click(object sender, EventArgs e)
-        {
-            ditherMethod = 1;
-        }
-
-        private void radioBtnDo8_Click(object sender, EventArgs e)
-        {
-            ditherMethod = 2;
-        }
-
-        private void radioBtnDDefault_Click(object sender, EventArgs e)
-        {
-            ditherMethod = 3;
-        }
+        private void radioBtnDNone_Click(object sender, EventArgs e) => DitherMethod = 0;
+        private void radioBtnDro64_Click(object sender, EventArgs e) => DitherMethod = 1;
+        private void radioBtnDo8_Click(object sender, EventArgs e) => DitherMethod = 2;
+        private void radioBtnDDefault_Click(object sender, EventArgs e) => DitherMethod = 3;
     }
 }
