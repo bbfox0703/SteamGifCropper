@@ -144,9 +144,16 @@ namespace GifProcessorApp
                         partCollection.Optimize();
                         mainForm.lblStatus.Text = "Compressing...";
                         Application.DoEvents();
+                        int compressFrameCount = 0;
                         foreach (var frame in partCollection)
                         {
                             frame.Settings.SetDefine("compress", "LZW");
+                            
+                            // Update every 25 frames during compression
+                            if (++compressFrameCount % 25 == 0)
+                            {
+                                Application.DoEvents();
+                            }
                         }
 
                         currentStep++;
@@ -338,17 +345,31 @@ namespace GifProcessorApp
                     // Coalesce for proper animation handling
                     collections[i].Coalesce();
                     
+                    int frameCount = 0;
                     foreach (var frame in collections[i])
                     {
                         // Resize maintaining aspect ratio
                         frame.Resize((uint)targetWidths[i], 0);
                         resizedCollections[i].Add(frame.Clone());
+                        
+                        // Update UI every 10 frames to keep responsive
+                        if (++frameCount % 10 == 0)
+                        {
+                            mainForm.lblStatus.Text = $"Resizing GIF #{i + 1} - Frame {frameCount}/{collections[i].Count}...";
+                            Application.DoEvents();
+                        }
                     }
 
                     // Copy animation settings
                     for (int j = 0; j < resizedCollections[i].Count; j++)
                     {
                         resizedCollections[i][j].AnimationDelay = collections[i][j].AnimationDelay;
+                        
+                        // Update UI every 50 frames for animation settings
+                        if (j % 50 == 0 && j > 0)
+                        {
+                            Application.DoEvents();
+                        }
                     }
                 }
 
@@ -391,26 +412,43 @@ namespace GifProcessorApp
             {
                 for (int i = 0; i < 5; i++)
                 {
+                    mainForm.lblStatus.Text = $"Synchronizing GIF #{i + 1} duration...";
+                    Application.DoEvents();
+                    
                     syncedCollections[i] = new MagickImageCollection();
                     
                     if (durations[i] == shortestDuration)
                     {
                         // Already the shortest, copy as-is
+                        int frameCount = 0;
                         foreach (var frame in collections[i])
                         {
                             syncedCollections[i].Add(frame.Clone());
+                            
+                            // Update every 20 frames
+                            if (++frameCount % 20 == 0)
+                            {
+                                Application.DoEvents();
+                            }
                         }
                     }
                     else
                     {
                         // Trim to shortest duration
                         int currentDuration = 0;
+                        int frameCount = 0;
                         foreach (var frame in collections[i])
                         {
                             if (currentDuration + (int)frame.AnimationDelay <= shortestDuration)
                             {
                                 syncedCollections[i].Add(frame.Clone());
                                 currentDuration += (int)frame.AnimationDelay;
+                                
+                                // Update every 20 frames
+                                if (++frameCount % 20 == 0)
+                                {
+                                    Application.DoEvents();
+                                }
                             }
                             else
                             {
@@ -455,6 +493,13 @@ namespace GifProcessorApp
             {
                 for (int frameIndex = 0; frameIndex < maxFrames; frameIndex++)
                 {
+                    // Update UI every 10 frames during merging
+                    if (frameIndex % 10 == 0)
+                    {
+                        mainForm.lblStatus.Text = $"Merging frame {frameIndex + 1}/{maxFrames}...";
+                        Application.DoEvents();
+                    }
+                    
                     // Create 766px wide canvas
                     var canvas = new MagickImage(MagickColors.Transparent, 766, (uint)maxHeight);
                     
@@ -626,9 +671,16 @@ namespace GifProcessorApp
                         partCollection.Optimize();
                         mainForm.lblStatus.Text = "Compressing...";
                         Application.DoEvents();
+                        int compressFrameCount = 0;
                         foreach (var frame in partCollection)
                         {
                             frame.Settings.SetDefine("compress", "LZW");
+                            
+                            // Update every 25 frames during compression
+                            if (++compressFrameCount % 25 == 0)
+                            {
+                                Application.DoEvents();
+                            }
                         }
 
                         currentStep++;
