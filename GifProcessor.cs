@@ -1055,8 +1055,8 @@ namespace GifProcessorApp
                                 {
                                     options.Seek(startTime)
                                            .WithDuration(duration)
-                                           .WithVideoFilters(filterOptions => filterOptions
-                                               .Scale(-1, -1))  // Scaling on GPU if supported
+                                           // Download frames from the GPU and convert to a GIF-friendly format
+                                           .WithCustomArgument("-vf hwdownload,format=rgb24,scale=-1:-1")
                                            .WithFramerate(25)
                                            .WithCustomArgument("-pix_fmt rgb24");
                                 })
