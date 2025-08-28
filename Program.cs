@@ -10,12 +10,8 @@ namespace GifProcessorApp
         {
             try
             {
-                // Enable high DPI support for .NET Framework
-                if (Environment.OSVersion.Version.Major >= 6)
-                {
-                    SetProcessDPIAware();
-                }
-                
+                // .NET 8 modern high DPI support
+                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 
@@ -43,7 +39,5 @@ namespace GifProcessorApp
                            MessageBoxIcon.Error);
         }
 
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
-        private static extern bool SetProcessDPIAware();
     }
 }
