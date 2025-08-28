@@ -1067,10 +1067,26 @@ namespace GifProcessorApp
                             mainForm.lblStatus.Text = "GPU decode failed, using CPU...";
                             Application.DoEvents();
 
-                            if (gpuEx is FFMpegException ffmpegEx && !string.IsNullOrWhiteSpace(ffmpegEx.FFMpegErrorOutput))
+                            if (gpuEx is FFMpegException ffmpegException && !string.IsNullOrWhiteSpace(ffmpegException.FFMpegErrorOutput))
                             {
-                                MessageBox.Show($"FFmpeg GPU error output:\n{ffmpegEx.FFMpegErrorOutput}",
-                                                "GPU Decode Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                string logFilePath = null;
+                                try
+                                {
+                                    string logDirectory = Path.GetDirectoryName(outputPath);
+                                    if (string.IsNullOrEmpty(logDirectory) || !Directory.Exists(logDirectory))
+                                        logDirectory = Path.GetTempPath();
+
+                                    logFilePath = Path.Combine(logDirectory, "ffmpeg_gpu_error.log");
+                                    File.WriteAllText(logFilePath, ffmpegException.FFMpegErrorOutput);
+                                    mainForm.lblStatus.Text += $" (FFmpeg log: {logFilePath})";
+                                }
+                                catch
+                                {
+                                    string truncated = ffmpegException.FFMpegErrorOutput.Length > 200
+                                        ? ffmpegException.FFMpegErrorOutput.Substring(0, 200) + "..."
+                                        : ffmpegException.FFMpegErrorOutput;
+                                    mainForm.lblStatus.Text += $" FFmpeg output: {truncated}";
+                                }
                             }
 
                             // GPU failed, fallback to full CPU processing
