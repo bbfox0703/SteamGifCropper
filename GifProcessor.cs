@@ -1018,24 +1018,60 @@ namespace GifProcessorApp
 
                         try
                         {
+                            // Determine the source codec to choose the appropriate CUDA decoder
+                            string decoder = null;
+                            try
+                            {
+                                var analysis = await FFProbe.AnalyseAsync(inputPath);
+                                var codec = analysis.PrimaryVideoStream?.CodecName?.ToLowerInvariant();
+                                decoder = codec switch
+                                {
+                                    "h264" => "h264_cuvid",
+                                    "hevc" => "hevc_cuvid",
+                                    "h265" => "hevc_cuvid",
+                                    "mpeg2video" => "mpeg2_cuvid",
+                                    "mpeg4" => "mpeg4_cuvid",
+                                    "vp9" => "vp9_cuvid",
+                                    _ => null
+                                };
+                            }
+                            catch
+                            {
+                                // If ffprobe fails, continue without specifying decoder
+                                decoder = null;
+                            }
+
                             // GPU-accelerated MP4 decoding, CPU GIF encoding
                             // Note: GIF encoding doesn't support CUDA, only decoding can be accelerated
                             await FFMpegArguments
-                                .FromFileInput(inputPath)
-                                .OutputToFile(outputPath, true, options => options
-                                    .WithCustomArgument("-hwaccel cuda")  // GPU decode only
-                                    .Seek(startTime)
-                                    .WithDuration(duration)
-                                    .WithVideoFilters(filterOptions => filterOptions
-                                        .Scale(-1, -1))  // Scaling on GPU if supported
-                                    .WithFramerate(25)
-                                    .WithCustomArgument("-pix_fmt rgb24"))
+                                .FromFileInput(inputPath, true, input =>
+                                {
+                                    input.WithCustomArgument("-hwaccel cuda");
+                                    if (!string.IsNullOrEmpty(decoder))
+                                        input.WithCustomArgument($"-c:v {decoder}");
+                                    input.WithCustomArgument("-hwaccel_output_format cuda");
+                                })
+                                .OutputToFile(outputPath, true, options =>
+                                {
+                                    options.Seek(startTime)
+                                           .WithDuration(duration)
+                                           // Download frames from the GPU and convert to a GIF-friendly format
+                                           .WithCustomArgument("-vf hwdownload,format=nv12,scale=-1:-1,format=rgb24")
+                                           .WithFramerate(25)
+                                           .WithCustomArgument("-pix_fmt rgb8");
+                                })
                                 .ProcessAsynchronously();
                         }
-                        catch (Exception)
+                        catch (Exception gpuEx)
                         {
                             mainForm.lblStatus.Text = "GPU decode failed, using CPU...";
                             Application.DoEvents();
+
+                            if (gpuEx is FFMpegException ffmpegEx && !string.IsNullOrWhiteSpace(ffmpegEx.FFMpegErrorOutput))
+                            {
+                                MessageBox.Show($"FFmpeg GPU error output:\n{ffmpegEx.FFMpegErrorOutput}",
+                                                "GPU Decode Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
 
                             // GPU failed, fallback to full CPU processing
                             await FFMpegArguments
@@ -1046,7 +1082,7 @@ namespace GifProcessorApp
                                     .WithVideoFilters(filterOptions => filterOptions
                                         .Scale(-1, -1))
                                     .WithFramerate(25)
-                                    .WithCustomArgument("-pix_fmt rgb24"))
+                                    .WithCustomArgument("-pix_fmt rgb8"))
                                 .ProcessAsynchronously();
                         }
                     }
@@ -1064,7 +1100,7 @@ namespace GifProcessorApp
                                 .WithVideoFilters(filterOptions => filterOptions
                                     .Scale(-1, -1))
                                 .WithFramerate(25)
-                                .WithCustomArgument("-pix_fmt rgb24"))
+                                .WithCustomArgument("-pix_fmt rgb8"))
                             .ProcessAsynchronously();
                     }
 
