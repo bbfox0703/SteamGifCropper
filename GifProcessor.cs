@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using ImageMagick;
 
@@ -170,7 +171,322 @@ namespace GifProcessorApp
               }
           }
 
+        public static void MergeAndSplitFiveGifs(GifToolMainForm mainForm)
+        {
+            // Step 1: Select five GIF files in order
+            var gifFiles = SelectFiveOrderedGifs();
+            if (gifFiles == null || gifFiles.Length != 5)
+            {
+                return; // User cancelled or didn't select exactly 5 files
+            }
+
+            try
+            {
+                mainForm.lblStatus.Text = "Validating and processing 5 GIF files...";
+                mainForm.pBarTaskStatus.Minimum = 0;
+                mainForm.pBarTaskStatus.Maximum = 100;
+                mainForm.pBarTaskStatus.Value = 0;
+                Application.DoEvents();
+
+                // Step 2: Load and validate all GIF files
+                var collections = LoadAndValidateGifs(gifFiles, mainForm);
+                if (collections == null) return;
+
+                UpdateProgress(mainForm.pBarTaskStatus, 20, 100);
+
+                // Step 3: Resize GIFs to specific widths (153, 153, 154, 153, 153)
+                var resizedCollections = ResizeGifsToSpecificWidths(collections, mainForm);
+                UpdateProgress(mainForm.pBarTaskStatus, 40, 100);
+
+                // Step 4: Synchronize to shortest duration
+                var syncedCollections = SynchronizeToShortestDuration(resizedCollections, mainForm);
+                UpdateProgress(mainForm.pBarTaskStatus, 60, 100);
+
+                // Step 5: Merge horizontally to create 766px wide GIF
+                var mergedCollection = MergeGifsHorizontally(syncedCollections, mainForm);
+                UpdateProgress(mainForm.pBarTaskStatus, 80, 100);
+
+                // Step 6: Apply existing split functionality
+                var tempFilePath = Path.GetTempFileName().Replace(".tmp", ".gif");
+                mergedCollection.Write(tempFilePath);
+
+                // Use existing split logic
+                var ranges = GetCropRanges(SupportedWidth1); // Use 766px ranges
+                int adjustedHeight = CalculateAdjustedHeight(mergedCollection);
+                SplitGif(mergedCollection, tempFilePath, mainForm, ranges, adjustedHeight);
+
+                // Cleanup temp file
+                if (File.Exists(tempFilePath))
+                {
+                    File.Delete(tempFilePath);
+                }
+
+                UpdateProgress(mainForm.pBarTaskStatus, 100, 100);
+                mainForm.lblStatus.Text = "Five GIF merge and split completed successfully!";
+                MessageBox.Show("Five GIF files have been merged and split into 5 parts successfully!",
+                              "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Dispose collections
+                foreach (var collection in syncedCollections)
+                {
+                    collection.Dispose();
+                }
+                mergedCollection.Dispose();
+            }
+            catch (Exception ex)
+            {
+                mainForm.lblStatus.Text = "Error occurred during processing.";
+                MessageBox.Show($"Error processing five GIF merge and split: {ex.Message}",
+                              "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static string[] SelectFiveOrderedGifs()
+        {
+            using (var openFileDialog = new OpenFileDialog
+            {
+                Filter = "GIF Files (*.gif)|*.gif",
+                Title = "Select exactly 5 GIF files in order (gif1, gif2, gif3, gif4, gif5)",
+                Multiselect = true
+            })
+            {
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    if (openFileDialog.FileNames.Length != 5)
+                    {
+                        MessageBox.Show("Please select exactly 5 GIF files.",
+                                      "Invalid Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return null;
+                    }
+                    return openFileDialog.FileNames;
+                }
+                return null;
+            }
+        }
+
+        private static MagickImageCollection[] LoadAndValidateGifs(string[] gifFiles, GifToolMainForm mainForm)
+        {
+            var collections = new MagickImageCollection[5];
+
+            try
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    collections[i] = new MagickImageCollection(gifFiles[i]);
+                    
+                    // Validate that GIF has palette colors (8-bit)
+                    if (collections[i][0].ColorType != ColorType.Palette && collections[i][0].ColorType != ColorType.PaletteAlpha)
+                    {
+                        MessageBox.Show($"GIF #{i + 1} ({Path.GetFileName(gifFiles[i])}) must have palette-based colors (8-bit).\nCurrent color type: {collections[i][0].ColorType}",
+                                      "Invalid Color Type", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        
+                        // Cleanup loaded collections
+                        for (int j = 0; j <= i; j++)
+                        {
+                            collections[j]?.Dispose();
+                        }
+                        return null;
+                    }
+                }
+                return collections;
+            }
+            catch (Exception ex)
+            {
+                // Cleanup on error
+                foreach (var collection in collections)
+                {
+                    collection?.Dispose();
+                }
+                throw new InvalidOperationException($"Failed to load and validate GIF files: {ex.Message}", ex);
+            }
+        }
+
+        private static MagickImageCollection[] ResizeGifsToSpecificWidths(MagickImageCollection[] collections, GifToolMainForm mainForm)
+        {
+            int[] targetWidths = { 153, 153, 154, 153, 153 };
+            var resizedCollections = new MagickImageCollection[5];
+
+            try
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    mainForm.lblStatus.Text = $"Resizing GIF #{i + 1} to {targetWidths[i]}px width...";
+                    Application.DoEvents();
+
+                    resizedCollections[i] = new MagickImageCollection();
+                    
+                    // Coalesce for proper animation handling
+                    collections[i].Coalesce();
+                    
+                    foreach (var frame in collections[i])
+                    {
+                        // Resize maintaining aspect ratio
+                        frame.Resize((uint)targetWidths[i], 0);
+                        resizedCollections[i].Add(frame.Clone());
+                    }
+
+                    // Copy animation settings
+                    for (int j = 0; j < resizedCollections[i].Count; j++)
+                    {
+                        resizedCollections[i][j].AnimationDelay = collections[i][j].AnimationDelay;
+                    }
+                }
+
+                return resizedCollections;
+            }
+            catch (Exception ex)
+            {
+                // Cleanup on error
+                foreach (var collection in resizedCollections)
+                {
+                    collection?.Dispose();
+                }
+                throw new InvalidOperationException($"Failed to resize GIF files: {ex.Message}", ex);
+            }
+        }
+
+        private static MagickImageCollection[] SynchronizeToShortestDuration(MagickImageCollection[] collections, GifToolMainForm mainForm)
+        {
+            mainForm.lblStatus.Text = "Synchronizing animation durations...";
+            Application.DoEvents();
+
+            // Calculate total duration for each GIF (frames * delay)
+            var durations = new int[5];
+            for (int i = 0; i < 5; i++)
+            {
+                durations[i] = (int)collections[i].Sum(frame => (long)frame.AnimationDelay);
+            }
+
+            // Find shortest duration
+            int shortestDuration = durations.Min();
+            int shortestIndex = Array.IndexOf(durations, shortestDuration);
+
+            mainForm.lblStatus.Text = $"Shortest duration: {shortestDuration/100.0:F1}s (GIF #{shortestIndex + 1})";
+            Application.DoEvents();
+
+            // Synchronize all GIFs to shortest duration
+            var syncedCollections = new MagickImageCollection[5];
+
+            try
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    syncedCollections[i] = new MagickImageCollection();
+                    
+                    if (durations[i] == shortestDuration)
+                    {
+                        // Already the shortest, copy as-is
+                        foreach (var frame in collections[i])
+                        {
+                            syncedCollections[i].Add(frame.Clone());
+                        }
+                    }
+                    else
+                    {
+                        // Trim to shortest duration
+                        int currentDuration = 0;
+                        foreach (var frame in collections[i])
+                        {
+                            if (currentDuration + (int)frame.AnimationDelay <= shortestDuration)
+                            {
+                                syncedCollections[i].Add(frame.Clone());
+                                currentDuration += (int)frame.AnimationDelay;
+                            }
+                            else
+                            {
+                                break; // Stop when we reach the shortest duration
+                            }
+                        }
+                    }
+                    
+                    // Set loop animation for each frame
+                    foreach (var frame in syncedCollections[i])
+                    {
+                        frame.GifDisposeMethod = GifDisposeMethod.Background;
+                    }
+                }
+
+                return syncedCollections;
+            }
+            catch (Exception ex)
+            {
+                // Cleanup on error
+                foreach (var collection in syncedCollections)
+                {
+                    collection?.Dispose();
+                }
+                throw new InvalidOperationException($"Failed to synchronize GIF durations: {ex.Message}", ex);
+            }
+        }
+
+        private static MagickImageCollection MergeGifsHorizontally(MagickImageCollection[] collections, GifToolMainForm mainForm)
+        {
+            mainForm.lblStatus.Text = "Merging GIFs horizontally to 766px width...";
+            Application.DoEvents();
+
+            // Calculate maximum height among all resized GIFs
+            int maxHeight = collections.Max(c => (int)c[0].Height);
+            
+            // Create merged collection
+            var mergedCollection = new MagickImageCollection();
+            int maxFrames = collections.Max(c => c.Count);
+
+            try
+            {
+                for (int frameIndex = 0; frameIndex < maxFrames; frameIndex++)
+                {
+                    // Create 766px wide canvas
+                    var canvas = new MagickImage(MagickColors.Transparent, 766, (uint)maxHeight);
+                    
+                    // X positions for each GIF: 0, 153, 306, 460, 613
+                    int[] xPositions = { 0, 153, 306, 460, 613 };
+                    
+                    for (int gifIndex = 0; gifIndex < 5; gifIndex++)
+                    {
+                        // Get frame (loop if GIF has fewer frames)
+                        var collection = collections[gifIndex];
+                        var frameIdx = frameIndex % collection.Count;
+                        var frame = collection[frameIdx];
+                        
+                        // Composite frame onto canvas at specific X position
+                        canvas.Composite(frame, xPositions[gifIndex], 0, CompositeOperator.Over);
+                    }
+
+                    // Set animation delay (use delay from first GIF)
+                    canvas.AnimationDelay = collections[0][frameIndex % collections[0].Count].AnimationDelay;
+                    
+                    mergedCollection.Add(canvas);
+                }
+
+                // Set infinite loop for each frame
+                foreach (var frame in mergedCollection)
+                {
+                    frame.GifDisposeMethod = GifDisposeMethod.Background;
+                }
+                
+                return mergedCollection;
+            }
+            catch (Exception ex)
+            {
+                mergedCollection?.Dispose();
+                throw new InvalidOperationException($"Failed to merge GIFs horizontally: {ex.Message}", ex);
+            }
+        }
+
+        private static int CalculateAdjustedHeight(MagickImageCollection collection)
+        {
+            return (int)collection[0].Height + HeightExtension;
+        }
+
         public static void SplitGifWithReducedPalette(GifToolMainForm mainForm)
+        {
+            // Keep the original method name for backward compatibility
+            // but redirect to the new merge and split functionality
+            MergeAndSplitFiveGifs(mainForm);
+        }
+
+        [Obsolete("This method has been replaced with MergeAndSplitFiveGifs")]
+        public static void SplitGifWithReducedPaletteOld(GifToolMainForm mainForm)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {

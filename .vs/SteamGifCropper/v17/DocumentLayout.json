@@ -12,10 +12,6 @@
     },
     {
       "AbsoluteMoniker": "D:0:0:{00000000-0000-0000-0000-000000000000}|\u003CSolution\u003E|SteamGifCropper||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|d:\\github\\steamgifcropper\\steamgifcropper.csproj||{B270807C-D8C6-49EB-8EBE-8E8D566637A1}|5e9a8ac2-4f34-4521-858f-4c248ba31532",
-      "RelativeMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|solutionrelative:steamgifcropper.csproj||{B270807C-D8C6-49EB-8EBE-8E8D566637A1}|5e9a8ac2-4f34-4521-858f-4c248ba31532"
     }
   ],
   "DocumentGroupContainers": [
@@ -61,8 +57,7 @@
               "ToolTip": "D:\\Github\\SteamGifCropper\\SteamGifCropper.csproj",
               "RelativeToolTip": "SteamGifCropper.csproj",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2025-08-08T14:09:32.118Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-08-08T14:09:32.118Z"
             }
           ]
         }

@@ -114,7 +114,6 @@
             btnMergeAndSplit.TabIndex = 5;
             btnMergeAndSplit.Text = "Merge & split 5 gif files into 5 parts";
             btnMergeAndSplit.UseVisualStyleBackColor = true;
-            btnMergeAndSplit.Visible = false;
             btnMergeAndSplit.Click += btnSplitGIFWithReducedPalette_Click;
             // 
             // lblPaletteDesc
