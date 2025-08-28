@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -215,19 +216,20 @@ namespace GifProcessorApp
                 UpdateProgress(mainForm.pBarTaskStatus, 80, 100);
 
                 // Step 6: Apply existing split functionality
-                var tempFilePath = Path.GetTempFileName().Replace(".tmp", ".gif");
-                mergedCollection.Write(tempFilePath);
+                // Create merged filename based on first selected GIF
+                string firstGifPath = gifFiles[0];
+                string mergedFileName = $"{Path.GetFileNameWithoutExtension(firstGifPath)}_merged.gif";
+                string outputDir = Path.GetDirectoryName(firstGifPath);
+                string mergedFilePath = Path.Combine(outputDir, mergedFileName);
+                
+                mergedCollection.Write(mergedFilePath);
 
                 // Use existing split logic
                 var ranges = GetCropRanges(SupportedWidth1); // Use 766px ranges
                 int adjustedHeight = CalculateAdjustedHeight(mergedCollection);
-                SplitGif(mergedCollection, tempFilePath, mainForm, ranges, adjustedHeight);
+                SplitGif(mergedCollection, mergedFilePath, mainForm, ranges, adjustedHeight);
 
-                // Cleanup temp file
-                if (File.Exists(tempFilePath))
-                {
-                    File.Delete(tempFilePath);
-                }
+                // Note: mergedFilePath is kept as the intermediate merged file
 
                 UpdateProgress(mainForm.pBarTaskStatus, 100, 100);
                 mainForm.lblStatus.Text = "Five GIF merge and split completed successfully!";
@@ -251,25 +253,35 @@ namespace GifProcessorApp
 
         private static string[] SelectFiveOrderedGifs()
         {
-            using (var openFileDialog = new OpenFileDialog
+            var selectedFiles = new List<string>();
+            
+            MessageBox.Show("You will need to select 5 GIF files one by one in the desired order.\n\n" +
+                          "File 1: First position (leftmost)\n" +
+                          "File 2: Second position\n" +
+                          "File 3: Third position (center)\n" +
+                          "File 4: Fourth position\n" +
+                          "File 5: Fifth position (rightmost)",
+                          "Selection Order Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            
+            for (int i = 1; i <= 5; i++)
             {
-                Filter = "GIF Files (*.gif)|*.gif",
-                Title = "Select exactly 5 GIF files in order (gif1, gif2, gif3, gif4, gif5)",
-                Multiselect = true
-            })
-            {
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                using (var openFileDialog = new OpenFileDialog
                 {
-                    if (openFileDialog.FileNames.Length != 5)
+                    Filter = "GIF Files (*.gif)|*.gif",
+                    Title = $"Select GIF file #{i} (position {i} from left to right)",
+                    Multiselect = false
+                })
+                {
+                    if (openFileDialog.ShowDialog() != DialogResult.OK)
                     {
-                        MessageBox.Show("Please select exactly 5 GIF files.",
-                                      "Invalid Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        // User cancelled
                         return null;
                     }
-                    return openFileDialog.FileNames;
+                    selectedFiles.Add(openFileDialog.FileName);
                 }
-                return null;
             }
+            
+            return selectedFiles.ToArray();
         }
 
         private static MagickImageCollection[] LoadAndValidateGifs(string[] gifFiles, GifToolMainForm mainForm)

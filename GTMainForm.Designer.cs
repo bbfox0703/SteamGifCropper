@@ -35,8 +35,6 @@
             pBarTaskStatus = new System.Windows.Forms.ProgressBar();
             lblStatus = new System.Windows.Forms.Label();
             btnMergeAndSplit = new System.Windows.Forms.Button();
-            lblPaletteDesc = new System.Windows.Forms.Label();
-            numUpDownPalette = new System.Windows.Forms.NumericUpDown();
             panel1 = new System.Windows.Forms.Panel();
             groupDither = new System.Windows.Forms.GroupBox();
             radioBtnDDefault = new System.Windows.Forms.RadioButton();
@@ -51,19 +49,21 @@
             label2 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             chkGifsicle = new System.Windows.Forms.CheckBox();
-            ((System.ComponentModel.ISupportInitialize)numUpDownPalette).BeginInit();
+            numUpDownPalette = new System.Windows.Forms.NumericUpDown();
+            lblPaletteDesc = new System.Windows.Forms.Label();
             panel1.SuspendLayout();
             groupDither.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPaletteSicle).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownLossy).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numUpDownPalette).BeginInit();
             SuspendLayout();
             // 
             // btnSplitGif
             // 
             btnSplitGif.Location = new System.Drawing.Point(12, 12);
             btnSplitGif.Name = "btnSplitGif";
-            btnSplitGif.Size = new System.Drawing.Size(372, 45);
+            btnSplitGif.Size = new System.Drawing.Size(497, 45);
             btnSplitGif.TabIndex = 0;
             btnSplitGif.Text = "Split Gif file into 5 parts with gifsicle";
             btnSplitGif.UseVisualStyleBackColor = true;
@@ -73,7 +73,7 @@
             // 
             btnResizeGif766.Location = new System.Drawing.Point(12, 63);
             btnResizeGif766.Name = "btnResizeGif766";
-            btnResizeGif766.Size = new System.Drawing.Size(372, 45);
+            btnResizeGif766.Size = new System.Drawing.Size(497, 45);
             btnResizeGif766.TabIndex = 1;
             btnResizeGif766.Text = "Resize GIF file to 766px width";
             btnResizeGif766.UseVisualStyleBackColor = true;
@@ -83,7 +83,7 @@
             // 
             btnWriteTailByte.Location = new System.Drawing.Point(12, 114);
             btnWriteTailByte.Name = "btnWriteTailByte";
-            btnWriteTailByte.Size = new System.Drawing.Size(372, 45);
+            btnWriteTailByte.Size = new System.Drawing.Size(497, 45);
             btnWriteTailByte.TabIndex = 2;
             btnWriteTailByte.Text = "Write Gif files last byte as 0x21";
             btnWriteTailByte.UseVisualStyleBackColor = true;
@@ -93,7 +93,7 @@
             // 
             btnRestoreTailByte.Location = new System.Drawing.Point(12, 165);
             btnRestoreTailByte.Name = "btnRestoreTailByte";
-            btnRestoreTailByte.Size = new System.Drawing.Size(372, 45);
+            btnRestoreTailByte.Size = new System.Drawing.Size(497, 45);
             btnRestoreTailByte.TabIndex = 6;
             btnRestoreTailByte.Text = "Restore Gif files last byte from 0x21 to 0x3B";
             btnRestoreTailByte.UseVisualStyleBackColor = true;
@@ -102,16 +102,16 @@
             // pBarTaskStatus
             // 
             pBarTaskStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            pBarTaskStatus.Location = new System.Drawing.Point(0, 581);
+            pBarTaskStatus.Location = new System.Drawing.Point(0, 664);
             pBarTaskStatus.Name = "pBarTaskStatus";
-            pBarTaskStatus.Size = new System.Drawing.Size(465, 36);
+            pBarTaskStatus.Size = new System.Drawing.Size(521, 36);
             pBarTaskStatus.TabIndex = 3;
             // 
             // lblStatus
             // 
             lblStatus.AutoSize = true;
             lblStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            lblStatus.Location = new System.Drawing.Point(0, 555);
+            lblStatus.Location = new System.Drawing.Point(0, 638);
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new System.Drawing.Size(53, 26);
             lblStatus.TabIndex = 4;
@@ -121,32 +121,11 @@
             // 
             btnMergeAndSplit.Location = new System.Drawing.Point(12, 216);
             btnMergeAndSplit.Name = "btnMergeAndSplit";
-            btnMergeAndSplit.Size = new System.Drawing.Size(372, 45);
+            btnMergeAndSplit.Size = new System.Drawing.Size(497, 45);
             btnMergeAndSplit.TabIndex = 5;
-            btnMergeAndSplit.Text = "Merge & split 5 gif files into 5 parts";
+            btnMergeAndSplit.Text = "Merge 5 gif files into 1 part (766px)";
             btnMergeAndSplit.UseVisualStyleBackColor = true;
             btnMergeAndSplit.Click += btnSplitGIFWithReducedPalette_Click;
-            // 
-            // lblPaletteDesc
-            // 
-            lblPaletteDesc.AutoSize = true;
-            lblPaletteDesc.Location = new System.Drawing.Point(98, 218);
-            lblPaletteDesc.Name = "lblPaletteDesc";
-            lblPaletteDesc.Size = new System.Drawing.Size(199, 26);
-            lblPaletteDesc.TabIndex = 6;
-            lblPaletteDesc.Text = "Number of palette:";
-            lblPaletteDesc.Visible = false;
-            // 
-            // numUpDownPalette
-            // 
-            numUpDownPalette.Location = new System.Drawing.Point(304, 216);
-            numUpDownPalette.Maximum = new decimal(new int[] { 256, 0, 0, 0 });
-            numUpDownPalette.Minimum = new decimal(new int[] { 32, 0, 0, 0 });
-            numUpDownPalette.Name = "numUpDownPalette";
-            numUpDownPalette.Size = new System.Drawing.Size(80, 34);
-            numUpDownPalette.TabIndex = 8;
-            numUpDownPalette.Value = new decimal(new int[] { 256, 0, 0, 0 });
-            numUpDownPalette.Visible = false;
             // 
             // panel1
             // 
@@ -160,9 +139,9 @@
             panel1.Controls.Add(label1);
             panel1.Controls.Add(chkGifsicle);
             panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            panel1.Location = new System.Drawing.Point(0, 291);
+            panel1.Location = new System.Drawing.Point(0, 403);
             panel1.Name = "panel1";
-            panel1.Size = new System.Drawing.Size(465, 264);
+            panel1.Size = new System.Drawing.Size(521, 235);
             panel1.TabIndex = 11;
             // 
             // groupDither
@@ -172,9 +151,9 @@
             groupDither.Controls.Add(radioBtnDro64);
             groupDither.Controls.Add(radioBtnDNone);
             groupDither.Dock = System.Windows.Forms.DockStyle.Bottom;
-            groupDither.Location = new System.Drawing.Point(0, 191);
+            groupDither.Location = new System.Drawing.Point(0, 162);
             groupDither.Name = "groupDither";
-            groupDither.Size = new System.Drawing.Size(465, 73);
+            groupDither.Size = new System.Drawing.Size(521, 73);
             groupDither.TabIndex = 19;
             groupDither.TabStop = false;
             groupDither.Text = "Dither";
@@ -300,12 +279,33 @@
             chkGifsicle.Text = "Enable gifsicle optimization";
             chkGifsicle.UseVisualStyleBackColor = true;
             // 
+            // numUpDownPalette
+            // 
+            numUpDownPalette.Location = new System.Drawing.Point(349, 356);
+            numUpDownPalette.Maximum = new decimal(new int[] { 256, 0, 0, 0 });
+            numUpDownPalette.Minimum = new decimal(new int[] { 32, 0, 0, 0 });
+            numUpDownPalette.Name = "numUpDownPalette";
+            numUpDownPalette.Size = new System.Drawing.Size(80, 34);
+            numUpDownPalette.TabIndex = 8;
+            numUpDownPalette.Value = new decimal(new int[] { 256, 0, 0, 0 });
+            numUpDownPalette.Visible = false;
+            // 
+            // lblPaletteDesc
+            // 
+            lblPaletteDesc.AutoSize = true;
+            lblPaletteDesc.Location = new System.Drawing.Point(146, 356);
+            lblPaletteDesc.Name = "lblPaletteDesc";
+            lblPaletteDesc.Size = new System.Drawing.Size(199, 26);
+            lblPaletteDesc.TabIndex = 6;
+            lblPaletteDesc.Text = "Number of palette:";
+            lblPaletteDesc.Visible = false;
+            // 
             // GifToolMainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(168F, 168F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSize = true;
-            ClientSize = new System.Drawing.Size(465, 617);
+            ClientSize = new System.Drawing.Size(521, 700);
             Controls.Add(panel1);
             Controls.Add(numUpDownPalette);
             Controls.Add(lblPaletteDesc);
@@ -321,7 +321,6 @@
             Name = "GifToolMainForm";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             Text = "Steam Gif tool";
-            ((System.ComponentModel.ISupportInitialize)numUpDownPalette).EndInit();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             groupDither.ResumeLayout(false);
@@ -329,6 +328,7 @@
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPaletteSicle).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownLossy).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numUpDownPalette).EndInit();
             ResumeLayout(false);
             PerformLayout();
 
@@ -343,8 +343,6 @@
         private System.Windows.Forms.Button btnRestoreTailByte;
         public System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.Button btnMergeAndSplit;
-        private System.Windows.Forms.Label lblPaletteDesc;
-        public System.Windows.Forms.NumericUpDown numUpDownPalette;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label1;
         public System.Windows.Forms.CheckBox chkGifsicle;
@@ -359,5 +357,7 @@
         private System.Windows.Forms.RadioButton radioBtnDo8;
         private System.Windows.Forms.RadioButton radioBtnDro64;
         private System.Windows.Forms.RadioButton radioBtnDNone;
+        public System.Windows.Forms.NumericUpDown numUpDownPalette;
+        private System.Windows.Forms.Label lblPaletteDesc;
     }
 }
