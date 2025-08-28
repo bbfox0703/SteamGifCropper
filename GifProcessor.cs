@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using FFMpegCore;
+using FFMpegCore.Exceptions;
 using ImageMagick;
 
 namespace GifProcessorApp
@@ -1081,9 +1082,9 @@ namespace GifProcessorApp
                     // Capture detailed FFmpeg output if available
                     string ffmpegOutput = null;
                     string logFilePath = null;
-                    if (ex is FFMpegException ffmpegException && !string.IsNullOrWhiteSpace(ffmpegException.Output))
+                    if (ex is FFMpegException ffmpegException && !string.IsNullOrWhiteSpace(ffmpegException.FFMpegErrorOutput))
                     {
-                        ffmpegOutput = ffmpegException.Output;
+                        ffmpegOutput = ffmpegException.FFMpegErrorOutput;
                         try
                         {
                             string logDirectory = Path.GetDirectoryName(outputPath);
