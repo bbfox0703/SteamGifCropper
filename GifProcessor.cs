@@ -1056,9 +1056,9 @@ namespace GifProcessorApp
                                     options.Seek(startTime)
                                            .WithDuration(duration)
                                            // Download frames from the GPU and convert to a GIF-friendly format
-                                           .WithCustomArgument("-vf hwdownload,format=rgb24,scale=-1:-1")
+                                           .WithCustomArgument("-vf hwdownload,format=nv12,scale=-1:-1,format=rgb24")
                                            .WithFramerate(25)
-                                           .WithCustomArgument("-pix_fmt rgb24");
+                                           .WithCustomArgument("-pix_fmt rgb8");
                                 })
                                 .ProcessAsynchronously();
                         }
@@ -1082,7 +1082,7 @@ namespace GifProcessorApp
                                     .WithVideoFilters(filterOptions => filterOptions
                                         .Scale(-1, -1))
                                     .WithFramerate(25)
-                                    .WithCustomArgument("-pix_fmt rgb24"))
+                                    .WithCustomArgument("-pix_fmt rgb8"))
                                 .ProcessAsynchronously();
                         }
                     }
@@ -1100,7 +1100,7 @@ namespace GifProcessorApp
                                 .WithVideoFilters(filterOptions => filterOptions
                                     .Scale(-1, -1))
                                 .WithFramerate(25)
-                                .WithCustomArgument("-pix_fmt rgb24"))
+                                .WithCustomArgument("-pix_fmt rgb8"))
                             .ProcessAsynchronously();
                     }
 
