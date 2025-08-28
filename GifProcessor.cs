@@ -994,28 +994,106 @@ namespace GifProcessorApp
                 var outputPath = conversionDialog.OutputFilePath;
                 var startTime = conversionDialog.StartTime;
                 var duration = conversionDialog.Duration;
+                var useGPU = conversionDialog.UseGPUAcceleration;
 
                 try
                 {
-                    mainForm.lblStatus.Text = "Converting MP4 to GIF...";
                     mainForm.pBarTaskStatus.Visible = true;
                     mainForm.pBarTaskStatus.Value = 0;
                     Application.DoEvents();
 
-                    mainForm.lblStatus.Text = "Converting MP4 to GIF (simplified method)...";
-                    Application.DoEvents();
+                    if (useGPU)
+                    {
+                        mainForm.lblStatus.Text = "Converting MP4 to GIF with NVIDIA GPU acceleration...";
+                        Application.DoEvents();
 
-                    // Use a simpler, more reliable conversion method
-                    await FFMpegArguments
-                        .FromFileInput(inputPath)
-                        .OutputToFile(outputPath, true, options => options
-                            .Seek(startTime)
-                            .WithDuration(duration)
-                            .WithVideoFilters(filterOptions => filterOptions
-                                .Scale(-1, -1))
-                            .WithFramerate(25)
-                            .WithCustomArgument("-pix_fmt rgb24"))
-                        .ProcessAsynchronously();
+                        try
+                        {
+                            // Try different CUDA approaches in order of preference
+                            bool gpuSuccess = false;
+                            
+                            // Method 1: Try NVDEC hardware decoding only
+                            try
+                            {
+                                mainForm.lblStatus.Text = "Trying NVIDIA hardware decoding...";
+                                Application.DoEvents();
+                                
+                                await FFMpegArguments
+                                    .FromFileInput(inputPath)
+                                    .OutputToFile(outputPath, true, options => options
+                                        .WithCustomArgument("-hwaccel cuda -hwaccel_output_format cuda")  // CUDA video decoder
+                                        .Seek(startTime)
+                                        .WithDuration(duration)
+                                        .WithFramerate(25)
+                                        .WithCustomArgument("-pix_fmt rgb24"))
+                                    .ProcessAsynchronously();
+                                gpuSuccess = true;
+                            }
+                            catch
+                            {
+                                // Method 2: Try basic hardware acceleration
+                                try
+                                {
+                                    mainForm.lblStatus.Text = "Converting MP4 to GIF with CPU (GIF no CUDA)...";
+                                    Application.DoEvents();
+                                    
+                                    await FFMpegArguments
+                                        .FromFileInput(inputPath)
+                                        .OutputToFile(outputPath, true, options => options
+                                            //.WithCustomArgument("-hwaccel cuda") // no cuda in gif output
+                                            .Seek(startTime)
+                                            .WithDuration(duration)
+                                            .WithFramerate(25)
+                                            .WithCustomArgument("-pix_fmt rgb24"))
+                                        .ProcessAsynchronously();
+                                    gpuSuccess = true;
+                                }
+                                catch
+                                {
+                                    // Will fall through to CPU fallback
+                                }
+                            }
+                            
+                            if (!gpuSuccess)
+                            {
+                                throw new Exception("All GPU methods failed");
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            mainForm.lblStatus.Text = "GPU failed, falling back to CPU...";
+                            Application.DoEvents();
+
+                            // GPU failed, fallback to CPU
+                            await FFMpegArguments
+                                .FromFileInput(inputPath)
+                                .OutputToFile(outputPath, true, options => options
+                                    .Seek(startTime)
+                                    .WithDuration(duration)
+                                    .WithVideoFilters(filterOptions => filterOptions
+                                        .Scale(-1, -1))
+                                    .WithFramerate(25)
+                                    .WithCustomArgument("-pix_fmt rgb24"))
+                                .ProcessAsynchronously();
+                        }
+                    }
+                    else
+                    {
+                        mainForm.lblStatus.Text = "Converting MP4 to GIF with CPU...";
+                        Application.DoEvents();
+
+                        // CPU conversion (fallback method)
+                        await FFMpegArguments
+                            .FromFileInput(inputPath)
+                            .OutputToFile(outputPath, true, options => options
+                                .Seek(startTime)
+                                .WithDuration(duration)
+                                .WithVideoFilters(filterOptions => filterOptions
+                                    .Scale(-1, -1))
+                                .WithFramerate(25)
+                                .WithCustomArgument("-pix_fmt rgb24"))
+                            .ProcessAsynchronously();
+                    }
 
                     mainForm.pBarTaskStatus.Value = 100;
                     mainForm.lblStatus.Text = "MP4 to GIF conversion completed successfully!";
