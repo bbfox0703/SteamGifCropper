@@ -37,7 +37,7 @@ Because of loading time differences, the animations may appear slightly out of s
 ## System Requirements
 
 - **Operating system**: Windows 10 or newer
-- **Runtime**: .NET Framework 4.8
+- **Runtime**: .NET 8
 - **Dependency library**: Magick.NET (based on ImageMagick) -- included in the zip package
 - **gifsicle.exe external program**: Search and download it (e.g., "gifsicle for Windows") and ensure its location is included in the system environment variable **PATH**, otherwise it cannot be invoked.
 
