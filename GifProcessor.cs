@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using ImageMagick;
 
@@ -7,6 +9,34 @@ namespace GifProcessorApp
 {
     public static class GifProcessor
     {
+        private static readonly (int Start, int End)[] Ranges766 = { (0, 149), (154, 303), (308, 457), (462, 611), (616, 765) };
+        private static readonly (int Start, int End)[] Ranges774 = { (0, 149), (155, 305), (311, 461), (467, 617), (623, 773) };
+        private const int HeightExtension = 100;
+        private const uint SupportedWidth1 = 766;
+        private const uint SupportedWidth2 = 774;
+
+        private static bool IsValidCanvasWidth(uint width) => width == SupportedWidth1 || width == SupportedWidth2;
+
+        private static void ShowUnsupportedWidthError(uint width)
+        {
+            string message = $"Unsupported GIF canvas width: {width}px. Only {SupportedWidth1}px and {SupportedWidth2}px are supported.";
+            MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private static (int Start, int End)[] GetCropRanges(uint canvasWidth)
+        {
+            return canvasWidth == SupportedWidth1 ? Ranges766 : Ranges774;
+        }
+
+        private static void UpdateProgress(ProgressBar progressBar, int current, int total)
+        {
+            if (progressBar != null && total > 0)
+            {
+                progressBar.Value = Math.Min((int)((double)current / total * 100), 100);
+                Application.DoEvents();
+            }
+        }
+
         public static void StartProcessing(GifToolMainForm mainForm)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -26,10 +56,9 @@ namespace GifProcessorApp
                         uint canvasWidth = collection[0].Page.Width;
                         uint canvasHeight = collection[0].Page.Height;
 
-                        if (canvasWidth != 766 && canvasWidth != 774)
+                        if (!IsValidCanvasWidth(canvasWidth))
                         {
-                            string message = $"Unsupported GIF canvas width: {canvasWidth}px. Only 766px and 774px are supported.";
-                            MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            ShowUnsupportedWidthError(canvasWidth);
                             return;
                         }
 
@@ -39,7 +68,8 @@ namespace GifProcessorApp
                         mainForm.pBarTaskStatus.Value = 0;
                         Application.DoEvents();
 
-                        SplitGif(collection, inputFilePath, mainForm.pBarTaskStatus, (int)canvasWidth, (int)canvasHeight, mainForm);
+                        var ranges = GetCropRanges(canvasWidth);
+                        SplitGif(collection, inputFilePath, mainForm, ranges, (int)canvasHeight);
                         mainForm.lblStatus.Text = "Done.";
                         MessageBox.Show("GIF processing and splitting completed successfully!",
                                         "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -59,20 +89,16 @@ namespace GifProcessorApp
                 }
             }
         }
-        private static void SplitGif(MagickImageCollection collection, string inputFilePath, ProgressBar progressBar, int canvasWidth, int canvasHeight, GifToolMainForm mainForm)
+        private static void SplitGif(MagickImageCollection collection, string inputFilePath, GifToolMainForm mainForm, (int Start, int End)[] ranges, int canvasHeight)
         {
             mainForm.lblStatus.Text = "Coalescing frames...";
             Application.DoEvents();
             collection.Coalesce();
             Application.DoEvents();
-            int newHeight = canvasHeight + 100;
+            int newHeight = canvasHeight + HeightExtension;
 
-                (int Start, int End)[] ranges = canvasWidth == 766
-                    ? new (int Start, int End)[] { (0, 149), (154, 303), (308, 457), (462, 611), (616, canvasWidth - 1) }
-                    : new (int Start, int End)[] { (0, 149), (155, 305), (311, 461), (467, 617), (623, canvasWidth - 1) };
-
-                int totalSteps = (collection.Count * ranges.Length) + (ranges.Length * 2); // Processing + LZW compression + Writing
-                int currentStep = 0;
+            int totalSteps = (collection.Count * ranges.Length) + (ranges.Length * 2);
+            int currentStep = 0;
 
                 for (int i = 0; i < ranges.Length; i++)
                 {
@@ -82,27 +108,33 @@ namespace GifProcessorApp
                         {
                             uint originalDelay = frame.AnimationDelay;
                             int copyWidth = ranges[i].End - ranges[i].Start + 1;
-                            frame.ResetPage();
-                            frame.Extent(new MagickGeometry((uint)canvasWidth, (uint)canvasHeight), Gravity.Northwest);
 
-                            mainForm.lblStatus.Text = "Split...";
+                            mainForm.lblStatus.Text = $"Processing part {i + 1}, frame {currentStep % collection.Count + 1}...";
                             Application.DoEvents();
-                            MagickImage newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight);
-                            int cropStartX = ranges[i].Start;
-                            if (cropStartX < 0) cropStartX = 0;
-
-                            newImage.Composite(frame, -cropStartX, 0, CompositeOperator.Copy);
-                            newImage.Extent(new MagickGeometry((uint)copyWidth, (uint)newHeight), Gravity.North);
-
-                            newImage.AnimationDelay = originalDelay;
-                            mainForm.lblStatus.Text = "Add frame...";
-                            Application.DoEvents();
-
-                            partCollection.Add(newImage);
+                            
+                            // Create new image with correct dimensions
+                            using (var newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight))
+                            {
+                                // Crop the frame to the specific range
+                                var cropGeometry = new MagickGeometry(ranges[i].Start, 0, (uint)copyWidth, (uint)canvasHeight);
+                                using (var croppedFrame = frame.Clone())
+                                {
+                                    croppedFrame.Crop(cropGeometry);
+                                    croppedFrame.ResetPage();
+                                    
+                                    // Composite the cropped frame onto the new image
+                                    newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
+                                }
+                                
+                                // Set animation delay
+                                newImage.AnimationDelay = originalDelay;
+                                newImage.GifDisposeMethod = GifDisposeMethod.Background;
+                                
+                                partCollection.Add(newImage.Clone());
+                            }
 
                             currentStep++;
-                            progressBar.Value = (int)((double)currentStep / totalSteps * 100);
-                            Application.DoEvents();
+                            UpdateProgress(mainForm.pBarTaskStatus, currentStep, totalSteps);
                         }
 
                         string outputFile = $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}.gif";
@@ -112,13 +144,20 @@ namespace GifProcessorApp
                         partCollection.Optimize();
                         mainForm.lblStatus.Text = "Compressing...";
                         Application.DoEvents();
+                        int compressFrameCount = 0;
                         foreach (var frame in partCollection)
                         {
                             frame.Settings.SetDefine("compress", "LZW");
+                            
+                            // Update every 25 frames during compression
+                            if (++compressFrameCount % 25 == 0)
+                            {
+                                Application.DoEvents();
+                            }
                         }
 
                         currentStep++;
-                        progressBar.Value = (int)((double)currentStep / totalSteps * 100);
+                        UpdateProgress(mainForm.pBarTaskStatus, currentStep, totalSteps);
                         mainForm.lblStatus.Text = "Saving...";
                         Application.DoEvents();
 
@@ -133,14 +172,14 @@ namespace GifProcessorApp
                                 Colors = (int)mainForm.numUpDownPaletteSicle.Value,
                                 Lossy = (int)mainForm.numUpDownLossy.Value,
                                 OptimizeLevel = (int)mainForm.numUpDownOptimize.Value,
-                                Dither = mainForm.ditherMethod
+                                Dither = mainForm.DitherMethod
                             };
 
                             GifsicleWrapper.OptimizeGif(outputPath, outputPath, options);
                         }
 
                         currentStep++;
-                        progressBar.Value = (int)((double)currentStep / totalSteps * 100);
+                        UpdateProgress(mainForm.pBarTaskStatus, currentStep, totalSteps);
                         Application.DoEvents();
 
                         ModifyGifFile(outputPath, canvasHeight);
@@ -148,7 +187,371 @@ namespace GifProcessorApp
               }
           }
 
+        public static void MergeAndSplitFiveGifs(GifToolMainForm mainForm)
+        {
+            // Step 1: Select five GIF files in order
+            var gifFiles = SelectFiveOrderedGifs();
+            if (gifFiles == null || gifFiles.Length != 5)
+            {
+                return; // User cancelled or didn't select exactly 5 files
+            }
+
+            try
+            {
+                mainForm.lblStatus.Text = "Validating and processing 5 GIF files...";
+                mainForm.pBarTaskStatus.Minimum = 0;
+                mainForm.pBarTaskStatus.Maximum = 100;
+                mainForm.pBarTaskStatus.Value = 0;
+                Application.DoEvents();
+
+                // Step 2: Load and validate all GIF files
+                var collections = LoadAndValidateGifs(gifFiles, mainForm);
+                if (collections == null) return;
+
+                UpdateProgress(mainForm.pBarTaskStatus, 20, 100);
+
+                // Step 3: Resize GIFs to specific widths (153, 153, 154, 153, 153)
+                var resizedCollections = ResizeGifsToSpecificWidths(collections, mainForm);
+                UpdateProgress(mainForm.pBarTaskStatus, 40, 100);
+
+                // Step 4: Synchronize to shortest duration
+                var syncedCollections = SynchronizeToShortestDuration(resizedCollections, mainForm);
+                UpdateProgress(mainForm.pBarTaskStatus, 60, 100);
+
+                // Step 5: Merge horizontally to create 766px wide GIF
+                var mergedCollection = MergeGifsHorizontally(syncedCollections, mainForm);
+                UpdateProgress(mainForm.pBarTaskStatus, 80, 100);
+
+                // Step 6: Apply existing split functionality
+                // Create merged filename based on first selected GIF
+                string firstGifPath = gifFiles[0];
+                string mergedFileName = $"{Path.GetFileNameWithoutExtension(firstGifPath)}_merged.gif";
+                string outputDir = Path.GetDirectoryName(firstGifPath);
+                string mergedFilePath = Path.Combine(outputDir, mergedFileName);
+                
+                mergedCollection.Write(mergedFilePath);
+
+                // Use existing split logic
+                var ranges = GetCropRanges(SupportedWidth1); // Use 766px ranges
+                int adjustedHeight = CalculateAdjustedHeight(mergedCollection);
+                SplitGif(mergedCollection, mergedFilePath, mainForm, ranges, adjustedHeight);
+
+                // Note: mergedFilePath is kept as the intermediate merged file
+
+                UpdateProgress(mainForm.pBarTaskStatus, 100, 100);
+                mainForm.lblStatus.Text = "Five GIF merge and split completed successfully!";
+                MessageBox.Show("Five GIF files have been merged and split into 5 parts successfully!",
+                              "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Dispose collections
+                foreach (var collection in syncedCollections)
+                {
+                    collection.Dispose();
+                }
+                mergedCollection.Dispose();
+            }
+            catch (Exception ex)
+            {
+                mainForm.lblStatus.Text = "Error occurred during processing.";
+                MessageBox.Show($"Error processing five GIF merge and split: {ex.Message}",
+                              "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static string[] SelectFiveOrderedGifs()
+        {
+            var selectedFiles = new List<string>();
+            
+            MessageBox.Show("You will need to select 5 GIF files one by one in the desired order.\n\n" +
+                          "File 1: First position (leftmost)\n" +
+                          "File 2: Second position\n" +
+                          "File 3: Third position (center)\n" +
+                          "File 4: Fourth position\n" +
+                          "File 5: Fifth position (rightmost)",
+                          "Selection Order Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            
+            for (int i = 1; i <= 5; i++)
+            {
+                using (var openFileDialog = new OpenFileDialog
+                {
+                    Filter = "GIF Files (*.gif)|*.gif",
+                    Title = $"Select GIF file #{i} (position {i} from left to right)",
+                    Multiselect = false
+                })
+                {
+                    if (openFileDialog.ShowDialog() != DialogResult.OK)
+                    {
+                        // User cancelled
+                        return null;
+                    }
+                    selectedFiles.Add(openFileDialog.FileName);
+                }
+            }
+            
+            return selectedFiles.ToArray();
+        }
+
+        private static MagickImageCollection[] LoadAndValidateGifs(string[] gifFiles, GifToolMainForm mainForm)
+        {
+            var collections = new MagickImageCollection[5];
+
+            try
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    collections[i] = new MagickImageCollection(gifFiles[i]);
+                    
+                    // Validate that GIF has palette colors (8-bit)
+                    if (collections[i][0].ColorType != ColorType.Palette && collections[i][0].ColorType != ColorType.PaletteAlpha)
+                    {
+                        MessageBox.Show($"GIF #{i + 1} ({Path.GetFileName(gifFiles[i])}) must have palette-based colors (8-bit).\nCurrent color type: {collections[i][0].ColorType}",
+                                      "Invalid Color Type", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        
+                        // Cleanup loaded collections
+                        for (int j = 0; j <= i; j++)
+                        {
+                            collections[j]?.Dispose();
+                        }
+                        return null;
+                    }
+                }
+                return collections;
+            }
+            catch (Exception ex)
+            {
+                // Cleanup on error
+                foreach (var collection in collections)
+                {
+                    collection?.Dispose();
+                }
+                throw new InvalidOperationException($"Failed to load and validate GIF files: {ex.Message}", ex);
+            }
+        }
+
+        private static MagickImageCollection[] ResizeGifsToSpecificWidths(MagickImageCollection[] collections, GifToolMainForm mainForm)
+        {
+            int[] targetWidths = { 153, 153, 154, 153, 153 };
+            var resizedCollections = new MagickImageCollection[5];
+
+            try
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    mainForm.lblStatus.Text = $"Resizing GIF #{i + 1} to {targetWidths[i]}px width...";
+                    Application.DoEvents();
+
+                    resizedCollections[i] = new MagickImageCollection();
+                    
+                    // Coalesce for proper animation handling
+                    collections[i].Coalesce();
+                    
+                    int frameCount = 0;
+                    foreach (var frame in collections[i])
+                    {
+                        // Resize maintaining aspect ratio
+                        frame.Resize((uint)targetWidths[i], 0);
+                        resizedCollections[i].Add(frame.Clone());
+                        
+                        // Update UI every 10 frames to keep responsive
+                        if (++frameCount % 10 == 0)
+                        {
+                            mainForm.lblStatus.Text = $"Resizing GIF #{i + 1} - Frame {frameCount}/{collections[i].Count}...";
+                            Application.DoEvents();
+                        }
+                    }
+
+                    // Copy animation settings
+                    for (int j = 0; j < resizedCollections[i].Count; j++)
+                    {
+                        resizedCollections[i][j].AnimationDelay = collections[i][j].AnimationDelay;
+                        
+                        // Update UI every 50 frames for animation settings
+                        if (j % 50 == 0 && j > 0)
+                        {
+                            Application.DoEvents();
+                        }
+                    }
+                }
+
+                return resizedCollections;
+            }
+            catch (Exception ex)
+            {
+                // Cleanup on error
+                foreach (var collection in resizedCollections)
+                {
+                    collection?.Dispose();
+                }
+                throw new InvalidOperationException($"Failed to resize GIF files: {ex.Message}", ex);
+            }
+        }
+
+        private static MagickImageCollection[] SynchronizeToShortestDuration(MagickImageCollection[] collections, GifToolMainForm mainForm)
+        {
+            mainForm.lblStatus.Text = "Synchronizing animation durations...";
+            Application.DoEvents();
+
+            // Calculate total duration for each GIF (frames * delay)
+            var durations = new int[5];
+            for (int i = 0; i < 5; i++)
+            {
+                durations[i] = (int)collections[i].Sum(frame => (long)frame.AnimationDelay);
+            }
+
+            // Find shortest duration
+            int shortestDuration = durations.Min();
+            int shortestIndex = Array.IndexOf(durations, shortestDuration);
+
+            mainForm.lblStatus.Text = $"Shortest duration: {shortestDuration/100.0:F1}s (GIF #{shortestIndex + 1})";
+            Application.DoEvents();
+
+            // Synchronize all GIFs to shortest duration
+            var syncedCollections = new MagickImageCollection[5];
+
+            try
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    mainForm.lblStatus.Text = $"Synchronizing GIF #{i + 1} duration...";
+                    Application.DoEvents();
+                    
+                    syncedCollections[i] = new MagickImageCollection();
+                    
+                    if (durations[i] == shortestDuration)
+                    {
+                        // Already the shortest, copy as-is
+                        int frameCount = 0;
+                        foreach (var frame in collections[i])
+                        {
+                            syncedCollections[i].Add(frame.Clone());
+                            
+                            // Update every 20 frames
+                            if (++frameCount % 20 == 0)
+                            {
+                                Application.DoEvents();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Trim to shortest duration
+                        int currentDuration = 0;
+                        int frameCount = 0;
+                        foreach (var frame in collections[i])
+                        {
+                            if (currentDuration + (int)frame.AnimationDelay <= shortestDuration)
+                            {
+                                syncedCollections[i].Add(frame.Clone());
+                                currentDuration += (int)frame.AnimationDelay;
+                                
+                                // Update every 20 frames
+                                if (++frameCount % 20 == 0)
+                                {
+                                    Application.DoEvents();
+                                }
+                            }
+                            else
+                            {
+                                break; // Stop when we reach the shortest duration
+                            }
+                        }
+                    }
+                    
+                    // Set loop animation for each frame
+                    foreach (var frame in syncedCollections[i])
+                    {
+                        frame.GifDisposeMethod = GifDisposeMethod.Background;
+                    }
+                }
+
+                return syncedCollections;
+            }
+            catch (Exception ex)
+            {
+                // Cleanup on error
+                foreach (var collection in syncedCollections)
+                {
+                    collection?.Dispose();
+                }
+                throw new InvalidOperationException($"Failed to synchronize GIF durations: {ex.Message}", ex);
+            }
+        }
+
+        private static MagickImageCollection MergeGifsHorizontally(MagickImageCollection[] collections, GifToolMainForm mainForm)
+        {
+            mainForm.lblStatus.Text = "Merging GIFs horizontally to 766px width...";
+            Application.DoEvents();
+
+            // Calculate maximum height among all resized GIFs
+            int maxHeight = collections.Max(c => (int)c[0].Height);
+            
+            // Create merged collection
+            var mergedCollection = new MagickImageCollection();
+            int maxFrames = collections.Max(c => c.Count);
+
+            try
+            {
+                for (int frameIndex = 0; frameIndex < maxFrames; frameIndex++)
+                {
+                    // Update UI every 10 frames during merging
+                    if (frameIndex % 10 == 0)
+                    {
+                        mainForm.lblStatus.Text = $"Merging frame {frameIndex + 1}/{maxFrames}...";
+                        Application.DoEvents();
+                    }
+                    
+                    // Create 766px wide canvas
+                    var canvas = new MagickImage(MagickColors.Transparent, 766, (uint)maxHeight);
+                    
+                    // X positions for each GIF: 0, 153, 306, 460, 613
+                    int[] xPositions = { 0, 153, 306, 460, 613 };
+                    
+                    for (int gifIndex = 0; gifIndex < 5; gifIndex++)
+                    {
+                        // Get frame (loop if GIF has fewer frames)
+                        var collection = collections[gifIndex];
+                        var frameIdx = frameIndex % collection.Count;
+                        var frame = collection[frameIdx];
+                        
+                        // Composite frame onto canvas at specific X position
+                        canvas.Composite(frame, xPositions[gifIndex], 0, CompositeOperator.Over);
+                    }
+
+                    // Set animation delay (use delay from first GIF)
+                    canvas.AnimationDelay = collections[0][frameIndex % collections[0].Count].AnimationDelay;
+                    
+                    mergedCollection.Add(canvas);
+                }
+
+                // Set infinite loop for each frame
+                foreach (var frame in mergedCollection)
+                {
+                    frame.GifDisposeMethod = GifDisposeMethod.Background;
+                }
+                
+                return mergedCollection;
+            }
+            catch (Exception ex)
+            {
+                mergedCollection?.Dispose();
+                throw new InvalidOperationException($"Failed to merge GIFs horizontally: {ex.Message}", ex);
+            }
+        }
+
+        private static int CalculateAdjustedHeight(MagickImageCollection collection)
+        {
+            return (int)collection[0].Height + HeightExtension;
+        }
+
         public static void SplitGifWithReducedPalette(GifToolMainForm mainForm)
+        {
+            // Keep the original method name for backward compatibility
+            // but redirect to the new merge and split functionality
+            MergeAndSplitFiveGifs(mainForm);
+        }
+
+        [Obsolete("This method has been replaced with MergeAndSplitFiveGifs")]
+        public static void SplitGifWithReducedPaletteOld(GifToolMainForm mainForm)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
@@ -167,10 +570,9 @@ namespace GifProcessorApp
                         uint canvasWidth = collection[0].Page.Width;
                         uint canvasHeight = collection[0].Page.Height;
 
-                        if (canvasWidth != 766 && canvasWidth != 774)
+                        if (!IsValidCanvasWidth(canvasWidth))
                         {
-                            string message = $"Unsupported GIF canvas width: {canvasWidth}px. Only 766px and 774px are supported.";
-                            MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            ShowUnsupportedWidthError(canvasWidth);
                             return;
                         }
 
@@ -187,7 +589,8 @@ namespace GifProcessorApp
                         mainForm.pBarTaskStatus.Value = 0;
                         Application.DoEvents();
 
-                        ReducePaletteAndSplitGif(inputFilePath, mainForm.pBarTaskStatus, (int)canvasWidth, (int)canvasHeight, paletteSize, mainForm.lblStatus);
+                        var ranges = GetCropRanges(canvasWidth);
+                        ReducePaletteAndSplitGif(inputFilePath, mainForm, ranges, (int)canvasHeight, paletteSize);
                         mainForm.lblStatus.Text = "Done.";
                         MessageBox.Show("GIF processing with reduced palette completed successfully!",
                                         "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -207,20 +610,16 @@ namespace GifProcessorApp
             }
         }
 
-        private static void ReducePaletteAndSplitGif(string inputFilePath, ProgressBar progressBar, int canvasWidth, int canvasHeight, int paletteSize, Label labelSt)
+        private static void ReducePaletteAndSplitGif(string inputFilePath, GifToolMainForm mainForm, (int Start, int End)[] ranges, int canvasHeight, int paletteSize)
         {
             using (var collection = new MagickImageCollection(inputFilePath))
             {
-                labelSt.Text = "Coalescing frames...";
+                mainForm.lblStatus.Text = "Coalescing frames...";
                 Application.DoEvents();
                 collection.Coalesce();
                 Application.DoEvents();
 
-                int newHeight = canvasHeight + 100;
-
-                (int Start, int End)[] ranges = canvasWidth == 766
-                    ? new (int Start, int End)[] { (0, 149), (154, 303), (308, 457), (462, 611), (616, canvasWidth - 1) }
-                    : new (int Start, int End)[] { (0, 149), (155, 305), (311, 461), (467, 617), (623, canvasWidth - 1) };
+                int newHeight = canvasHeight + HeightExtension;
 
                 int totalSteps = (collection.Count * ranges.Length) + (ranges.Length * 3); // Processing + Palette reduction + LZW compression
                 int currentStep = 0;
@@ -234,28 +633,35 @@ namespace GifProcessorApp
                             uint originalDelay = frame.AnimationDelay;
                             int copyWidth = ranges[i].End - ranges[i].Start + 1;
 
-                            frame.ResetPage();
-                            frame.Extent(new MagickGeometry((uint)canvasWidth, (uint)canvasHeight), Gravity.Northwest);
-
-                            labelSt.Text = "Splitting...";
+                            mainForm.lblStatus.Text = $"Processing part {i + 1} with palette reduction, frame {currentStep % collection.Count + 1}...";
                             Application.DoEvents();
-                            MagickImage newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight);
+                            
+                            // Create new image with correct dimensions
+                            using (var newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight))
+                            {
+                                // Crop the frame to the specific range
+                                var cropGeometry = new MagickGeometry(ranges[i].Start, 0, (uint)copyWidth, (uint)canvasHeight);
+                                using (var croppedFrame = frame.Clone())
+                                {
+                                    croppedFrame.Crop(cropGeometry);
+                                    croppedFrame.ResetPage();
+                                    
+                                    // Composite the cropped frame onto the new image
+                                    newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
+                                }
 
-                            int cropStartX = ranges[i].Start;
-                            newImage.Composite(frame, -cropStartX, 0, CompositeOperator.Copy);
+                                // Set animation properties
+                                newImage.AnimationDelay = originalDelay;
+                                newImage.GifDisposeMethod = GifDisposeMethod.Background;
 
-                            newImage.Extent(new MagickGeometry((uint)copyWidth, (uint)newHeight), Gravity.North);
-                            newImage.AnimationDelay = originalDelay;
+                                // Apply palette reduction
+                                newImage.Quantize(new QuantizeSettings { Colors = (uint)paletteSize });
 
-                            labelSt.Text = "Reducing palette...";
-                            Application.DoEvents();
-                            newImage.Quantize(new QuantizeSettings { Colors = (uint)paletteSize }); // Reduce palette size
-
-                            partCollection.Add(newImage);
+                                partCollection.Add(newImage.Clone());
+                            }
 
                             currentStep++;
-                            progressBar.Value = (int)((double)currentStep / totalSteps * 100);
-                            Application.DoEvents();
+                            UpdateProgress(mainForm.pBarTaskStatus, currentStep, totalSteps);
                         }
 
                         string outputFile = $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}_Palette{paletteSize}.gif";
@@ -263,22 +669,29 @@ namespace GifProcessorApp
                         string outputPath = Path.Combine(outputDir, outputFile);
 
                         partCollection.Optimize();
-                        labelSt.Text = "Compressing...";
+                        mainForm.lblStatus.Text = "Compressing...";
                         Application.DoEvents();
+                        int compressFrameCount = 0;
                         foreach (var frame in partCollection)
                         {
                             frame.Settings.SetDefine("compress", "LZW");
+                            
+                            // Update every 25 frames during compression
+                            if (++compressFrameCount % 25 == 0)
+                            {
+                                Application.DoEvents();
+                            }
                         }
 
                         currentStep++;
-                        progressBar.Value = (int)((double)currentStep / totalSteps * 100);
-                        labelSt.Text = "Saving...";
+                        UpdateProgress(mainForm.pBarTaskStatus, currentStep, totalSteps);
+                        mainForm.lblStatus.Text = "Saving...";
                         Application.DoEvents();
 
                         partCollection.Write(outputPath);
 
                         currentStep++;
-                        progressBar.Value = (int)((double)currentStep / totalSteps * 100);
+                        UpdateProgress(mainForm.pBarTaskStatus, currentStep, totalSteps);
                         Application.DoEvents();
 
                         ModifyGifFile(outputPath, canvasHeight);
@@ -288,36 +701,44 @@ namespace GifProcessorApp
         }
         private static void ModifyGifFile(string filePath, int adjustedHeight)
         {
-            byte[] fileData = File.ReadAllBytes(filePath);
+            try
+            {
+                byte[] fileData = File.ReadAllBytes(filePath);
+                if (fileData.Length < 10)
+                {
+                    throw new InvalidOperationException($"Invalid GIF file: {filePath}");
+                }
 
-            fileData[fileData.Length - 1] = 0x21;
+                // Modify tail byte from 0x3B to 0x21
+                fileData[fileData.Length - 1] = 0x21;
 
-            ushort heightValue = (ushort)adjustedHeight;
-            fileData[8] = (byte)(heightValue & 0xFF);
-            fileData[9] = (byte)((heightValue >> 8) & 0xFF);
+                // Update height bytes
+                ushort heightValue = (ushort)adjustedHeight;
+                fileData[8] = (byte)(heightValue & 0xFF);
+                fileData[9] = (byte)((heightValue >> 8) & 0xFF);
 
-            File.WriteAllBytes(filePath, fileData);
+                File.WriteAllBytes(filePath, fileData);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to modify GIF file {filePath}: {ex.Message}", ex);
+            }
         }
         public static void ResizeGifTo766(GifToolMainForm mainForm)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
+            using (var openFileDialog = new OpenFileDialog
             {
                 Filter = "GIF Files (*.gif)|*.gif",
                 Title = "Select a GIF file to resize"
-            };
-
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            })
             {
-                string inputFilePath = openFileDialog.FileName;
+                if (openFileDialog.ShowDialog() != DialogResult.OK) return;
 
-                // Generate output file name
-                string directory = Path.GetDirectoryName(inputFilePath);
-                string originalFileName = Path.GetFileNameWithoutExtension(inputFilePath);
-                string outputFilePath = Path.Combine(directory, $"{originalFileName}_766px.gif");
+                string inputFilePath = openFileDialog.FileName;
+                string outputFilePath = GenerateOutputPath(inputFilePath, "_766px");
 
                 try
                 {
-                    // Update progress bar to indicate loading
                     mainForm.lblStatus.Text = "Loading...";
                     mainForm.pBarTaskStatus.Value = 0;
                     mainForm.pBarTaskStatus.Maximum = 100;
@@ -327,113 +748,190 @@ namespace GifProcessorApp
                     using (var collection = new MagickImageCollection(inputFilePath))
                     {
                         collection.Coalesce();
-                        Application.DoEvents();
-
-                        // Define total steps: resizing + LZW compression
-                        int totalSteps = collection.Count * 2; // Each frame: Resize + LZW Compression
+                        
+                        int totalSteps = collection.Count * 2;
                         int currentStep = 0;
 
-                        // Resize each frame
-                        mainForm.lblStatus.Text = "Calculate frames...";
-                        Application.DoEvents();
+                        // Resize frames
+                        mainForm.lblStatus.Text = "Resizing frames...";
                         foreach (var frame in collection)
                         {
                             frame.ResetPage();
-                            frame.Resize(766, 0);
-
-                            // Update progress bar
-                            currentStep++;
-                            mainForm.pBarTaskStatus.Value = (int)((double)currentStep / totalSteps * 100);
-                            Application.DoEvents();
-                        }
-                        mainForm.lblStatus.Text = "Compressing...";
-                        Application.DoEvents();
-                        // Apply LZW compression
-                        foreach (var frame in collection)
-                        {
+                            frame.Resize(SupportedWidth1, 0);
                             frame.Settings.SetDefine("compress", "LZW");
-                            // Update progress bar
+                            
                             currentStep++;
-                            mainForm.pBarTaskStatus.Value = (int)((double)currentStep / totalSteps * 100);
-                            Application.DoEvents();
+                            UpdateProgress(mainForm.pBarTaskStatus, currentStep, totalSteps);
                         }
 
-                        // Write the resized GIF to the output path
-                        mainForm.lblStatus.Text = "Optimization...";
-                        Application.DoEvents();
+                        // Optimize and save
+                        mainForm.lblStatus.Text = "Optimizing...";
                         collection.Optimize();
+                        
+                        currentStep = totalSteps;
+                        UpdateProgress(mainForm.pBarTaskStatus, currentStep, totalSteps);
+                        
                         mainForm.lblStatus.Text = "Saving...";
-                        Application.DoEvents();
                         collection.Write(outputFilePath);
 
-                        // Reset progress bar
-                        mainForm.pBarTaskStatus.Value = 0;
-                        mainForm.lblStatus.Text = "Done.";
-                        Application.DoEvents();
-                        MessageBox.Show(mainForm, $"GIF resizing completed successfully!\nSaved as: {outputFilePath}",
+                        MessageBox.Show(mainForm, $"GIF resizing completed successfully!\nSaved as: {Path.GetFileName(outputFilePath)}",
                                         "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(mainForm, $"An error occurred: {ex.Message}",
+                    MessageBox.Show(mainForm, $"Resize operation failed: {ex.Message}",
                                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 finally
                 {
                     mainForm.pBarTaskStatus.Value = 0;
                     mainForm.lblStatus.Text = "Idle.";
-                    //mainForm.pBarTaskStatus.Visible = false;
                 }
             }
         }
-        public static void WriteTailByteForMultipleGifs(GifToolMainForm mainForm)
+
+        private static string GenerateOutputPath(string inputPath, string suffix)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
+            string directory = Path.GetDirectoryName(inputPath);
+            string fileName = Path.GetFileNameWithoutExtension(inputPath);
+            string extension = Path.GetExtension(inputPath);
+            return Path.Combine(directory, $"{fileName}{suffix}{extension}");
+        }
+        public static void RestoreTailByteForMultipleGifs(GifToolMainForm mainForm)
+        {
+            using (var openFileDialog = new OpenFileDialog
             {
                 Filter = "GIF Files (*.gif)|*.gif",
-                Title = "Select GIF files to process",
-                Multiselect = true // Enable multiple file selection
-            };
-
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
+                Title = "Select GIF files to restore tail bytes from 0x21 to 0x3B",
+                Multiselect = true
+            })
             {
-                string[] filePaths = openFileDialog.FileNames;
+                if (openFileDialog.ShowDialog() != DialogResult.OK) return;
+
+                string[] selectedFiles = openFileDialog.FileNames;
+                int processedCount = 0;
+                int skippedCount = 0;
 
                 try
                 {
-                    // Set up progress bar
+                    mainForm.lblStatus.Text = "Restoring tail bytes...";
+                    mainForm.pBarTaskStatus.Value = 0;
+                    mainForm.pBarTaskStatus.Maximum = selectedFiles.Length;
+                    mainForm.pBarTaskStatus.Visible = true;
+
+                    foreach (string filePath in selectedFiles)
+                    {
+                        try
+                        {
+                            if (RestoreGifTailByte(filePath))
+                            {
+                                processedCount++;
+                            }
+                            else
+                            {
+                                skippedCount++;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Error processing {Path.GetFileName(filePath)}: {ex.Message}",
+                                          "File Processing Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            skippedCount++;
+                        }
+
+                        mainForm.pBarTaskStatus.Value++;
+                        mainForm.lblStatus.Text = $"Processing... {mainForm.pBarTaskStatus.Value}/{selectedFiles.Length}";
+                        Application.DoEvents();
+                    }
+
+                    string resultMessage = $"Restoration completed!\n" +
+                                         $"Files processed: {processedCount}\n" +
+                                         $"Files skipped (not 0x21): {skippedCount}";
+
+                    MessageBox.Show(resultMessage, "Tail Byte Restoration", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred: {ex.Message}",
+                                  "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    mainForm.pBarTaskStatus.Value = 0;
+                    mainForm.pBarTaskStatus.Visible = false;
+                    mainForm.lblStatus.Text = "Ready";
+                }
+            }
+        }
+
+        private static bool RestoreGifTailByte(string filePath)
+        {
+            try
+            {
+                byte[] fileData = File.ReadAllBytes(filePath);
+                
+                if (fileData.Length == 0)
+                {
+                    return false;
+                }
+
+                // Check if the last byte is 0x21
+                if (fileData[fileData.Length - 1] != 0x21)
+                {
+                    // File doesn't have 0x21 as last byte, skip it
+                    return false;
+                }
+
+                // Change 0x21 to 0x3B
+                fileData[fileData.Length - 1] = 0x3B;
+                
+                File.WriteAllBytes(filePath, fileData);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to restore tail byte for {filePath}: {ex.Message}", ex);
+            }
+        }
+
+        public static void WriteTailByteForMultipleGifs(GifToolMainForm mainForm)
+        {
+            using (var openFileDialog = new OpenFileDialog
+            {
+                Filter = "GIF Files (*.gif)|*.gif",
+                Title = "Select GIF files to process",
+                Multiselect = true
+            })
+            {
+                if (openFileDialog.ShowDialog() != DialogResult.OK) return;
+
+                string[] filePaths = openFileDialog.FileNames;
+                int processedFiles = 0;
+
+                try
+                {
                     mainForm.pBarTaskStatus.Visible = true;
                     mainForm.pBarTaskStatus.Value = 0;
                     mainForm.pBarTaskStatus.Maximum = filePaths.Length;
-
-                    int processedFiles = 0;
 
                     foreach (string filePath in filePaths)
                     {
                         try
                         {
-                            byte[] fileData = File.ReadAllBytes(filePath);
+                            if (ProcessTailByte(filePath))
+                                processedFiles++;
 
-                            if (fileData.Length > 0 && fileData[fileData.Length - 1] == 0x3B) // Check if the last byte is 0x3B
-                            {
-                                fileData[fileData.Length - 1] = 0x21; // Replace the last byte with 0x21
-                                File.WriteAllBytes(filePath, fileData);
-                            }
-
-                            // Update progress bar
-                            processedFiles++;
-                            mainForm.pBarTaskStatus.Value = processedFiles;
-                            Application.DoEvents();
+                            UpdateProgress(mainForm.pBarTaskStatus, processedFiles, filePaths.Length);
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show(mainForm, $"Error processing file {filePath}:\n{ex.Message}",
-                                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show(mainForm, $"Error processing file {Path.GetFileName(filePath)}:\n{ex.Message}",
+                                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
                     }
 
-                    MessageBox.Show(mainForm, $"{processedFiles} GIF files processed successfully!",
+                    MessageBox.Show(mainForm, $"{processedFiles} of {filePaths.Length} GIF files processed successfully!",
                                     "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
@@ -443,11 +941,28 @@ namespace GifProcessorApp
                 }
                 finally
                 {
-                    // Reset and hide the progress bar
                     mainForm.pBarTaskStatus.Value = 0;
                     mainForm.pBarTaskStatus.Visible = false;
+                    mainForm.lblStatus.Text = "Idle.";
                 }
             }
+        }
+
+        private static bool ProcessTailByte(string filePath)
+        {
+            const byte gifTrailer = 0x3B;
+            const byte modifiedTrailer = 0x21;
+
+            byte[] fileData = File.ReadAllBytes(filePath);
+            if (fileData.Length == 0) return false;
+
+            if (fileData[fileData.Length - 1] == gifTrailer)
+            {
+                fileData[fileData.Length - 1] = modifiedTrailer;
+                File.WriteAllBytes(filePath, fileData);
+                return true;
+            }
+            return false;
         }
 
     }
