@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using FFMpegCore;
+using FFMpegCore.Exceptions;
 using ImageMagick;
 
 namespace GifProcessorApp
@@ -1077,7 +1078,28 @@ namespace GifProcessorApp
                 {
                     string detailedError = ex.ToString();
                     string userFriendlyMessage;
-                    
+
+                    // Capture detailed FFmpeg output if available
+                    string ffmpegOutput = null;
+                    string logFilePath = null;
+                    if (ex is FFMpegException ffmpegException && !string.IsNullOrWhiteSpace(ffmpegException.FFMpegErrorOutput))
+                    {
+                        ffmpegOutput = ffmpegException.FFMpegErrorOutput;
+                        try
+                        {
+                            string logDirectory = Path.GetDirectoryName(outputPath);
+                            if (string.IsNullOrEmpty(logDirectory) || !Directory.Exists(logDirectory))
+                                logDirectory = Path.GetTempPath();
+
+                            logFilePath = Path.Combine(logDirectory, "ffmpeg_error.log");
+                            File.WriteAllText(logFilePath, ffmpegOutput);
+                        }
+                        catch
+                        {
+                            // Ignore logging failures
+                        }
+                    }
+
                     if (ex.Message.Contains("No such file or directory") || ex.Message.Contains("not found"))
                     {
                         userFriendlyMessage = "FFmpeg executable not found. Please ensure FFmpeg is installed and available in your system PATH.\n\n" +
@@ -1101,7 +1123,21 @@ namespace GifProcessorApp
                     {
                         userFriendlyMessage = "An unexpected error occurred during MP4 to GIF conversion.";
                     }
-                    
+
+                    // Append FFmpeg stderr details
+                    if (!string.IsNullOrEmpty(ffmpegOutput))
+                    {
+                        if (!string.IsNullOrEmpty(logFilePath))
+                        {
+                            userFriendlyMessage += $"\n\nDetailed FFmpeg output saved to: {logFilePath}";
+                        }
+                        else
+                        {
+                            string truncated = ffmpegOutput.Length > 500 ? ffmpegOutput.Substring(0, 500) + "..." : ffmpegOutput;
+                            userFriendlyMessage += $"\n\nFFmpeg output (truncated):\n{truncated}";
+                        }
+                    }
+
                     MessageBox.Show($"{userFriendlyMessage}\n\n" +
                                   $"Input file: \"{inputPath}\"\n" +
                                   $"Output file: \"{outputPath}\"\n" +
