@@ -38,6 +38,141 @@ namespace GifProcessorApp
         {
             InitializeComponent();
             CheckGPUAvailability();
+            ApplyTheme();
+        }
+
+        private void ApplyTheme()
+        {
+            bool isDarkMode = WindowsThemeManager.IsDarkModeEnabled();
+            
+            if (isDarkMode)
+            {
+                // Dark theme
+                BackColor = System.Drawing.Color.FromArgb(32, 32, 32);
+                ForeColor = System.Drawing.Color.White;
+                
+                // Apply dark theme to all controls
+                ApplyDarkThemeToControls(this.Controls);
+            }
+            else
+            {
+                // Light theme (default)
+                BackColor = System.Drawing.SystemColors.Control;
+                ForeColor = System.Drawing.SystemColors.ControlText;
+                
+                // Apply light theme to all controls
+                ApplyLightThemeToControls(this.Controls);
+            }
+            
+            // Apply title bar theme when form handle is created
+            if (IsHandleCreated)
+            {
+                WindowsThemeManager.SetDarkModeForWindow(this.Handle, isDarkMode);
+            }
+        }
+
+        protected override void SetVisibleCore(bool value)
+        {
+            base.SetVisibleCore(value);
+            
+            // Apply title bar theme when form becomes visible
+            if (value && IsHandleCreated)
+            {
+                bool isDarkMode = WindowsThemeManager.IsDarkModeEnabled();
+                WindowsThemeManager.SetDarkModeForWindow(this.Handle, isDarkMode);
+            }
+        }
+
+        private void ApplyDarkThemeToControls(Control.ControlCollection controls)
+        {
+            foreach (Control control in controls)
+            {
+                if (control is Label label)
+                {
+                    label.BackColor = System.Drawing.Color.Transparent;
+                    label.ForeColor = System.Drawing.Color.White;
+                }
+                else if (control is TextBox textBox)
+                {
+                    textBox.BackColor = System.Drawing.Color.FromArgb(64, 64, 64);
+                    textBox.ForeColor = System.Drawing.Color.White;
+                }
+                else if (control is Button button)
+                {
+                    button.BackColor = System.Drawing.Color.FromArgb(64, 64, 64);
+                    button.ForeColor = System.Drawing.Color.White;
+                    button.FlatStyle = FlatStyle.Flat;
+                    button.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(128, 128, 128);
+                }
+                else if (control is NumericUpDown numericUpDown)
+                {
+                    numericUpDown.BackColor = System.Drawing.Color.FromArgb(64, 64, 64);
+                    numericUpDown.ForeColor = System.Drawing.Color.White;
+                }
+                else if (control is CheckBox checkBox)
+                {
+                    checkBox.BackColor = System.Drawing.Color.Transparent;
+                    checkBox.ForeColor = System.Drawing.Color.White;
+                }
+                else if (control is LinkLabel linkLabel)
+                {
+                    linkLabel.BackColor = System.Drawing.Color.Transparent;
+                    linkLabel.LinkColor = System.Drawing.Color.LightBlue;
+                    linkLabel.VisitedLinkColor = System.Drawing.Color.LightPink;
+                }
+                
+                // Recursively apply to child controls
+                if (control.HasChildren)
+                {
+                    ApplyDarkThemeToControls(control.Controls);
+                }
+            }
+        }
+
+        private void ApplyLightThemeToControls(Control.ControlCollection controls)
+        {
+            foreach (Control control in controls)
+            {
+                if (control is Label label)
+                {
+                    label.BackColor = System.Drawing.Color.Transparent;
+                    label.ForeColor = System.Drawing.SystemColors.ControlText;
+                }
+                else if (control is TextBox textBox)
+                {
+                    textBox.BackColor = System.Drawing.SystemColors.Window;
+                    textBox.ForeColor = System.Drawing.SystemColors.WindowText;
+                }
+                else if (control is Button button)
+                {
+                    button.BackColor = System.Drawing.SystemColors.Control;
+                    button.ForeColor = System.Drawing.SystemColors.ControlText;
+                    button.FlatStyle = FlatStyle.Standard;
+                    button.UseVisualStyleBackColor = true;
+                }
+                else if (control is NumericUpDown numericUpDown)
+                {
+                    numericUpDown.BackColor = System.Drawing.SystemColors.Window;
+                    numericUpDown.ForeColor = System.Drawing.SystemColors.WindowText;
+                }
+                else if (control is CheckBox checkBox)
+                {
+                    checkBox.BackColor = System.Drawing.Color.Transparent;
+                    checkBox.ForeColor = System.Drawing.SystemColors.ControlText;
+                }
+                else if (control is LinkLabel linkLabel)
+                {
+                    linkLabel.BackColor = System.Drawing.Color.Transparent;
+                    linkLabel.LinkColor = System.Drawing.SystemColors.HotTrack;
+                    linkLabel.VisitedLinkColor = System.Drawing.SystemColors.HotTrack;
+                }
+                
+                // Recursively apply to child controls
+                if (control.HasChildren)
+                {
+                    ApplyLightThemeToControls(control.Controls);
+                }
+            }
         }
 
         private void InitializeComponent()
@@ -243,7 +378,7 @@ namespace GifProcessorApp
             chkUseGPU.Name = "chkUseGPU";
             chkUseGPU.Size = new System.Drawing.Size(202, 31);
             chkUseGPU.TabIndex = 18;
-            chkUseGPU.Text = "Use GPU acceleration (NVIDIA)";
+            chkUseGPU.Text = "GPU decode (decode only, GIF encode uses CPU)";
             chkUseGPU.UseVisualStyleBackColor = true;
             chkUseGPU.CheckedChanged += ChkUseGPU_CheckedChanged;
             // 
@@ -381,12 +516,12 @@ namespace GifProcessorApp
             // Update status text based on selection
             if (chkUseGPU.Checked && chkUseGPU.Enabled)
             {
-                lblGPUStatus.Text = "GPU acceleration enabled ⚡";
+                lblGPUStatus.Text = "GPU decode enabled ⚡";
                 lblGPUStatus.ForeColor = System.Drawing.Color.Blue;
             }
             else if (chkUseGPU.Enabled)
             {
-                lblGPUStatus.Text = "NVIDIA GPU detected (CPU mode) ✓";
+                lblGPUStatus.Text = "NVIDIA GPU detected (CPU decode) ✓";
                 lblGPUStatus.ForeColor = System.Drawing.Color.Green;
             }
         }

@@ -55,6 +55,9 @@
   <ItemGroup>
     <Content Include="icon.ico" />
     <None Include="app.manifest" />
+    <Content Include="arrange.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

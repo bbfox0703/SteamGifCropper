@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using FFMpegCore;
+using FFMpegCore.Exceptions;
 using ImageMagick;
 
 namespace GifProcessorApp
@@ -968,18 +969,26 @@ namespace GifProcessorApp
             return false;
         }
 
-        public static async void ConvertMp4ToGif(GifToolMainForm mainForm)
+        public static async Task ConvertMp4ToGif(GifToolMainForm mainForm)
         {
-            // Check if FFmpeg is available
-            if (!IsFFmpegAvailable())
+            // Check if FFmpeg is available with detailed diagnostics
+            var (isAvailable, ffmpegPath, ffmpegVersion, error) = GetFFmpegDiagnostics();
+            
+            if (!isAvailable)
             {
-                MessageBox.Show("FFmpeg is not installed or not available in the system PATH.\n\n" +
-                              "To install FFmpeg:\n" +
-                              "1. Open Command Prompt or PowerShell as Administrator\n" +
-                              "2. Run: winget install ffmpeg\n" +
-                              "3. Restart this application\n\n" +
-                              "For more help, click the link in the MP4 to GIF dialog.",
-                              "FFmpeg Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                string diagMessage = "FFmpeg is not installed or not available in the system PATH.\n\n";
+                diagMessage += $"FFmpeg Path: {ffmpegPath ?? "Not found"}\n";
+                diagMessage += $"Version: {ffmpegVersion ?? "N/A"}\n";
+                if (!string.IsNullOrEmpty(error))
+                    diagMessage += $"Error: {error}\n";
+                
+                diagMessage += "\nTo install FFmpeg:\n";
+                diagMessage += "1. Open Command Prompt or PowerShell as Administrator\n";
+                diagMessage += "2. Run: winget install ffmpeg\n";
+                diagMessage += "3. Restart this application\n\n";
+                diagMessage += "For more help, click the link in the MP4 to GIF dialog.";
+                
+                MessageBox.Show(diagMessage, "FFmpeg Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -1004,67 +1013,31 @@ namespace GifProcessorApp
 
                     if (useGPU)
                     {
-                        mainForm.lblStatus.Text = "Converting MP4 to GIF with NVIDIA GPU acceleration...";
+                        mainForm.lblStatus.Text = "GPU decode + CPU GIF encoding...";
                         Application.DoEvents();
 
                         try
                         {
-                            // Try different CUDA approaches in order of preference
-                            bool gpuSuccess = false;
-                            
-                            // Method 1: Try NVDEC hardware decoding only
-                            try
-                            {
-                                mainForm.lblStatus.Text = "Trying NVIDIA hardware decoding...";
-                                Application.DoEvents();
-                                
-                                await FFMpegArguments
-                                    .FromFileInput(inputPath)
-                                    .OutputToFile(outputPath, true, options => options
-                                        .WithCustomArgument("-hwaccel cuda -hwaccel_output_format cuda")  // CUDA video decoder
-                                        .Seek(startTime)
-                                        .WithDuration(duration)
-                                        .WithFramerate(25)
-                                        .WithCustomArgument("-pix_fmt rgb24"))
-                                    .ProcessAsynchronously();
-                                gpuSuccess = true;
-                            }
-                            catch
-                            {
-                                // Method 2: Try basic hardware acceleration
-                                try
-                                {
-                                    mainForm.lblStatus.Text = "Converting MP4 to GIF with CPU (GIF no CUDA)...";
-                                    Application.DoEvents();
-                                    
-                                    await FFMpegArguments
-                                        .FromFileInput(inputPath)
-                                        .OutputToFile(outputPath, true, options => options
-                                            //.WithCustomArgument("-hwaccel cuda") // no cuda in gif output
-                                            .Seek(startTime)
-                                            .WithDuration(duration)
-                                            .WithFramerate(25)
-                                            .WithCustomArgument("-pix_fmt rgb24"))
-                                        .ProcessAsynchronously();
-                                    gpuSuccess = true;
-                                }
-                                catch
-                                {
-                                    // Will fall through to CPU fallback
-                                }
-                            }
-                            
-                            if (!gpuSuccess)
-                            {
-                                throw new Exception("All GPU methods failed");
-                            }
+                            // GPU-accelerated MP4 decoding, CPU GIF encoding
+                            // Note: GIF encoding doesn't support CUDA, only decoding can be accelerated
+                            await FFMpegArguments
+                                .FromFileInput(inputPath)
+                                .OutputToFile(outputPath, true, options => options
+                                    .WithCustomArgument("-hwaccel cuda")  // GPU decode only
+                                    .Seek(startTime)
+                                    .WithDuration(duration)
+                                    .WithVideoFilters(filterOptions => filterOptions
+                                        .Scale(-1, -1))  // Scaling on GPU if supported
+                                    .WithFramerate(25)
+                                    .WithCustomArgument("-pix_fmt rgb24"))
+                                .ProcessAsynchronously();
                         }
                         catch (Exception)
                         {
-                            mainForm.lblStatus.Text = "GPU failed, falling back to CPU...";
+                            mainForm.lblStatus.Text = "GPU decode failed, using CPU...";
                             Application.DoEvents();
 
-                            // GPU failed, fallback to CPU
+                            // GPU failed, fallback to full CPU processing
                             await FFMpegArguments
                                 .FromFileInput(inputPath)
                                 .OutputToFile(outputPath, true, options => options
@@ -1103,12 +1076,75 @@ namespace GifProcessorApp
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"An error occurred during MP4 to GIF conversion: {ex.Message}\n\n" +
+                    string detailedError = ex.ToString();
+                    string userFriendlyMessage;
+
+                    // Capture detailed FFmpeg output if available
+                    string ffmpegOutput = null;
+                    string logFilePath = null;
+                    if (ex is FFMpegException ffmpegException && !string.IsNullOrWhiteSpace(ffmpegException.FFMpegErrorOutput))
+                    {
+                        ffmpegOutput = ffmpegException.FFMpegErrorOutput;
+                        try
+                        {
+                            string logDirectory = Path.GetDirectoryName(outputPath);
+                            if (string.IsNullOrEmpty(logDirectory) || !Directory.Exists(logDirectory))
+                                logDirectory = Path.GetTempPath();
+
+                            logFilePath = Path.Combine(logDirectory, "ffmpeg_error.log");
+                            File.WriteAllText(logFilePath, ffmpegOutput);
+                        }
+                        catch
+                        {
+                            // Ignore logging failures
+                        }
+                    }
+
+                    if (ex.Message.Contains("No such file or directory") || ex.Message.Contains("not found"))
+                    {
+                        userFriendlyMessage = "FFmpeg executable not found. Please ensure FFmpeg is installed and available in your system PATH.\n\n" +
+                                            "Installation: winget install ffmpeg";
+                    }
+                    else if (ex.Message.Contains("Invalid data found") || ex.Message.Contains("moov atom not found"))
+                    {
+                        userFriendlyMessage = "The input video file appears to be corrupted or incomplete.\n\n" +
+                                            "Try using a different video file or re-download the original.";
+                    }
+                    else if (ex.Message.Contains("cuda") || ex.Message.Contains("nvdec"))
+                    {
+                        userFriendlyMessage = "GPU acceleration failed. The conversion will automatically retry with CPU processing.\n\n" +
+                                            "This is normal if your GPU drivers are outdated or CUDA is not properly installed.";
+                    }
+                    else if (ex.Message.Contains("Permission denied") || ex.Message.Contains("Access is denied"))
+                    {
+                        userFriendlyMessage = "Cannot access the output directory. Please check file permissions and ensure the directory is writable.";
+                    }
+                    else
+                    {
+                        userFriendlyMessage = "An unexpected error occurred during MP4 to GIF conversion.";
+                    }
+
+                    // Append FFmpeg stderr details
+                    if (!string.IsNullOrEmpty(ffmpegOutput))
+                    {
+                        if (!string.IsNullOrEmpty(logFilePath))
+                        {
+                            userFriendlyMessage += $"\n\nDetailed FFmpeg output saved to: {logFilePath}";
+                        }
+                        else
+                        {
+                            string truncated = ffmpegOutput.Length > 500 ? ffmpegOutput.Substring(0, 500) + "..." : ffmpegOutput;
+                            userFriendlyMessage += $"\n\nFFmpeg output (truncated):\n{truncated}";
+                        }
+                    }
+
+                    MessageBox.Show($"{userFriendlyMessage}\n\n" +
                                   $"Input file: \"{inputPath}\"\n" +
                                   $"Output file: \"{outputPath}\"\n" +
                                   $"Start time: {startTime}\n" +
-                                  $"Duration: {duration}",
-                                  "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                  $"Duration: {duration}\n\n" +
+                                  $"Technical details: {ex.Message}",
+                                  "MP4 to GIF Conversion Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 finally
                 {
@@ -1121,13 +1157,22 @@ namespace GifProcessorApp
 
         private static bool IsFFmpegAvailable()
         {
+            var (isAvailable, _, _, _) = GetFFmpegDiagnostics();
+            return isAvailable;
+        }
+
+        private static (bool isAvailable, string ffmpegPath, string version, string error) GetFFmpegDiagnostics()
+        {
             try
             {
+                // First, try to find FFmpeg in PATH
+                string ffmpegPath = "ffmpeg"; // Will use PATH lookup
+                
                 var process = new Process
                 {
                     StartInfo = new ProcessStartInfo
                     {
-                        FileName = "ffmpeg",
+                        FileName = ffmpegPath,
                         Arguments = "-version",
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
@@ -1137,12 +1182,37 @@ namespace GifProcessorApp
                 };
                 
                 process.Start();
-                process.WaitForExit(3000); // Wait max 3 seconds
-                return process.ExitCode == 0;
+                string output = process.StandardOutput.ReadToEnd();
+                string error = process.StandardError.ReadToEnd();
+                
+                bool finished = process.WaitForExit(5000); // Wait max 5 seconds
+                
+                if (!finished)
+                {
+                    try { process.Kill(); } catch { }
+                    return (false, ffmpegPath, null, "FFmpeg process timed out");
+                }
+                
+                if (process.ExitCode == 0 && (output.Contains("ffmpeg version") || output.Contains("configuration:")))
+                {
+                    // Extract version from output
+                    string version = "Unknown";
+                    var lines = output.Split('\n');
+                    if (lines.Length > 0 && lines[0].Contains("ffmpeg version"))
+                    {
+                        version = lines[0].Trim();
+                    }
+                    
+                    return (true, ffmpegPath, version, null);
+                }
+                else
+                {
+                    return (false, ffmpegPath, null, $"Exit code: {process.ExitCode}, Output: {output}, Error: {error}");
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                return (false, null, null, ex.Message);
             }
         }
 
