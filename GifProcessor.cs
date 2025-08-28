@@ -1044,13 +1044,15 @@ namespace GifProcessorApp
                             // GPU-accelerated MP4 decoding, CPU GIF encoding
                             // Note: GIF encoding doesn't support CUDA, only decoding can be accelerated
                             await FFMpegArguments
-                                .FromFileInput(inputPath)
+                                .FromFileInput(inputPath, true, input =>
+                                {
+                                    input.WithCustomArgument("-hwaccel cuda");
+                                    if (!string.IsNullOrEmpty(decoder))
+                                        input.WithCustomArgument($"-c:v {decoder}");
+                                    input.WithCustomArgument("-hwaccel_output_format cuda");
+                                })
                                 .OutputToFile(outputPath, true, options =>
                                 {
-                                    options.WithCustomArgument("-hwaccel cuda");
-                                    if (!string.IsNullOrEmpty(decoder))
-                                        options.WithCustomArgument($"-c:v {decoder}");
-                                    options.WithCustomArgument("-hwaccel_output_format cuda");
                                     options.Seek(startTime)
                                            .WithDuration(duration)
                                            .WithVideoFilters(filterOptions => filterOptions
