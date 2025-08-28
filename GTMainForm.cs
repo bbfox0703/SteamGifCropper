@@ -90,27 +90,47 @@ namespace GifProcessorApp
 
         private async void btnSplitGif_Click(object sender, EventArgs e)
         {
-            await ExecuteWithErrorHandling(async () => GifProcessor.StartProcessing(this), "GIF splitting");
+            await ExecuteWithErrorHandling(() =>
+            {
+                GifProcessor.StartProcessing(this);
+                return Task.CompletedTask;
+            }, "GIF splitting");
         }
 
         private async void btnResizeGif766_Click(object sender, EventArgs e)
         {
-            await ExecuteWithErrorHandling(async () => GifProcessor.ResizeGifTo766(this), "GIF resizing");
+            await ExecuteWithErrorHandling(() =>
+            {
+                GifProcessor.ResizeGifTo766(this);
+                return Task.CompletedTask;
+            }, "GIF resizing");
         }
 
         private async void btnWriteTailByte_Click(object sender, EventArgs e)
         {
-            await ExecuteWithErrorHandling(async () => GifProcessor.WriteTailByteForMultipleGifs(this), "tail byte modification");
+            await ExecuteWithErrorHandling(() =>
+            {
+                GifProcessor.WriteTailByteForMultipleGifs(this);
+                return Task.CompletedTask;
+            }, "tail byte modification");
         }
 
         private async void btnRestoreTailByte_Click(object sender, EventArgs e)
         {
-            await ExecuteWithErrorHandling(async () => GifProcessor.RestoreTailByteForMultipleGifs(this), "tail byte restoration");
+            await ExecuteWithErrorHandling(() =>
+            {
+                GifProcessor.RestoreTailByteForMultipleGifs(this);
+                return Task.CompletedTask;
+            }, "tail byte restoration");
         }
 
         private async void btnSplitGIFWithReducedPalette_Click(object sender, EventArgs e)
         {
-            await ExecuteWithErrorHandling(async () => GifProcessor.SplitGifWithReducedPalette(this), "palette reduction and splitting");
+            await ExecuteWithErrorHandling(() =>
+            {
+                GifProcessor.SplitGifWithReducedPalette(this);
+                return Task.CompletedTask;
+            }, "palette reduction and splitting");
         }
 
         private async void btnMp4ToGif_Click(object sender, EventArgs e)
