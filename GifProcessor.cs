@@ -968,7 +968,7 @@ namespace GifProcessorApp
             return false;
         }
 
-        public static async void ConvertMp4ToGif(GifToolMainForm mainForm)
+        public static async Task ConvertMp4ToGif(GifToolMainForm mainForm)
         {
             // Check if FFmpeg is available with detailed diagnostics
             var (isAvailable, ffmpegPath, ffmpegVersion, error) = GetFFmpegDiagnostics();
