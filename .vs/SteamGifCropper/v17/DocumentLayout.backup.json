@@ -3,7 +3,11 @@
   "WorkspaceRootPath": "D:\\Github\\SteamGifCropper\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|d:\\github\\steamgifcropper\\gtmainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|d:\\github\\steamgifcropper\\mp4togifdialog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|solutionrelative:mp4togifdialog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|D:\\Github\\SteamGifCropper\\gtmainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|solutionrelative:gtmainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
@@ -22,18 +26,29 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "Mp4ToGifDialog.cs [\u8A2D\u8A08]",
+              "DocumentMoniker": "D:\\Github\\SteamGifCropper\\Mp4ToGifDialog.cs",
+              "RelativeDocumentMoniker": "Mp4ToGifDialog.cs",
+              "ToolTip": "D:\\Github\\SteamGifCropper\\Mp4ToGifDialog.cs [\u8A2D\u8A08]",
+              "RelativeToolTip": "Mp4ToGifDialog.cs [\u8A2D\u8A08]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-28T11:29:47.14Z",
+              "EditorCaption": " [\u8A2D\u8A08]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "GTMainForm.cs [Design]",
               "DocumentMoniker": "D:\\Github\\SteamGifCropper\\GTMainForm.cs",
               "RelativeDocumentMoniker": "GTMainForm.cs",
               "ToolTip": "D:\\Github\\SteamGifCropper\\GTMainForm.cs [Design]",
               "RelativeToolTip": "GTMainForm.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-28T11:03:51.911Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-08-28T11:03:51.911Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "SteamGifCropper",
               "DocumentMoniker": "D:\\Github\\SteamGifCropper\\SteamGifCropper.csproj",
               "RelativeDocumentMoniker": "SteamGifCropper.csproj",

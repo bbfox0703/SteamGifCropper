@@ -35,6 +35,7 @@
             pBarTaskStatus = new System.Windows.Forms.ProgressBar();
             lblStatus = new System.Windows.Forms.Label();
             btnMergeAndSplit = new System.Windows.Forms.Button();
+            btnMp4ToGif = new System.Windows.Forms.Button();
             panel1 = new System.Windows.Forms.Panel();
             groupDither = new System.Windows.Forms.GroupBox();
             radioBtnDDefault = new System.Windows.Forms.RadioButton();
@@ -102,7 +103,7 @@
             // pBarTaskStatus
             // 
             pBarTaskStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            pBarTaskStatus.Location = new System.Drawing.Point(0, 664);
+            pBarTaskStatus.Location = new System.Drawing.Point(0, 798);
             pBarTaskStatus.Name = "pBarTaskStatus";
             pBarTaskStatus.Size = new System.Drawing.Size(521, 36);
             pBarTaskStatus.TabIndex = 3;
@@ -111,7 +112,7 @@
             // 
             lblStatus.AutoSize = true;
             lblStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            lblStatus.Location = new System.Drawing.Point(0, 638);
+            lblStatus.Location = new System.Drawing.Point(0, 772);
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new System.Drawing.Size(53, 26);
             lblStatus.TabIndex = 4;
@@ -127,6 +128,16 @@
             btnMergeAndSplit.UseVisualStyleBackColor = true;
             btnMergeAndSplit.Click += btnSplitGIFWithReducedPalette_Click;
             // 
+            // btnMp4ToGif
+            // 
+            btnMp4ToGif.Location = new System.Drawing.Point(12, 267);
+            btnMp4ToGif.Name = "btnMp4ToGif";
+            btnMp4ToGif.Size = new System.Drawing.Size(497, 45);
+            btnMp4ToGif.TabIndex = 7;
+            btnMp4ToGif.Text = "Convert MP4 to GIF (with time control)";
+            btnMp4ToGif.UseVisualStyleBackColor = true;
+            btnMp4ToGif.Click += btnMp4ToGif_Click;
+            // 
             // panel1
             // 
             panel1.Controls.Add(groupDither);
@@ -139,7 +150,7 @@
             panel1.Controls.Add(label1);
             panel1.Controls.Add(chkGifsicle);
             panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            panel1.Location = new System.Drawing.Point(0, 403);
+            panel1.Location = new System.Drawing.Point(0, 537);
             panel1.Name = "panel1";
             panel1.Size = new System.Drawing.Size(521, 235);
             panel1.TabIndex = 11;
@@ -281,7 +292,7 @@
             // 
             // numUpDownPalette
             // 
-            numUpDownPalette.Location = new System.Drawing.Point(349, 356);
+            numUpDownPalette.Location = new System.Drawing.Point(437, 491);
             numUpDownPalette.Maximum = new decimal(new int[] { 256, 0, 0, 0 });
             numUpDownPalette.Minimum = new decimal(new int[] { 32, 0, 0, 0 });
             numUpDownPalette.Name = "numUpDownPalette";
@@ -293,7 +304,7 @@
             // lblPaletteDesc
             // 
             lblPaletteDesc.AutoSize = true;
-            lblPaletteDesc.Location = new System.Drawing.Point(146, 356);
+            lblPaletteDesc.Location = new System.Drawing.Point(234, 491);
             lblPaletteDesc.Name = "lblPaletteDesc";
             lblPaletteDesc.Size = new System.Drawing.Size(199, 26);
             lblPaletteDesc.TabIndex = 6;
@@ -305,10 +316,11 @@
             AutoScaleDimensions = new System.Drawing.SizeF(168F, 168F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSize = true;
-            ClientSize = new System.Drawing.Size(521, 700);
+            ClientSize = new System.Drawing.Size(521, 834);
             Controls.Add(panel1);
             Controls.Add(numUpDownPalette);
             Controls.Add(lblPaletteDesc);
+            Controls.Add(btnMp4ToGif);
             Controls.Add(btnMergeAndSplit);
             Controls.Add(lblStatus);
             Controls.Add(pBarTaskStatus);
@@ -343,6 +355,7 @@
         private System.Windows.Forms.Button btnRestoreTailByte;
         public System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.Button btnMergeAndSplit;
+        private System.Windows.Forms.Button btnMp4ToGif;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label1;
         public System.Windows.Forms.CheckBox chkGifsicle;

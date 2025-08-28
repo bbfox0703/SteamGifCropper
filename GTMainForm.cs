@@ -112,6 +112,11 @@ namespace GifProcessorApp
             ExecuteWithErrorHandling(() => GifProcessor.SplitGifWithReducedPalette(this), "palette reduction and splitting");
         }
 
+        private void btnMp4ToGif_Click(object sender, EventArgs e)
+        {
+            ExecuteWithErrorHandling(() => GifProcessor.ConvertMp4ToGif(this), "MP4 to GIF conversion");
+        }
+
         private void label2_Click(object sender, EventArgs e)
         {
 

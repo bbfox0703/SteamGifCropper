@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using FFMpegCore;
 using ImageMagick;
 
 namespace GifProcessorApp
@@ -963,6 +966,106 @@ namespace GifProcessorApp
                 return true;
             }
             return false;
+        }
+
+        public static async void ConvertMp4ToGif(GifToolMainForm mainForm)
+        {
+            // Check if FFmpeg is available
+            if (!IsFFmpegAvailable())
+            {
+                MessageBox.Show("FFmpeg is not installed or not available in the system PATH.\n\n" +
+                              "To install FFmpeg:\n" +
+                              "1. Open Command Prompt or PowerShell as Administrator\n" +
+                              "2. Run: winget install ffmpeg\n" +
+                              "3. Restart this application\n\n" +
+                              "For more help, click the link in the MP4 to GIF dialog.",
+                              "FFmpeg Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Show MP4 to GIF conversion dialog
+            using (var conversionDialog = new Mp4ToGifDialog())
+            {
+                if (conversionDialog.ShowDialog() != DialogResult.OK)
+                    return;
+
+                // Get conversion parameters
+                var inputPath = conversionDialog.InputFilePath;
+                var outputPath = conversionDialog.OutputFilePath;
+                var startTime = conversionDialog.StartTime;
+                var duration = conversionDialog.Duration;
+
+                try
+                {
+                    mainForm.lblStatus.Text = "Converting MP4 to GIF...";
+                    mainForm.pBarTaskStatus.Visible = true;
+                    mainForm.pBarTaskStatus.Value = 0;
+                    Application.DoEvents();
+
+                    mainForm.lblStatus.Text = "Converting MP4 to GIF (simplified method)...";
+                    Application.DoEvents();
+
+                    // Use a simpler, more reliable conversion method
+                    await FFMpegArguments
+                        .FromFileInput(inputPath)
+                        .OutputToFile(outputPath, true, options => options
+                            .Seek(startTime)
+                            .WithDuration(duration)
+                            .WithVideoFilters(filterOptions => filterOptions
+                                .Scale(-1, -1))
+                            .WithFramerate(25)
+                            .WithCustomArgument("-pix_fmt rgb24"))
+                        .ProcessAsynchronously();
+
+                    mainForm.pBarTaskStatus.Value = 100;
+                    mainForm.lblStatus.Text = "MP4 to GIF conversion completed successfully!";
+                    
+                    MessageBox.Show($"MP4 to GIF conversion completed successfully!\nSaved as: {Path.GetFileName(outputPath)}",
+                                  "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred during MP4 to GIF conversion: {ex.Message}\n\n" +
+                                  $"Input file: \"{inputPath}\"\n" +
+                                  $"Output file: \"{outputPath}\"\n" +
+                                  $"Start time: {startTime}\n" +
+                                  $"Duration: {duration}",
+                                  "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    mainForm.pBarTaskStatus.Value = 0;
+                    mainForm.pBarTaskStatus.Visible = false;
+                    mainForm.lblStatus.Text = "Ready";
+                }
+            }
+        }
+
+        private static bool IsFFmpegAvailable()
+        {
+            try
+            {
+                var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "ffmpeg",
+                        Arguments = "-version",
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        CreateNoWindow = true
+                    }
+                };
+                
+                process.Start();
+                process.WaitForExit(3000); // Wait max 3 seconds
+                return process.ExitCode == 0;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
     }
