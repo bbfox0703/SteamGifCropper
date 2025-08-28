@@ -10,6 +10,7 @@ namespace GifProcessorApp
         public string OutputFilePath { get; private set; }
         public TimeSpan StartTime { get; private set; }
         public TimeSpan Duration { get; private set; }
+        public bool UseGPUAcceleration { get; private set; }
 
         private TextBox txtInputPath;
         private Button btnBrowseInput;
@@ -30,10 +31,13 @@ namespace GifProcessorApp
         private Label lblDurationUnit;
         private Button btnCancel;
         private LinkLabel linkFFmpegHelp;
+        private CheckBox chkUseGPU;
+        private Label lblGPUStatus;
 
         public Mp4ToGifDialog()
         {
             InitializeComponent();
+            CheckGPUAvailability();
         }
 
         private void InitializeComponent()
@@ -57,6 +61,8 @@ namespace GifProcessorApp
             btnOK = new Button();
             btnCancel = new Button();
             linkFFmpegHelp = new LinkLabel();
+            chkUseGPU = new CheckBox();
+            lblGPUStatus = new Label();
             ((System.ComponentModel.ISupportInitialize)numStartMinutes).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numStartSeconds).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numStartMilliseconds).BeginInit();
@@ -203,7 +209,7 @@ namespace GifProcessorApp
             // btnOK
             // 
             btnOK.DialogResult = DialogResult.OK;
-            btnOK.Location = new System.Drawing.Point(366, 267);
+            btnOK.Location = new System.Drawing.Point(368, 329);
             btnOK.Name = "btnOK";
             btnOK.Size = new System.Drawing.Size(121, 42);
             btnOK.TabIndex = 16;
@@ -214,7 +220,7 @@ namespace GifProcessorApp
             // btnCancel
             // 
             btnCancel.DialogResult = DialogResult.Cancel;
-            btnCancel.Location = new System.Drawing.Point(493, 267);
+            btnCancel.Location = new System.Drawing.Point(495, 329);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new System.Drawing.Size(123, 42);
             btnCancel.TabIndex = 17;
@@ -223,7 +229,7 @@ namespace GifProcessorApp
             // 
             // linkFFmpegHelp
             // 
-            linkFFmpegHelp.Location = new System.Drawing.Point(12, 280);
+            linkFFmpegHelp.Location = new System.Drawing.Point(12, 337);
             linkFFmpegHelp.Name = "linkFFmpegHelp";
             linkFFmpegHelp.Size = new System.Drawing.Size(300, 47);
             linkFFmpegHelp.TabIndex = 18;
@@ -231,11 +237,30 @@ namespace GifProcessorApp
             linkFFmpegHelp.Text = "How to install FFmpeg? (Required for MP4 conversion)";
             linkFFmpegHelp.LinkClicked += LinkFFmpegHelp_LinkClicked;
             // 
+            // chkUseGPU
+            // 
+            chkUseGPU.Location = new System.Drawing.Point(12, 281);
+            chkUseGPU.Name = "chkUseGPU";
+            chkUseGPU.Size = new System.Drawing.Size(202, 31);
+            chkUseGPU.TabIndex = 18;
+            chkUseGPU.Text = "Use GPU acceleration (NVIDIA)";
+            chkUseGPU.UseVisualStyleBackColor = true;
+            chkUseGPU.CheckedChanged += ChkUseGPU_CheckedChanged;
+            // 
+            // lblGPUStatus
+            // 
+            lblGPUStatus.ForeColor = System.Drawing.Color.Gray;
+            lblGPUStatus.Location = new System.Drawing.Point(220, 282);
+            lblGPUStatus.Name = "lblGPUStatus";
+            lblGPUStatus.Size = new System.Drawing.Size(200, 40);
+            lblGPUStatus.TabIndex = 19;
+            lblGPUStatus.Text = "Checking GPU...";
+            // 
             // Mp4ToGifDialog
             // 
             AcceptButton = btnOK;
             CancelButton = btnCancel;
-            ClientSize = new System.Drawing.Size(663, 336);
+            ClientSize = new System.Drawing.Size(663, 395);
             Controls.Add(lblInput);
             Controls.Add(txtInputPath);
             Controls.Add(btnBrowseInput);
@@ -254,6 +279,8 @@ namespace GifProcessorApp
             Controls.Add(lblDurationUnit);
             Controls.Add(btnOK);
             Controls.Add(btnCancel);
+            Controls.Add(chkUseGPU);
+            Controls.Add(lblGPUStatus);
             Controls.Add(linkFFmpegHelp);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
@@ -320,6 +347,81 @@ namespace GifProcessorApp
             MessageBox.Show(message, "FFmpeg Installation Guide", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        private void CheckGPUAvailability()
+        {
+            try
+            {
+                bool gpuAvailable = IsNVIDIAGPUAvailable();
+                if (gpuAvailable)
+                {
+                    lblGPUStatus.Text = "NVIDIA GPU detected ✓";
+                    lblGPUStatus.ForeColor = System.Drawing.Color.Green;
+                    chkUseGPU.Enabled = true;
+                    chkUseGPU.Checked = true; // Default to GPU if available
+                }
+                else
+                {
+                    lblGPUStatus.Text = "No NVIDIA GPU detected";
+                    lblGPUStatus.ForeColor = System.Drawing.Color.Red;
+                    chkUseGPU.Enabled = false;
+                    chkUseGPU.Checked = false;
+                }
+            }
+            catch
+            {
+                lblGPUStatus.Text = "GPU detection failed";
+                lblGPUStatus.ForeColor = System.Drawing.Color.Orange;
+                chkUseGPU.Enabled = false;
+                chkUseGPU.Checked = false;
+            }
+        }
+
+        private void ChkUseGPU_CheckedChanged(object sender, EventArgs e)
+        {
+            // Update status text based on selection
+            if (chkUseGPU.Checked && chkUseGPU.Enabled)
+            {
+                lblGPUStatus.Text = "GPU acceleration enabled ⚡";
+                lblGPUStatus.ForeColor = System.Drawing.Color.Blue;
+            }
+            else if (chkUseGPU.Enabled)
+            {
+                lblGPUStatus.Text = "NVIDIA GPU detected (CPU mode) ✓";
+                lblGPUStatus.ForeColor = System.Drawing.Color.Green;
+            }
+        }
+
+        private static bool IsNVIDIAGPUAvailable()
+        {
+            try
+            {
+                // Try to execute nvidia-smi to detect NVIDIA GPU
+                var process = new System.Diagnostics.Process
+                {
+                    StartInfo = new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = "nvidia-smi",
+                        Arguments = "-L", // List GPUs
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        CreateNoWindow = true
+                    }
+                };
+                
+                process.Start();
+                string output = process.StandardOutput.ReadToEnd();
+                process.WaitForExit(3000);
+                
+                // Check if output contains GPU information and process succeeded
+                return process.ExitCode == 0 && !string.IsNullOrEmpty(output) && output.Contains("GPU");
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         private void BtnOK_Click(object sender, EventArgs e)
         {
             // Validate inputs
@@ -362,6 +464,7 @@ namespace GifProcessorApp
             
             StartTime = new TimeSpan(0, 0, (int)numStartMinutes.Value, (int)numStartSeconds.Value, (int)numStartMilliseconds.Value);
             Duration = TimeSpan.FromSeconds((double)numDurationSeconds.Value);
+            UseGPUAcceleration = chkUseGPU.Checked && chkUseGPU.Enabled;
 
             DialogResult = DialogResult.OK;
             Close();
