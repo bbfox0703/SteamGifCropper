@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Win32;
 
@@ -74,11 +75,11 @@ namespace GifProcessorApp
             base.OnHandleDestroyed(e);
         }
 
-        private void ExecuteWithErrorHandling(Action action, string operationName)
+        private async Task ExecuteWithErrorHandling(Func<Task> action, string operationName)
         {
             try
             {
-                action();
+                await action();
             }
             catch (Exception ex)
             {
@@ -87,34 +88,34 @@ namespace GifProcessorApp
             }
         }
 
-        private void btnSplitGif_Click(object sender, EventArgs e)
+        private async void btnSplitGif_Click(object sender, EventArgs e)
         {
-            ExecuteWithErrorHandling(() => GifProcessor.StartProcessing(this), "GIF splitting");
+            await ExecuteWithErrorHandling(async () => GifProcessor.StartProcessing(this), "GIF splitting");
         }
 
-        private void btnResizeGif766_Click(object sender, EventArgs e)
+        private async void btnResizeGif766_Click(object sender, EventArgs e)
         {
-            ExecuteWithErrorHandling(() => GifProcessor.ResizeGifTo766(this), "GIF resizing");
+            await ExecuteWithErrorHandling(async () => GifProcessor.ResizeGifTo766(this), "GIF resizing");
         }
 
-        private void btnWriteTailByte_Click(object sender, EventArgs e)
+        private async void btnWriteTailByte_Click(object sender, EventArgs e)
         {
-            ExecuteWithErrorHandling(() => GifProcessor.WriteTailByteForMultipleGifs(this), "tail byte modification");
+            await ExecuteWithErrorHandling(async () => GifProcessor.WriteTailByteForMultipleGifs(this), "tail byte modification");
         }
 
-        private void btnRestoreTailByte_Click(object sender, EventArgs e)
+        private async void btnRestoreTailByte_Click(object sender, EventArgs e)
         {
-            ExecuteWithErrorHandling(() => GifProcessor.RestoreTailByteForMultipleGifs(this), "tail byte restoration");
+            await ExecuteWithErrorHandling(async () => GifProcessor.RestoreTailByteForMultipleGifs(this), "tail byte restoration");
         }
 
-        private void btnSplitGIFWithReducedPalette_Click(object sender, EventArgs e)
+        private async void btnSplitGIFWithReducedPalette_Click(object sender, EventArgs e)
         {
-            ExecuteWithErrorHandling(() => GifProcessor.SplitGifWithReducedPalette(this), "palette reduction and splitting");
+            await ExecuteWithErrorHandling(async () => GifProcessor.SplitGifWithReducedPalette(this), "palette reduction and splitting");
         }
 
-        private void btnMp4ToGif_Click(object sender, EventArgs e)
+        private async void btnMp4ToGif_Click(object sender, EventArgs e)
         {
-            ExecuteWithErrorHandling(() => GifProcessor.ConvertMp4ToGif(this), "MP4 to GIF conversion");
+            await ExecuteWithErrorHandling(async () => await GifProcessor.ConvertMp4ToGif(this), "MP4 to GIF conversion");
         }
 
         private void label2_Click(object sender, EventArgs e)
