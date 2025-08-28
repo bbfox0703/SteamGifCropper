@@ -11,7 +11,7 @@
       "RelativeMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|solutionrelative:mp4togifdialog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|d:\\github\\steamgifcropper\\mp4togifdialog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|D:\\Github\\SteamGifCropper\\mp4togifdialog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{336D2573-022A-4DBB-A448-7370D4BDD9F8}|SteamGifCropper.csproj|solutionrelative:mp4togifdialog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
@@ -39,7 +39,7 @@
               "RelativeDocumentMoniker": "GifProcessor.cs",
               "ToolTip": "D:\\Github\\SteamGifCropper\\GifProcessor.cs",
               "RelativeToolTip": "GifProcessor.cs",
-              "ViewState": "AgIAAPIDAAAAAAAAAAAAAAwEAABrAAAAAAAAAA==",
+              "ViewState": "AgIAAPgDAAAAAAAAAAAAAAwEAABrAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-08-28T12:35:42.352Z",
               "EditorCaption": ""
@@ -66,8 +66,7 @@
               "ToolTip": "D:\\Github\\SteamGifCropper\\Mp4ToGifDialog.cs [\u8A2D\u8A08]",
               "RelativeToolTip": "Mp4ToGifDialog.cs [\u8A2D\u8A08]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-28T11:29:47.14Z",
-              "EditorCaption": " [\u8A2D\u8A08]"
+              "WhenOpened": "2025-08-28T11:29:47.14Z"
             },
             {
               "$type": "Document",
