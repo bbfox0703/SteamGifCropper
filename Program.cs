@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace GifProcessorApp
@@ -12,8 +13,17 @@ namespace GifProcessorApp
             {
                 // .NET 8 modern high DPI support
                 Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+                
+                // Enable modern visual styles for Windows 10/11
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
+                
+                // Enable Windows theming and modern controls
+                if (WindowsThemeManager.IsWindows10OrGreater())
+                {
+                    // This enables modern Windows controls
+                    Application.SetDefaultFont(SystemFonts.MessageBoxFont);
+                }
                 
                 // Set global exception handler
                 Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);

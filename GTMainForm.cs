@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Windows.Forms;
+using Microsoft.Win32;
 
 namespace GifProcessorApp
 {
     public partial class GifToolMainForm : Form
     {
         public int DitherMethod { get; private set; } = 0;
+        private bool _isDarkMode;
         
         public GifToolMainForm()
         {
             try
             {
                 InitializeComponent();
+                
+                // Initialize theme
+                _isDarkMode = WindowsThemeManager.IsDarkModeEnabled();
+                ApplyCurrentTheme();
                 
                 // Set initial state
                 lblStatus.Text = "Ready";
@@ -20,6 +26,9 @@ namespace GifProcessorApp
                 // Ensure proper form state
                 this.WindowState = FormWindowState.Normal;
                 this.StartPosition = FormStartPosition.CenterScreen;
+                
+                // Register for theme changes
+                SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
             }
             catch (Exception ex)
             {
@@ -29,6 +38,40 @@ namespace GifProcessorApp
                                 MessageBoxIcon.Error);
                 throw;
             }
+        }
+
+        private void SystemEvents_UserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
+        {
+            if (e.Category == UserPreferenceCategory.General || e.Category == UserPreferenceCategory.VisualStyle)
+            {
+                // Check if theme changed
+                bool newDarkMode = WindowsThemeManager.IsDarkModeEnabled();
+                if (newDarkMode != _isDarkMode)
+                {
+                    _isDarkMode = newDarkMode;
+                    this.BeginInvoke(new Action(ApplyCurrentTheme));
+                }
+            }
+        }
+
+        private void ApplyCurrentTheme()
+        {
+            try
+            {
+                WindowsThemeManager.ApplyThemeToControl(this, _isDarkMode);
+                this.Refresh();
+            }
+            catch (Exception ex)
+            {
+                // Silently handle theme application errors
+                System.Diagnostics.Debug.WriteLine($"Theme application error: {ex.Message}");
+            }
+        }
+
+        protected override void OnHandleDestroyed(EventArgs e)
+        {
+            SystemEvents.UserPreferenceChanged -= SystemEvents_UserPreferenceChanged;
+            base.OnHandleDestroyed(e);
         }
 
         private void ExecuteWithErrorHandling(Action action, string operationName)
@@ -73,5 +116,18 @@ namespace GifProcessorApp
         private void radioBtnDro64_Click(object sender, EventArgs e) => DitherMethod = 1;
         private void radioBtnDo8_Click(object sender, EventArgs e) => DitherMethod = 2;
         private void radioBtnDDefault_Click(object sender, EventArgs e) => DitherMethod = 3;
+
+        public void ForceThemeRefresh()
+        {
+            _isDarkMode = WindowsThemeManager.IsDarkModeEnabled();
+            ApplyCurrentTheme();
+        }
+
+        private void ToggleThemeForTesting()
+        {
+            // This is just for testing - normally theme comes from Windows settings
+            _isDarkMode = !_isDarkMode;
+            ApplyCurrentTheme();
+        }
     }
 }
