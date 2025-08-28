@@ -107,23 +107,31 @@ namespace GifProcessorApp
                         {
                             uint originalDelay = frame.AnimationDelay;
                             int copyWidth = ranges[i].End - ranges[i].Start + 1;
-                            frame.ResetPage();
-                            frame.Extent(new MagickGeometry((uint)(ranges[i].End + 1), (uint)canvasHeight), Gravity.Northwest);
 
-                            mainForm.lblStatus.Text = "Split...";
+                            mainForm.lblStatus.Text = $"Processing part {i + 1}, frame {currentStep % collection.Count + 1}...";
                             Application.DoEvents();
                             
+                            // Create new image with correct dimensions
                             using (var newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight))
                             {
-                                int cropStartX = Math.Max(ranges[i].Start, 0);
-                                newImage.Composite(frame, -cropStartX, 0, CompositeOperator.Copy);
-                                newImage.Extent(new MagickGeometry((uint)copyWidth, (uint)newHeight), Gravity.North);
+                                // Crop the frame to the specific range
+                                var cropGeometry = new MagickGeometry(ranges[i].Start, 0, (uint)copyWidth, (uint)canvasHeight);
+                                using (var croppedFrame = frame.Clone())
+                                {
+                                    croppedFrame.Crop(cropGeometry);
+                                    croppedFrame.ResetPage();
+                                    
+                                    // Composite the cropped frame onto the new image
+                                    newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
+                                }
+                                
+                                // Set animation delay
                                 newImage.AnimationDelay = originalDelay;
+                                newImage.GifDisposeMethod = GifDisposeMethod.Background;
                                 
                                 partCollection.Add(newImage.Clone());
                             }
 
-                            mainForm.lblStatus.Text = "Add frame...";
                             currentStep++;
                             UpdateProgress(mainForm.pBarTaskStatus, currentStep, totalSteps);
                         }
@@ -568,21 +576,28 @@ namespace GifProcessorApp
                             uint originalDelay = frame.AnimationDelay;
                             int copyWidth = ranges[i].End - ranges[i].Start + 1;
 
-                            frame.ResetPage();
-                            frame.Extent(new MagickGeometry((uint)(ranges[i].End + 1), (uint)canvasHeight), Gravity.Northwest);
-
-                            mainForm.lblStatus.Text = "Splitting...";
+                            mainForm.lblStatus.Text = $"Processing part {i + 1} with palette reduction, frame {currentStep % collection.Count + 1}...";
                             Application.DoEvents();
                             
+                            // Create new image with correct dimensions
                             using (var newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight))
                             {
-                                int cropStartX = Math.Max(ranges[i].Start, 0);
-                                newImage.Composite(frame, -cropStartX, 0, CompositeOperator.Copy);
-                                newImage.Extent(new MagickGeometry((uint)copyWidth, (uint)newHeight), Gravity.North);
-                                newImage.AnimationDelay = originalDelay;
+                                // Crop the frame to the specific range
+                                var cropGeometry = new MagickGeometry(ranges[i].Start, 0, (uint)copyWidth, (uint)canvasHeight);
+                                using (var croppedFrame = frame.Clone())
+                                {
+                                    croppedFrame.Crop(cropGeometry);
+                                    croppedFrame.ResetPage();
+                                    
+                                    // Composite the cropped frame onto the new image
+                                    newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
+                                }
 
-                                mainForm.lblStatus.Text = "Reducing palette...";
-                                Application.DoEvents();
+                                // Set animation properties
+                                newImage.AnimationDelay = originalDelay;
+                                newImage.GifDisposeMethod = GifDisposeMethod.Background;
+
+                                // Apply palette reduction
                                 newImage.Quantize(new QuantizeSettings { Colors = (uint)paletteSize });
 
                                 partCollection.Add(newImage.Clone());
@@ -719,6 +734,103 @@ namespace GifProcessorApp
             string extension = Path.GetExtension(inputPath);
             return Path.Combine(directory, $"{fileName}{suffix}{extension}");
         }
+        public static void RestoreTailByteForMultipleGifs(GifToolMainForm mainForm)
+        {
+            using (var openFileDialog = new OpenFileDialog
+            {
+                Filter = "GIF Files (*.gif)|*.gif",
+                Title = "Select GIF files to restore tail bytes from 0x21 to 0x3B",
+                Multiselect = true
+            })
+            {
+                if (openFileDialog.ShowDialog() != DialogResult.OK) return;
+
+                string[] selectedFiles = openFileDialog.FileNames;
+                int processedCount = 0;
+                int skippedCount = 0;
+
+                try
+                {
+                    mainForm.lblStatus.Text = "Restoring tail bytes...";
+                    mainForm.pBarTaskStatus.Value = 0;
+                    mainForm.pBarTaskStatus.Maximum = selectedFiles.Length;
+                    mainForm.pBarTaskStatus.Visible = true;
+
+                    foreach (string filePath in selectedFiles)
+                    {
+                        try
+                        {
+                            if (RestoreGifTailByte(filePath))
+                            {
+                                processedCount++;
+                            }
+                            else
+                            {
+                                skippedCount++;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Error processing {Path.GetFileName(filePath)}: {ex.Message}",
+                                          "File Processing Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            skippedCount++;
+                        }
+
+                        mainForm.pBarTaskStatus.Value++;
+                        mainForm.lblStatus.Text = $"Processing... {mainForm.pBarTaskStatus.Value}/{selectedFiles.Length}";
+                        Application.DoEvents();
+                    }
+
+                    string resultMessage = $"Restoration completed!\n" +
+                                         $"Files processed: {processedCount}\n" +
+                                         $"Files skipped (not 0x21): {skippedCount}";
+
+                    MessageBox.Show(resultMessage, "Tail Byte Restoration", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred: {ex.Message}",
+                                  "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    mainForm.pBarTaskStatus.Value = 0;
+                    mainForm.pBarTaskStatus.Visible = false;
+                    mainForm.lblStatus.Text = "Ready";
+                }
+            }
+        }
+
+        private static bool RestoreGifTailByte(string filePath)
+        {
+            try
+            {
+                byte[] fileData = File.ReadAllBytes(filePath);
+                
+                if (fileData.Length == 0)
+                {
+                    return false;
+                }
+
+                // Check if the last byte is 0x21
+                if (fileData[fileData.Length - 1] != 0x21)
+                {
+                    // File doesn't have 0x21 as last byte, skip it
+                    return false;
+                }
+
+                // Change 0x21 to 0x3B
+                fileData[fileData.Length - 1] = 0x3B;
+                
+                File.WriteAllBytes(filePath, fileData);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to restore tail byte for {filePath}: {ex.Message}", ex);
+            }
+        }
+
         public static void WriteTailByteForMultipleGifs(GifToolMainForm mainForm)
         {
             using (var openFileDialog = new OpenFileDialog

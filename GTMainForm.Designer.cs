@@ -31,6 +31,7 @@
             btnSplitGif = new System.Windows.Forms.Button();
             btnResizeGif766 = new System.Windows.Forms.Button();
             btnWriteTailByte = new System.Windows.Forms.Button();
+            btnRestoreTailByte = new System.Windows.Forms.Button();
             pBarTaskStatus = new System.Windows.Forms.ProgressBar();
             lblStatus = new System.Windows.Forms.Label();
             btnMergeAndSplit = new System.Windows.Forms.Button();
@@ -88,6 +89,16 @@
             btnWriteTailByte.UseVisualStyleBackColor = true;
             btnWriteTailByte.Click += btnWriteTailByte_Click;
             // 
+            // btnRestoreTailByte
+            // 
+            btnRestoreTailByte.Location = new System.Drawing.Point(12, 165);
+            btnRestoreTailByte.Name = "btnRestoreTailByte";
+            btnRestoreTailByte.Size = new System.Drawing.Size(372, 45);
+            btnRestoreTailByte.TabIndex = 6;
+            btnRestoreTailByte.Text = "Restore Gif files last byte from 0x21 to 0x3B";
+            btnRestoreTailByte.UseVisualStyleBackColor = true;
+            btnRestoreTailByte.Click += btnRestoreTailByte_Click;
+            // 
             // pBarTaskStatus
             // 
             pBarTaskStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -108,7 +119,7 @@
             // 
             // btnMergeAndSplit
             // 
-            btnMergeAndSplit.Location = new System.Drawing.Point(12, 165);
+            btnMergeAndSplit.Location = new System.Drawing.Point(12, 216);
             btnMergeAndSplit.Name = "btnMergeAndSplit";
             btnMergeAndSplit.Size = new System.Drawing.Size(372, 45);
             btnMergeAndSplit.TabIndex = 5;
@@ -302,6 +313,7 @@
             Controls.Add(lblStatus);
             Controls.Add(pBarTaskStatus);
             Controls.Add(btnWriteTailByte);
+            Controls.Add(btnRestoreTailByte);
             Controls.Add(btnResizeGif766);
             Controls.Add(btnSplitGif);
             FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
@@ -328,6 +340,7 @@
         private System.Windows.Forms.Button btnResizeGif766;
         public System.Windows.Forms.ProgressBar pBarTaskStatus;
         private System.Windows.Forms.Button btnWriteTailByte;
+        private System.Windows.Forms.Button btnRestoreTailByte;
         public System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.Button btnMergeAndSplit;
         private System.Windows.Forms.Label lblPaletteDesc;

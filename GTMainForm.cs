@@ -102,6 +102,11 @@ namespace GifProcessorApp
             ExecuteWithErrorHandling(() => GifProcessor.WriteTailByteForMultipleGifs(this), "tail byte modification");
         }
 
+        private void btnRestoreTailByte_Click(object sender, EventArgs e)
+        {
+            ExecuteWithErrorHandling(() => GifProcessor.RestoreTailByteForMultipleGifs(this), "tail byte restoration");
+        }
+
         private void btnSplitGIFWithReducedPalette_Click(object sender, EventArgs e)
         {
             ExecuteWithErrorHandling(() => GifProcessor.SplitGifWithReducedPalette(this), "palette reduction and splitting");
