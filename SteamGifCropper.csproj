@@ -55,6 +55,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="SteamGifCropper.Tests/**" />
+    <None Remove="SteamGifCropper.Tests/**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="icon.ico" />
     <None Include="app.manifest" />
     <Content Include="arrange.html">
