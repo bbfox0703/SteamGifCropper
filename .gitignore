@@ -435,5 +435,3 @@ nul
 # repos specified
 /reference/
 
-# Test GIF assets (not committed)
-SteamGifCropper.Tests/TestData/*.gif
