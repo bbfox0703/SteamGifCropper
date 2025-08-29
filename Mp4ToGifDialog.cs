@@ -206,25 +206,28 @@ namespace GifProcessorApp
             // 
             // lblInput
             // 
-            lblInput.Location = new System.Drawing.Point(8, 1);
+            lblInput.Location = new System.Drawing.Point(14, 9);
+            lblInput.Margin = new Padding(41, 0, 41, 0);
             lblInput.Name = "lblInput";
-            lblInput.Size = new System.Drawing.Size(232, 32);
+            lblInput.Size = new System.Drawing.Size(132, 20);
             lblInput.TabIndex = 0;
             lblInput.Text = "Input MP4 file:";
             // 
             // txtInputPath
             // 
-            txtInputPath.Location = new System.Drawing.Point(12, 36);
+            txtInputPath.Location = new System.Drawing.Point(14, 29);
+            txtInputPath.Margin = new Padding(41, 19, 41, 19);
             txtInputPath.Name = "txtInputPath";
             txtInputPath.ReadOnly = true;
-            txtInputPath.Size = new System.Drawing.Size(350, 34);
+            txtInputPath.Size = new System.Drawing.Size(333, 23);
             txtInputPath.TabIndex = 1;
             // 
             // btnBrowseInput
             // 
-            btnBrowseInput.Location = new System.Drawing.Point(368, 36);
+            btnBrowseInput.Location = new System.Drawing.Point(363, 27);
+            btnBrowseInput.Margin = new Padding(41, 19, 41, 19);
             btnBrowseInput.Name = "btnBrowseInput";
-            btnBrowseInput.Size = new System.Drawing.Size(135, 36);
+            btnBrowseInput.Size = new System.Drawing.Size(88, 25);
             btnBrowseInput.TabIndex = 2;
             btnBrowseInput.Text = "Browse...";
             btnBrowseInput.UseVisualStyleBackColor = true;
@@ -232,25 +235,28 @@ namespace GifProcessorApp
             // 
             // lblOutput
             // 
-            lblOutput.Location = new System.Drawing.Point(8, 86);
+            lblOutput.Location = new System.Drawing.Point(14, 71);
+            lblOutput.Margin = new Padding(41, 0, 41, 0);
             lblOutput.Name = "lblOutput";
-            lblOutput.Size = new System.Drawing.Size(232, 32);
+            lblOutput.Size = new System.Drawing.Size(110, 22);
             lblOutput.TabIndex = 3;
             lblOutput.Text = "Output GIF file:";
             // 
             // txtOutputPath
             // 
-            txtOutputPath.Location = new System.Drawing.Point(12, 121);
+            txtOutputPath.Location = new System.Drawing.Point(14, 92);
+            txtOutputPath.Margin = new Padding(41, 19, 41, 19);
             txtOutputPath.Name = "txtOutputPath";
             txtOutputPath.ReadOnly = true;
-            txtOutputPath.Size = new System.Drawing.Size(350, 34);
+            txtOutputPath.Size = new System.Drawing.Size(333, 23);
             txtOutputPath.TabIndex = 4;
             // 
             // btnBrowseOutput
             // 
-            btnBrowseOutput.Location = new System.Drawing.Point(368, 119);
+            btnBrowseOutput.Location = new System.Drawing.Point(363, 90);
+            btnBrowseOutput.Margin = new Padding(41, 19, 41, 19);
             btnBrowseOutput.Name = "btnBrowseOutput";
-            btnBrowseOutput.Size = new System.Drawing.Size(135, 36);
+            btnBrowseOutput.Size = new System.Drawing.Size(88, 25);
             btnBrowseOutput.TabIndex = 5;
             btnBrowseOutput.Text = "Browse...";
             btnBrowseOutput.UseVisualStyleBackColor = true;
@@ -258,66 +264,74 @@ namespace GifProcessorApp
             // 
             // lblStartTime
             // 
-            lblStartTime.Location = new System.Drawing.Point(8, 180);
+            lblStartTime.Location = new System.Drawing.Point(14, 134);
+            lblStartTime.Margin = new Padding(41, 0, 41, 0);
             lblStartTime.Name = "lblStartTime";
-            lblStartTime.Size = new System.Drawing.Size(121, 25);
+            lblStartTime.Size = new System.Drawing.Size(68, 23);
             lblStartTime.TabIndex = 6;
             lblStartTime.Text = "Start time:";
             // 
             // lblMinutes
             // 
-            lblMinutes.Location = new System.Drawing.Point(126, 180);
+            lblMinutes.Location = new System.Drawing.Point(86, 134);
+            lblMinutes.Margin = new Padding(41, 0, 41, 0);
             lblMinutes.Name = "lblMinutes";
-            lblMinutes.Size = new System.Drawing.Size(58, 32);
+            lblMinutes.Size = new System.Drawing.Size(39, 23);
             lblMinutes.TabIndex = 7;
             lblMinutes.Text = "min:";
             // 
             // numStartMinutes
             // 
-            numStartMinutes.Location = new System.Drawing.Point(188, 180);
+            numStartMinutes.Location = new System.Drawing.Point(120, 132);
+            numStartMinutes.Margin = new Padding(41, 19, 41, 19);
             numStartMinutes.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
             numStartMinutes.Name = "numStartMinutes";
-            numStartMinutes.Size = new System.Drawing.Size(78, 34);
+            numStartMinutes.Size = new System.Drawing.Size(50, 23);
             numStartMinutes.TabIndex = 8;
             // 
             // lblSeconds
             // 
-            lblSeconds.Location = new System.Drawing.Point(272, 180);
+            lblSeconds.Location = new System.Drawing.Point(182, 134);
+            lblSeconds.Margin = new Padding(41, 0, 41, 0);
             lblSeconds.Name = "lblSeconds";
-            lblSeconds.Size = new System.Drawing.Size(54, 32);
+            lblSeconds.Size = new System.Drawing.Size(39, 23);
             lblSeconds.TabIndex = 9;
             lblSeconds.Text = "sec:";
             // 
             // numStartSeconds
             // 
-            numStartSeconds.Location = new System.Drawing.Point(332, 178);
+            numStartSeconds.Location = new System.Drawing.Point(217, 132);
+            numStartSeconds.Margin = new Padding(41, 19, 41, 19);
             numStartSeconds.Maximum = new decimal(new int[] { 59, 0, 0, 0 });
             numStartSeconds.Name = "numStartSeconds";
-            numStartSeconds.Size = new System.Drawing.Size(80, 34);
+            numStartSeconds.Size = new System.Drawing.Size(50, 23);
             numStartSeconds.TabIndex = 10;
             // 
             // lblMs
             // 
-            lblMs.Location = new System.Drawing.Point(430, 180);
+            lblMs.Location = new System.Drawing.Point(282, 134);
+            lblMs.Margin = new Padding(41, 0, 41, 0);
             lblMs.Name = "lblMs";
-            lblMs.Size = new System.Drawing.Size(50, 25);
+            lblMs.Size = new System.Drawing.Size(40, 23);
             lblMs.TabIndex = 11;
             lblMs.Text = "ms:";
             // 
             // numStartMilliseconds
             // 
             numStartMilliseconds.Increment = new decimal(new int[] { 10, 0, 0, 0 });
-            numStartMilliseconds.Location = new System.Drawing.Point(480, 178);
+            numStartMilliseconds.Location = new System.Drawing.Point(316, 132);
+            numStartMilliseconds.Margin = new Padding(41, 19, 41, 19);
             numStartMilliseconds.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
             numStartMilliseconds.Name = "numStartMilliseconds";
-            numStartMilliseconds.Size = new System.Drawing.Size(98, 34);
+            numStartMilliseconds.Size = new System.Drawing.Size(55, 23);
             numStartMilliseconds.TabIndex = 12;
             // 
             // lblDuration
             // 
-            lblDuration.Location = new System.Drawing.Point(8, 232);
+            lblDuration.Location = new System.Drawing.Point(14, 189);
+            lblDuration.Margin = new Padding(41, 0, 41, 0);
             lblDuration.Name = "lblDuration";
-            lblDuration.Size = new System.Drawing.Size(112, 32);
+            lblDuration.Size = new System.Drawing.Size(132, 23);
             lblDuration.TabIndex = 13;
             lblDuration.Text = "Duration (max 30s):";
             // 
@@ -325,28 +339,31 @@ namespace GifProcessorApp
             // 
             numDurationSeconds.DecimalPlaces = 2;
             numDurationSeconds.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
-            numDurationSeconds.Location = new System.Drawing.Point(126, 230);
+            numDurationSeconds.Location = new System.Drawing.Point(136, 187);
+            numDurationSeconds.Margin = new Padding(41, 19, 41, 19);
             numDurationSeconds.Maximum = new decimal(new int[] { 30, 0, 0, 0 });
             numDurationSeconds.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numDurationSeconds.Name = "numDurationSeconds";
-            numDurationSeconds.Size = new System.Drawing.Size(80, 34);
+            numDurationSeconds.Size = new System.Drawing.Size(70, 23);
             numDurationSeconds.TabIndex = 14;
-            numDurationSeconds.Value = new decimal(new int[] { 5, 0, 0, 0 });
+            numDurationSeconds.Value = new decimal(new int[] { 10, 0, 0, 0 });
             // 
             // lblDurationUnit
             // 
-            lblDurationUnit.Location = new System.Drawing.Point(216, 232);
+            lblDurationUnit.Location = new System.Drawing.Point(207, 189);
+            lblDurationUnit.Margin = new Padding(41, 0, 41, 0);
             lblDurationUnit.Name = "lblDurationUnit";
-            lblDurationUnit.Size = new System.Drawing.Size(110, 32);
+            lblDurationUnit.Size = new System.Drawing.Size(71, 24);
             lblDurationUnit.TabIndex = 15;
             lblDurationUnit.Text = "seconds";
             // 
             // btnOK
             // 
             btnOK.DialogResult = DialogResult.OK;
-            btnOK.Location = new System.Drawing.Point(368, 329);
+            btnOK.Location = new System.Drawing.Point(288, 305);
+            btnOK.Margin = new Padding(41, 19, 41, 19);
             btnOK.Name = "btnOK";
-            btnOK.Size = new System.Drawing.Size(121, 42);
+            btnOK.Size = new System.Drawing.Size(83, 25);
             btnOK.TabIndex = 16;
             btnOK.Text = "Convert";
             btnOK.UseVisualStyleBackColor = true;
@@ -355,18 +372,20 @@ namespace GifProcessorApp
             // btnCancel
             // 
             btnCancel.DialogResult = DialogResult.Cancel;
-            btnCancel.Location = new System.Drawing.Point(495, 329);
+            btnCancel.Location = new System.Drawing.Point(378, 305);
+            btnCancel.Margin = new Padding(41, 19, 41, 19);
             btnCancel.Name = "btnCancel";
-            btnCancel.Size = new System.Drawing.Size(123, 42);
+            btnCancel.Size = new System.Drawing.Size(73, 25);
             btnCancel.TabIndex = 17;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
             // 
             // linkFFmpegHelp
             // 
-            linkFFmpegHelp.Location = new System.Drawing.Point(12, 337);
+            linkFFmpegHelp.Location = new System.Drawing.Point(12, 290);
+            linkFFmpegHelp.Margin = new Padding(41, 0, 41, 0);
             linkFFmpegHelp.Name = "linkFFmpegHelp";
-            linkFFmpegHelp.Size = new System.Drawing.Size(300, 47);
+            linkFFmpegHelp.Size = new System.Drawing.Size(266, 42);
             linkFFmpegHelp.TabIndex = 18;
             linkFFmpegHelp.TabStop = true;
             linkFFmpegHelp.Text = "How to install FFmpeg? (Required for MP4 conversion)";
@@ -374,50 +393,58 @@ namespace GifProcessorApp
             // 
             // chkUseGPU
             // 
-            chkUseGPU.Location = new System.Drawing.Point(12, 281);
+            chkUseGPU.Location = new System.Drawing.Point(12, 257);
+            chkUseGPU.Margin = new Padding(41, 19, 41, 19);
             chkUseGPU.Name = "chkUseGPU";
-            chkUseGPU.Size = new System.Drawing.Size(202, 31);
+            chkUseGPU.Size = new System.Drawing.Size(320, 25);
             chkUseGPU.TabIndex = 18;
             chkUseGPU.Text = "GPU decode (decode only, GIF encode uses CPU)";
             chkUseGPU.UseVisualStyleBackColor = true;
+            chkUseGPU.Visible = false;
             chkUseGPU.CheckedChanged += ChkUseGPU_CheckedChanged;
             // 
             // lblGPUStatus
             // 
             lblGPUStatus.ForeColor = System.Drawing.Color.Gray;
-            lblGPUStatus.Location = new System.Drawing.Point(220, 282);
+            lblGPUStatus.Location = new System.Drawing.Point(341, 261);
+            lblGPUStatus.Margin = new Padding(41, 0, 41, 0);
             lblGPUStatus.Name = "lblGPUStatus";
-            lblGPUStatus.Size = new System.Drawing.Size(200, 40);
+            lblGPUStatus.Size = new System.Drawing.Size(110, 23);
             lblGPUStatus.TabIndex = 19;
             lblGPUStatus.Text = "Checking GPU...";
+            lblGPUStatus.Visible = false;
             // 
             // Mp4ToGifDialog
             // 
             AcceptButton = btnOK;
+            AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            AutoScaleMode = AutoScaleMode.Dpi;
             CancelButton = btnCancel;
-            ClientSize = new System.Drawing.Size(663, 395);
-            Controls.Add(lblInput);
+            ClientSize = new System.Drawing.Size(479, 341);
             Controls.Add(txtInputPath);
+            Controls.Add(txtOutputPath);
+            Controls.Add(numStartSeconds);
+            Controls.Add(lblGPUStatus);
+            Controls.Add(numStartMinutes);
+            Controls.Add(numStartMilliseconds);
+            Controls.Add(numDurationSeconds);
+            Controls.Add(lblInput);
             Controls.Add(btnBrowseInput);
             Controls.Add(lblOutput);
-            Controls.Add(txtOutputPath);
             Controls.Add(btnBrowseOutput);
             Controls.Add(lblStartTime);
             Controls.Add(lblMinutes);
-            Controls.Add(numStartMinutes);
             Controls.Add(lblSeconds);
-            Controls.Add(numStartSeconds);
             Controls.Add(lblMs);
-            Controls.Add(numStartMilliseconds);
             Controls.Add(lblDuration);
-            Controls.Add(numDurationSeconds);
             Controls.Add(lblDurationUnit);
             Controls.Add(btnOK);
             Controls.Add(btnCancel);
             Controls.Add(chkUseGPU);
-            Controls.Add(lblGPUStatus);
             Controls.Add(linkFFmpegHelp);
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            ImeMode = ImeMode.Off;
+            Margin = new Padding(41, 19, 41, 19);
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "Mp4ToGifDialog";
@@ -492,7 +519,7 @@ namespace GifProcessorApp
                     lblGPUStatus.Text = "NVIDIA GPU detected ✓";
                     lblGPUStatus.ForeColor = System.Drawing.Color.Green;
                     chkUseGPU.Enabled = true;
-                    chkUseGPU.Checked = true; // Default to GPU if available
+                    chkUseGPU.Checked = false; // Default to CPU for better compatibility
                 }
                 else
                 {

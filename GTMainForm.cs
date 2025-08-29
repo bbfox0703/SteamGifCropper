@@ -21,7 +21,7 @@ namespace GifProcessorApp
                 ApplyCurrentTheme();
                 
                 // Set initial state
-                lblStatus.Text = "Ready";
+                lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready;
                 pBarTaskStatus.Visible = false;
                 
                 // Ensure proper form state
@@ -33,8 +33,8 @@ namespace GifProcessorApp
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to initialize form: {ex.Message}", 
-                                "Initialization Error", 
+                MessageBox.Show(string.Format(SteamGifCropper.Properties.Resources.Error_InitializationFailed, ex.Message), 
+                                SteamGifCropper.Properties.Resources.Title_InitializationError, 
                                 MessageBoxButtons.OK, 
                                 MessageBoxIcon.Error);
                 throw;
