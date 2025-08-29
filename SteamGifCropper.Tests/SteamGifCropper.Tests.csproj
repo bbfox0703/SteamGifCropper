@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <Compile Include="..\GifsicleWrapper.cs" Link="GifsicleWrapper.cs" />
+    <Compile Include="..\RegistryProvider.cs" Link="RegistryProvider.cs" />
   </ItemGroup>
 
 </Project>
