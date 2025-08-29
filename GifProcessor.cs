@@ -1013,11 +1013,23 @@ namespace GifProcessorApp
 
                     if (useGPU)
                     {
-                        mainForm.lblStatus.Text = "GPU decode + CPU GIF encoding...";
+                        // For short clips or small files, CPU is often faster due to GPU memory overhead
+                        bool preferCpu = duration.TotalSeconds < 8;
+                        if (preferCpu)
+                        {
+                            mainForm.lblStatus.Text = "Short clip - CPU more efficient...";
+                            useGPU = false;
+                        }
+                        else
+                        {
+                            mainForm.lblStatus.Text = "GPU decode + CPU GIF encoding...";
+                        }
                         Application.DoEvents();
 
-                        try
+                        if (useGPU)
                         {
+                            try
+                            {
                             // Determine the source codec to choose the appropriate CUDA decoder
                             string decoder = null;
                             try
@@ -1055,17 +1067,17 @@ namespace GifProcessorApp
                                 {
                                     options.Seek(startTime)
                                            .WithDuration(duration)
-                                           // Download frames from the GPU and convert to a GIF-friendly format
-                                           .WithCustomArgument("-vf hwdownload,format=nv12,scale=-1:-1,format=rgb24")
+                                           // GPU-to-CPU transfer with proper format conversion
+                                           .WithCustomArgument("-vf hwdownload,format=nv12,format=rgb24")
                                            .WithFramerate(25)
                                            .WithCustomArgument("-pix_fmt rgb8");
                                 })
                                 .ProcessAsynchronously();
                         }
-                        catch (Exception gpuEx)
-                        {
-                            mainForm.lblStatus.Text = "GPU decode failed, using CPU...";
-                            Application.DoEvents();
+                            catch (Exception gpuEx)
+                            {
+                                mainForm.lblStatus.Text = "GPU decode failed, using CPU...";
+                                Application.DoEvents();
 
                             if (gpuEx is FFMpegException ffmpegException && !string.IsNullOrWhiteSpace(ffmpegException.FFMpegErrorOutput))
                             {
@@ -1089,35 +1101,17 @@ namespace GifProcessorApp
                                 }
                             }
 
-                            // GPU failed, fallback to full CPU processing
-                            await FFMpegArguments
-                                .FromFileInput(inputPath)
-                                .OutputToFile(outputPath, true, options => options
-                                    .Seek(startTime)
-                                    .WithDuration(duration)
-                                    .WithVideoFilters(filterOptions => filterOptions
-                                        .Scale(-1, -1))
-                                    .WithFramerate(25)
-                                    .WithCustomArgument("-pix_fmt rgb8"))
-                                .ProcessAsynchronously();
+                                // GPU failed, fallback to optimized CPU processing
+                                await ProcessWithOptimizedCpu(inputPath, outputPath, startTime, duration);
+                            }
                         }
                     }
-                    else
+                    
+                    if (!useGPU)
                     {
-                        mainForm.lblStatus.Text = "Converting MP4 to GIF with CPU...";
+                        mainForm.lblStatus.Text = "Converting MP4 to GIF with optimized CPU...";
                         Application.DoEvents();
-
-                        // CPU conversion (fallback method)
-                        await FFMpegArguments
-                            .FromFileInput(inputPath)
-                            .OutputToFile(outputPath, true, options => options
-                                .Seek(startTime)
-                                .WithDuration(duration)
-                                .WithVideoFilters(filterOptions => filterOptions
-                                    .Scale(-1, -1))
-                                .WithFramerate(25)
-                                .WithCustomArgument("-pix_fmt rgb8"))
-                            .ProcessAsynchronously();
+                        await ProcessWithOptimizedCpu(inputPath, outputPath, startTime, duration);
                     }
 
                     mainForm.pBarTaskStatus.Value = 100;
@@ -1211,6 +1205,20 @@ namespace GifProcessorApp
         {
             var (isAvailable, _, _, _) = GetFFmpegDiagnostics();
             return isAvailable;
+        }
+
+        private static async Task ProcessWithOptimizedCpu(string inputPath, string outputPath, TimeSpan startTime, TimeSpan duration)
+        {
+            // Optimized CPU processing - single-pass with minimal overhead
+            await FFMpegArguments
+                .FromFileInput(inputPath)
+                .OutputToFile(outputPath, true, options => options
+                    .Seek(startTime)
+                    .WithDuration(duration)
+                    .WithFramerate(25)
+                    .WithCustomArgument("-pix_fmt rgb8")
+                    .WithCustomArgument("-an")) // Remove audio for faster processing
+                .ProcessAsynchronously();
         }
 
         private static (bool isAvailable, string ffmpegPath, string version, string error) GetFFmpegDiagnostics()

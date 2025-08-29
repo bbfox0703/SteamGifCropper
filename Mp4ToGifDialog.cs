@@ -492,7 +492,7 @@ namespace GifProcessorApp
                     lblGPUStatus.Text = "NVIDIA GPU detected ✓";
                     lblGPUStatus.ForeColor = System.Drawing.Color.Green;
                     chkUseGPU.Enabled = true;
-                    chkUseGPU.Checked = true; // Default to GPU if available
+                    chkUseGPU.Checked = false; // Default to CPU for better compatibility
                 }
                 else
                 {
