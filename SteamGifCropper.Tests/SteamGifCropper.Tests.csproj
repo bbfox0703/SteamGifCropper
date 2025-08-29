@@ -21,11 +21,16 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.8.1" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Include="..\GifsicleWrapper.cs" Link="GifsicleWrapper.cs" />
     <Compile Include="..\RegistryProvider.cs" Link="RegistryProvider.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="TestData/**/*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

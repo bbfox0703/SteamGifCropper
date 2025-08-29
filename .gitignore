@@ -434,4 +434,6 @@ nul
 
 # repos specified
 /reference/
-/Legacy/
+
+# Test GIF assets (not committed)
+SteamGifCropper.Tests/TestData/*.gif

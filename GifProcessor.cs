@@ -552,6 +552,54 @@ namespace GifProcessorApp
             return (int)collection[0].Height + HeightExtension;
         }
 
+        public static void SplitGif(string inputFilePath, string outputDirectory, int targetFramerate = 15)
+        {
+            using var collection = new MagickImageCollection(inputFilePath);
+            collection.Coalesce();
+
+            uint canvasWidth = collection[0].Width;
+            if (!IsValidCanvasWidth(canvasWidth))
+            {
+                throw new InvalidOperationException($"Unsupported width: {canvasWidth}");
+            }
+
+            var ranges = GetCropRanges(canvasWidth);
+            int canvasHeight = (int)collection[0].Height;
+            int newHeight = canvasHeight + HeightExtension;
+            uint targetDelay = (uint)Math.Round(100.0 / targetFramerate);
+
+            Directory.CreateDirectory(outputDirectory);
+
+            for (int i = 0; i < ranges.Length; i++)
+            {
+                using var partCollection = new MagickImageCollection();
+                foreach (var frame in collection)
+                {
+                    int copyWidth = ranges[i].End - ranges[i].Start + 1;
+
+                    using var newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight);
+                    var cropGeometry = new MagickGeometry(ranges[i].Start, 0, (uint)copyWidth, (uint)canvasHeight);
+                    using var croppedFrame = frame.Clone();
+                    croppedFrame.Crop(cropGeometry);
+                    croppedFrame.ResetPage();
+                    newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
+                    newImage.AnimationDelay = targetDelay;
+                    newImage.GifDisposeMethod = GifDisposeMethod.Background;
+                    partCollection.Add(newImage.Clone());
+                }
+
+                partCollection.Optimize();
+                foreach (var frame in partCollection)
+                {
+                    frame.Settings.SetDefine("compress", "LZW");
+                }
+
+                string outputFile = Path.Combine(outputDirectory, $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}.gif");
+                partCollection.Write(outputFile);
+                ModifyGifFile(outputFile, canvasHeight);
+            }
+        }
+
         public static void SplitGifWithReducedPalette(GifToolMainForm mainForm)
         {
             // Keep the original method name for backward compatibility
@@ -736,6 +784,24 @@ namespace GifProcessorApp
                 throw new InvalidOperationException($"Failed to modify GIF file {filePath}: {ex.Message}", ex);
             }
         }
+        public static void ResizeGifTo766(string inputFilePath, string outputFilePath)
+        {
+            using (var collection = new MagickImageCollection(inputFilePath))
+            {
+                collection.Coalesce();
+
+                foreach (var frame in collection)
+                {
+                    frame.ResetPage();
+                    frame.Resize(SupportedWidth1, 0);
+                    frame.Settings.SetDefine("compress", "LZW");
+                }
+
+                collection.Optimize();
+                collection.Write(outputFilePath);
+            }
+        }
+
         public static void ResizeGifTo766(GifToolMainForm mainForm)
         {
             using (var openFileDialog = new OpenFileDialog
@@ -757,38 +823,10 @@ namespace GifProcessorApp
                     mainForm.pBarTaskStatus.Visible = true;
                     Application.DoEvents();
 
-                    using (var collection = new MagickImageCollection(inputFilePath))
-                    {
-                        collection.Coalesce();
-                        
-                        int totalSteps = collection.Count * 2;
-                        int currentStep = 0;
+                    ResizeGifTo766(inputFilePath, outputFilePath);
 
-                        // Resize frames
-                        mainForm.lblStatus.Text = "Resizing frames...";
-                        foreach (var frame in collection)
-                        {
-                            frame.ResetPage();
-                            frame.Resize(SupportedWidth1, 0);
-                            frame.Settings.SetDefine("compress", "LZW");
-                            
-                            currentStep++;
-                            UpdateProgress(mainForm.pBarTaskStatus, currentStep, totalSteps);
-                        }
-
-                        // Optimize and save
-                        mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Optimizing;
-                        collection.Optimize();
-                        
-                        currentStep = totalSteps;
-                        UpdateProgress(mainForm.pBarTaskStatus, currentStep, totalSteps);
-                        
-                        mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Saving;
-                        collection.Write(outputFilePath);
-
-                        MessageBox.Show(mainForm, $"GIF resizing completed successfully!\nSaved as: {Path.GetFileName(outputFilePath)}",
-                                        SteamGifCropper.Properties.Resources.Title_Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
+                    MessageBox.Show(mainForm, $"GIF resizing completed successfully!\nSaved as: {Path.GetFileName(outputFilePath)}",
+                                    SteamGifCropper.Properties.Resources.Title_Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
