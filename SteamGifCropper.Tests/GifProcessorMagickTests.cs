@@ -25,7 +25,7 @@ public class GifProcessorMagickTests
             Directory.Delete(tempDir, true);
             if (created)
             {
-                File.Delete(input);
+                //File.Delete(input);  // keep source file
             }
         }
     }
@@ -52,7 +52,7 @@ public class GifProcessorMagickTests
             Directory.Delete(tempDir, true);
             if (created)
             {
-                File.Delete(input);
+                //File.Delete(input);  // keep source file
             }
         }
     }
