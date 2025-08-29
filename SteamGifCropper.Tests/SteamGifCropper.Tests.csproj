@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SteamGifCropper.csproj" />
+    <Compile Include="..\GifsicleWrapper.cs" Link="GifsicleWrapper.cs" />
   </ItemGroup>
 
 </Project>
