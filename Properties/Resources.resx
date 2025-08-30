@@ -133,7 +133,7 @@
     <value>Merge 5 GIF files into 1 part (766px), each ~153px</value>
   </data>
   <data name="Button_Mp4ToGif" xml:space="preserve">
-    <value>Convert MP4 to GIF (with time control)</value>
+    <value>FFMPEG: Convert MP4 to GIF (with time control)</value>
   </data>
   <data name="Button_MergeGifs" xml:space="preserve">
     <value>Merge 2-5 GIF files into one</value>
@@ -197,6 +197,12 @@
   </data>
   <data name="Status_SynchronizingGif" xml:space="preserve">
     <value>Synchronizing GIF #{0} duration...</value>
+  </data>
+  <data name="Status_MappingFastPalette" xml:space="preserve">
+    <value>Mapping with fast palette...</value>
+  </data>
+  <data name="Status_MappingSharedPalette" xml:space="preserve">
+    <value>Mapping to shared palette...</value>
   </data>
   <data name="Status_MergingFrame" xml:space="preserve">
     <value>Merging frame {0}/{1}...</value>
@@ -408,6 +414,12 @@
   <data name="Status_ErrorOccurred" xml:space="preserve">
     <value>Error occurred during processing.</value>
   </data>
+  <data name="MergeFiveGif_Success" xml:space="preserve">
+    <value>Five GIF merge and split completed successfully!</value>
+  </data>
+  <data name="MergeFiveGif_Error" xml:space="preserve">
+    <value>Error occurred during processing.</value>
+  </data>
   <data name="Status_ProcessingPalette" xml:space="preserve">
     <value>Processing with reduced palette...</value>
   </data>
@@ -440,6 +452,9 @@
   </data>
   <data name="Status_GifReversed" xml:space="preserve">
     <value>GIF reversed successfully!</value>
+  </data>
+  <data name="Status_FFmpegFallback" xml:space="preserve">
+    <value>FFmpeg failed, trying ImageMagick fallback...</value>
   </data>
   <data name="Message_GifReversedSuccess" xml:space="preserve">
     <value>GIF reversed successfully!</value>
@@ -503,6 +518,15 @@
   </data>
   <data name="MergeDialog_Title" xml:space="preserve">
     <value>Merge GIF Files</value>
+  </data>
+  <data name="MergeDialog_FileNotFound" xml:space="preserve">
+    <value>File not found: {0}</value>
+  </data>
+  <data name="MergeDialog_RequireOutput" xml:space="preserve">
+    <value>Please specify an output GIF file.</value>
+  </data>
+  <data name="MergeDialog_CannotCreateDir" xml:space="preserve">
+    <value>Cannot create output directory:</value>
   </data>
   <data name="Mp4Dialog_InputLabel" xml:space="preserve">
     <value>Input MP4 file:</value>
@@ -601,6 +625,87 @@ After installation, FFmpeg should be available in your system PATH.</value>
   </data>
   <data name="Mp4Dialog_DirectoryError" xml:space="preserve">
     <value>Directory Error</value>
+  </data>
+  <data name="Mp4ToGif_FFmpegRequiredMessage" xml:space="preserve">
+    <value>FFmpeg is not installed or not available in the system PATH.
+
+FFmpeg Path: {0}
+Version: {1}
+{2}
+
+To install FFmpeg:
+1. Open Command Prompt or PowerShell as Administrator
+2. Run: winget install ffmpeg
+3. Restart this application
+
+For more help, click the link in the MP4 to GIF dialog.</value>
+  </data>
+  <data name="Mp4ToGif_ShortClipCpu" xml:space="preserve">
+    <value>Short clip - CPU more efficient...</value>
+  </data>
+  <data name="Mp4ToGif_GpuCpuEncoding" xml:space="preserve">
+    <value>GPU decode + CPU GIF encoding...</value>
+  </data>
+  <data name="Mp4ToGif_GpuDecodeFailed" xml:space="preserve">
+    <value>GPU decode failed, using CPU...</value>
+  </data>
+  <data name="Mp4ToGif_FFmpegLog" xml:space="preserve">
+    <value> (FFmpeg log: {0})</value>
+  </data>
+  <data name="Mp4ToGif_FFmpegOutput" xml:space="preserve">
+    <value> FFmpeg output: {0}</value>
+  </data>
+  <data name="Mp4ToGif_Converting" xml:space="preserve">
+    <value>Converting MP4 to GIF with optimized CPU...</value>
+  </data>
+  <data name="Mp4ToGif_Success" xml:space="preserve">
+    <value>MP4 to GIF conversion completed successfully!</value>
+  </data>
+  <data name="Mp4ToGif_SuccessMessage" xml:space="preserve">
+    <value>MP4 to GIF conversion completed successfully!
+Saved as: {0}</value>
+  </data>
+  <data name="Mp4ToGif_Error_FFmpegNotFound" xml:space="preserve">
+    <value>FFmpeg executable not found. Please ensure FFmpeg is installed and available in your system PATH.
+
+Installation: winget install ffmpeg</value>
+  </data>
+  <data name="Mp4ToGif_Error_CorruptedInput" xml:space="preserve">
+    <value>The input video file appears to be corrupted or incomplete.
+
+Try using a different video file or re-download the original.</value>
+  </data>
+  <data name="Mp4ToGif_Error_GPUFailed" xml:space="preserve">
+    <value>GPU acceleration failed. The conversion will automatically retry with CPU processing.
+
+This is normal if your GPU drivers are outdated or CUDA is not properly installed.</value>
+  </data>
+  <data name="Mp4ToGif_Error_PermissionDenied" xml:space="preserve">
+    <value>Cannot access the output directory. Please check file permissions and ensure the directory is writable.</value>
+  </data>
+  <data name="Mp4ToGif_Error_Unexpected" xml:space="preserve">
+    <value>An unexpected error occurred during MP4 to GIF conversion.</value>
+  </data>
+  <data name="Mp4ToGif_Error_DetailsSaved" xml:space="preserve">
+    <value>
+
+Detailed FFmpeg output saved to: {0}</value>
+  </data>
+  <data name="Mp4ToGif_Error_FFmpegOutputTruncated" xml:space="preserve">
+    <value>
+
+FFmpeg output (truncated):
+{0}</value>
+  </data>
+  <data name="Mp4ToGif_ErrorMessageDetails" xml:space="preserve">
+    <value>{0}
+
+Input file: "{1}"
+Output file: "{2}"
+Start time: {3}
+Duration: {4}
+
+Technical details: {5}</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">
