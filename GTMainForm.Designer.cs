@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             btnSplitGif = new System.Windows.Forms.Button();
             btnResizeGif766 = new System.Windows.Forms.Button();
             btnWriteTailByte = new System.Windows.Forms.Button();
@@ -58,6 +59,11 @@
             btnMerge2to5GifToOne = new System.Windows.Forms.Button();
             chk5GIFMergeFasterPaletteProcess = new System.Windows.Forms.CheckBox();
             btnReverseGIF = new System.Windows.Forms.Button();
+            btnLanguageChange = new System.Windows.Forms.Button();
+            conMenuLangSwitch = new System.Windows.Forms.ContextMenuStrip(components);
+            toolStripLangEnglish = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripLangTradChinese = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripLangJapanese = new System.Windows.Forms.ToolStripMenuItem();
             panelGifsicle.SuspendLayout();
             groupDither.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).BeginInit();
@@ -65,6 +71,7 @@
             ((System.ComponentModel.ISupportInitialize)numUpDownLossy).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownFramerate).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPalette).BeginInit();
+            conMenuLangSwitch.SuspendLayout();
             SuspendLayout();
             // 
             // btnSplitGif
@@ -185,7 +192,7 @@
             groupDither.Size = new System.Drawing.Size(586, 53);
             groupDither.TabIndex = 19;
             groupDither.TabStop = false;
-            groupDither.Text = SteamGifCropper.Properties.Resources.Group_Dither;
+            groupDither.Text = "Dither";
             // 
             // radioBtnDDefault
             // 
@@ -277,7 +284,7 @@
             label4.Name = "label4";
             label4.Size = new System.Drawing.Size(62, 15);
             label4.TabIndex = 15;
-            label4.Text = SteamGifCropper.Properties.Resources.Label_Optimize;
+            label4.Text = "Optimize:";
             // 
             // label3
             // 
@@ -287,7 +294,7 @@
             label3.Name = "label3";
             label3.Size = new System.Drawing.Size(49, 15);
             label3.TabIndex = 14;
-            label3.Text = SteamGifCropper.Properties.Resources.Label_Palette;
+            label3.Text = "Palette:";
             // 
             // label2
             // 
@@ -297,7 +304,7 @@
             label2.Name = "label2";
             label2.Size = new System.Drawing.Size(40, 15);
             label2.TabIndex = 13;
-            label2.Text = SteamGifCropper.Properties.Resources.Label_Lossy;
+            label2.Text = "Lossy:";
             // 
             // label1
             // 
@@ -307,7 +314,7 @@
             label1.Name = "label1";
             label1.Size = new System.Drawing.Size(255, 15);
             label1.TabIndex = 12;
-            label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
+            label1.Text = "Notice: gifsicle.exe must be in \"System Path\"";
             // 
             // chkGifsicle
             // 
@@ -317,7 +324,7 @@
             chkGifsicle.Name = "chkGifsicle";
             chkGifsicle.Size = new System.Drawing.Size(182, 19);
             chkGifsicle.TabIndex = 11;
-            chkGifsicle.Text = SteamGifCropper.Properties.Resources.CheckBox_GifsicleOptimization ?? "Enable gifsicle optimization";
+            chkGifsicle.Text = SteamGifCropper.Properties.Resources.CheckBox_GifsicleOptimization;
             chkGifsicle.UseVisualStyleBackColor = true;
             // 
             // numUpDownFramerate
@@ -339,7 +346,7 @@
             lblFramerate.Name = "lblFramerate";
             lblFramerate.Size = new System.Drawing.Size(105, 15);
             lblFramerate.TabIndex = 21;
-            lblFramerate.Text = SteamGifCropper.Properties.Resources.Label_Framerate;
+            lblFramerate.Text = "Target framerate:";
             // 
             // lblFPS
             // 
@@ -349,7 +356,7 @@
             lblFPS.Name = "lblFPS";
             lblFPS.Size = new System.Drawing.Size(24, 15);
             lblFPS.TabIndex = 22;
-            lblFPS.Text = SteamGifCropper.Properties.Resources.Label_FPS;
+            lblFPS.Text = "fps";
             // 
             // numUpDownPalette
             // 
@@ -404,12 +411,47 @@
             btnReverseGIF.UseVisualStyleBackColor = true;
             btnReverseGIF.Click += btnReverseGIF_Click;
             // 
+            // btnLanguageChange
+            // 
+            btnLanguageChange.Location = new System.Drawing.Point(515, 156);
+            btnLanguageChange.Name = "btnLanguageChange";
+            btnLanguageChange.Size = new System.Drawing.Size(64, 26);
+            btnLanguageChange.TabIndex = 26;
+            btnLanguageChange.Text = "A⇆文";
+            btnLanguageChange.UseVisualStyleBackColor = true;
+            btnLanguageChange.Click += btnLanguageChange_Click;
+            // 
+            // conMenuLangSwitch
+            // 
+            conMenuLangSwitch.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripLangEnglish, toolStripLangTradChinese, toolStripLangJapanese });
+            conMenuLangSwitch.Name = "conMenuLangSwitch";
+            conMenuLangSwitch.Size = new System.Drawing.Size(181, 92);
+            // 
+            // toolStripLangEnglish
+            // 
+            toolStripLangEnglish.Name = "toolStripLangEnglish";
+            toolStripLangEnglish.Size = new System.Drawing.Size(180, 22);
+            toolStripLangEnglish.Text = "English";
+            // 
+            // toolStripLangTradChinese
+            // 
+            toolStripLangTradChinese.Name = "toolStripLangTradChinese";
+            toolStripLangTradChinese.Size = new System.Drawing.Size(122, 22);
+            toolStripLangTradChinese.Text = "繁體中文";
+            // 
+            // toolStripLangJapanese
+            // 
+            toolStripLangJapanese.Name = "toolStripLangJapanese";
+            toolStripLangJapanese.Size = new System.Drawing.Size(122, 22);
+            toolStripLangJapanese.Text = "日本語";
+            // 
             // GifToolMainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             ClientSize = new System.Drawing.Size(586, 444);
+            Controls.Add(btnLanguageChange);
             Controls.Add(btnReverseGIF);
             Controls.Add(chk5GIFMergeFasterPaletteProcess);
             Controls.Add(panelGifsicle);
@@ -440,6 +482,7 @@
             ((System.ComponentModel.ISupportInitialize)numUpDownLossy).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownFramerate).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPalette).EndInit();
+            conMenuLangSwitch.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
 
@@ -477,5 +520,10 @@
         private System.Windows.Forms.Button btnMerge2to5GifToOne;
         public System.Windows.Forms.CheckBox chk5GIFMergeFasterPaletteProcess;
         private System.Windows.Forms.Button btnReverseGIF;
+        private System.Windows.Forms.Button btnLanguageChange;
+        private System.Windows.Forms.ContextMenuStrip conMenuLangSwitch;
+        private System.Windows.Forms.ToolStripMenuItem toolStripLangEnglish;
+        private System.Windows.Forms.ToolStripMenuItem toolStripLangTradChinese;
+        private System.Windows.Forms.ToolStripMenuItem toolStripLangJapanese;
     }
 }

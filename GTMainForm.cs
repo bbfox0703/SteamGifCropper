@@ -10,33 +10,33 @@ namespace GifProcessorApp
     {
         public int DitherMethod { get; private set; } = 0;
         private bool _isDarkMode;
-        
+
         public GifToolMainForm()
         {
             try
             {
                 InitializeComponent();
-                
+
                 // Initialize theme
                 _isDarkMode = WindowsThemeManager.IsDarkModeEnabled();
                 ApplyCurrentTheme();
-                
+
                 // Set initial state
                 lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready;
                 pBarTaskStatus.Visible = false;
-                
+
                 // Ensure proper form state
                 this.WindowState = FormWindowState.Normal;
                 this.StartPosition = FormStartPosition.CenterScreen;
-                
+
                 // Register for theme changes
                 SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format(SteamGifCropper.Properties.Resources.Error_InitializationFailed, ex.Message), 
-                                SteamGifCropper.Properties.Resources.Title_InitializationError, 
-                                MessageBoxButtons.OK, 
+                MessageBox.Show(string.Format(SteamGifCropper.Properties.Resources.Error_InitializationFailed, ex.Message),
+                                SteamGifCropper.Properties.Resources.Title_InitializationError,
+                                MessageBoxButtons.OK,
                                 MessageBoxIcon.Error);
                 throw;
             }
@@ -200,13 +200,13 @@ namespace GifProcessorApp
             try
             {
                 Program.InitializeLocalization(culture);
-                
+
                 // Update the form text and controls
                 UpdateUIText();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to switch language: {ex.Message}", "Language Switch Error", 
+                MessageBox.Show($"Failed to switch language: {ex.Message}", "Language Switch Error",
                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
@@ -220,7 +220,7 @@ namespace GifProcessorApp
             {
                 // Update main form elements - these will be picked up automatically on next access
                 this.Text = "Steam GIF Cropper"; // Keep main title in English
-                
+
                 // Update status
                 if (lblStatus.Text == "Ready" || lblStatus.Text == "就緒" || lblStatus.Text == "準備完了")
                 {
@@ -235,6 +235,11 @@ namespace GifProcessorApp
             {
                 System.Diagnostics.Debug.WriteLine($"Failed to update UI text: {ex.Message}");
             }
+        }
+
+        private void btnLanguageChange_Click(object sender, EventArgs e)
+        {
+            conMenuLangSwitch.Show(btnLanguageChange, new Point(0, btnLanguageChange.Height));
         }
     }
 }

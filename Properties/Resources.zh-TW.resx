@@ -133,7 +133,7 @@
     <value>合併5個GIF檔案為1個部分(766px)，每個約153px</value>
   </data>
   <data name="Button_Mp4ToGif" xml:space="preserve">
-    <value>轉換MP4為GIF(具時間控制)</value>
+    <value>轉換MP4為GIF (指定影片轉出長度)</value>
   </data>
   <data name="Button_MergeGifs" xml:space="preserve">
     <value>合併2-5個GIF檔案為一個</value>
@@ -363,13 +363,13 @@
     <value>邊緣平滑</value>
   </data>
   <data name="Label_Optimize" xml:space="preserve">
-    <value>最佳化：</value>
+    <value>Optimize:</value>
   </data>
   <data name="Label_Palette" xml:space="preserve">
-    <value>調色盤大小：</value>
+    <value>Palette:</value>
   </data>
   <data name="Label_Lossy" xml:space="preserve">
-    <value>有損壓縮：</value>
+    <value>Lossy:</value>
   </data>
   <data name="Radio_Default" xml:space="preserve">
     <value>預設</value>
@@ -477,7 +477,7 @@
     <value>啟用gifsicle最佳化</value>
   </data>
   <data name="Label_GifsicleNotice" xml:space="preserve">
-    <value>注意：gifsicle.exe必須在「系統路徑」中</value>
+    <value>注意：gifsicle.exe必須在「系統路徑變數 PATH」中</value>
   </data>
   <data name="MergeDialog_Instructions" xml:space="preserve">
     <value>請選擇2-5個GIF檔案進行合併（順序為由左至右）：</value>
@@ -565,5 +565,50 @@
   </data>
   <data name="Mp4Dialog_NvidiaGPUCPU" xml:space="preserve">
     <value>已偵測到 NVIDIA GPU（CPU 解碼）✓</value>
+  </data>
+  <data name="Mp4Dialog_FFmpegMessage" xml:space="preserve">
+    <value>要使用MP4轉GIF功能，您需要先安裝FFmpeg。
+
+使用Windows套件管理員輕鬆安裝：
+1. 以管理員身分開啟命令提示字元或PowerShell
+2. 執行：winget install ffmpeg
+3. 重新啟動此應用程式
+
+替代方法：
+• 從以下網址下載：https://ffmpeg.org/download.html
+• 或使用Chocolatey：choco install ffmpeg
+
+安裝後，FFmpeg應可在您的系統PATH中使用。</value>
+  </data>
+  <data name="Mp4Dialog_FFmpegGuideTitle" xml:space="preserve">
+    <value>FFmpeg安裝指南</value>
+  </data>
+  <data name="Mp4Dialog_SelectInputFile" xml:space="preserve">
+    <value>請選擇輸入的MP4檔案。</value>
+  </data>
+  <data name="Mp4Dialog_InputRequired" xml:space="preserve">
+    <value>需要輸入</value>
+  </data>
+  <data name="Mp4Dialog_FileNotFound" xml:space="preserve">
+    <value>輸入檔案不存在。</value>
+  </data>
+  <data name="Mp4Dialog_FileNotFoundTitle" xml:space="preserve">
+    <value>找不到檔案</value>
+  </data>
+  <data name="Mp4Dialog_SpecifyOutput" xml:space="preserve">
+    <value>請指定輸出的GIF檔案。</value>
+  </data>
+  <data name="Mp4Dialog_OutputRequired" xml:space="preserve">
+    <value>需要輸出</value>
+  </data>
+  <data name="Mp4Dialog_CannotCreateDir" xml:space="preserve">
+    <value>無法建立輸出目錄：</value>
+  </data>
+  <data name="Mp4Dialog_DirectoryError" xml:space="preserve">
+    <value>目錄錯誤</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>C:\Users\Andyc\Downloads\lang_switch.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

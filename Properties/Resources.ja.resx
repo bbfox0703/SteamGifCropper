@@ -363,13 +363,13 @@
     <value>ディザリング</value>
   </data>
   <data name="Label_Optimize" xml:space="preserve">
-    <value>最適化：</value>
+    <value>Optimize:</value>
   </data>
   <data name="Label_Palette" xml:space="preserve">
-    <value>パレットサイズ：</value>
+    <value>Palette:</value>
   </data>
   <data name="Label_Lossy" xml:space="preserve">
-    <value>非可逆圧縮：</value>
+    <value>Lossy:</value>
   </data>
   <data name="Radio_Default" xml:space="preserve">
     <value>デフォルト</value>
@@ -477,7 +477,7 @@
     <value>gifsicle最適化を有効にする</value>
   </data>
   <data name="Label_GifsicleNotice" xml:space="preserve">
-    <value>注意：gifsicle.exeは「システムパス」にある必要があります</value>
+    <value>注意：gifsicle.exeは「システムパス "PATH"」にある必要があります</value>
   </data>
   <data name="MergeDialog_Instructions" xml:space="preserve">
     <value>マージする2-5個のGIFファイルを選択してください（左から右の順序で）：</value>
@@ -565,5 +565,50 @@
   </data>
   <data name="Mp4Dialog_NvidiaGPUCPU" xml:space="preserve">
     <value>NVIDIA GPU が検出されました（CPU デコード）✓</value>
+  </data>
+  <data name="Mp4Dialog_FFmpegMessage" xml:space="preserve">
+    <value>MP4 から GIF への変換を使用するには、まず FFmpeg をインストールする必要があります。
+
+Windows パッケージマネージャを使用した簡単なインストール：
+1. 管理者としてコマンドプロンプトまたは PowerShell を開く
+2. 実行：winget install ffmpeg
+3. このアプリケーションを再起動
+
+その他の方法：
+• ダウンロード：https://ffmpeg.org/download.html
+• または Chocolatey を使用：choco install ffmpeg
+
+インストール後、FFmpeg がシステム PATH で利用可能になります。</value>
+  </data>
+  <data name="Mp4Dialog_FFmpegGuideTitle" xml:space="preserve">
+    <value>FFmpeg インストールガイド</value>
+  </data>
+  <data name="Mp4Dialog_SelectInputFile" xml:space="preserve">
+    <value>入力用の MP4 ファイルを選択してください。</value>
+  </data>
+  <data name="Mp4Dialog_InputRequired" xml:space="preserve">
+    <value>入力が必要です</value>
+  </data>
+  <data name="Mp4Dialog_FileNotFound" xml:space="preserve">
+    <value>入力ファイルが存在しません。</value>
+  </data>
+  <data name="Mp4Dialog_FileNotFoundTitle" xml:space="preserve">
+    <value>ファイルが見つかりません</value>
+  </data>
+  <data name="Mp4Dialog_SpecifyOutput" xml:space="preserve">
+    <value>出力 GIF ファイルを指定してください。</value>
+  </data>
+  <data name="Mp4Dialog_OutputRequired" xml:space="preserve">
+    <value>出力が必要です</value>
+  </data>
+  <data name="Mp4Dialog_CannotCreateDir" xml:space="preserve">
+    <value>出力ディレクトリを作成できません：</value>
+  </data>
+  <data name="Mp4Dialog_DirectoryError" xml:space="preserve">
+    <value>ディレクトリエラー</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>C:\Users\Andyc\Downloads\lang_switch.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

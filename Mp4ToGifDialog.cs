@@ -229,7 +229,7 @@ namespace GifProcessorApp
             btnBrowseInput.Name = "btnBrowseInput";
             btnBrowseInput.Size = new System.Drawing.Size(88, 25);
             btnBrowseInput.TabIndex = 2;
-            btnBrowseInput.Text = "Browse...";
+            btnBrowseInput.Text = SteamGifCropper.Properties.Resources.Mp4Dialog_Browse;
             btnBrowseInput.UseVisualStyleBackColor = true;
             btnBrowseInput.Click += BtnBrowseInput_Click;
             // 
@@ -258,7 +258,7 @@ namespace GifProcessorApp
             btnBrowseOutput.Name = "btnBrowseOutput";
             btnBrowseOutput.Size = new System.Drawing.Size(88, 25);
             btnBrowseOutput.TabIndex = 5;
-            btnBrowseOutput.Text = "Browse...";
+            btnBrowseOutput.Text = SteamGifCropper.Properties.Resources.Mp4Dialog_Browse;
             btnBrowseOutput.UseVisualStyleBackColor = true;
             btnBrowseOutput.Click += BtnBrowseOutput_Click;
             // 
@@ -339,7 +339,7 @@ namespace GifProcessorApp
             // 
             numDurationSeconds.DecimalPlaces = 2;
             numDurationSeconds.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
-            numDurationSeconds.Location = new System.Drawing.Point(136, 187);
+            numDurationSeconds.Location = new System.Drawing.Point(151, 187);
             numDurationSeconds.Margin = new Padding(41, 19, 41, 19);
             numDurationSeconds.Maximum = new decimal(new int[] { 30, 0, 0, 0 });
             numDurationSeconds.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
@@ -350,7 +350,7 @@ namespace GifProcessorApp
             // 
             // lblDurationUnit
             // 
-            lblDurationUnit.Location = new System.Drawing.Point(207, 189);
+            lblDurationUnit.Location = new System.Drawing.Point(222, 189);
             lblDurationUnit.Margin = new Padding(41, 0, 41, 0);
             lblDurationUnit.Name = "lblDurationUnit";
             lblDurationUnit.Size = new System.Drawing.Size(71, 24);
@@ -365,7 +365,7 @@ namespace GifProcessorApp
             btnOK.Name = "btnOK";
             btnOK.Size = new System.Drawing.Size(83, 25);
             btnOK.TabIndex = 16;
-            btnOK.Text = "Convert";
+            btnOK.Text = SteamGifCropper.Properties.Resources.Mp4Dialog_Convert;
             btnOK.UseVisualStyleBackColor = true;
             btnOK.Click += BtnOK_Click;
             // 
@@ -377,7 +377,7 @@ namespace GifProcessorApp
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new System.Drawing.Size(73, 25);
             btnCancel.TabIndex = 17;
-            btnCancel.Text = "Cancel";
+            btnCancel.Text = SteamGifCropper.Properties.Resources.Mp4Dialog_Cancel;
             btnCancel.UseVisualStyleBackColor = true;
             // 
             // linkFFmpegHelp
@@ -398,7 +398,7 @@ namespace GifProcessorApp
             chkUseGPU.Name = "chkUseGPU";
             chkUseGPU.Size = new System.Drawing.Size(320, 25);
             chkUseGPU.TabIndex = 18;
-            chkUseGPU.Text = "GPU decode (decode only, GIF encode uses CPU)";
+            chkUseGPU.Text = SteamGifCropper.Properties.Resources.Mp4Dialog_GPUDecode;
             chkUseGPU.UseVisualStyleBackColor = true;
             chkUseGPU.Visible = false;
             chkUseGPU.CheckedChanged += ChkUseGPU_CheckedChanged;
@@ -462,7 +462,7 @@ namespace GifProcessorApp
         {
             using (var openFileDialog = new OpenFileDialog
             {
-                Filter = "MP4 Files (*.mp4)|*.mp4|All Video Files|*.mp4;*.avi;*.mkv;*.mov",
+                Filter = SteamGifCropper.Properties.Resources.FileDialog_Mp4Filter,
                 Title = "Select MP4 file to convert"
             })
             {
@@ -482,7 +482,7 @@ namespace GifProcessorApp
         {
             using (var saveFileDialog = new SaveFileDialog
             {
-                Filter = "GIF Files (*.gif)|*.gif",
+                Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
                 Title = "Save GIF file as...",
                 FileName = txtOutputPath.Text
             })
@@ -496,17 +496,9 @@ namespace GifProcessorApp
 
         private void LinkFFmpegHelp_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            var message = "To use MP4 to GIF conversion, you need to install FFmpeg first.\n\n" +
-                         "Easy installation using Windows Package Manager:\n" +
-                         "1. Open Command Prompt or PowerShell as Administrator\n" +
-                         "2. Run: winget install ffmpeg\n" +
-                         "3. Restart this application\n\n" +
-                         "Alternative methods:\n" +
-                         "• Download from: https://ffmpeg.org/download.html\n" +
-                         "• Or use Chocolatey: choco install ffmpeg\n\n" +
-                         "After installation, FFmpeg should be available in your system PATH.";
-
-            MessageBox.Show(message, "FFmpeg Installation Guide", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(SteamGifCropper.Properties.Resources.Mp4Dialog_FFmpegMessage, 
+                          SteamGifCropper.Properties.Resources.Mp4Dialog_FFmpegGuideTitle, 
+                          MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void CheckGPUAvailability()
@@ -516,14 +508,14 @@ namespace GifProcessorApp
                 bool gpuAvailable = IsNVIDIAGPUAvailable();
                 if (gpuAvailable)
                 {
-                    lblGPUStatus.Text = "NVIDIA GPU detected ✓";
+                    lblGPUStatus.Text = SteamGifCropper.Properties.Resources.Mp4Dialog_NvidiaDetected;
                     lblGPUStatus.ForeColor = System.Drawing.Color.Green;
                     chkUseGPU.Enabled = true;
                     chkUseGPU.Checked = false; // Default to CPU for better compatibility
                 }
                 else
                 {
-                    lblGPUStatus.Text = "No NVIDIA GPU detected";
+                    lblGPUStatus.Text = SteamGifCropper.Properties.Resources.Mp4Dialog_NoNvidiaGPU;
                     lblGPUStatus.ForeColor = System.Drawing.Color.Red;
                     chkUseGPU.Enabled = false;
                     chkUseGPU.Checked = false;
@@ -531,7 +523,7 @@ namespace GifProcessorApp
             }
             catch
             {
-                lblGPUStatus.Text = "GPU detection failed";
+                lblGPUStatus.Text = SteamGifCropper.Properties.Resources.Mp4Dialog_GPUDetectionFailed;
                 lblGPUStatus.ForeColor = System.Drawing.Color.Orange;
                 chkUseGPU.Enabled = false;
                 chkUseGPU.Checked = false;
@@ -543,12 +535,12 @@ namespace GifProcessorApp
             // Update status text based on selection
             if (chkUseGPU.Checked && chkUseGPU.Enabled)
             {
-                lblGPUStatus.Text = "GPU decode enabled ⚡";
+                lblGPUStatus.Text = SteamGifCropper.Properties.Resources.Mp4Dialog_GPUEnabled;
                 lblGPUStatus.ForeColor = System.Drawing.Color.Blue;
             }
             else if (chkUseGPU.Enabled)
             {
-                lblGPUStatus.Text = "NVIDIA GPU detected (CPU decode) ✓";
+                lblGPUStatus.Text = SteamGifCropper.Properties.Resources.Mp4Dialog_NvidiaGPUCPU;
                 lblGPUStatus.ForeColor = System.Drawing.Color.Green;
             }
         }
@@ -589,19 +581,25 @@ namespace GifProcessorApp
             // Validate inputs
             if (string.IsNullOrEmpty(txtInputPath.Text))
             {
-                MessageBox.Show("Please select an input MP4 file.", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(SteamGifCropper.Properties.Resources.Mp4Dialog_SelectInputFile, 
+                              SteamGifCropper.Properties.Resources.Mp4Dialog_InputRequired, 
+                              MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (!File.Exists(txtInputPath.Text))
             {
-                MessageBox.Show("Input file does not exist.", "File Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(SteamGifCropper.Properties.Resources.Mp4Dialog_FileNotFound, 
+                              SteamGifCropper.Properties.Resources.Mp4Dialog_FileNotFoundTitle, 
+                              MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             if (string.IsNullOrEmpty(txtOutputPath.Text))
             {
-                MessageBox.Show("Please specify an output GIF file.", "Output Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(SteamGifCropper.Properties.Resources.Mp4Dialog_SpecifyOutput, 
+                              SteamGifCropper.Properties.Resources.Mp4Dialog_OutputRequired, 
+                              MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -615,7 +613,9 @@ namespace GifProcessorApp
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Cannot create output directory:\n{ex.Message}", "Directory Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"{SteamGifCropper.Properties.Resources.Mp4Dialog_CannotCreateDir}\n{ex.Message}", 
+                                  SteamGifCropper.Properties.Resources.Mp4Dialog_DirectoryError, 
+                                  MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }

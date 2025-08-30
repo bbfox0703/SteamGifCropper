@@ -343,7 +343,7 @@
     <value>min:</value>
   </data>
   <data name="Mp4Dialog_Seconds" xml:space="preserve">
-    <value>sec:</value>
+    <value>seconds</value>
   </data>
   <data name="Mp4Dialog_Duration" xml:space="preserve">
     <value>Duration:</value>
@@ -525,9 +525,6 @@
   <data name="Mp4Dialog_DurationLabel" xml:space="preserve">
     <value>Duration (max 30s):</value>
   </data>
-  <data name="Mp4Dialog_Seconds" xml:space="preserve">
-    <value>seconds</value>
-  </data>
   <data name="Mp4Dialog_Convert" xml:space="preserve">
     <value>Convert</value>
   </data>
@@ -560,5 +557,50 @@
   </data>
   <data name="Mp4Dialog_NvidiaGPUCPU" xml:space="preserve">
     <value>NVIDIA GPU detected (CPU decode) ✓</value>
+  </data>
+  <data name="Mp4Dialog_FFmpegMessage" xml:space="preserve">
+    <value>To use MP4 to GIF conversion, you need to install FFmpeg first.
+
+Easy installation using Windows Package Manager:
+1. Open Command Prompt or PowerShell as Administrator
+2. Run: winget install ffmpeg
+3. Restart this application
+
+Alternative methods:
+• Download from: https://ffmpeg.org/download.html
+• Or use Chocolatey: choco install ffmpeg
+
+After installation, FFmpeg should be available in your system PATH.</value>
+  </data>
+  <data name="Mp4Dialog_FFmpegGuideTitle" xml:space="preserve">
+    <value>FFmpeg Installation Guide</value>
+  </data>
+  <data name="Mp4Dialog_SelectInputFile" xml:space="preserve">
+    <value>Please select an input MP4 file.</value>
+  </data>
+  <data name="Mp4Dialog_InputRequired" xml:space="preserve">
+    <value>Input Required</value>
+  </data>
+  <data name="Mp4Dialog_FileNotFound" xml:space="preserve">
+    <value>Input file does not exist.</value>
+  </data>
+  <data name="Mp4Dialog_FileNotFoundTitle" xml:space="preserve">
+    <value>File Not Found</value>
+  </data>
+  <data name="Mp4Dialog_SpecifyOutput" xml:space="preserve">
+    <value>Please specify an output GIF file.</value>
+  </data>
+  <data name="Mp4Dialog_OutputRequired" xml:space="preserve">
+    <value>Output Required</value>
+  </data>
+  <data name="Mp4Dialog_CannotCreateDir" xml:space="preserve">
+    <value>Cannot create output directory:</value>
+  </data>
+  <data name="Mp4Dialog_DirectoryError" xml:space="preserve">
+    <value>Directory Error</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\lang_switch.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
