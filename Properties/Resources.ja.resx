@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -118,241 +118,249 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Button_SplitGif" xml:space="preserve">
-    <value>Split GIF file into 5 parts with gifsicle</value>
+    <value>gifsicleでGIFファイルを5つの部分に分割</value>
   </data>
   <data name="Button_ResizeGif" xml:space="preserve">
-    <value>Resize GIF file to 766px width</value>
+    <value>GIFファイルのサイズを766ピクセル幅に調整</value>
   </data>
   <data name="Button_WriteTailByte" xml:space="preserve">
-    <value>Write GIF files last byte as 0x21</value>
+    <value>GIFファイルの最後のバイトを0x21に書き込み</value>
   </data>
   <data name="Button_RestoreTailByte" xml:space="preserve">
-    <value>Restore GIF files last byte from 0x21 to 0x3B</value>
+    <value>GIFファイルの最後のバイトを0x21から0x3Bに復元</value>
   </data>
   <data name="Button_MergeAndSplit" xml:space="preserve">
-    <value>Merge 5 GIF files into 1 part (766px), each ~153px</value>
+    <value>5つのGIFファイルを1つの部分(766px)にマージ、各約153px</value>
   </data>
   <data name="Button_Mp4ToGif" xml:space="preserve">
-    <value>Convert MP4 to GIF (with time control)</value>
+    <value>MP4をGIFに変換（時間制御付き）</value>
   </data>
   <data name="Button_MergeGifs" xml:space="preserve">
-    <value>Merge 2-5 GIF files into one</value>
+    <value>2-5個のGIFファイルを1つにマージ</value>
   </data>
   <data name="Button_Browse" xml:space="preserve">
-    <value>Browse...</value>
+    <value>参照...</value>
   </data>
   <data name="Status_Idle" xml:space="preserve">
-    <value>Idle.</value>
+    <value>待機中</value>
   </data>
   <data name="Status_Ready" xml:space="preserve">
-    <value>Ready</value>
+    <value>準備完了</value>
   </data>
   <data name="Status_Processing" xml:space="preserve">
-    <value>Processing...</value>
+    <value>処理中...</value>
   </data>
   <data name="Status_Done" xml:space="preserve">
-    <value>Done.</value>
+    <value>完了</value>
   </data>
   <data name="Status_Error" xml:space="preserve">
-    <value>Error.</value>
+    <value>エラー</value>
   </data>
   <data name="Status_Compressing" xml:space="preserve">
-    <value>Compressing...</value>
+    <value>圧縮しています...</value>
   </data>
   <data name="Status_Saving" xml:space="preserve">
-    <value>Saving...</value>
+    <value>保存しています...</value>
   </data>
   <data name="Status_ReducingPalette" xml:space="preserve">
-    <value>Reducing palette...</value>
+    <value>パレットを縮小しています...</value>
   </data>
   <data name="Status_CoalescingFrames" xml:space="preserve">
-    <value>Coalescing frames...</value>
+    <value>フレームを結合しています...</value>
   </data>
   <data name="Status_GifsicleOptimizing" xml:space="preserve">
-    <value>gifsicle-ing...</value>
+    <value>gifsicle最適化中...</value>
   </data>
   <data name="Status_Loading" xml:space="preserve">
-    <value>Loading...</value>
+    <value>読み込み中...</value>
   </data>
   <data name="Status_ResizingFrames" xml:space="preserve">
-    <value>Resizing frames...</value>
+    <value>フレームサイズ変更中...</value>
   </data>
   <data name="Status_Optimizing" xml:space="preserve">
-    <value>Optimizing...</value>
+    <value>最適化中...</value>
   </data>
   <data name="Status_RestoringTailBytes" xml:space="preserve">
-    <value>Restoring tail bytes...</value>
+    <value>テールバイト復元中...</value>
   </data>
   <data name="Status_ProcessingPart" xml:space="preserve">
-    <value>Processing part {0}, frame {1}...</value>
+    <value>パート{0}、フレーム{1}を処理中...</value>
   </data>
   <data name="Status_ProcessingCount" xml:space="preserve">
-    <value>Processing... {0}/{1}</value>
+    <value>処理中... {0}/{1}</value>
   </data>
   <data name="Status_ResizingGif" xml:space="preserve">
-    <value>Resizing GIF #{0} to {1}px width...</value>
+    <value>GIF #{0}を{1}px幅にサイズ変更中...</value>
   </data>
   <data name="Status_ResizingGifFrame" xml:space="preserve">
-    <value>Resizing GIF #{0} - Frame {1}/{2}...</value>
+    <value>GIF #{0} - フレーム{1}/{2}をサイズ変更中...</value>
   </data>
   <data name="Status_SynchronizingGif" xml:space="preserve">
-    <value>Synchronizing GIF #{0} duration...</value>
+    <value>GIF #{0}の持続時間を同期中...</value>
   </data>
   <data name="Status_MergingFrame" xml:space="preserve">
-    <value>Merging frame {0}/{1}...</value>
+    <value>フレーム{0}/{1}をマージしています...</value>
   </data>
   <data name="Title_Error" xml:space="preserve">
-    <value>Error</value>
+    <value>エラー</value>
   </data>
   <data name="Title_Success" xml:space="preserve">
-    <value>Success</value>
+    <value>成功</value>
   </data>
   <data name="Title_Warning" xml:space="preserve">
-    <value>Warning</value>
+    <value>警告</value>
   </data>
   <data name="Title_Information" xml:space="preserve">
-    <value>Information</value>
+    <value>情報</value>
   </data>
   <data name="Title_StartupError" xml:space="preserve">
-    <value>Startup Error</value>
+    <value>起動エラー</value>
   </data>
   <data name="Title_InitializationError" xml:space="preserve">
-    <value>Initialization Error</value>
+    <value>初期化エラー</value>
   </data>
   <data name="Title_FFmpegRequired" xml:space="preserve">
-    <value>FFmpeg Required</value>
+    <value>FFmpegが必要</value>
   </data>
   <data name="Title_Mp4ToGifError" xml:space="preserve">
-    <value>MP4 to GIF Conversion Error</value>
+    <value>MP4からGIF変換エラー</value>
   </data>
   <data name="Title_MergeGifs" xml:space="preserve">
-    <value>Merge GIF Files</value>
+    <value>GIFマージ</value>
   </data>
   <data name="Title_MergeGifError" xml:space="preserve">
-    <value>GIF Merge Error</value>
+    <value>GIFマージエラー</value>
   </data>
   <data name="Title_TailByteRestoration" xml:space="preserve">
-    <value>Tail Byte Restoration</value>
+    <value>テールバイト復元</value>
   </data>
   <data name="Title_FileProcessingError" xml:space="preserve">
-    <value>File Processing Error</value>
+    <value>ファイル処理エラー</value>
   </data>
   <data name="Title_InvalidColorType" xml:space="preserve">
-    <value>Invalid Color Type</value>
+    <value>無効な色タイプ</value>
   </data>
   <data name="Title_SelectionOrder" xml:space="preserve">
-    <value>Selection Order Information</value>
+    <value>選択順序</value>
   </data>
   <data name="Message_ProcessingComplete" xml:space="preserve">
-    <value>GIF processing and splitting completed successfully!</value>
+    <value>処理が完了しました！</value>
   </data>
   <data name="Message_PaletteProcessingComplete" xml:space="preserve">
-    <value>GIF processing with reduced palette completed successfully!</value>
+    <value>パレット処理が完了しました！</value>
   </data>
   <data name="Message_FiveGifMergeComplete" xml:space="preserve">
-    <value>Five GIF files have been merged and split into 5 parts successfully!</value>
+    <value>5つのGIFファイルが正常に結合され、5つの部分に分割されました！</value>
   </data>
   <data name="Message_GifMergeComplete" xml:space="preserve">
-    <value>GIF files merged successfully!\nSaved as: {0}</value>
+    <value>GIFマージが完了しました！
+出力ファイル：{0}</value>
   </data>
   <data name="Message_SelectGifFiles" xml:space="preserve">
-    <value>Please select 2-5 GIF files to merge (in order from left to right):</value>
+    <value>マージする2-5個のGIFファイルを選択してください</value>
   </data>
   <data name="Message_GifFileCount" xml:space="preserve">
-    <value>Please select between 2 and 5 GIF files.</value>
+    <value>2～5 個のGIFファイルを選択してください。</value>
   </data>
   <data name="Message_AnalyzingGifs" xml:space="preserve">
-    <value>Analyzing GIF files...</value>
+    <value>GIFファイルを分析中...</value>
   </data>
   <data name="Message_MergingGifs" xml:space="preserve">
-    <value>Merging GIF files...</value>
+    <value>GIFファイルをマージしています...</value>
   </data>
   <data name="Message_ResizeComplete" xml:space="preserve">
-    <value>GIF resizing completed successfully!\nSaved as: {0}</value>
+    <value>GIF のリサイズが正常に完了しました！\n保存名: {0}</value>
   </data>
   <data name="Message_Mp4ConversionComplete" xml:space="preserve">
-    <value>MP4 to GIF conversion completed successfully!\nSaved as: {0}</value>
+    <value>MP4からGIFへの変換が完了しました！
+出力ファイル：{0}</value>
   </data>
   <data name="Message_ProcessedFiles" xml:space="preserve">
-    <value>{0} of {1} GIF files processed successfully!</value>
+    <value>{1} 個のGIFファイルのうち {0} 個が正常に処理されました！</value>
   </data>
   <data name="Message_RestorationComplete" xml:space="preserve">
-    <value>Restoration completed!\nFiles processed: {0}\nFiles skipped (not 0x21): {1}</value>
+    <value>復元が完了しました！\n処理されたファイル: {0}\nスキップされたファイル (0x21 ではない): {1}</value>
   </data>
   <data name="Error_UnsupportedWidth" xml:space="preserve">
-    <value>Unsupported GIF canvas width: {0}px. Only {1}px and {2}px are supported.</value>
+    <value>サポートされていないGIF幅：{0}ピクセル。このツールは{1}ピクセルまたは{2}ピクセル幅のGIFファイルのみサポートしています。</value>
   </data>
   <data name="Error_PaletteRange" xml:space="preserve">
-    <value>Palette size must be between 32 and 256.</value>
+    <value>パレットサイズは32から256の間である必要があります。</value>
   </data>
   <data name="Error_Occurred" xml:space="preserve">
-    <value>An error occurred: {0}</value>
+    <value>エラーが発生しました：{0}</value>
   </data>
   <data name="Error_Processing" xml:space="preserve">
-    <value>Error processing five GIF merge and split: {0}</value>
+    <value>処理エラー：{0}</value>
   </data>
   <data name="Error_ProcessingFile" xml:space="preserve">
-    <value>Error processing {0}: {1}</value>
+    <value>ファイル処理中にエラーが発生しました {0}：{1}</value>
   </data>
   <data name="Error_ResizeFailed" xml:space="preserve">
-    <value>Resize operation failed: {0}</value>
+    <value>サイズ変更に失敗しました：{0}</value>
   </data>
   <data name="Error_StartupFailed" xml:space="preserve">
-    <value>Application startup failed: {0}\n\nStack trace:\n{1}</value>
+    <value>起動に失敗しました：{0}\n\nスタックトレース：{1}</value>
   </data>
   <data name="Error_InitializationFailed" xml:space="preserve">
-    <value>Failed to initialize form: {0}</value>
+    <value>初期化に失敗しました：{0}</value>
   </data>
   <data name="Error_UnhandledException" xml:space="preserve">
-    <value>Unhandled exception: {0}\n\nStack trace:\n{1}</value>
+    <value>未処理の例外が発生しました：{0}\n\nスタックトレース：{1}</value>
   </data>
   <data name="Error_InvalidColorType" xml:space="preserve">
-    <value>GIF #{0} ({1}) must have palette-based colors (8-bit).\nCurrent color type: {2}</value>
+    <value>GIF #{0} ({1}) はパレットベースの色 (8ビット) でなければなりません。\n現在の色タイプ: {2}</value>
   </data>
   <data name="FileDialog_SelectGif" xml:space="preserve">
-    <value>Select a GIF file to process</value>
+    <value>GIFファイルを選択</value>
   </data>
   <data name="FileDialog_SelectGifResize" xml:space="preserve">
-    <value>Select a GIF file to resize</value>
+    <value>サイズ変更するGIFファイルを選択</value>
   </data>
   <data name="FileDialog_SelectGifFiles" xml:space="preserve">
-    <value>Select GIF files to process</value>
+    <value>GIFファイルを選択</value>
   </data>
   <data name="FileDialog_SelectGifRestore" xml:space="preserve">
-    <value>Select GIF files to restore tail bytes from 0x21 to 0x3B</value>
+    <value>復元するGIFファイルを選択</value>
   </data>
   <data name="FileDialog_GifFilter" xml:space="preserve">
-    <value>GIF Files (*.gif)|*.gif</value>
+    <value>GIFファイル (*.gif)|*.gif</value>
   </data>
   <data name="FileDialog_SelectGifOrder" xml:space="preserve">
-    <value>Select GIF file #{0} (position {1} from left to right)</value>
+    <value>GIF ファイル #{0} を選択してください（左から右へ {1} 番目の位置）</value>
   </data>
   <data name="Instruction_SelectFiveGifs" xml:space="preserve">
-    <value>You will need to select 5 GIF files one by one in the desired order.\n\nFile 1: First position (leftmost)\nFile 2: Second position\nFile 3: Third position (center)\nFile 4: Fourth position\nFile 5: Fifth position (rightmost)</value>
+    <value>希望する順序で5つのGIFファイルを1つずつ選択する必要があります。
+
+ファイル1：第1位置（左端）
+ファイル2：第2位置
+ファイル3：第3位置（中央）
+ファイル4：第4位置
+ファイル5：第5位置（右端）</value>
   </data>
   <data name="Mp4Dialog_InputFile" xml:space="preserve">
-    <value>Input MP4 file:</value>
+    <value>入力ファイル：</value>
   </data>
   <data name="Mp4Dialog_OutputFile" xml:space="preserve">
-    <value>Output GIF file:</value>
+    <value>出力ファイル：</value>
   </data>
   <data name="Mp4Dialog_StartTime" xml:space="preserve">
-    <value>Start time:</value>
+    <value>開始時刻:</value>
   </data>
   <data name="Mp4Dialog_Minutes" xml:space="preserve">
-    <value>min:</value>
+    <value>分</value>
   </data>
   <data name="Mp4Dialog_Seconds" xml:space="preserve">
-    <value>seconds</value>
+    <value>秒</value>
   </data>
   <data name="Mp4Dialog_Duration" xml:space="preserve">
-    <value>Duration:</value>
+    <value>持続時間：</value>
   </data>
   <data name="Mp4Dialog_UseGPU" xml:space="preserve">
-    <value>Use GPU acceleration (if available)</value>
+    <value>GPU加速を使用（利用可能な場合）</value>
   </data>
   <data name="Group_Dither" xml:space="preserve">
-    <value>Dither</value>
+    <value>ディザリング</value>
   </data>
   <data name="Label_Optimize" xml:space="preserve">
     <value>Optimize:</value>
@@ -364,7 +372,7 @@
     <value>Lossy:</value>
   </data>
   <data name="Radio_Default" xml:space="preserve">
-    <value>Default</value>
+    <value>デフォルト</value>
   </data>
   <data name="Radio_o8" xml:space="preserve">
     <value>o8</value>
@@ -373,234 +381,234 @@
     <value>ro64</value>
   </data>
   <data name="Radio_None" xml:space="preserve">
-    <value>None</value>
+    <value>なし</value>
   </data>
   <data name="Label_Framerate" xml:space="preserve">
-    <value>Target framerate:</value>
+    <value>ターゲットフレームレート：</value>
   </data>
   <data name="Label_FPS" xml:space="preserve">
     <value>fps</value>
   </data>
   <data name="Tooltip_Framerate" xml:space="preserve">
-    <value>Target framerate for all GIF outputs (frames per second)</value>
+    <value>すべての出力GIFのターゲットフレームレート(1-60 fps)</value>
   </data>
   <data name="CheckBox_FasterPalette" xml:space="preserve">
-    <value>Faster palette reduction (quality down)</value>
+    <value>高速パレット処理を使用（品質低下）</value>
   </data>
   <data name="Button_ReverseGif" xml:space="preserve">
-    <value>FFMPEG: Reverse animated GIF</value>
+    <value>FFMPEG：アニメーションGIFを反転</value>
   </data>
   <data name="Status_ValidatingProcessing" xml:space="preserve">
-    <value>Validating and processing 5 GIF files...</value>
+    <value>処理を検証中...</value>
   </data>
   <data name="Status_SynchronizingDurations" xml:space="preserve">
-    <value>Synchronizing animation durations...</value>
+    <value>アニメーション持続時間を同期中...</value>
   </data>
   <data name="Status_ShortestDuration" xml:space="preserve">
-    <value>Shortest duration: {0:F1}s (GIF #{1})</value>
+    <value>最短持続時間：{0:F1}秒 (GIF #{1})</value>
   </data>
   <data name="Status_MergingHorizontally" xml:space="preserve">
-    <value>Merging GIFs horizontally to 766px width...</value>
+    <value>GIFを766px幅に水平マージ中...</value>
   </data>
   <data name="Status_FiveGifComplete" xml:space="preserve">
-    <value>Five GIF merge and split completed successfully!</value>
+    <value>5つのGIF処理が完了しました！</value>
   </data>
   <data name="Status_ErrorOccurred" xml:space="preserve">
-    <value>Error occurred during processing.</value>
+    <value>エラーが発生しました</value>
   </data>
   <data name="Status_ProcessingPalette" xml:space="preserve">
-    <value>Processing with reduced palette...</value>
+    <value>パレット処理中...</value>
   </data>
   <data name="Status_ProcessingPartPalette" xml:space="preserve">
-    <value>Processing part {0} with palette reduction, frame {1}...</value>
+    <value>パート{0}のパレット、フレーム{1}を処理しています...</value>
   </data>
   <data name="Status_Mp4ShortClip" xml:space="preserve">
-    <value>Short clip - CPU more efficient...</value>
+    <value>短いクリップ：最適化設定でMP4を変換中...</value>
   </data>
   <data name="Status_Mp4GPU" xml:space="preserve">
-    <value>GPU decode + CPU GIF encoding...</value>
+    <value>GPU加速でMP4をGIFに変換中...</value>
   </data>
   <data name="Status_Mp4GPUFailed" xml:space="preserve">
-    <value>GPU decode failed, using CPU...</value>
+    <value>GPUデコードに失敗、CPUを使用しています...</value>
   </data>
   <data name="Status_Mp4CPU" xml:space="preserve">
-    <value>Converting MP4 to GIF with optimized CPU...</value>
+    <value>最適化されたCPUでMP4をGIFに変換しています...</value>
   </data>
   <data name="Status_Mp4Complete" xml:space="preserve">
-    <value>MP4 to GIF conversion completed successfully!</value>
+    <value>MP4からGIFへの変換が正常に完了しました！</value>
   </data>
   <data name="FileDialog_SelectGifToReverse" xml:space="preserve">
-    <value>Select a GIF file to reverse</value>
+    <value>反転するGIFファイルを選択</value>
   </data>
   <data name="FileDialog_SaveReversedGif" xml:space="preserve">
-    <value>Save reversed GIF as</value>
+    <value>反転したGIFを名前を付けて保存</value>
   </data>
   <data name="Status_ReversingGif" xml:space="preserve">
-    <value>Reversing GIF...</value>
+    <value>GIFを反転しています...</value>
   </data>
   <data name="Status_GifReversed" xml:space="preserve">
-    <value>GIF reversed successfully!</value>
+    <value>GIF反転が成功しました！</value>
   </data>
   <data name="Message_GifReversedSuccess" xml:space="preserve">
-    <value>GIF reversed successfully!</value>
+    <value>GIF反転が成功しました！</value>
   </data>
   <data name="Error_GifReverseFailed" xml:space="preserve">
-    <value>Failed to reverse GIF: {0}</value>
+    <value>GIF反転に失敗しました：{0}</value>
   </data>
   <data name="Error_FileValidationFailed" xml:space="preserve">
-    <value>File validation failed: {0}</value>
+    <value>ファイル検証に失敗しました：{0}</value>
   </data>
   <data name="Error_GifMergeFailed" xml:space="preserve">
-    <value>GIF merge failed: {0}</value>
+    <value>GIFマージに失敗しました：{0}</value>
   </data>
   <data name="FileDialog_Mp4Filter" xml:space="preserve">
-    <value>MP4 file (*.mp4)|*.mp4</value>
+    <value>MP4ファイル (*.mp4)|*.mp4</value>
   </data>
   <data name="FileDialog_SelectMp4" xml:space="preserve">
-    <value>Select MP4 file to convert</value>
+    <value>変換するMP4ファイルを選択</value>
   </data>
   <data name="FileDialog_SaveGif" xml:space="preserve">
-    <value>Save GIF file as...</value>
+    <value>GIFファイルを名前を付けて保存...</value>
   </data>
   <data name="Status_ConvertingMp4" xml:space="preserve">
-    <value>Converting to GIF...</value>
+    <value>MP4をGIFに変換しています...</value>
   </data>
   <data name="Title_Mp4ConversionError" xml:space="preserve">
-    <value>Conversion error</value>
+    <value>MP4変換エラー</value>
   </data>
   <data name="CheckBox_GifsicleOptimization" xml:space="preserve">
-    <value>Enable gifsicle optimization</value>
+    <value>gifsicle最適化を有効にする</value>
   </data>
   <data name="Label_GifsicleNotice" xml:space="preserve">
-    <value>Notice: gifsicle.exe must be in the "System PATH"</value>
+    <value>注意：gifsicle.exe は「システム PATH」に存在する必要があります</value>
   </data>
   <data name="MergeDialog_Instructions" xml:space="preserve">
-    <value>Please select 2-5 GIF files to merge (in order from left to right):</value>
+    <value>マージする2-5個のGIFファイルを選択してください（左から右の順序で）：</value>
   </data>
   <data name="MergeDialog_GifFiles" xml:space="preserve">
-    <value>GIF Files (2-5):</value>
+    <value>GIFファイル（2-5個）：</value>
   </data>
   <data name="MergeDialog_AddFiles" xml:space="preserve">
-    <value>Add Files...</value>
+    <value>ファイルを追加...</value>
   </data>
   <data name="MergeDialog_Remove" xml:space="preserve">
-    <value>Remove</value>
+    <value>削除</value>
   </data>
   <data name="MergeDialog_MoveUp" xml:space="preserve">
-    <value>Move Up</value>
+    <value>上に移動</value>
   </data>
   <data name="MergeDialog_MoveDown" xml:space="preserve">
-    <value>Move Down</value>
+    <value>下に移動</value>
   </data>
   <data name="MergeDialog_OutputFile" xml:space="preserve">
-    <value>Output GIF file:</value>
+    <value>出力GIFファイル：</value>
   </data>
   <data name="MergeDialog_Merge" xml:space="preserve">
-    <value>Merge</value>
+    <value>マージ</value>
   </data>
   <data name="MergeDialog_Cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>キャンセル</value>
   </data>
   <data name="MergeDialog_Title" xml:space="preserve">
-    <value>Merge GIF Files</value>
+    <value>GIFファイルをマージ</value>
   </data>
   <data name="Mp4Dialog_InputLabel" xml:space="preserve">
-    <value>Input MP4 file:</value>
+    <value>入力ファイル：</value>
   </data>
   <data name="Mp4Dialog_Browse" xml:space="preserve">
-    <value>Browse...</value>
+    <value>参照...</value>
   </data>
   <data name="Mp4Dialog_OutputLabel" xml:space="preserve">
-    <value>Output GIF file:</value>
+    <value>出力ファイル：</value>
   </data>
   <data name="Mp4Dialog_StartTimeLabel" xml:space="preserve">
-    <value>Start time:</value>
+    <value>開始時刻:</value>
   </data>
   <data name="Mp4Dialog_Min" xml:space="preserve">
-    <value>min:</value>
+    <value>分</value>
   </data>
   <data name="Mp4Dialog_Sec" xml:space="preserve">
-    <value>sec:</value>
+    <value>秒</value>
   </data>
   <data name="Mp4Dialog_Ms" xml:space="preserve">
-    <value>ms:</value>
+    <value>ミリ秒</value>
   </data>
   <data name="Mp4Dialog_DurationLabel" xml:space="preserve">
-    <value>Duration (max 30s):</value>
+    <value>時間 (最大 30 秒):</value>
   </data>
   <data name="Mp4Dialog_Convert" xml:space="preserve">
-    <value>Convert</value>
+    <value>変換</value>
   </data>
   <data name="Mp4Dialog_Cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>キャンセル</value>
   </data>
   <data name="Mp4Dialog_FFmpegHelp" xml:space="preserve">
-    <value>How to install FFmpeg? (Required for MP4 conversion)</value>
+    <value>FFmpeg をインストールする方法は？（MP4 変換に必須）</value>
   </data>
   <data name="Mp4Dialog_GPUDecode" xml:space="preserve">
-    <value>GPU decode (decode only, GIF encode uses CPU)</value>
+    <value>GPU デコード（デコードのみ、GIF のエンコードは CPU を使用）</value>
   </data>
   <data name="Mp4Dialog_CheckingGPU" xml:space="preserve">
-    <value>Checking GPU...</value>
+    <value>GPU を確認中...</value>
   </data>
   <data name="Mp4Dialog_Title" xml:space="preserve">
-    <value>MP4 to GIF Converter</value>
+    <value>MP4 → GIF コンバーター</value>
   </data>
   <data name="Mp4Dialog_NvidiaDetected" xml:space="preserve">
-    <value>NVIDIA GPU detected ✓</value>
+    <value>NVIDIA GPU が検出されました ✓</value>
   </data>
   <data name="Mp4Dialog_NoNvidiaGPU" xml:space="preserve">
-    <value>No NVIDIA GPU detected</value>
+    <value>NVIDIA GPU が検出されませんでした</value>
   </data>
   <data name="Mp4Dialog_GPUDetectionFailed" xml:space="preserve">
-    <value>GPU detection failed</value>
+    <value>GPU の検出に失敗しました</value>
   </data>
   <data name="Mp4Dialog_GPUEnabled" xml:space="preserve">
-    <value>GPU decode enabled ⚡</value>
+    <value>GPU デコードが有効になりました⚡</value>
   </data>
   <data name="Mp4Dialog_NvidiaGPUCPU" xml:space="preserve">
-    <value>NVIDIA GPU detected (CPU decode) ✓</value>
+    <value>NVIDIA GPU が検出されました（CPU デコード）✓</value>
   </data>
   <data name="Mp4Dialog_FFmpegMessage" xml:space="preserve">
-    <value>To use MP4 to GIF conversion, you need to install FFmpeg first.
+    <value>MP4 から GIF への変換を使用するには、まず FFmpeg をインストールする必要があります。
 
-Easy installation using Windows Package Manager:
-1. Open Command Prompt or PowerShell as Administrator
-2. Run: winget install ffmpeg
-3. Restart this application
+Windows パッケージマネージャを使用した簡単なインストール：
+1. 管理者としてコマンドプロンプトまたは PowerShell を開く
+2. 実行：winget install ffmpeg
+3. このアプリケーションを再起動
 
-Alternative methods:
-• Download from: https://ffmpeg.org/download.html
-• Or use Chocolatey: choco install ffmpeg
+その他の方法：
+• ダウンロード：https://ffmpeg.org/download.html
+• または Chocolatey を使用：choco install ffmpeg
 
-After installation, FFmpeg should be available in your system PATH.</value>
+インストール後、FFmpeg がシステム PATH で利用可能になります。</value>
   </data>
   <data name="Mp4Dialog_FFmpegGuideTitle" xml:space="preserve">
-    <value>FFmpeg Installation Guide</value>
+    <value>FFmpeg インストールガイド</value>
   </data>
   <data name="Mp4Dialog_SelectInputFile" xml:space="preserve">
-    <value>Please select an input MP4 file.</value>
+    <value>入力用の MP4 ファイルを選択してください。</value>
   </data>
   <data name="Mp4Dialog_InputRequired" xml:space="preserve">
-    <value>Input Required</value>
+    <value>入力が必要です</value>
   </data>
   <data name="Mp4Dialog_FileNotFound" xml:space="preserve">
-    <value>Input file does not exist.</value>
+    <value>入力ファイルが存在しません。</value>
   </data>
   <data name="Mp4Dialog_FileNotFoundTitle" xml:space="preserve">
-    <value>File Not Found</value>
+    <value>ファイルが見つかりません</value>
   </data>
   <data name="Mp4Dialog_SpecifyOutput" xml:space="preserve">
-    <value>Please specify an output GIF file.</value>
+    <value>出力 GIF ファイルを指定してください。</value>
   </data>
   <data name="Mp4Dialog_OutputRequired" xml:space="preserve">
-    <value>Output Required</value>
+    <value>出力が必要です</value>
   </data>
   <data name="Mp4Dialog_CannotCreateDir" xml:space="preserve">
-    <value>Cannot create output directory:</value>
+    <value>出力ディレクトリを作成できません：</value>
   </data>
   <data name="Mp4Dialog_DirectoryError" xml:space="preserve">
-    <value>Directory Error</value>
+    <value>ディレクトリエラー</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">

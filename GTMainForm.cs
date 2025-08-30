@@ -1,4 +1,7 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Win32;
 
@@ -8,33 +11,33 @@ namespace GifProcessorApp
     {
         public int DitherMethod { get; private set; } = 0;
         private bool _isDarkMode;
-        
+
         public GifToolMainForm()
         {
             try
             {
                 InitializeComponent();
-                
+
                 // Initialize theme
                 _isDarkMode = WindowsThemeManager.IsDarkModeEnabled();
                 ApplyCurrentTheme();
-                
+
                 // Set initial state
-                lblStatus.Text = "Ready";
+                lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready;
                 pBarTaskStatus.Visible = false;
-                
+
                 // Ensure proper form state
                 this.WindowState = FormWindowState.Normal;
                 this.StartPosition = FormStartPosition.CenterScreen;
-                
+
                 // Register for theme changes
                 SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to initialize form: {ex.Message}", 
-                                "Initialization Error", 
-                                MessageBoxButtons.OK, 
+                MessageBox.Show(string.Format(SteamGifCropper.Properties.Resources.Error_InitializationFailed, ex.Message),
+                                SteamGifCropper.Properties.Resources.Title_InitializationError,
+                                MessageBoxButtons.OK,
                                 MessageBoxIcon.Error);
                 throw;
             }
@@ -59,6 +62,7 @@ namespace GifProcessorApp
             try
             {
                 WindowsThemeManager.ApplyThemeToControl(this, _isDarkMode);
+                WindowsThemeManager.ApplyThemeToControl(conMenuLangSwitch, _isDarkMode);
                 this.Refresh();
             }
             catch (Exception ex)
@@ -74,11 +78,19 @@ namespace GifProcessorApp
             base.OnHandleDestroyed(e);
         }
 
-        private void ExecuteWithErrorHandling(Action action, string operationName)
+        protected override void OnDpiChanged(DpiChangedEventArgs e)
+        {
+            base.OnDpiChanged(e);
+            Bounds = e.SuggestedRectangle;
+            AutoScaleDimensions = new SizeF(e.DeviceDpiNew, e.DeviceDpiNew);
+            PerformLayout();
+        }
+
+        private async Task ExecuteWithErrorHandling(Func<Task> action, string operationName)
         {
             try
             {
-                action();
+                await action();
             }
             catch (Exception ex)
             {
@@ -87,34 +99,75 @@ namespace GifProcessorApp
             }
         }
 
-        private void btnSplitGif_Click(object sender, EventArgs e)
+        private async void btnSplitGif_Click(object sender, EventArgs e)
         {
-            ExecuteWithErrorHandling(() => GifProcessor.StartProcessing(this), "GIF splitting");
+            await ExecuteWithErrorHandling(() =>
+            {
+                GifProcessor.StartProcessing(this);
+                return Task.CompletedTask;
+            }, "GIF splitting");
         }
 
-        private void btnResizeGif766_Click(object sender, EventArgs e)
+        private async void btnResizeGif766_Click(object sender, EventArgs e)
         {
-            ExecuteWithErrorHandling(() => GifProcessor.ResizeGifTo766(this), "GIF resizing");
+            await ExecuteWithErrorHandling(() =>
+            {
+                GifProcessor.ResizeGifTo766(this);
+                return Task.CompletedTask;
+            }, "GIF resizing");
         }
 
-        private void btnWriteTailByte_Click(object sender, EventArgs e)
+        private async void btnWriteTailByte_Click(object sender, EventArgs e)
         {
-            ExecuteWithErrorHandling(() => GifProcessor.WriteTailByteForMultipleGifs(this), "tail byte modification");
+            await ExecuteWithErrorHandling(() =>
+            {
+                GifProcessor.WriteTailByteForMultipleGifs(this);
+                return Task.CompletedTask;
+            }, "tail byte modification");
         }
 
-        private void btnRestoreTailByte_Click(object sender, EventArgs e)
+        private async void btnRestoreTailByte_Click(object sender, EventArgs e)
         {
-            ExecuteWithErrorHandling(() => GifProcessor.RestoreTailByteForMultipleGifs(this), "tail byte restoration");
+            await ExecuteWithErrorHandling(() =>
+            {
+                GifProcessor.RestoreTailByteForMultipleGifs(this);
+                return Task.CompletedTask;
+            }, "tail byte restoration");
         }
 
-        private void btnSplitGIFWithReducedPalette_Click(object sender, EventArgs e)
+        private async void btnSplitGIFWithReducedPalette_Click(object sender, EventArgs e)
         {
-            ExecuteWithErrorHandling(() => GifProcessor.SplitGifWithReducedPalette(this), "palette reduction and splitting");
+            await ExecuteWithErrorHandling(() =>
+            {
+                GifProcessor.SplitGifWithReducedPalette(this);
+                return Task.CompletedTask;
+            }, "palette reduction and splitting");
         }
 
-        private void btnMp4ToGif_Click(object sender, EventArgs e)
+        private async void btnMp4ToGif_Click(object sender, EventArgs e)
         {
-            ExecuteWithErrorHandling(() => GifProcessor.ConvertMp4ToGif(this), "MP4 to GIF conversion");
+            await ExecuteWithErrorHandling(async () => await GifProcessor.ConvertMp4ToGif(this), "MP4 to GIF conversion");
+        }
+
+        private async void btnMerge2to5GifToOne_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(async () =>
+            {
+                using (var dialog = new MergeGifsDialog())
+                {
+                    if (dialog.ShowDialog() == DialogResult.OK)
+                    {
+                        int targetFramerate = (int)numUpDownFramerate.Value;
+                        bool useFastPalette = dialog.chkGIFMergeFasterPaletteProcess.Checked;
+                        await GifProcessor.MergeMultipleGifs(dialog.SelectedFilePaths, dialog.OutputFilePath, this, targetFramerate, useFastPalette);
+                    }
+                }
+            }, "GIF merge");
+        }
+
+        private async void btnReverseGIF_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(async () => await GifProcessor.ReverseGif(this), "GIF reversal");
         }
 
         private void label2_Click(object sender, EventArgs e)
@@ -138,6 +191,117 @@ namespace GifProcessorApp
             // This is just for testing - normally theme comes from Windows settings
             _isDarkMode = !_isDarkMode;
             ApplyCurrentTheme();
+        }
+
+        /// <summary>
+        /// Switch language for testing purposes
+        /// </summary>
+        /// <param name="culture">Culture code: "en", "zh-TW", or "ja"</param>
+        public void SwitchLanguage(string culture)
+        {
+            try
+            {
+                Program.InitializeLocalization(culture);
+
+                // Update the form text and controls
+                UpdateUIText();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to switch language: {ex.Message}", "Language Switch Error",
+                               MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        /// <summary>
+        /// Update all UI text elements with current culture
+        /// </summary>
+        private void UpdateUIText()
+        {
+            try
+            {
+                var resources = new ComponentResourceManager(typeof(GifToolMainForm));
+
+                ApplyResourcesRecursively(this, resources);
+
+                // Update context menu items if resource entries exist
+                resources.ApplyResources(conMenuLangSwitch, conMenuLangSwitch.Name);
+                ApplyToolStripItemsRecursively(conMenuLangSwitch.Items, resources);
+
+                // Reassign control captions from resources so they update with the culture
+                btnSplitGif.Text = SteamGifCropper.Properties.Resources.Button_SplitGif;
+                btnResizeGif766.Text = SteamGifCropper.Properties.Resources.Button_ResizeGif;
+                btnWriteTailByte.Text = SteamGifCropper.Properties.Resources.Button_WriteTailByte;
+                btnRestoreTailByte.Text = SteamGifCropper.Properties.Resources.Button_RestoreTailByte;
+                btnMergeAndSplit.Text = SteamGifCropper.Properties.Resources.Button_MergeAndSplit;
+                btnMp4ToGif.Text = SteamGifCropper.Properties.Resources.Button_Mp4ToGif;
+                radioBtnDDefault.Text = SteamGifCropper.Properties.Resources.Radio_Default;
+                radioBtnDo8.Text = SteamGifCropper.Properties.Resources.Radio_o8;
+                radioBtnDro64.Text = SteamGifCropper.Properties.Resources.Radio_ro64;
+                radioBtnDNone.Text = SteamGifCropper.Properties.Resources.Radio_None;
+                chkGifsicle.Text = SteamGifCropper.Properties.Resources.CheckBox_GifsicleOptimization;
+                btnMerge2to5GifToOne.Text = SteamGifCropper.Properties.Resources.Button_MergeGifs;
+                chk5GIFMergeFasterPaletteProcess.Text = SteamGifCropper.Properties.Resources.CheckBox_FasterPalette;
+                btnReverseGIF.Text = SteamGifCropper.Properties.Resources.Button_ReverseGif;
+
+                this.Text = "Steam GIF Cropper"; // Keep main title in English
+
+                if (lblStatus.Text == "Ready" || lblStatus.Text == "就緒" || lblStatus.Text == "準備完了")
+                {
+                    lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready;
+                }
+
+                this.Invalidate(true);
+                this.Update();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to update UI text: {ex.Message}");
+            }
+        }
+
+        private void ApplyResourcesRecursively(Control control, ComponentResourceManager resources)
+        {
+            resources.ApplyResources(control, control.Name);
+            foreach (Control child in control.Controls)
+            {
+                ApplyResourcesRecursively(child, resources);
+            }
+        }
+
+        private void ApplyToolStripItemsRecursively(ToolStripItemCollection items, ComponentResourceManager resources)
+        {
+            foreach (ToolStripItem item in items)
+            {
+                resources.ApplyResources(item, item.Name);
+                if (item is ToolStripDropDownItem dropDownItem && dropDownItem.HasDropDownItems)
+                {
+                    ApplyToolStripItemsRecursively(dropDownItem.DropDownItems, resources);
+                }
+            }
+        }
+
+        private void btnLanguageChange_Click(object sender, EventArgs e)
+        {
+            conMenuLangSwitch.Show(btnLanguageChange, new Point(0, btnLanguageChange.Height));
+        }
+
+        private void toolStripLangEnglish_Click(object sender, EventArgs e)
+        {
+            SwitchLanguage("en");
+            conMenuLangSwitch.Close();
+        }
+
+        private void toolStripLangTradChinese_Click(object sender, EventArgs e)
+        {
+            SwitchLanguage("zh-TW");
+            conMenuLangSwitch.Close();
+        }
+
+        private void toolStripLangJapanese_Click(object sender, EventArgs e)
+        {
+            SwitchLanguage("ja");
+            conMenuLangSwitch.Close();
         }
     }
 }

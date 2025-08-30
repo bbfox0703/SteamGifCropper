@@ -2,7 +2,8 @@ using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Microsoft.Win32;
+
+#nullable enable
 
 namespace GifProcessorApp
 {
@@ -15,17 +16,15 @@ namespace GifProcessorApp
         private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
 
         [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
-        private static extern int SetWindowTheme(IntPtr hwnd, string pszSubAppName, string pszSubIdList);
+        private static extern int SetWindowTheme(IntPtr hwnd, string? pszSubAppName, string? pszSubIdList);
 
-        public static bool IsDarkModeEnabled()
+        public static bool IsDarkModeEnabled(IRegistryProvider? registryProvider = null)
         {
             try
             {
-                using (var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
-                {
-                    var value = key?.GetValue("AppsUseLightTheme");
-                    return value is int intValue && intValue == 0;
-                }
+                registryProvider ??= new RegistryProvider();
+                var value = registryProvider.GetValue(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "AppsUseLightTheme");
+                return value is int intValue && intValue == 0;
             }
             catch
             {
@@ -84,19 +83,38 @@ namespace GifProcessorApp
 
         public static void ApplyThemeToControl(Control control, bool isDarkMode)
         {
-            if (isDarkMode)
+            if (control is ContextMenuStrip contextMenu)
             {
-                ApplyDarkTheme(control);
+                if (isDarkMode)
+                {
+                    ApplyDarkTheme(contextMenu);
+                }
+                else
+                {
+                    ApplyLightTheme(contextMenu);
+                }
+
+                foreach (ToolStripItem item in contextMenu.Items)
+                {
+                    ApplyThemeToToolStripItem(item, isDarkMode);
+                }
             }
             else
             {
-                ApplyLightTheme(control);
-            }
+                if (isDarkMode)
+                {
+                    ApplyDarkTheme(control);
+                }
+                else
+                {
+                    ApplyLightTheme(control);
+                }
 
-            // Recursively apply to child controls
-            foreach (Control childControl in control.Controls)
-            {
-                ApplyThemeToControl(childControl, isDarkMode);
+                // Recursively apply to child controls
+                foreach (Control childControl in control.Controls)
+                {
+                    ApplyThemeToControl(childControl, isDarkMode);
+                }
             }
         }
 
@@ -162,6 +180,15 @@ namespace GifProcessorApp
                 case GroupBox groupBox:
                     groupBox.BackColor = Color.Transparent;
                     groupBox.ForeColor = darkForeColor;
+                    break;
+
+                case ContextMenuStrip menu:
+                    menu.BackColor = darkControlColor;
+                    menu.ForeColor = darkForeColor;
+                    foreach (ToolStripItem item in menu.Items)
+                    {
+                        ApplyThemeToToolStripItem(item, true);
+                    }
                     break;
 
                 default:
@@ -232,10 +259,41 @@ namespace GifProcessorApp
                     groupBox.ForeColor = SystemColors.ControlText;
                     break;
 
+                case ContextMenuStrip menu:
+                    menu.BackColor = SystemColors.Control;
+                    menu.ForeColor = SystemColors.ControlText;
+                    foreach (ToolStripItem item in menu.Items)
+                    {
+                        ApplyThemeToToolStripItem(item, false);
+                    }
+                    break;
+
                 default:
                     control.BackColor = SystemColors.Control;
                     control.ForeColor = SystemColors.ControlText;
                     break;
+            }
+        }
+
+        private static void ApplyThemeToToolStripItem(ToolStripItem item, bool isDarkMode)
+        {
+            if (isDarkMode)
+            {
+                item.BackColor = Color.FromArgb(45, 45, 48);
+                item.ForeColor = Color.FromArgb(255, 255, 255);
+            }
+            else
+            {
+                item.BackColor = SystemColors.Control;
+                item.ForeColor = SystemColors.ControlText;
+            }
+
+            if (item is ToolStripMenuItem menuItem && menuItem.HasDropDownItems)
+            {
+                foreach (ToolStripItem dropDownItem in menuItem.DropDownItems)
+                {
+                    ApplyThemeToToolStripItem(dropDownItem, isDarkMode);
+                }
             }
         }
     }

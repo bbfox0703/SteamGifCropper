@@ -12,6 +12,8 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <NoWarn>CA1416;WFAC010</NoWarn>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -49,12 +51,20 @@
 
   <ItemGroup>
     <PackageReference Include="FFMpegCore" Version="5.2.0" />
-    <PackageReference Include="Magick.NET-Q8-x64" Version="14.8.1" />
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.8.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="SteamGifCropper.Tests/**" />
+    <None Remove="SteamGifCropper.Tests/**" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="icon.ico" />
     <None Include="app.manifest" />
+    <Content Include="arrange.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
