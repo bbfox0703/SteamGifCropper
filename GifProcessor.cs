@@ -603,7 +603,7 @@ namespace GifProcessorApp
                     DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
                 };
 
-                foreach (var frame in mergedCollection)
+                foreach (MagickImage frame in mergedCollection)
                 {
                     frame.Map(palette, mapSettings);
                 }
@@ -1220,7 +1220,7 @@ namespace GifProcessorApp
                         DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
                     };
 
-                    foreach (var frame in mergedCollection)
+                    foreach (MagickImage frame in mergedCollection)
                     {
                         frame.Map(palette, mapSettings);
                     }
