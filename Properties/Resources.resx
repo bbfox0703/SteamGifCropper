@@ -130,7 +130,7 @@
     <value>Restore GIF files last byte from 0x21 to 0x3B</value>
   </data>
   <data name="Button_MergeAndSplit" xml:space="preserve">
-    <value>Merge 5 GIF files into 1 part (766px)</value>
+    <value>Merge 5 GIF files into 1 part (766px), each ~153px</value>
   </data>
   <data name="Button_Mp4ToGif" xml:space="preserve">
     <value>Convert MP4 to GIF (with time control)</value>
@@ -376,7 +376,7 @@
     <value>None</value>
   </data>
   <data name="Label_Framerate" xml:space="preserve">
-    <value>Framerate:</value>
+    <value>Target framerate:</value>
   </data>
   <data name="Label_FPS" xml:space="preserve">
     <value>fps</value>

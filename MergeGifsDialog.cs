@@ -22,6 +22,7 @@ namespace GifProcessorApp
         private Button btnCancel;
         private Label lblGifFiles;
         private Label lblOutput;
+        private CheckBox chkGIFMergeFasterPaletteProcess;
         private Label lblInstructions;
 
         public MergeGifsDialog()
@@ -147,6 +148,7 @@ namespace GifProcessorApp
             btnBrowseOutput = new Button();
             btnOK = new Button();
             btnCancel = new Button();
+            chkGIFMergeFasterPaletteProcess = new CheckBox();
             SuspendLayout();
             // 
             // lblInstructions
@@ -189,7 +191,7 @@ namespace GifProcessorApp
             // 
             // btnRemoveSelected
             // 
-            btnRemoveSelected.Location = new System.Drawing.Point(440, 127);
+            btnRemoveSelected.Location = new System.Drawing.Point(440, 95);
             btnRemoveSelected.Margin = new Padding(41, 19, 41, 19);
             btnRemoveSelected.Name = "btnRemoveSelected";
             btnRemoveSelected.Size = new System.Drawing.Size(101, 25);
@@ -200,7 +202,7 @@ namespace GifProcessorApp
             // 
             // btnMoveUp
             // 
-            btnMoveUp.Location = new System.Drawing.Point(440, 158);
+            btnMoveUp.Location = new System.Drawing.Point(440, 126);
             btnMoveUp.Margin = new Padding(41, 19, 41, 19);
             btnMoveUp.Name = "btnMoveUp";
             btnMoveUp.Size = new System.Drawing.Size(101, 25);
@@ -211,7 +213,7 @@ namespace GifProcessorApp
             // 
             // btnMoveDown
             // 
-            btnMoveDown.Location = new System.Drawing.Point(440, 189);
+            btnMoveDown.Location = new System.Drawing.Point(440, 157);
             btnMoveDown.Margin = new Padding(41, 19, 41, 19);
             btnMoveDown.Name = "btnMoveDown";
             btnMoveDown.Size = new System.Drawing.Size(101, 25);
@@ -222,7 +224,7 @@ namespace GifProcessorApp
             // 
             // lblOutput
             // 
-            lblOutput.Location = new System.Drawing.Point(14, 247);
+            lblOutput.Location = new System.Drawing.Point(14, 265);
             lblOutput.Margin = new Padding(41, 0, 41, 0);
             lblOutput.Name = "lblOutput";
             lblOutput.Size = new System.Drawing.Size(108, 20);
@@ -231,7 +233,7 @@ namespace GifProcessorApp
             // 
             // txtOutputPath
             // 
-            txtOutputPath.Location = new System.Drawing.Point(14, 268);
+            txtOutputPath.Location = new System.Drawing.Point(14, 286);
             txtOutputPath.Margin = new Padding(41, 19, 41, 19);
             txtOutputPath.Name = "txtOutputPath";
             txtOutputPath.ReadOnly = true;
@@ -240,7 +242,7 @@ namespace GifProcessorApp
             // 
             // btnBrowseOutput
             // 
-            btnBrowseOutput.Location = new System.Drawing.Point(439, 95);
+            btnBrowseOutput.Location = new System.Drawing.Point(440, 283);
             btnBrowseOutput.Margin = new Padding(41, 19, 41, 19);
             btnBrowseOutput.Name = "btnBrowseOutput";
             btnBrowseOutput.Size = new System.Drawing.Size(101, 26);
@@ -252,7 +254,7 @@ namespace GifProcessorApp
             // btnOK
             // 
             btnOK.DialogResult = DialogResult.OK;
-            btnOK.Location = new System.Drawing.Point(334, 304);
+            btnOK.Location = new System.Drawing.Point(334, 322);
             btnOK.Margin = new Padding(41, 19, 41, 19);
             btnOK.Name = "btnOK";
             btnOK.Size = new System.Drawing.Size(100, 25);
@@ -264,7 +266,7 @@ namespace GifProcessorApp
             // btnCancel
             // 
             btnCancel.DialogResult = DialogResult.Cancel;
-            btnCancel.Location = new System.Drawing.Point(440, 304);
+            btnCancel.Location = new System.Drawing.Point(440, 322);
             btnCancel.Margin = new Padding(41, 19, 41, 19);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new System.Drawing.Size(100, 25);
@@ -272,13 +274,24 @@ namespace GifProcessorApp
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
             // 
+            // chkGIFMergeFasterPaletteProcess
+            // 
+            chkGIFMergeFasterPaletteProcess.AutoSize = true;
+            chkGIFMergeFasterPaletteProcess.Location = new System.Drawing.Point(14, 234);
+            chkGIFMergeFasterPaletteProcess.Name = "chkGIFMergeFasterPaletteProcess";
+            chkGIFMergeFasterPaletteProcess.Size = new System.Drawing.Size(243, 19);
+            chkGIFMergeFasterPaletteProcess.TabIndex = 12;
+            chkGIFMergeFasterPaletteProcess.Text = "Faster palette reduction (quality down)";
+            chkGIFMergeFasterPaletteProcess.UseVisualStyleBackColor = true;
+            // 
             // MergeGifsDialog
             // 
             AcceptButton = btnOK;
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
             CancelButton = btnCancel;
-            ClientSize = new System.Drawing.Size(556, 336);
+            ClientSize = new System.Drawing.Size(556, 359);
+            Controls.Add(chkGIFMergeFasterPaletteProcess);
             Controls.Add(lstGifFiles);
             Controls.Add(lblInstructions);
             Controls.Add(lblGifFiles);

@@ -56,6 +56,7 @@
             numUpDownPalette = new System.Windows.Forms.NumericUpDown();
             lblPaletteDesc = new System.Windows.Forms.Label();
             btnMerge2to5GifToOne = new System.Windows.Forms.Button();
+            chk5GIFMergeFasterPaletteProcess = new System.Windows.Forms.CheckBox();
             panelGifsicle.SuspendLayout();
             groupDither.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).BeginInit();
@@ -134,9 +135,9 @@
             btnMergeAndSplit.Location = new System.Drawing.Point(7, 35);
             btnMergeAndSplit.Margin = new System.Windows.Forms.Padding(2);
             btnMergeAndSplit.Name = "btnMergeAndSplit";
-            btnMergeAndSplit.Size = new System.Drawing.Size(284, 26);
+            btnMergeAndSplit.Size = new System.Drawing.Size(312, 26);
             btnMergeAndSplit.TabIndex = 5;
-            btnMergeAndSplit.Text = "Merge 5 GIF files into 1 part (766px)";
+            btnMergeAndSplit.Text = "Merge 5 GIF files into 1 part (766px), each ~153px";
             btnMergeAndSplit.UseVisualStyleBackColor = true;
             btnMergeAndSplit.Click += btnSplitGIFWithReducedPalette_Click;
             // 
@@ -320,7 +321,7 @@
             // 
             // numUpDownFramerate
             // 
-            numUpDownFramerate.Location = new System.Drawing.Point(78, 224);
+            numUpDownFramerate.Location = new System.Drawing.Point(126, 226);
             numUpDownFramerate.Margin = new System.Windows.Forms.Padding(2);
             numUpDownFramerate.Maximum = new decimal(new int[] { 60, 0, 0, 0 });
             numUpDownFramerate.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
@@ -335,14 +336,14 @@
             lblFramerate.Location = new System.Drawing.Point(7, 228);
             lblFramerate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFramerate.Name = "lblFramerate";
-            lblFramerate.Size = new System.Drawing.Size(67, 15);
+            lblFramerate.Size = new System.Drawing.Size(105, 15);
             lblFramerate.TabIndex = 21;
-            lblFramerate.Text = "Framerate:";
+            lblFramerate.Text = "Target framerate:";
             // 
             // lblFPS
             // 
             lblFPS.AutoSize = true;
-            lblFPS.Location = new System.Drawing.Point(128, 228);
+            lblFPS.Location = new System.Drawing.Point(176, 230);
             lblFPS.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFPS.Name = "lblFPS";
             lblFPS.Size = new System.Drawing.Size(24, 15);
@@ -382,12 +383,23 @@
             btnMerge2to5GifToOne.UseVisualStyleBackColor = true;
             btnMerge2to5GifToOne.Click += btnMerge2to5GifToOne_Click;
             // 
+            // chk5GIFMergeFasterPaletteProcess
+            // 
+            chk5GIFMergeFasterPaletteProcess.AutoSize = true;
+            chk5GIFMergeFasterPaletteProcess.Location = new System.Drawing.Point(324, 39);
+            chk5GIFMergeFasterPaletteProcess.Name = "chk5GIFMergeFasterPaletteProcess";
+            chk5GIFMergeFasterPaletteProcess.Size = new System.Drawing.Size(243, 19);
+            chk5GIFMergeFasterPaletteProcess.TabIndex = 24;
+            chk5GIFMergeFasterPaletteProcess.Text = "Faster palette reduction (quality down)";
+            chk5GIFMergeFasterPaletteProcess.UseVisualStyleBackColor = true;
+            // 
             // GifToolMainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSize = true;
             ClientSize = new System.Drawing.Size(586, 444);
+            Controls.Add(chk5GIFMergeFasterPaletteProcess);
             Controls.Add(panelGifsicle);
             Controls.Add(numUpDownPalette);
             Controls.Add(lblPaletteDesc);
@@ -453,5 +465,6 @@
         private System.Windows.Forms.Label lblFramerate;
         private System.Windows.Forms.Label lblFPS;
         private System.Windows.Forms.Button btnMerge2to5GifToOne;
+        private System.Windows.Forms.CheckBox chk5GIFMergeFasterPaletteProcess;
     }
 }
