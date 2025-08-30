@@ -413,18 +413,18 @@ namespace GifProcessorApp
             mainForm.lblStatus.Text = "Synchronizing animation durations...";
             Application.DoEvents();
 
-            // Calculate total duration for each GIF (frames * delay)
-            var durations = new int[5];
+            // Calculate total duration for each GIF in seconds
+            var durations = new double[5];
             for (int i = 0; i < 5; i++)
             {
-                durations[i] = (int)collections[i].Sum(frame => (long)frame.AnimationDelay);
+                durations[i] = collections[i].Sum(frame => (double)frame.AnimationDelay / frame.AnimationTicksPerSecond);
             }
 
             // Find shortest duration
-            int shortestDuration = durations.Min();
+            double shortestDuration = durations.Min();
             int shortestIndex = Array.IndexOf(durations, shortestDuration);
 
-            mainForm.lblStatus.Text = $"Shortest duration: {shortestDuration/100.0:F1}s (GIF #{shortestIndex + 1})";
+            mainForm.lblStatus.Text = $"Shortest duration: {shortestDuration:F1}s (GIF #{shortestIndex + 1})";
             Application.DoEvents();
 
             // Synchronize all GIFs to shortest duration
@@ -439,7 +439,7 @@ namespace GifProcessorApp
                     
                     syncedCollections[i] = new MagickImageCollection();
                     
-                    if (durations[i] == shortestDuration)
+                    if (Math.Abs(durations[i] - shortestDuration) < 0.0001)
                     {
                         // Already the shortest, copy as-is
                         int frameCount = 0;
@@ -457,15 +457,16 @@ namespace GifProcessorApp
                     else
                     {
                         // Trim to shortest duration
-                        int currentDuration = 0;
+                        double currentDuration = 0;
                         int frameCount = 0;
                         foreach (var frame in collections[i])
                         {
-                            if (currentDuration + (int)frame.AnimationDelay <= shortestDuration)
+                            double frameDuration = (double)frame.AnimationDelay / frame.AnimationTicksPerSecond;
+                            if (currentDuration + frameDuration <= shortestDuration)
                             {
                                 syncedCollections[i].Add(frame.Clone());
-                                currentDuration += (int)frame.AnimationDelay;
-                                
+                                currentDuration += frameDuration;
+
                                 // Update every 20 frames
                                 if (++frameCount % 20 == 0)
                                 {
@@ -499,6 +500,42 @@ namespace GifProcessorApp
             }
         }
 
+        private static MagickImage BuildSharedPalette(IEnumerable<MagickImageCollection> collections, bool useFastPalette)
+        {
+            var paletteSamples = new MagickImageCollection();
+            try
+            {
+                foreach (var c in collections)
+                {
+                    if (c != null && c.Count > 0)
+                    {
+                        paletteSamples.Add((MagickImage)c[0].Clone());
+                    }
+                }
+
+                var settings = new QuantizeSettings
+                {
+                    Colors = 256,
+                    ColorSpace = ColorSpace.RGB,
+                    DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+                };
+
+                if (useFastPalette)
+                {
+                    settings.TreeDepth = 5; // Lower tree depth for performance
+                }
+
+                paletteSamples.Quantize(settings);
+
+                // Create a copy of the quantized sample to use as palette
+                return new MagickImage(paletteSamples[0]);
+            }
+            finally
+            {
+                paletteSamples.Dispose();
+            }
+        }
+
         private static MagickImageCollection MergeGifsHorizontally(MagickImageCollection[] collections, GifToolMainForm mainForm, bool useFastPalette = false)
         {
             mainForm.lblStatus.Text = "Merging GIFs horizontally to 766px width...";
@@ -506,7 +543,10 @@ namespace GifProcessorApp
 
             // Calculate maximum height among all resized GIFs
             int maxHeight = collections.Max(c => (int)c[0].Height);
-            
+
+            // Build shared palette from first frames
+            var palette = BuildSharedPalette(collections, useFastPalette);
+
             // Create merged collection
             var mergedCollection = new MagickImageCollection();
             int maxFrames = collections.Max(c => c.Count);
@@ -521,27 +561,29 @@ namespace GifProcessorApp
                         mainForm.lblStatus.Text = $"Merging frame {frameIndex + 1}/{maxFrames}...";
                         Application.DoEvents();
                     }
-                    
+
                     // Create 766px wide canvas
                     var canvas = new MagickImage(MagickColors.Transparent, 766, (uint)maxHeight);
-                    
+
                     // X positions for each GIF: 0, 153, 306, 460, 613
                     int[] xPositions = { 0, 153, 306, 460, 613 };
-                    
+
                     for (int gifIndex = 0; gifIndex < 5; gifIndex++)
                     {
                         // Get frame (loop if GIF has fewer frames)
                         var collection = collections[gifIndex];
                         var frameIdx = frameIndex % collection.Count;
                         var frame = collection[frameIdx];
-                        
+
                         // Composite frame onto canvas at specific X position
                         canvas.Composite(frame, xPositions[gifIndex], 0, CompositeOperator.Over);
                     }
 
-                    // Set animation delay (use delay from first GIF)
-                    canvas.AnimationDelay = collections[0][frameIndex % collections[0].Count].AnimationDelay;
-                    
+                    // Set animation delay and timing from first GIF to maintain original speed
+                    var referenceFrame = collections[0][frameIndex % collections[0].Count];
+                    canvas.AnimationDelay = referenceFrame.AnimationDelay;
+                    canvas.AnimationTicksPerSecond = referenceFrame.AnimationTicksPerSecond;
+
                     mergedCollection.Add(canvas);
                 }
 
@@ -551,31 +593,30 @@ namespace GifProcessorApp
                     frame.GifDisposeMethod = GifDisposeMethod.Background;
                 }
 
-                // Apply palette integration
-                mainForm.lblStatus.Text = useFastPalette ? 
-                    "Fast palette integration..." : 
-                    "Integrating palettes...";
+                // Remap frames to shared palette
+                mainForm.lblStatus.Text = useFastPalette ?
+                    "Mapping with fast palette..." :
+                    "Mapping to shared palette...";
                 Application.DoEvents();
 
-                // Apply palette optimization (integrate palettes from multiple sources)
-                var quantizeSettings = new QuantizeSettings
+                var mapSettings = new QuantizeSettings
                 {
-                    Colors = 256, // Use 256 as maximum but allow fewer
+                    Colors = 256,
                     ColorSpace = ColorSpace.RGB,
                     DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
                 };
-                
-                if (useFastPalette)
-                {
-                    quantizeSettings.TreeDepth = 6; // Faster but lower quality
-                }
 
-                mergedCollection.Quantize(quantizeSettings);
-                
+                foreach (MagickImage frame in mergedCollection)
+                {
+                    frame.Remap(palette, mapSettings);
+                }
+                palette.Dispose();
+
                 return mergedCollection;
             }
             catch (Exception ex)
             {
+                palette?.Dispose();
                 mergedCollection?.Dispose();
                 throw new InvalidOperationException($"Failed to merge GIFs horizontally: {ex.Message}", ex);
             }
@@ -1095,25 +1136,28 @@ namespace GifProcessorApp
                     var collection = new MagickImageCollection(gifPath);
                     collection.Coalesce();
                     collections.Add(collection);
-                    
+
                     int width = (int)collection[0].Width;
                     widths.Add(width);
-                    
-                    // Calculate total duration
-                    double totalDuration = collection.Sum(frame => frame.AnimationDelay) / 100.0; // Convert to seconds
+
+                    // Calculate total duration in seconds accounting for ticks-per-second
+                    double totalDuration = collection.Sum(frame => (double)frame.AnimationDelay / frame.AnimationTicksPerSecond);
                     if (totalDuration < shortestDuration)
                     {
                         shortestDuration = totalDuration;
                     }
-                    
+
                     minFrameCount = Math.Min(minFrameCount, collection.Count);
                 }
 
+                // Determine timing based on first GIF
+                int ticksPerSecond = collections[0][0].AnimationTicksPerSecond;
+
                 // Calculate target frame count based on shortest duration and target framerate
                 int targetFrameCount = Math.Max(1, (int)(shortestDuration * targetFramerate));
-                
-                // Calculate target delay in centiseconds
-                uint targetDelay = (uint)Math.Round(100.0 / targetFramerate);
+
+                // Calculate target delay in ticks
+                uint targetDelay = (uint)Math.Round((double)ticksPerSecond / targetFramerate);
 
                 // Calculate total width
                 int totalWidth = widths.Sum();
@@ -1122,6 +1166,9 @@ namespace GifProcessorApp
                 mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Message_MergingGifs;
                 await Task.Delay(1); // Allow UI update
                 Application.DoEvents();
+
+                // Build shared palette from first frames
+                var palette = BuildSharedPalette(collections, useFastPalette);
 
                 var mergedCollection = new MagickImageCollection();
 
@@ -1158,33 +1205,32 @@ namespace GifProcessorApp
                             currentX += widths[gifIndex];
                         }
 
-                        // Set animation delay to target framerate
+                        // Set animation delay and timing to maintain source speed
                         canvas.AnimationDelay = targetDelay;
+                        canvas.AnimationTicksPerSecond = ticksPerSecond;
                         canvas.GifDisposeMethod = GifDisposeMethod.Background;
                         
                         mergedCollection.Add(canvas);
                     }
 
-                    // Apply palette optimization
-                    mainForm.lblStatus.Text = useFastPalette ? 
-                        "Fast palette reduction..." : 
+                    // Remap frames to shared palette
+                    mainForm.lblStatus.Text = useFastPalette ?
+                        "Mapping with fast palette..." :
                         SteamGifCropper.Properties.Resources.Status_ReducingPalette;
                     await Task.Delay(1); // Allow UI update
                     Application.DoEvents();
 
-                    var quantizeSettings = new QuantizeSettings
+                    var mapSettings = new QuantizeSettings
                     {
                         Colors = 256,
                         ColorSpace = ColorSpace.RGB,
                         DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
                     };
-                    
-                    if (useFastPalette)
-                    {
-                        quantizeSettings.TreeDepth = 6; // Faster but lower quality
-                    }
 
-                    mergedCollection.Quantize(quantizeSettings);
+                    foreach (MagickImage frame in mergedCollection)
+                    {
+                        frame.Remap(palette, mapSettings);
+                    }
 
                     // Apply LZW compression
                     foreach (var frame in mergedCollection)
@@ -1207,6 +1253,7 @@ namespace GifProcessorApp
                 }
                 finally
                 {
+                    palette.Dispose();
                     mergedCollection?.Dispose();
                 }
             }
