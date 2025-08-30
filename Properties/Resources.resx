@@ -469,7 +469,7 @@
     <value>Enable gifsicle optimization</value>
   </data>
   <data name="Label_GifsicleNotice" xml:space="preserve">
-    <value>Notice: gifsicle.exe must be in "System Path"</value>
+    <value>Notice: gifsicle.exe must be in the "System PATH"</value>
   </data>
   <data name="MergeDialog_Instructions" xml:space="preserve">
     <value>Please select 2-5 GIF files to merge (in order from left to right):</value>

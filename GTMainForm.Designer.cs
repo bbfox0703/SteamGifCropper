@@ -314,7 +314,7 @@
             label1.Name = "label1";
             label1.Size = new System.Drawing.Size(255, 15);
             label1.TabIndex = 12;
-            label1.Text = "Notice: gifsicle.exe must be in \"System Path\"";
+            label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
             // 
             // chkGifsicle
             // 
