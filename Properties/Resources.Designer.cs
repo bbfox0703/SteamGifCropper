@@ -671,6 +671,24 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Status_Loading", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Mapping with fast palette....
+        /// </summary>
+        internal static string Status_MappingFastPalette {
+            get {
+                return ResourceManager.GetString("Status_MappingFastPalette", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Mapping to shared palette....
+        /// </summary>
+        internal static string Status_MappingSharedPalette {
+            get {
+                return ResourceManager.GetString("Status_MappingSharedPalette", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Merging frame {0}/{1}....
@@ -1047,6 +1065,15 @@ namespace SteamGifCropper.Properties {
         internal static string Status_GifReversed {
             get {
                 return ResourceManager.GetString("Status_GifReversed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to FFmpeg failed, trying ImageMagick fallback....
+        /// </summary>
+        internal static string Status_FFmpegFallback {
+            get {
+                return ResourceManager.GetString("Status_FFmpegFallback", resourceCulture);
             }
         }
         
