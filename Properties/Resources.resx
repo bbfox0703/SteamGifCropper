@@ -384,6 +384,9 @@
   <data name="Tooltip_Framerate" xml:space="preserve">
     <value>Target framerate for all GIF outputs (frames per second)</value>
   </data>
+  <data name="CheckBox_FasterPalette" xml:space="preserve">
+    <value>Faster palette reduction (quality down)</value>
+  </data>
   <data name="Status_ValidatingProcessing" xml:space="preserve">
     <value>Validating and processing 5 GIF files...</value>
   </data>

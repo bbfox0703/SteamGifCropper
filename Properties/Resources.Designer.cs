@@ -349,6 +349,15 @@ namespace SteamGifCropper.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Faster palette reduction (quality down).
+        /// </summary>
+        internal static string CheckBox_FasterPalette {
+            get {
+                return ResourceManager.GetString("CheckBox_FasterPalette", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Five GIF files have been merged and split into 5 parts successfully!.
         /// </summary>
         internal static string Message_FiveGifMergeComplete {

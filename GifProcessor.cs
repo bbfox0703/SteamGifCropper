@@ -204,9 +204,21 @@ namespace GifProcessorApp
                 return; // User cancelled or didn't select exactly 5 files
             }
 
+            // Validate all source files exist
+            foreach (string gifPath in gifFiles)
+            {
+                if (!File.Exists(gifPath))
+                {
+                    MessageBox.Show($"Source file not found: {Path.GetFileName(gifPath)}", 
+                                   SteamGifCropper.Properties.Resources.Title_Error, 
+                                   MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
             try
             {
-                mainForm.lblStatus.Text = "Validating and processing 5 GIF files...";
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_ValidatingProcessing;
                 mainForm.pBarTaskStatus.Minimum = 0;
                 mainForm.pBarTaskStatus.Maximum = 100;
                 mainForm.pBarTaskStatus.Value = 0;
@@ -227,7 +239,8 @@ namespace GifProcessorApp
                 UpdateProgress(mainForm.pBarTaskStatus, 60, 100);
 
                 // Step 5: Merge horizontally to create 766px wide GIF
-                var mergedCollection = MergeGifsHorizontally(syncedCollections, mainForm);
+                bool useFastPalette = mainForm.chk5GIFMergeFasterPaletteProcess.Checked;
+                var mergedCollection = MergeGifsHorizontally(syncedCollections, mainForm, useFastPalette);
                 UpdateProgress(mainForm.pBarTaskStatus, 80, 100);
 
                 // Step 6: Apply existing split functionality
@@ -486,7 +499,7 @@ namespace GifProcessorApp
             }
         }
 
-        private static MagickImageCollection MergeGifsHorizontally(MagickImageCollection[] collections, GifToolMainForm mainForm)
+        private static MagickImageCollection MergeGifsHorizontally(MagickImageCollection[] collections, GifToolMainForm mainForm, bool useFastPalette = false)
         {
             mainForm.lblStatus.Text = "Merging GIFs horizontally to 766px width...";
             Application.DoEvents();
@@ -537,6 +550,27 @@ namespace GifProcessorApp
                 {
                     frame.GifDisposeMethod = GifDisposeMethod.Background;
                 }
+
+                // Apply palette integration
+                mainForm.lblStatus.Text = useFastPalette ? 
+                    "Fast palette integration..." : 
+                    "Integrating palettes...";
+                Application.DoEvents();
+
+                // Apply palette optimization (integrate palettes from multiple sources)
+                var quantizeSettings = new QuantizeSettings
+                {
+                    Colors = 256, // Use 256 as maximum but allow fewer
+                    ColorSpace = ColorSpace.RGB,
+                    DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+                };
+                
+                if (useFastPalette)
+                {
+                    quantizeSettings.TreeDepth = 6; // Faster but lower quality
+                }
+
+                mergedCollection.Quantize(quantizeSettings);
                 
                 return mergedCollection;
             }
@@ -1015,11 +1049,33 @@ namespace GifProcessorApp
             return false;
         }
 
-        public static void MergeMultipleGifs(List<string> gifPaths, string outputPath, GifToolMainForm mainForm, int targetFramerate = 15)
+        public static async Task MergeMultipleGifs(List<string> gifPaths, string outputPath, GifToolMainForm mainForm, int targetFramerate = 15, bool useFastPalette = false)
         {
             if (gifPaths == null || gifPaths.Count < 2 || gifPaths.Count > 5)
             {
                 throw new ArgumentException(SteamGifCropper.Properties.Resources.Message_GifFileCount);
+            }
+
+            // Validate source files and destination path
+            foreach (string gifPath in gifPaths)
+            {
+                if (!File.Exists(gifPath))
+                {
+                    throw new FileNotFoundException($"Source file not found: {Path.GetFileName(gifPath)}");
+                }
+            }
+            
+            var outputDir = Path.GetDirectoryName(outputPath);
+            if (!string.IsNullOrEmpty(outputDir) && !Directory.Exists(outputDir))
+            {
+                try
+                {
+                    Directory.CreateDirectory(outputDir);
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException($"Cannot create output directory: {ex.Message}");
+                }
             }
 
             var collections = new List<MagickImageCollection>();
@@ -1027,6 +1083,7 @@ namespace GifProcessorApp
             try
             {
                 mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Message_AnalyzingGifs;
+                await Task.Delay(1); // Allow UI update
                 Application.DoEvents();
                 var widths = new List<int>();
                 int minFrameCount = int.MaxValue;
@@ -1063,6 +1120,7 @@ namespace GifProcessorApp
                 int maxHeight = collections.Max(c => (int)c[0].Height);
 
                 mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Message_MergingGifs;
+                await Task.Delay(1); // Allow UI update
                 Application.DoEvents();
 
                 var mergedCollection = new MagickImageCollection();
@@ -1071,10 +1129,11 @@ namespace GifProcessorApp
                 {
                     for (int frameIndex = 0; frameIndex < targetFrameCount; frameIndex++)
                     {
-                        // Update progress
+                        // Update progress and allow UI updates
                         if (frameIndex % 5 == 0)
                         {
                             mainForm.lblStatus.Text = $"{SteamGifCropper.Properties.Resources.Message_MergingGifs} ({frameIndex + 1}/{targetFrameCount})";
+                            await Task.Delay(1); // Allow UI update
                             Application.DoEvents();
                         }
 
@@ -1106,16 +1165,26 @@ namespace GifProcessorApp
                         mergedCollection.Add(canvas);
                     }
 
-                    // Reduce to 256 colors palette
-                    mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_ReducingPalette;
+                    // Apply palette optimization
+                    mainForm.lblStatus.Text = useFastPalette ? 
+                        "Fast palette reduction..." : 
+                        SteamGifCropper.Properties.Resources.Status_ReducingPalette;
+                    await Task.Delay(1); // Allow UI update
                     Application.DoEvents();
 
-                    mergedCollection.Quantize(new QuantizeSettings
+                    var quantizeSettings = new QuantizeSettings
                     {
                         Colors = 256,
                         ColorSpace = ColorSpace.RGB,
-                        DitherMethod = DitherMethod.No
-                    });
+                        DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+                    };
+                    
+                    if (useFastPalette)
+                    {
+                        quantizeSettings.TreeDepth = 6; // Faster but lower quality
+                    }
+
+                    mergedCollection.Quantize(quantizeSettings);
 
                     // Apply LZW compression
                     foreach (var frame in mergedCollection)
@@ -1126,6 +1195,7 @@ namespace GifProcessorApp
 
                     // Save the merged GIF
                     mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Saving;
+                    await Task.Delay(1); // Allow UI update
                     Application.DoEvents();
                     
                     mergedCollection.Write(outputPath);

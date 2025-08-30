@@ -140,17 +140,17 @@ namespace GifProcessorApp
 
         private async void btnMerge2to5GifToOne_Click(object sender, EventArgs e)
         {
-            await ExecuteWithErrorHandling(() =>
+            await ExecuteWithErrorHandling(async () =>
             {
                 using (var dialog = new MergeGifsDialog())
                 {
                     if (dialog.ShowDialog() == DialogResult.OK)
                     {
                         int targetFramerate = (int)numUpDownFramerate.Value;
-                        GifProcessor.MergeMultipleGifs(dialog.SelectedFilePaths, dialog.OutputFilePath, this, targetFramerate);
+                        bool useFastPalette = dialog.chkGIFMergeFasterPaletteProcess.Checked;
+                        await GifProcessor.MergeMultipleGifs(dialog.SelectedFilePaths, dialog.OutputFilePath, this, targetFramerate, useFastPalette);
                     }
                 }
-                return Task.CompletedTask;
             }, "GIF merge");
         }
 

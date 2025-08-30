@@ -390,7 +390,7 @@
             chk5GIFMergeFasterPaletteProcess.Name = "chk5GIFMergeFasterPaletteProcess";
             chk5GIFMergeFasterPaletteProcess.Size = new System.Drawing.Size(243, 19);
             chk5GIFMergeFasterPaletteProcess.TabIndex = 24;
-            chk5GIFMergeFasterPaletteProcess.Text = "Faster palette reduction (quality down)";
+            chk5GIFMergeFasterPaletteProcess.Text = SteamGifCropper.Properties.Resources.CheckBox_FasterPalette;
             chk5GIFMergeFasterPaletteProcess.UseVisualStyleBackColor = true;
             // 
             // GifToolMainForm
@@ -465,6 +465,6 @@
         private System.Windows.Forms.Label lblFramerate;
         private System.Windows.Forms.Label lblFPS;
         private System.Windows.Forms.Button btnMerge2to5GifToOne;
-        private System.Windows.Forms.CheckBox chk5GIFMergeFasterPaletteProcess;
+        public System.Windows.Forms.CheckBox chk5GIFMergeFasterPaletteProcess;
     }
 }

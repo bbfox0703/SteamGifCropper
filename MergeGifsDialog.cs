@@ -22,7 +22,7 @@ namespace GifProcessorApp
         private Button btnCancel;
         private Label lblGifFiles;
         private Label lblOutput;
-        private CheckBox chkGIFMergeFasterPaletteProcess;
+        public CheckBox chkGIFMergeFasterPaletteProcess;
         private Label lblInstructions;
 
         public MergeGifsDialog()
@@ -281,7 +281,7 @@ namespace GifProcessorApp
             chkGIFMergeFasterPaletteProcess.Name = "chkGIFMergeFasterPaletteProcess";
             chkGIFMergeFasterPaletteProcess.Size = new System.Drawing.Size(243, 19);
             chkGIFMergeFasterPaletteProcess.TabIndex = 12;
-            chkGIFMergeFasterPaletteProcess.Text = "Faster palette reduction (quality down)";
+            chkGIFMergeFasterPaletteProcess.Text = SteamGifCropper.Properties.Resources.CheckBox_FasterPalette;
             chkGIFMergeFasterPaletteProcess.UseVisualStyleBackColor = true;
             // 
             // MergeGifsDialog
