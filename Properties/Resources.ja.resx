@@ -332,6 +332,9 @@
   <data name="FileDialog_GifFilter" xml:space="preserve">
     <value>GIFファイル (*.gif)|*.gif</value>
   </data>
+  <data name="FileDialog_ImageFilter" xml:space="preserve">
+    <value>画像ファイル (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp</value>
+  </data>
   <data name="FileDialog_SelectGifOrder" xml:space="preserve">
     <value>GIF ファイル #{0} を選択してください（左から右へ {1} 番目の位置）</value>
   </data>
@@ -403,6 +406,9 @@
   </data>
   <data name="Button_ReverseGif" xml:space="preserve">
     <value>FFMPEG：アニメーションGIFを反転</value>
+  </data>
+  <data name="Button_ScrollStaticImage" xml:space="preserve">
+    <value>静止画像スクロール</value>
   </data>
   <data name="Status_ValidatingProcessing" xml:space="preserve">
     <value>処理を検証中...</value>
@@ -714,6 +720,72 @@ FFmpeg 出力（切り捨て）:
 長さ: {4}
 
 技術的詳細: {5}</value>
+  </data>
+  <data name="ScrollDialog_Title" xml:space="preserve">
+    <value>静止画像スクロール</value>
+  </data>
+  <data name="ScrollDialog_InputLabel" xml:space="preserve">
+    <value>入力画像</value>
+  </data>
+  <data name="ScrollDialog_OutputLabel" xml:space="preserve">
+    <value>出力GIF</value>
+  </data>
+  <data name="ScrollDialog_Direction" xml:space="preserve">
+    <value>方向</value>
+  </data>
+  <data name="ScrollDialog_Step" xml:space="preserve">
+    <value>ピクセル/ステップ</value>
+  </data>
+  <data name="ScrollDialog_Duration" xml:space="preserve">
+    <value>秒数</value>
+  </data>
+  <data name="ScrollDialog_FullCycle" xml:space="preserve">
+    <value>一周させる</value>
+  </data>
+  <data name="ScrollDialog_Browse" xml:space="preserve">
+    <value>参照</value>
+  </data>
+  <data name="ScrollDialog_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="ScrollDialog_Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="ScrollDialog_SelectInput" xml:space="preserve">
+    <value>画像ファイルを選択</value>
+  </data>
+  <data name="ScrollDialog_SelectOutput" xml:space="preserve">
+    <value>スクロール後のGIFを保存</value>
+  </data>
+  <data name="ScrollDialog_InputRequired" xml:space="preserve">
+    <value>入力画像を選択してください。</value>
+  </data>
+  <data name="ScrollDialog_OutputRequired" xml:space="preserve">
+    <value>出力ファイルを指定してください。</value>
+  </data>
+  <data name="ScrollDialog_DirRight" xml:space="preserve">
+    <value>右</value>
+  </data>
+  <data name="ScrollDialog_DirLeft" xml:space="preserve">
+    <value>左</value>
+  </data>
+  <data name="ScrollDialog_DirDown" xml:space="preserve">
+    <value>下</value>
+  </data>
+  <data name="ScrollDialog_DirUp" xml:space="preserve">
+    <value>上</value>
+  </data>
+  <data name="ScrollDialog_DirLeftUp" xml:space="preserve">
+    <value>左上</value>
+  </data>
+  <data name="ScrollDialog_DirLeftDown" xml:space="preserve">
+    <value>左下</value>
+  </data>
+  <data name="ScrollDialog_DirRightUp" xml:space="preserve">
+    <value>右上</value>
+  </data>
+  <data name="ScrollDialog_DirRightDown" xml:space="preserve">
+    <value>右下</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">

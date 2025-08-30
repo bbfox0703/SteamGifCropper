@@ -330,6 +330,9 @@
   <data name="FileDialog_GifFilter" xml:space="preserve">
     <value>GIF Files (*.gif)|*.gif</value>
   </data>
+  <data name="FileDialog_ImageFilter" xml:space="preserve">
+    <value>Image Files (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp</value>
+  </data>
   <data name="FileDialog_SelectGifOrder" xml:space="preserve">
     <value>Select GIF file #{0} (position {1} from left to right)</value>
   </data>
@@ -395,6 +398,9 @@
   </data>
   <data name="Button_ReverseGif" xml:space="preserve">
     <value>FFMPEG: Reverse animated GIF</value>
+  </data>
+  <data name="Button_ScrollStaticImage" xml:space="preserve">
+    <value>Scroll static image</value>
   </data>
   <data name="Status_ValidatingProcessing" xml:space="preserve">
     <value>Validating and processing 5 GIF files...</value>
@@ -706,6 +712,72 @@ Start time: {3}
 Duration: {4}
 
 Technical details: {5}</value>
+  </data>
+  <data name="ScrollDialog_Title" xml:space="preserve">
+    <value>Scroll Static Image</value>
+  </data>
+  <data name="ScrollDialog_InputLabel" xml:space="preserve">
+    <value>Input image</value>
+  </data>
+  <data name="ScrollDialog_OutputLabel" xml:space="preserve">
+    <value>Output GIF</value>
+  </data>
+  <data name="ScrollDialog_Direction" xml:space="preserve">
+    <value>Direction</value>
+  </data>
+  <data name="ScrollDialog_Step" xml:space="preserve">
+    <value>Pixels per step</value>
+  </data>
+  <data name="ScrollDialog_Duration" xml:space="preserve">
+    <value>Duration (sec)</value>
+  </data>
+  <data name="ScrollDialog_FullCycle" xml:space="preserve">
+    <value>Scroll full cycle</value>
+  </data>
+  <data name="ScrollDialog_Browse" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+  <data name="ScrollDialog_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="ScrollDialog_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ScrollDialog_SelectInput" xml:space="preserve">
+    <value>Select an image file</value>
+  </data>
+  <data name="ScrollDialog_SelectOutput" xml:space="preserve">
+    <value>Save scrolled GIF as</value>
+  </data>
+  <data name="ScrollDialog_InputRequired" xml:space="preserve">
+    <value>Please choose an input image.</value>
+  </data>
+  <data name="ScrollDialog_OutputRequired" xml:space="preserve">
+    <value>Please specify an output file.</value>
+  </data>
+  <data name="ScrollDialog_DirRight" xml:space="preserve">
+    <value>Right</value>
+  </data>
+  <data name="ScrollDialog_DirLeft" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="ScrollDialog_DirDown" xml:space="preserve">
+    <value>Down</value>
+  </data>
+  <data name="ScrollDialog_DirUp" xml:space="preserve">
+    <value>Up</value>
+  </data>
+  <data name="ScrollDialog_DirLeftUp" xml:space="preserve">
+    <value>Left-Up</value>
+  </data>
+  <data name="ScrollDialog_DirLeftDown" xml:space="preserve">
+    <value>Left-Down</value>
+  </data>
+  <data name="ScrollDialog_DirRightUp" xml:space="preserve">
+    <value>Right-Up</value>
+  </data>
+  <data name="ScrollDialog_DirRightDown" xml:space="preserve">
+    <value>Right-Down</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">

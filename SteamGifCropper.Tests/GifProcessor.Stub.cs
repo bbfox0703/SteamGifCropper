@@ -293,5 +293,63 @@ namespace GifProcessorApp
                 partCollection.Write(outputFile);
             }
         }
+
+        public static void ScrollStaticImage(string inputFilePath, string outputFilePath,
+            ScrollDirection direction, int stepPixels, int durationSeconds, bool fullCycle, int targetFramerate = 15)
+        {
+            using var baseImage = new MagickImage(inputFilePath);
+            int width = (int)baseImage.Width;
+            int height = (int)baseImage.Height;
+            int dx = 0, dy = 0;
+            switch (direction)
+            {
+                case ScrollDirection.Right: dx = stepPixels; break;
+                case ScrollDirection.Left: dx = -stepPixels; break;
+                case ScrollDirection.Down: dy = stepPixels; break;
+                case ScrollDirection.Up: dy = -stepPixels; break;
+                case ScrollDirection.LeftUp: dx = -stepPixels; dy = -stepPixels; break;
+                case ScrollDirection.LeftDown: dx = -stepPixels; dy = stepPixels; break;
+                case ScrollDirection.RightUp: dx = stepPixels; dy = -stepPixels; break;
+                case ScrollDirection.RightDown: dx = stepPixels; dy = stepPixels; break;
+            }
+
+            int frames;
+            if (fullCycle)
+            {
+                int stepsX = dx != 0 ? (int)Math.Ceiling((double)width / Math.Abs(dx)) : 0;
+                int stepsY = dy != 0 ? (int)Math.Ceiling((double)height / Math.Abs(dy)) : 0;
+                frames = Math.Max(stepsX, stepsY);
+                if (frames <= 0) frames = 1;
+            }
+            else
+            {
+                frames = Math.Max(1, durationSeconds * targetFramerate);
+            }
+
+            uint delay = (uint)Math.Round(100.0 / targetFramerate);
+            using var collection = new MagickImageCollection();
+            for (int i = 0; i < frames; i++)
+            {
+                var frame = baseImage.Clone();
+                int offsetX = dx * i;
+                int offsetY = dy * i;
+                if (width > 0)
+                {
+                    offsetX %= width;
+                    if (offsetX < 0) offsetX += width;
+                }
+                if (height > 0)
+                {
+                    offsetY %= height;
+                    if (offsetY < 0) offsetY += height;
+                }
+                frame.Roll(offsetX, offsetY);
+                frame.AnimationDelay = delay;
+                frame.GifDisposeMethod = GifDisposeMethod.Background;
+                collection.Add(frame);
+            }
+            collection.Optimize();
+            collection.Write(outputFilePath);
+        }
     }
 }
