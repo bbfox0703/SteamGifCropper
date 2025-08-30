@@ -133,7 +133,7 @@
     <value>5つのGIFファイルを1つの部分(766px)にマージ、各約153px</value>
   </data>
   <data name="Button_Mp4ToGif" xml:space="preserve">
-    <value>MP4をGIFに変換（時間制御付き）</value>
+    <value>FFMPEG: MP4をGIFに変換（時間制御付き）</value>
   </data>
   <data name="Button_MergeGifs" xml:space="preserve">
     <value>2-5個のGIFファイルを1つにマージ</value>
@@ -635,7 +635,18 @@ Windows パッケージマネージャを使用した簡単なインストール
     <value>ディレクトリエラー</value>
   </data>
   <data name="Mp4ToGif_FFmpegRequiredMessage" xml:space="preserve">
-    <value>FFmpeg がインストールされていないか、システム PATH で利用できません。&#x0A;&#x0A;FFmpeg パス: {0}&#x0A;バージョン: {1}&#x0A;{2}&#x0A;&#x0A;FFmpeg をインストールするには:&#x0A;1. 管理者としてコマンド プロンプトまたは PowerShell を開く&#x0A;2. 実行: winget install ffmpeg&#x0A;3. 本アプリケーションを再起動&#x0A;&#x0A;詳細は MP4→GIF ダイアログのリンクを参照してください。</value>
+    <value>FFmpeg がインストールされていないか、システム PATH で利用できません。
+
+FFmpeg パス: {0}
+バージョン: {1}
+{2}
+
+FFmpeg をインストールするには:
+1. 管理者としてコマンド プロンプトまたは PowerShell を開く
+2. 実行: winget install ffmpeg
+3. 本アプリケーションを再起動
+
+詳細は MP4→GIF ダイアログのリンクを参照してください。</value>
   </data>
   <data name="Mp4ToGif_ShortClipCpu" xml:space="preserve">
     <value>短いクリップ - CPU の方が効率的...</value>
@@ -659,16 +670,23 @@ Windows パッケージマネージャを使用した簡単なインストール
     <value>MP4 から GIF への変換が完了しました！</value>
   </data>
   <data name="Mp4ToGif_SuccessMessage" xml:space="preserve">
-    <value>MP4 から GIF への変換が完了しました！&#x0A;保存先: {0}</value>
+    <value>MP4 から GIF への変換が完了しました！
+保存先: {0}</value>
   </data>
   <data name="Mp4ToGif_Error_FFmpegNotFound" xml:space="preserve">
-    <value>FFmpeg 実行ファイルが見つかりません。FFmpeg がインストールされ、システム PATH で利用可能であることを確認してください。&#x0A;&#x0A;インストール: winget install ffmpeg</value>
+    <value>FFmpeg 実行ファイルが見つかりません。FFmpeg がインストールされ、システム PATH で利用可能であることを確認してください。
+
+インストール: winget install ffmpeg</value>
   </data>
   <data name="Mp4ToGif_Error_CorruptedInput" xml:space="preserve">
-    <value>入力動画ファイルが破損しているか不完全です。&#x0A;&#x0A;別の動画ファイルを使用するか、元のファイルを再ダウンロードしてください。</value>
+    <value>入力動画ファイルが破損しているか不完全です。
+
+別の動画ファイルを使用するか、元のファイルを再ダウンロードしてください。</value>
   </data>
   <data name="Mp4ToGif_Error_GPUFailed" xml:space="preserve">
-    <value>GPU アクセラレーションに失敗しました。変換は自動的に CPU 処理で再試行します。&#x0A;&#x0A;GPU ドライバーが古いか CUDA が適切にインストールされていない場合は正常です。</value>
+    <value>GPU アクセラレーションに失敗しました。変換は自動的に CPU 処理で再試行します。
+
+GPU ドライバーが古いか CUDA が適切にインストールされていない場合は正常です。</value>
   </data>
   <data name="Mp4ToGif_Error_PermissionDenied" xml:space="preserve">
     <value>出力ディレクトリにアクセスできません。ファイル権限を確認し、ディレクトリが書き込み可能であることを確認してください。</value>
@@ -677,13 +695,25 @@ Windows パッケージマネージャを使用した簡単なインストール
     <value>MP4 から GIF への変換中に予期しないエラーが発生しました。</value>
   </data>
   <data name="Mp4ToGif_Error_DetailsSaved" xml:space="preserve">
-    <value>&#x0A;&#x0A;FFmpeg の詳細出力が次に保存されました: {0}</value>
+    <value>
+
+FFmpeg の詳細出力が次に保存されました: {0}</value>
   </data>
   <data name="Mp4ToGif_Error_FFmpegOutputTruncated" xml:space="preserve">
-    <value>&#x0A;&#x0A;FFmpeg 出力（切り捨て）:&#x0A;{0}</value>
+    <value>
+
+FFmpeg 出力（切り捨て）:
+{0}</value>
   </data>
   <data name="Mp4ToGif_ErrorMessageDetails" xml:space="preserve">
-    <value>{0}&#x0A;&#x0A;入力ファイル: "{1}"&#x0A;出力ファイル: "{2}"&#x0A;開始時間: {3}&#x0A;長さ: {4}&#x0A;&#x0A;技術的詳細: {5}</value>
+    <value>{0}
+
+入力ファイル: "{1}"
+出力ファイル: "{2}"
+開始時間: {3}
+長さ: {4}
+
+技術的詳細: {5}</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">
