@@ -1427,5 +1427,17 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("FileDialog_Mp4Filter", resourceCulture);
             }
         }
+
+        internal static string FileDialog_SelectMp4 {
+            get {
+                return ResourceManager.GetString("FileDialog_SelectMp4", resourceCulture);
+            }
+        }
+
+        internal static string FileDialog_SaveGif {
+            get {
+                return ResourceManager.GetString("FileDialog_SaveGif", resourceCulture);
+            }
+        }
     }
 }
