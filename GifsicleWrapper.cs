@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
+#nullable enable
+
 public class GifsicleWrapper
 {
     public class GifsicleOptions
