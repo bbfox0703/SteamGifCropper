@@ -499,6 +499,41 @@ namespace GifProcessorApp
             }
         }
 
+        private static MagickImage BuildSharedPalette(IEnumerable<MagickImageCollection> collections, bool useFastPalette)
+        {
+            var paletteSamples = new MagickImageCollection();
+            try
+            {
+                foreach (var c in collections)
+                {
+                    if (c != null && c.Count > 0)
+                    {
+                        paletteSamples.Add(c[0]);
+                    }
+                }
+
+                var settings = new QuantizeSettings
+                {
+                    Colors = 256,
+                    ColorSpace = ColorSpace.RGB,
+                    DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+                };
+
+                if (useFastPalette)
+                {
+                    settings.TreeDepth = 5; // Lower tree depth for performance
+                }
+
+                paletteSamples.Quantize(settings);
+
+                return paletteSamples[0].Clone();
+            }
+            finally
+            {
+                paletteSamples.Dispose();
+            }
+        }
+
         private static MagickImageCollection MergeGifsHorizontally(MagickImageCollection[] collections, GifToolMainForm mainForm, bool useFastPalette = false)
         {
             mainForm.lblStatus.Text = "Merging GIFs horizontally to 766px width...";
@@ -506,7 +541,10 @@ namespace GifProcessorApp
 
             // Calculate maximum height among all resized GIFs
             int maxHeight = collections.Max(c => (int)c[0].Height);
-            
+
+            // Build shared palette from first frames
+            var palette = BuildSharedPalette(collections, useFastPalette);
+
             // Create merged collection
             var mergedCollection = new MagickImageCollection();
             int maxFrames = collections.Max(c => c.Count);
@@ -521,27 +559,27 @@ namespace GifProcessorApp
                         mainForm.lblStatus.Text = $"Merging frame {frameIndex + 1}/{maxFrames}...";
                         Application.DoEvents();
                     }
-                    
+
                     // Create 766px wide canvas
                     var canvas = new MagickImage(MagickColors.Transparent, 766, (uint)maxHeight);
-                    
+
                     // X positions for each GIF: 0, 153, 306, 460, 613
                     int[] xPositions = { 0, 153, 306, 460, 613 };
-                    
+
                     for (int gifIndex = 0; gifIndex < 5; gifIndex++)
                     {
                         // Get frame (loop if GIF has fewer frames)
                         var collection = collections[gifIndex];
                         var frameIdx = frameIndex % collection.Count;
                         var frame = collection[frameIdx];
-                        
+
                         // Composite frame onto canvas at specific X position
                         canvas.Composite(frame, xPositions[gifIndex], 0, CompositeOperator.Over);
                     }
 
                     // Set animation delay (use delay from first GIF)
                     canvas.AnimationDelay = collections[0][frameIndex % collections[0].Count].AnimationDelay;
-                    
+
                     mergedCollection.Add(canvas);
                 }
 
@@ -551,31 +589,27 @@ namespace GifProcessorApp
                     frame.GifDisposeMethod = GifDisposeMethod.Background;
                 }
 
-                // Apply palette integration
-                mainForm.lblStatus.Text = useFastPalette ? 
-                    "Fast palette integration..." : 
-                    "Integrating palettes...";
+                // Remap frames to shared palette
+                mainForm.lblStatus.Text = useFastPalette ?
+                    "Mapping with fast palette..." :
+                    "Mapping to shared palette...";
                 Application.DoEvents();
 
-                // Apply palette optimization (integrate palettes from multiple sources)
-                var quantizeSettings = new QuantizeSettings
+                var mapSettings = new QuantizeSettings
                 {
-                    Colors = 256, // Use 256 as maximum but allow fewer
+                    Colors = 256,
                     ColorSpace = ColorSpace.RGB,
                     DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
                 };
-                
-                if (useFastPalette)
-                {
-                    quantizeSettings.TreeDepth = 6; // Faster but lower quality
-                }
 
-                mergedCollection.Quantize(quantizeSettings);
-                
+                mergedCollection.Map(palette, mapSettings);
+                palette.Dispose();
+
                 return mergedCollection;
             }
             catch (Exception ex)
             {
+                palette?.Dispose();
                 mergedCollection?.Dispose();
                 throw new InvalidOperationException($"Failed to merge GIFs horizontally: {ex.Message}", ex);
             }
@@ -1123,6 +1157,9 @@ namespace GifProcessorApp
                 await Task.Delay(1); // Allow UI update
                 Application.DoEvents();
 
+                // Build shared palette from first frames
+                var palette = BuildSharedPalette(collections, useFastPalette);
+
                 var mergedCollection = new MagickImageCollection();
 
                 try
@@ -1165,26 +1202,21 @@ namespace GifProcessorApp
                         mergedCollection.Add(canvas);
                     }
 
-                    // Apply palette optimization
-                    mainForm.lblStatus.Text = useFastPalette ? 
-                        "Fast palette reduction..." : 
+                    // Remap frames to shared palette
+                    mainForm.lblStatus.Text = useFastPalette ?
+                        "Mapping with fast palette..." :
                         SteamGifCropper.Properties.Resources.Status_ReducingPalette;
                     await Task.Delay(1); // Allow UI update
                     Application.DoEvents();
 
-                    var quantizeSettings = new QuantizeSettings
+                    var mapSettings = new QuantizeSettings
                     {
                         Colors = 256,
                         ColorSpace = ColorSpace.RGB,
                         DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
                     };
-                    
-                    if (useFastPalette)
-                    {
-                        quantizeSettings.TreeDepth = 6; // Faster but lower quality
-                    }
 
-                    mergedCollection.Quantize(quantizeSettings);
+                    mergedCollection.Map(palette, mapSettings);
 
                     // Apply LZW compression
                     foreach (var frame in mergedCollection)
@@ -1207,6 +1239,7 @@ namespace GifProcessorApp
                 }
                 finally
                 {
+                    palette.Dispose();
                     mergedCollection?.Dispose();
                 }
             }
