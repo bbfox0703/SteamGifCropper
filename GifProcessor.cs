@@ -1015,6 +1015,151 @@ namespace GifProcessorApp
             return false;
         }
 
+        public static void MergeMultipleGifs(List<string> gifPaths, string outputPath, GifToolMainForm mainForm, int targetFramerate = 15)
+        {
+            if (gifPaths == null || gifPaths.Count < 2 || gifPaths.Count > 5)
+            {
+                throw new ArgumentException(SteamGifCropper.Properties.Resources.Message_GifFileCount);
+            }
+
+            var collections = new List<MagickImageCollection>();
+            
+            try
+            {
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Message_AnalyzingGifs;
+                Application.DoEvents();
+                var widths = new List<int>();
+                int minFrameCount = int.MaxValue;
+                double shortestDuration = double.MaxValue;
+
+                // Load all GIFs and analyze properties
+                foreach (string gifPath in gifPaths)
+                {
+                    var collection = new MagickImageCollection(gifPath);
+                    collection.Coalesce();
+                    collections.Add(collection);
+                    
+                    int width = (int)collection[0].Width;
+                    widths.Add(width);
+                    
+                    // Calculate total duration
+                    double totalDuration = collection.Sum(frame => frame.AnimationDelay) / 100.0; // Convert to seconds
+                    if (totalDuration < shortestDuration)
+                    {
+                        shortestDuration = totalDuration;
+                    }
+                    
+                    minFrameCount = Math.Min(minFrameCount, collection.Count);
+                }
+
+                // Calculate target frame count based on shortest duration and target framerate
+                int targetFrameCount = Math.Max(1, (int)(shortestDuration * targetFramerate));
+                
+                // Calculate target delay in centiseconds
+                uint targetDelay = (uint)Math.Round(100.0 / targetFramerate);
+
+                // Calculate total width
+                int totalWidth = widths.Sum();
+                int maxHeight = collections.Max(c => (int)c[0].Height);
+
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Message_MergingGifs;
+                Application.DoEvents();
+
+                var mergedCollection = new MagickImageCollection();
+
+                try
+                {
+                    for (int frameIndex = 0; frameIndex < targetFrameCount; frameIndex++)
+                    {
+                        // Update progress
+                        if (frameIndex % 5 == 0)
+                        {
+                            mainForm.lblStatus.Text = $"{SteamGifCropper.Properties.Resources.Message_MergingGifs} ({frameIndex + 1}/{targetFrameCount})";
+                            Application.DoEvents();
+                        }
+
+                        // Create canvas with total width
+                        var canvas = new MagickImage(MagickColors.Transparent, (uint)totalWidth, (uint)maxHeight);
+
+                        int currentX = 0;
+                        
+                        for (int gifIndex = 0; gifIndex < collections.Count; gifIndex++)
+                        {
+                            var collection = collections[gifIndex];
+                            
+                            // Calculate which frame to use based on shortest duration
+                            double frameProgress = (double)frameIndex / targetFrameCount;
+                            int sourceFrameIndex = Math.Min((int)(frameProgress * collection.Count), collection.Count - 1);
+                            
+                            var frame = collection[sourceFrameIndex];
+                            
+                            // Composite frame onto canvas at current X position
+                            canvas.Composite(frame, currentX, 0, CompositeOperator.Over);
+                            
+                            currentX += widths[gifIndex];
+                        }
+
+                        // Set animation delay to target framerate
+                        canvas.AnimationDelay = targetDelay;
+                        canvas.GifDisposeMethod = GifDisposeMethod.Background;
+                        
+                        mergedCollection.Add(canvas);
+                    }
+
+                    // Reduce to 256 colors palette
+                    mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_ReducingPalette;
+                    Application.DoEvents();
+
+                    mergedCollection.Quantize(new QuantizeSettings
+                    {
+                        Colors = 256,
+                        ColorSpace = ColorSpace.RGB,
+                        DitherMethod = DitherMethod.No
+                    });
+
+                    // Apply LZW compression
+                    foreach (var frame in mergedCollection)
+                    {
+                        frame.Format = MagickFormat.Gif;
+                        frame.Settings.SetDefine(MagickFormat.Gif, "optimize-transparency", "true");
+                    }
+
+                    // Save the merged GIF
+                    mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Saving;
+                    Application.DoEvents();
+                    
+                    mergedCollection.Write(outputPath);
+
+                    string successMessage = string.Format(SteamGifCropper.Properties.Resources.Message_GifMergeComplete, outputPath);
+                    MessageBox.Show(successMessage, SteamGifCropper.Properties.Resources.Title_Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Done;
+                }
+                finally
+                {
+                    mergedCollection?.Dispose();
+                }
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = $"Error merging GIF files: {ex.Message}";
+                MessageBox.Show(errorMessage, SteamGifCropper.Properties.Resources.Title_MergeGifError, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Error;
+                throw;
+            }
+            finally
+            {
+                // Clean up collections
+                if (collections != null)
+                {
+                    foreach (var collection in collections)
+                    {
+                        collection?.Dispose();
+                    }
+                }
+            }
+        }
+
         public static async Task ConvertMp4ToGif(GifToolMainForm mainForm)
         {
             // Check if FFmpeg is available with detailed diagnostics

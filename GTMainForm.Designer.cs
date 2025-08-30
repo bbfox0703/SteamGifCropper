@@ -374,12 +374,13 @@
             // 
             // btnMerge2to5GifToOne
             // 
-            btnMerge2to5GifToOne.Location = new System.Drawing.Point(295, 35);
+            btnMerge2to5GifToOne.Location = new System.Drawing.Point(7, 125);
             btnMerge2to5GifToOne.Name = "btnMerge2to5GifToOne";
             btnMerge2to5GifToOne.Size = new System.Drawing.Size(284, 26);
             btnMerge2to5GifToOne.TabIndex = 23;
-            btnMerge2to5GifToOne.Text = "Merge 2 - 5 GIF files into single GIF";
+            btnMerge2to5GifToOne.Text = SteamGifCropper.Properties.Resources.Button_MergeGifs;
             btnMerge2to5GifToOne.UseVisualStyleBackColor = true;
+            btnMerge2to5GifToOne.Click += btnMerge2to5GifToOne_Click;
             // 
             // GifToolMainForm
             // 
@@ -387,7 +388,6 @@
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSize = true;
             ClientSize = new System.Drawing.Size(586, 444);
-            Controls.Add(btnMerge2to5GifToOne);
             Controls.Add(panelGifsicle);
             Controls.Add(numUpDownPalette);
             Controls.Add(lblPaletteDesc);
