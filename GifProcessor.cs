@@ -209,9 +209,11 @@ namespace GifProcessorApp
             {
                 if (!File.Exists(gifPath))
                 {
-                    MessageBox.Show($"Source file not found: {Path.GetFileName(gifPath)}", 
-                                   SteamGifCropper.Properties.Resources.Title_Error, 
-                                   MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        string.Format(SteamGifCropper.Properties.Resources.MergeDialog_FileNotFound,
+                                      Path.GetFileName(gifPath)),
+                        SteamGifCropper.Properties.Resources.Title_Error,
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }
@@ -262,8 +264,10 @@ namespace GifProcessorApp
 
                 UpdateProgress(mainForm.pBarTaskStatus, 100, 100);
                 mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.MergeFiveGif_Success;
-                MessageBox.Show("Five GIF files have been merged and split into 5 parts successfully!",
-                              SteamGifCropper.Properties.Resources.Title_Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(
+                    SteamGifCropper.Properties.Resources.Message_FiveGifMergeComplete,
+                    SteamGifCropper.Properties.Resources.Title_Success,
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 // Dispose collections
                 foreach (var collection in syncedCollections)
@@ -275,8 +279,9 @@ namespace GifProcessorApp
             catch (Exception ex)
             {
                 mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.MergeFiveGif_Error;
-                MessageBox.Show($"Error processing five GIF merge and split: {ex.Message}",
-                              SteamGifCropper.Properties.Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    string.Format(SteamGifCropper.Properties.Resources.Error_Processing, ex.Message),
+                    SteamGifCropper.Properties.Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -284,20 +289,17 @@ namespace GifProcessorApp
         {
             var selectedFiles = new List<string>();
             
-            MessageBox.Show("You will need to select 5 GIF files one by one in the desired order.\n\n" +
-                          "File 1: First position (leftmost)\n" +
-                          "File 2: Second position\n" +
-                          "File 3: Third position (center)\n" +
-                          "File 4: Fourth position\n" +
-                          "File 5: Fifth position (rightmost)",
-                          "Selection Order Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(
+                SteamGifCropper.Properties.Resources.Instruction_SelectFiveGifs,
+                SteamGifCropper.Properties.Resources.Title_SelectionOrder,
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
             
             for (int i = 1; i <= 5; i++)
             {
                 using (var openFileDialog = new OpenFileDialog
                 {
-                    Filter = "GIF Files (*.gif)|*.gif",
-                    Title = $"Select GIF file #{i} (position {i} from left to right)",
+                    Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
+                    Title = string.Format(SteamGifCropper.Properties.Resources.FileDialog_SelectGifOrder, i, i),
                     Multiselect = false
                 })
                 {
@@ -326,8 +328,11 @@ namespace GifProcessorApp
                     // Validate that GIF has palette colors (8-bit)
                     if (collections[i][0].ColorType != ColorType.Palette && collections[i][0].ColorType != ColorType.PaletteAlpha)
                     {
-                        MessageBox.Show($"GIF #{i + 1} ({Path.GetFileName(gifFiles[i])}) must have palette-based colors (8-bit).\nCurrent color type: {collections[i][0].ColorType}",
-                                      "Invalid Color Type", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(
+                            string.Format(SteamGifCropper.Properties.Resources.Error_InvalidColorType,
+                                          i + 1, Path.GetFileName(gifFiles[i]), collections[i][0].ColorType),
+                            SteamGifCropper.Properties.Resources.Title_InvalidColorType,
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
                         
                         // Cleanup loaded collections
                         for (int j = 0; j <= i; j++)
@@ -359,7 +364,9 @@ namespace GifProcessorApp
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    mainForm.lblStatus.Text = $"Resizing GIF #{i + 1} to {targetWidths[i]}px width...";
+                    mainForm.lblStatus.Text = string.Format(
+                        SteamGifCropper.Properties.Resources.Status_ResizingGif,
+                        i + 1, targetWidths[i]);
                     Application.DoEvents();
 
                     resizedCollections[i] = new MagickImageCollection();
@@ -377,7 +384,9 @@ namespace GifProcessorApp
                         // Update UI every 10 frames to keep responsive
                         if (++frameCount % 10 == 0)
                         {
-                            mainForm.lblStatus.Text = $"Resizing GIF #{i + 1} - Frame {frameCount}/{collections[i].Count}...";
+                            mainForm.lblStatus.Text = string.Format(
+                                SteamGifCropper.Properties.Resources.Status_ResizingGifFrame,
+                                i + 1, frameCount, collections[i].Count);
                             Application.DoEvents();
                         }
                     }
@@ -410,7 +419,7 @@ namespace GifProcessorApp
 
         private static MagickImageCollection[] SynchronizeToShortestDuration(MagickImageCollection[] collections, GifToolMainForm mainForm)
         {
-            mainForm.lblStatus.Text = "Synchronizing animation durations...";
+            mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_SynchronizingDurations;
             Application.DoEvents();
 
             // Calculate total duration for each GIF in seconds
@@ -424,7 +433,9 @@ namespace GifProcessorApp
             double shortestDuration = durations.Min();
             int shortestIndex = Array.IndexOf(durations, shortestDuration);
 
-            mainForm.lblStatus.Text = $"Shortest duration: {shortestDuration:F1}s (GIF #{shortestIndex + 1})";
+            mainForm.lblStatus.Text = string.Format(
+                SteamGifCropper.Properties.Resources.Status_ShortestDuration,
+                shortestDuration, shortestIndex + 1);
             Application.DoEvents();
 
             // Synchronize all GIFs to shortest duration
@@ -434,7 +445,9 @@ namespace GifProcessorApp
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    mainForm.lblStatus.Text = $"Synchronizing GIF #{i + 1} duration...";
+                    mainForm.lblStatus.Text = string.Format(
+                        SteamGifCropper.Properties.Resources.Status_SynchronizingGif,
+                        i + 1);
                     Application.DoEvents();
                     
                     syncedCollections[i] = new MagickImageCollection();
@@ -538,7 +551,7 @@ namespace GifProcessorApp
 
         private static MagickImageCollection MergeGifsHorizontally(MagickImageCollection[] collections, GifToolMainForm mainForm, bool useFastPalette = false)
         {
-            mainForm.lblStatus.Text = "Merging GIFs horizontally to 766px width...";
+            mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_MergingHorizontally;
             Application.DoEvents();
 
             // Calculate maximum height among all resized GIFs
@@ -558,7 +571,9 @@ namespace GifProcessorApp
                     // Update UI every 10 frames during merging
                     if (frameIndex % 10 == 0)
                     {
-                        mainForm.lblStatus.Text = $"Merging frame {frameIndex + 1}/{maxFrames}...";
+                        mainForm.lblStatus.Text = string.Format(
+                            SteamGifCropper.Properties.Resources.Status_MergingFrame,
+                            frameIndex + 1, maxFrames);
                         Application.DoEvents();
                     }
 
@@ -595,8 +610,8 @@ namespace GifProcessorApp
 
                 // Remap frames to shared palette
                 mainForm.lblStatus.Text = useFastPalette ?
-                    "Mapping with fast palette..." :
-                    "Mapping to shared palette...";
+                    SteamGifCropper.Properties.Resources.Status_MappingFastPalette :
+                    SteamGifCropper.Properties.Resources.Status_MappingSharedPalette;
                 Application.DoEvents();
 
                 var mapSettings = new QuantizeSettings
@@ -687,8 +702,8 @@ namespace GifProcessorApp
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                Filter = "GIF Files (*.gif)|*.gif",
-                Title = "Select a GIF file to process"
+                Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
+                Title = SteamGifCropper.Properties.Resources.FileDialog_SelectGif
             };
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -711,11 +726,13 @@ namespace GifProcessorApp
                         int paletteSize = (int)mainForm.numUpDownPalette.Value; // Get palette size from numericUpDown
                         if (paletteSize < 32 || paletteSize > 256)
                         {
-                            MessageBox.Show("Palette size must be between 32 and 256.", SteamGifCropper.Properties.Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show(SteamGifCropper.Properties.Resources.Error_PaletteRange,
+                                            SteamGifCropper.Properties.Resources.Title_Error,
+                                            MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
                         }
 
-                        mainForm.lblStatus.Text = "Processing with reduced palette...";
+                        mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_ProcessingPalette;
                         mainForm.pBarTaskStatus.Minimum = 0;
                         mainForm.pBarTaskStatus.Maximum = 100;
                         mainForm.pBarTaskStatus.Value = 0;
@@ -736,8 +753,8 @@ namespace GifProcessorApp
                         });
 
                         await ReducePaletteAndSplitGif(inputFilePath, ranges, (int)canvasHeight, paletteSize, targetFramerate, progress);
-                        mainForm.lblStatus.Text = "Done.";
-                        MessageBox.Show("GIF processing with reduced palette completed successfully!",
+                        mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Done;
+                        MessageBox.Show(SteamGifCropper.Properties.Resources.Message_PaletteProcessingComplete,
                                         SteamGifCropper.Properties.Resources.Title_Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
@@ -882,8 +899,8 @@ namespace GifProcessorApp
         {
             using (var openFileDialog = new OpenFileDialog
             {
-                Filter = "GIF Files (*.gif)|*.gif",
-                Title = "Select a GIF file to resize"
+                Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
+                Title = SteamGifCropper.Properties.Resources.FileDialog_SelectGifResize
             })
             {
                 if (openFileDialog.ShowDialog() != DialogResult.OK) return;
@@ -901,12 +918,15 @@ namespace GifProcessorApp
 
                     ResizeGifTo766(inputFilePath, outputFilePath);
 
-                    MessageBox.Show(mainForm, $"GIF resizing completed successfully!\nSaved as: {Path.GetFileName(outputFilePath)}",
+                    MessageBox.Show(mainForm,
+                                    string.Format(SteamGifCropper.Properties.Resources.Message_ResizeComplete,
+                                                  Path.GetFileName(outputFilePath)),
                                     SteamGifCropper.Properties.Resources.Title_Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(mainForm, $"Resize operation failed: {ex.Message}",
+                    MessageBox.Show(mainForm,
+                                    string.Format(SteamGifCropper.Properties.Resources.Error_ResizeFailed, ex.Message),
                                     SteamGifCropper.Properties.Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 finally
@@ -928,8 +948,8 @@ namespace GifProcessorApp
         {
             using (var openFileDialog = new OpenFileDialog
             {
-                Filter = "GIF Files (*.gif)|*.gif",
-                Title = "Select GIF files to restore tail bytes from 0x21 to 0x3B",
+                Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
+                Title = SteamGifCropper.Properties.Resources.FileDialog_SelectGifRestore,
                 Multiselect = true
             })
             {
@@ -941,7 +961,7 @@ namespace GifProcessorApp
 
                 try
                 {
-                    mainForm.lblStatus.Text = "Restoring tail bytes...";
+                    mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_RestoringTailBytes;
                     mainForm.pBarTaskStatus.Value = 0;
                     mainForm.pBarTaskStatus.Maximum = selectedFiles.Length;
                     mainForm.pBarTaskStatus.Visible = true;
@@ -961,21 +981,28 @@ namespace GifProcessorApp
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show($"Error processing {Path.GetFileName(filePath)}: {ex.Message}",
-                                          "File Processing Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            MessageBox.Show(
+                                string.Format(SteamGifCropper.Properties.Resources.Error_ProcessingFile,
+                                              Path.GetFileName(filePath), ex.Message),
+                                SteamGifCropper.Properties.Resources.Title_FileProcessingError,
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             skippedCount++;
                         }
 
                         mainForm.pBarTaskStatus.Value++;
-                        mainForm.lblStatus.Text = $"Processing... {mainForm.pBarTaskStatus.Value}/{selectedFiles.Length}";
+                        mainForm.lblStatus.Text = string.Format(
+                            SteamGifCropper.Properties.Resources.Status_ProcessingCount,
+                            mainForm.pBarTaskStatus.Value, selectedFiles.Length);
                         Application.DoEvents();
                     }
 
-                    string resultMessage = $"Restoration completed!\n" +
-                                         $"Files processed: {processedCount}\n" +
-                                         $"Files skipped (not 0x21): {skippedCount}";
+                    string resultMessage = string.Format(
+                        SteamGifCropper.Properties.Resources.Message_RestorationComplete,
+                        processedCount, skippedCount);
 
-                    MessageBox.Show(resultMessage, "Tail Byte Restoration", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(resultMessage,
+                                    SteamGifCropper.Properties.Resources.Title_TailByteRestoration,
+                                    MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
@@ -1025,8 +1052,8 @@ namespace GifProcessorApp
         {
             using (var openFileDialog = new OpenFileDialog
             {
-                Filter = "GIF Files (*.gif)|*.gif",
-                Title = "Select GIF files to process",
+                Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
+                Title = SteamGifCropper.Properties.Resources.FileDialog_SelectGifFiles,
                 Multiselect = true
             })
             {
@@ -1052,13 +1079,21 @@ namespace GifProcessorApp
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show(mainForm, $"Error processing file {Path.GetFileName(filePath)}:\n{ex.Message}",
-                                            SteamGifCropper.Properties.Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            MessageBox.Show(
+                                mainForm,
+                                string.Format(SteamGifCropper.Properties.Resources.Error_ProcessingFile,
+                                              Path.GetFileName(filePath), ex.Message),
+                                SteamGifCropper.Properties.Resources.Title_FileProcessingError,
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
                     }
 
-                    MessageBox.Show(mainForm, $"{processedFiles} of {filePaths.Length} GIF files processed successfully!",
-                                    SteamGifCropper.Properties.Resources.Title_Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(
+                        mainForm,
+                        string.Format(SteamGifCropper.Properties.Resources.Message_ProcessedFiles,
+                                      processedFiles, filePaths.Length),
+                        SteamGifCropper.Properties.Resources.Title_Success,
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
@@ -1216,8 +1251,8 @@ namespace GifProcessorApp
 
                     // Remap frames to shared palette
                     mainForm.lblStatus.Text = useFastPalette ?
-                        "Mapping with fast palette..." :
-                        SteamGifCropper.Properties.Resources.Status_ReducingPalette;
+                        SteamGifCropper.Properties.Resources.Status_MappingFastPalette :
+                        SteamGifCropper.Properties.Resources.Status_MappingSharedPalette;
                     await Task.Delay(1); // Allow UI update
                     Application.DoEvents();
 
@@ -1656,7 +1691,7 @@ namespace GifProcessorApp
                     // Fallback to ImageMagick if FFmpeg fails
                     try
                     {
-                        mainForm.lblStatus.Text = "FFmpeg failed, trying ImageMagick fallback...";
+                        mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_FFmpegFallback;
                         mainForm.pBarTaskStatus.Value = 25;
                         
                         // Get target framerate from main form

@@ -198,6 +198,12 @@
   <data name="Status_SynchronizingGif" xml:space="preserve">
     <value>同步GIF #{0}持續時間...</value>
   </data>
+  <data name="Status_MappingFastPalette" xml:space="preserve">
+    <value>使用快速調色盤進行映射...</value>
+  </data>
+  <data name="Status_MappingSharedPalette" xml:space="preserve">
+    <value>映射到共用調色盤...</value>
+  </data>
   <data name="Status_MergingFrame" xml:space="preserve">
     <value>正在合併影格 {0}/{1}...</value>
   </data>
@@ -454,6 +460,9 @@
   </data>
   <data name="Status_GifReversed" xml:space="preserve">
     <value>GIF反轉成功！</value>
+  </data>
+  <data name="Status_FFmpegFallback" xml:space="preserve">
+    <value>FFmpeg 失敗，改用 ImageMagick 備援...</value>
   </data>
   <data name="Message_GifReversedSuccess" xml:space="preserve">
     <value>GIF反轉成功！</value>

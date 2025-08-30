@@ -198,6 +198,12 @@
   <data name="Status_SynchronizingGif" xml:space="preserve">
     <value>Synchronizing GIF #{0} duration...</value>
   </data>
+  <data name="Status_MappingFastPalette" xml:space="preserve">
+    <value>Mapping with fast palette...</value>
+  </data>
+  <data name="Status_MappingSharedPalette" xml:space="preserve">
+    <value>Mapping to shared palette...</value>
+  </data>
   <data name="Status_MergingFrame" xml:space="preserve">
     <value>Merging frame {0}/{1}...</value>
   </data>
@@ -446,6 +452,9 @@
   </data>
   <data name="Status_GifReversed" xml:space="preserve">
     <value>GIF reversed successfully!</value>
+  </data>
+  <data name="Status_FFmpegFallback" xml:space="preserve">
+    <value>FFmpeg failed, trying ImageMagick fallback...</value>
   </data>
   <data name="Message_GifReversedSuccess" xml:space="preserve">
     <value>GIF reversed successfully!</value>

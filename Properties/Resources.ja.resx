@@ -198,6 +198,12 @@
   <data name="Status_SynchronizingGif" xml:space="preserve">
     <value>GIF #{0}の持続時間を同期中...</value>
   </data>
+  <data name="Status_MappingFastPalette" xml:space="preserve">
+    <value>高速パレットでマッピング中...</value>
+  </data>
+  <data name="Status_MappingSharedPalette" xml:space="preserve">
+    <value>共有パレットにマッピング中...</value>
+  </data>
   <data name="Status_MergingFrame" xml:space="preserve">
     <value>フレーム{0}/{1}をマージしています...</value>
   </data>
@@ -454,6 +460,9 @@
   </data>
   <data name="Status_GifReversed" xml:space="preserve">
     <value>GIF反転が成功しました！</value>
+  </data>
+  <data name="Status_FFmpegFallback" xml:space="preserve">
+    <value>FFmpeg に失敗したため、ImageMagick で再試行しています...</value>
   </data>
   <data name="Message_GifReversedSuccess" xml:space="preserve">
     <value>GIF反転が成功しました！</value>
