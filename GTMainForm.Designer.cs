@@ -64,6 +64,7 @@
             toolStripLangEnglish = new System.Windows.Forms.ToolStripMenuItem();
             toolStripLangTradChinese = new System.Windows.Forms.ToolStripMenuItem();
             toolStripLangJapanese = new System.Windows.Forms.ToolStripMenuItem();
+            btnScrollStaticImage = new System.Windows.Forms.Button();
             panelGifsicle.SuspendLayout();
             groupDither.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).BeginInit();
@@ -448,12 +449,22 @@
             toolStripLangJapanese.Text = "日本語";
             toolStripLangJapanese.Click += toolStripLangJapanese_Click;
             // 
+            // btnScrollStaticImage
+            // 
+            btnScrollStaticImage.Location = new System.Drawing.Point(313, 95);
+            btnScrollStaticImage.Name = "btnScrollStaticImage";
+            btnScrollStaticImage.Size = new System.Drawing.Size(300, 26);
+            btnScrollStaticImage.TabIndex = 27;
+            btnScrollStaticImage.Text = "Scroll static image";
+            btnScrollStaticImage.UseVisualStyleBackColor = true;
+            // 
             // GifToolMainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             ClientSize = new System.Drawing.Size(619, 444);
+            Controls.Add(btnScrollStaticImage);
             Controls.Add(btnLanguageChange);
             Controls.Add(btnReverseGIF);
             Controls.Add(chk5GIFMergeFasterPaletteProcess);
@@ -528,5 +539,6 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripLangEnglish;
         private System.Windows.Forms.ToolStripMenuItem toolStripLangTradChinese;
         private System.Windows.Forms.ToolStripMenuItem toolStripLangJapanese;
+        private System.Windows.Forms.Button btnScrollStaticImage;
     }
 }
