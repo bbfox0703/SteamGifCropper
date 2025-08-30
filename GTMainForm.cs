@@ -163,6 +163,11 @@ namespace GifProcessorApp
             }, "GIF merge");
         }
 
+        private async void btnReverseGIF_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(async () => await GifProcessor.ReverseGif(this), "GIF reversal");
+        }
+
         private void label2_Click(object sender, EventArgs e)
         {
 

@@ -387,6 +387,9 @@
   <data name="CheckBox_FasterPalette" xml:space="preserve">
     <value>Faster palette reduction (quality down)</value>
   </data>
+  <data name="Button_ReverseGif" xml:space="preserve">
+    <value>FFMPEG: Reverse animated GIF</value>
+  </data>
   <data name="Status_ValidatingProcessing" xml:space="preserve">
     <value>Validating and processing 5 GIF files...</value>
   </data>
@@ -425,5 +428,23 @@
   </data>
   <data name="Status_Mp4Complete" xml:space="preserve">
     <value>MP4 to GIF conversion completed successfully!</value>
+  </data>
+  <data name="FileDialog_SelectGifToReverse" xml:space="preserve">
+    <value>Select a GIF file to reverse</value>
+  </data>
+  <data name="FileDialog_SaveReversedGif" xml:space="preserve">
+    <value>Save reversed GIF as</value>
+  </data>
+  <data name="Status_ReversingGif" xml:space="preserve">
+    <value>Reversing GIF...</value>
+  </data>
+  <data name="Status_GifReversed" xml:space="preserve">
+    <value>GIF reversed successfully!</value>
+  </data>
+  <data name="Message_GifReversedSuccess" xml:space="preserve">
+    <value>GIF reversed successfully!</value>
+  </data>
+  <data name="Error_GifReverseFailed" xml:space="preserve">
+    <value>Failed to reverse GIF: {0}</value>
   </data>
 </root>

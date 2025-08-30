@@ -400,8 +400,9 @@
             btnReverseGIF.Name = "btnReverseGIF";
             btnReverseGIF.Size = new System.Drawing.Size(284, 26);
             btnReverseGIF.TabIndex = 25;
-            btnReverseGIF.Text = "FFMPEG: Reverse animated GIF";
+            btnReverseGIF.Text = SteamGifCropper.Properties.Resources.Button_ReverseGif;
             btnReverseGIF.UseVisualStyleBackColor = true;
+            btnReverseGIF.Click += btnReverseGIF_Click;
             // 
             // GifToolMainForm
             // 

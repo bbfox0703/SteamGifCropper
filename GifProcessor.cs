@@ -1538,5 +1538,142 @@ namespace GifProcessorApp
             }
         }
 
+        public static async Task ReverseGif(GifToolMainForm mainForm)
+        {
+            using (var openFileDialog = new OpenFileDialog
+            {
+                Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
+                Title = SteamGifCropper.Properties.Resources.FileDialog_SelectGifToReverse ?? "Select a GIF file to reverse"
+            })
+            {
+                if (openFileDialog.ShowDialog() != DialogResult.OK) return;
+
+                string inputFilePath = openFileDialog.FileName;
+                string inputFileName = Path.GetFileNameWithoutExtension(inputFilePath);
+                string inputDirectory = Path.GetDirectoryName(inputFilePath);
+                string outputFilePath = Path.Combine(inputDirectory, $"{inputFileName}_reversed.gif");
+
+                using (var saveFileDialog = new SaveFileDialog
+                {
+                    Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
+                    Title = SteamGifCropper.Properties.Resources.FileDialog_SaveReversedGif ?? "Save reversed GIF as",
+                    FileName = Path.GetFileName(outputFilePath)
+                })
+                {
+                    if (saveFileDialog.ShowDialog() != DialogResult.OK) return;
+                    outputFilePath = saveFileDialog.FileName;
+                }
+
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_ReversingGif ?? "Reversing GIF...";
+                mainForm.pBarTaskStatus.Visible = true;
+                mainForm.pBarTaskStatus.Value = 0;
+
+                try
+                {
+                    // Check FFmpeg availability
+                    var (isAvailable, ffmpegPath, version, error) = GetFFmpegDiagnostics();
+                    if (!isAvailable)
+                    {
+                        throw new InvalidOperationException($"FFmpeg not available: {error}");
+                    }
+
+                    // Get target framerate from main form
+                    int targetFramerate = (int)mainForm.numUpDownFramerate.Value;
+
+                    mainForm.pBarTaskStatus.Value = 25;
+                    await Task.Delay(1);
+
+                    // Use FFMpegCore to reverse the GIF
+                    var inputAnalysis = await FFProbe.AnalyseAsync(inputFilePath);
+                    var totalDuration = inputAnalysis.Duration;
+
+                    mainForm.pBarTaskStatus.Value = 50;
+                    await Task.Delay(1);
+                    // Reverse GIF directly with palettegen + paletteuse
+                    mainForm.pBarTaskStatus.Value = 75;
+                    await FFMpegArguments
+                        .FromFileInput(inputFilePath) // Only one input
+                        .OutputToFile(
+                            outputFilePath,
+                            overwrite: true,
+                            options => options
+                                .WithCustomArgument(
+                                    @"-filter_complex ""[0:v]reverse,split[s0][s1];[s0]palettegen=stats_mode=single[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3"""
+                                )
+                                .WithFramerate(targetFramerate)
+                        )
+                        .ProcessAsynchronously();
+
+                    mainForm.pBarTaskStatus.Value = 100;
+                    await Task.Delay(1);
+
+                    mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_GifReversed ?? "GIF reversed successfully!";
+                    MessageBox.Show(
+                        (SteamGifCropper.Properties.Resources.Message_GifReversedSuccess ?? "GIF reversed successfully!") + $"\n{outputFilePath}",
+                        SteamGifCropper.Properties.Resources.Title_Success ?? "Success",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    // Fallback to ImageMagick if FFmpeg fails
+                    try
+                    {
+                        mainForm.lblStatus.Text = "FFmpeg failed, trying ImageMagick fallback...";
+                        mainForm.pBarTaskStatus.Value = 25;
+                        
+                        // Get target framerate from main form
+                        int fallbackFramerate = (int)mainForm.numUpDownFramerate.Value;
+                        
+                        using (var collection = new MagickImageCollection(inputFilePath))
+                        {
+                            mainForm.pBarTaskStatus.Value = 50;
+                            await Task.Delay(1);
+                            
+                            // Reverse the frame order
+                            collection.Reverse();
+                            
+                            mainForm.pBarTaskStatus.Value = 75;
+                            await Task.Delay(1);
+                            
+                            // Apply framerate setting to all frames
+                            uint frameDelay = (uint)(100.0 / fallbackFramerate); // Convert fps to delay (in 1/100th seconds)
+                            foreach (var frame in collection)
+                            {
+                                frame.AnimationDelay = frameDelay;
+                            }
+                            
+                            mainForm.pBarTaskStatus.Value = 90;
+                            await Task.Delay(1);
+                            
+                            collection.Write(outputFilePath);
+                            
+                            mainForm.pBarTaskStatus.Value = 100;
+                            mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_GifReversed ?? "GIF reversed successfully!";
+                            MessageBox.Show(
+                                (SteamGifCropper.Properties.Resources.Message_GifReversedSuccess ?? "GIF reversed successfully!") + $"\n{outputFilePath}",
+                                SteamGifCropper.Properties.Resources.Title_Success ?? "Success",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+                        }
+                    }
+                    catch (Exception fallbackEx)
+                    {
+                        mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Error ?? "Error";
+                        MessageBox.Show(
+                            string.Format(SteamGifCropper.Properties.Resources.Error_GifReverseFailed ?? "Failed to reverse GIF: {0}", $"FFmpeg: {ex.Message}, ImageMagick: {fallbackEx.Message}"),
+                            SteamGifCropper.Properties.Resources.Title_Error ?? "Error",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
+                finally
+                {
+                    mainForm.pBarTaskStatus.Visible = false;
+                    mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready ?? "Ready";
+                }
+            }
+        }
+
     }
 }

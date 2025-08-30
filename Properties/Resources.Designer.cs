@@ -358,6 +358,15 @@ namespace SteamGifCropper.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to FFMPEG: Reverse animated GIF.
+        /// </summary>
+        internal static string Button_ReverseGif {
+            get {
+                return ResourceManager.GetString("Button_ReverseGif", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Five GIF files have been merged and split into 5 parts successfully!.
         /// </summary>
         internal static string Message_FiveGifMergeComplete {
@@ -984,6 +993,60 @@ namespace SteamGifCropper.Properties {
         internal static string Title_Warning {
             get {
                 return ResourceManager.GetString("Title_Warning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a GIF file to reverse.
+        /// </summary>
+        internal static string FileDialog_SelectGifToReverse {
+            get {
+                return ResourceManager.GetString("FileDialog_SelectGifToReverse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save reversed GIF as.
+        /// </summary>
+        internal static string FileDialog_SaveReversedGif {
+            get {
+                return ResourceManager.GetString("FileDialog_SaveReversedGif", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reversing GIF....
+        /// </summary>
+        internal static string Status_ReversingGif {
+            get {
+                return ResourceManager.GetString("Status_ReversingGif", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GIF reversed successfully!.
+        /// </summary>
+        internal static string Status_GifReversed {
+            get {
+                return ResourceManager.GetString("Status_GifReversed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GIF reversed successfully!.
+        /// </summary>
+        internal static string Message_GifReversedSuccess {
+            get {
+                return ResourceManager.GetString("Message_GifReversedSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to reverse GIF: {0}.
+        /// </summary>
+        internal static string Error_GifReverseFailed {
+            get {
+                return ResourceManager.GetString("Error_GifReverseFailed", resourceCulture);
             }
         }
     }
