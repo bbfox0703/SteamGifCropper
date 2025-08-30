@@ -436,13 +436,13 @@
             // toolStripLangTradChinese
             // 
             toolStripLangTradChinese.Name = "toolStripLangTradChinese";
-            toolStripLangTradChinese.Size = new System.Drawing.Size(122, 22);
+            toolStripLangTradChinese.Size = new System.Drawing.Size(180, 22);
             toolStripLangTradChinese.Text = "繁體中文";
             // 
             // toolStripLangJapanese
             // 
             toolStripLangJapanese.Name = "toolStripLangJapanese";
-            toolStripLangJapanese.Size = new System.Drawing.Size(122, 22);
+            toolStripLangJapanese.Size = new System.Drawing.Size(180, 22);
             toolStripLangJapanese.Text = "日本語";
             // 
             // GifToolMainForm
