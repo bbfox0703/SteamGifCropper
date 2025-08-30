@@ -55,7 +55,7 @@
             lblFPS = new System.Windows.Forms.Label();
             numUpDownPalette = new System.Windows.Forms.NumericUpDown();
             lblPaletteDesc = new System.Windows.Forms.Label();
-            btnMerge2to5Gifs = new System.Windows.Forms.Button();
+            btnMerge2to5GifToOne = new System.Windows.Forms.Button();
             panelGifsicle.SuspendLayout();
             groupDither.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).BeginInit();
@@ -372,14 +372,14 @@
             lblPaletteDesc.Text = "Number of palette:";
             lblPaletteDesc.Visible = false;
             // 
-            // btnMerge2to5Gifs
+            // btnMerge2to5GifToOne
             // 
-            btnMerge2to5Gifs.Location = new System.Drawing.Point(295, 35);
-            btnMerge2to5Gifs.Name = "btnMerge2to5Gifs";
-            btnMerge2to5Gifs.Size = new System.Drawing.Size(284, 26);
-            btnMerge2to5Gifs.TabIndex = 23;
-            btnMerge2to5Gifs.Text = "Merge 2 - 5 GIF files into single GIF";
-            btnMerge2to5Gifs.UseVisualStyleBackColor = true;
+            btnMerge2to5GifToOne.Location = new System.Drawing.Point(295, 35);
+            btnMerge2to5GifToOne.Name = "btnMerge2to5GifToOne";
+            btnMerge2to5GifToOne.Size = new System.Drawing.Size(284, 26);
+            btnMerge2to5GifToOne.TabIndex = 23;
+            btnMerge2to5GifToOne.Text = "Merge 2 - 5 GIF files into single GIF";
+            btnMerge2to5GifToOne.UseVisualStyleBackColor = true;
             // 
             // GifToolMainForm
             // 
@@ -387,7 +387,7 @@
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSize = true;
             ClientSize = new System.Drawing.Size(586, 444);
-            Controls.Add(btnMerge2to5Gifs);
+            Controls.Add(btnMerge2to5GifToOne);
             Controls.Add(panelGifsicle);
             Controls.Add(numUpDownPalette);
             Controls.Add(lblPaletteDesc);
@@ -451,6 +451,6 @@
         public System.Windows.Forms.NumericUpDown numUpDownFramerate;
         private System.Windows.Forms.Label lblFramerate;
         private System.Windows.Forms.Label lblFPS;
-        private System.Windows.Forms.Button btnMerge2to5Gifs;
+        private System.Windows.Forms.Button btnMerge2to5GifToOne;
     }
 }
