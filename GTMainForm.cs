@@ -138,6 +138,22 @@ namespace GifProcessorApp
             await ExecuteWithErrorHandling(async () => await GifProcessor.ConvertMp4ToGif(this), "MP4 to GIF conversion");
         }
 
+        private async void btnMerge2to5GifToOne_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(() =>
+            {
+                using (var dialog = new MergeGifsDialog())
+                {
+                    if (dialog.ShowDialog() == DialogResult.OK)
+                    {
+                        int targetFramerate = (int)numUpDownFramerate.Value;
+                        GifProcessor.MergeMultipleGifs(dialog.SelectedFilePaths, dialog.OutputFilePath, this, targetFramerate);
+                    }
+                }
+                return Task.CompletedTask;
+            }, "GIF merge");
+        }
+
         private void label2_Click(object sender, EventArgs e)
         {
 

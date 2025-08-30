@@ -135,6 +135,9 @@
   <data name="Button_Mp4ToGif" xml:space="preserve">
     <value>Convert MP4 to GIF (with time control)</value>
   </data>
+  <data name="Button_MergeGifs" xml:space="preserve">
+    <value>Merge 2-5 GIF files into one</value>
+  </data>
   <data name="Button_Browse" xml:space="preserve">
     <value>Browse...</value>
   </data>
@@ -158,6 +161,9 @@
   </data>
   <data name="Status_Saving" xml:space="preserve">
     <value>Saving...</value>
+  </data>
+  <data name="Status_ReducingPalette" xml:space="preserve">
+    <value>Reducing palette...</value>
   </data>
   <data name="Status_CoalescingFrames" xml:space="preserve">
     <value>Coalescing frames...</value>
@@ -219,6 +225,12 @@
   <data name="Title_Mp4ToGifError" xml:space="preserve">
     <value>MP4 to GIF Conversion Error</value>
   </data>
+  <data name="Title_MergeGifs" xml:space="preserve">
+    <value>Merge GIF Files</value>
+  </data>
+  <data name="Title_MergeGifError" xml:space="preserve">
+    <value>GIF Merge Error</value>
+  </data>
   <data name="Title_TailByteRestoration" xml:space="preserve">
     <value>Tail Byte Restoration</value>
   </data>
@@ -239,6 +251,21 @@
   </data>
   <data name="Message_FiveGifMergeComplete" xml:space="preserve">
     <value>Five GIF files have been merged and split into 5 parts successfully!</value>
+  </data>
+  <data name="Message_GifMergeComplete" xml:space="preserve">
+    <value>GIF files merged successfully!\nSaved as: {0}</value>
+  </data>
+  <data name="Message_SelectGifFiles" xml:space="preserve">
+    <value>Please select 2-5 GIF files to merge (in order from left to right):</value>
+  </data>
+  <data name="Message_GifFileCount" xml:space="preserve">
+    <value>Please select between 2 and 5 GIF files.</value>
+  </data>
+  <data name="Message_AnalyzingGifs" xml:space="preserve">
+    <value>Analyzing GIF files...</value>
+  </data>
+  <data name="Message_MergingGifs" xml:space="preserve">
+    <value>Merging GIF files...</value>
   </data>
   <data name="Message_ResizeComplete" xml:space="preserve">
     <value>GIF resizing completed successfully!\nSaved as: {0}</value>

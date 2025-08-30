@@ -88,6 +88,15 @@ namespace SteamGifCropper.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Merge 2-5 GIF files into one.
+        /// </summary>
+        internal static string Button_MergeGifs {
+            get {
+                return ResourceManager.GetString("Button_MergeGifs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Resize GIF file to 766px width.
         /// </summary>
         internal static string Button_ResizeGif {
@@ -345,6 +354,51 @@ namespace SteamGifCropper.Properties {
         internal static string Message_FiveGifMergeComplete {
             get {
                 return ResourceManager.GetString("Message_FiveGifMergeComplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GIF files merged successfully!\nSaved as: {0}.
+        /// </summary>
+        internal static string Message_GifMergeComplete {
+            get {
+                return ResourceManager.GetString("Message_GifMergeComplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select 2-5 GIF files to merge (in order from left to right):.
+        /// </summary>
+        internal static string Message_SelectGifFiles {
+            get {
+                return ResourceManager.GetString("Message_SelectGifFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select between 2 and 5 GIF files..
+        /// </summary>
+        internal static string Message_GifFileCount {
+            get {
+                return ResourceManager.GetString("Message_GifFileCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Analyzing GIF files....
+        /// </summary>
+        internal static string Message_AnalyzingGifs {
+            get {
+                return ResourceManager.GetString("Message_AnalyzingGifs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Merging GIF files....
+        /// </summary>
+        internal static string Message_MergingGifs {
+            get {
+                return ResourceManager.GetString("Message_MergingGifs", resourceCulture);
             }
         }
         
@@ -754,6 +808,15 @@ namespace SteamGifCropper.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reducing palette....
+        /// </summary>
+        internal static string Status_ReducingPalette {
+            get {
+                return ResourceManager.GetString("Status_ReducingPalette", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Shortest duration: {0:F1}s (GIF #{1}).
         /// </summary>
         internal static string Status_ShortestDuration {
@@ -849,6 +912,24 @@ namespace SteamGifCropper.Properties {
         internal static string Title_Mp4ToGifError {
             get {
                 return ResourceManager.GetString("Title_Mp4ToGifError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Merge GIF Files.
+        /// </summary>
+        internal static string Title_MergeGifs {
+            get {
+                return ResourceManager.GetString("Title_MergeGifs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GIF Merge Error.
+        /// </summary>
+        internal static string Title_MergeGifError {
+            get {
+                return ResourceManager.GetString("Title_MergeGifError", resourceCulture);
             }
         }
         
