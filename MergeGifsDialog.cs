@@ -136,6 +136,7 @@ namespace GifProcessorApp
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MergeGifsDialog));
             lblInstructions = new Label();
             lblGifFiles = new Label();
             lstGifFiles = new ListBox();
@@ -305,6 +306,7 @@ namespace GifProcessorApp
             Controls.Add(btnOK);
             Controls.Add(btnCancel);
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(41, 19, 41, 19);
             MaximizeBox = false;
             MinimizeBox = false;

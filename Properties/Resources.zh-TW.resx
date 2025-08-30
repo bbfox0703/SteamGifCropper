@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -118,253 +118,261 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Button_SplitGif" xml:space="preserve">
-    <value>Split GIF file into 5 parts with gifsicle</value>
+    <value>用gifsicle將GIF檔案分割為5個部分</value>
   </data>
   <data name="Button_ResizeGif" xml:space="preserve">
-    <value>Resize GIF file to 766px width</value>
+    <value>調整GIF檔案尺寸至766像素寬度</value>
   </data>
   <data name="Button_WriteTailByte" xml:space="preserve">
-    <value>Write GIF files last byte as 0x21</value>
+    <value>將GIF檔案最後位元組寫入為0x21</value>
   </data>
   <data name="Button_RestoreTailByte" xml:space="preserve">
-    <value>Restore GIF files last byte from 0x21 to 0x3B</value>
+    <value>將GIF檔案最後位元組從0x21還原為0x3B</value>
   </data>
   <data name="Button_MergeAndSplit" xml:space="preserve">
-    <value>Merge 5 GIF files into 1 part (766px), each ~153px</value>
+    <value>合併5個GIF檔案為1個部分(766px)，每個約153px</value>
   </data>
   <data name="Button_Mp4ToGif" xml:space="preserve">
-    <value>Convert MP4 to GIF (with time control)</value>
+    <value>轉換MP4為GIF(具時間控制)</value>
   </data>
   <data name="Button_MergeGifs" xml:space="preserve">
-    <value>Merge 2-5 GIF files into one</value>
+    <value>合併2-5個GIF檔案為一個</value>
   </data>
   <data name="Button_Browse" xml:space="preserve">
-    <value>Browse...</value>
+    <value>瀏覽...</value>
   </data>
   <data name="Status_Idle" xml:space="preserve">
-    <value>Idle.</value>
+    <value>閒置</value>
   </data>
   <data name="Status_Ready" xml:space="preserve">
-    <value>Ready</value>
+    <value>就緒</value>
   </data>
   <data name="Status_Processing" xml:space="preserve">
-    <value>Processing...</value>
+    <value>處理中...</value>
   </data>
   <data name="Status_Done" xml:space="preserve">
-    <value>Done.</value>
+    <value>完成。</value>
   </data>
   <data name="Status_Error" xml:space="preserve">
-    <value>Error.</value>
+    <value>錯誤</value>
   </data>
   <data name="Status_Compressing" xml:space="preserve">
-    <value>Compressing...</value>
+    <value>正在壓縮...</value>
   </data>
   <data name="Status_Saving" xml:space="preserve">
-    <value>Saving...</value>
+    <value>正在儲存...</value>
   </data>
   <data name="Status_ReducingPalette" xml:space="preserve">
-    <value>Reducing palette...</value>
+    <value>正在縮減調色盤...</value>
   </data>
   <data name="Status_CoalescingFrames" xml:space="preserve">
-    <value>Coalescing frames...</value>
+    <value>正在合併影格...</value>
   </data>
   <data name="Status_GifsicleOptimizing" xml:space="preserve">
-    <value>gifsicle-ing...</value>
+    <value>gifsicle優化中...</value>
   </data>
   <data name="Status_Loading" xml:space="preserve">
-    <value>Loading...</value>
+    <value>載入中...</value>
   </data>
   <data name="Status_ResizingFrames" xml:space="preserve">
-    <value>Resizing frames...</value>
+    <value>調整影格大小中...</value>
   </data>
   <data name="Status_Optimizing" xml:space="preserve">
-    <value>Optimizing...</value>
+    <value>最佳化中...</value>
   </data>
   <data name="Status_RestoringTailBytes" xml:space="preserve">
-    <value>Restoring tail bytes...</value>
+    <value>還原尾端位元組中...</value>
   </data>
   <data name="Status_ProcessingPart" xml:space="preserve">
-    <value>Processing part {0}, frame {1}...</value>
+    <value>處理第{0}部分，影格{1}...</value>
   </data>
   <data name="Status_ProcessingCount" xml:space="preserve">
-    <value>Processing... {0}/{1}</value>
+    <value>處理中... {0}/{1}</value>
   </data>
   <data name="Status_ResizingGif" xml:space="preserve">
-    <value>Resizing GIF #{0} to {1}px width...</value>
+    <value>調整GIF #{0}至{1}px寬度...</value>
   </data>
   <data name="Status_ResizingGifFrame" xml:space="preserve">
-    <value>Resizing GIF #{0} - Frame {1}/{2}...</value>
+    <value>調整GIF #{0} - 影格{1}/{2}...</value>
   </data>
   <data name="Status_SynchronizingGif" xml:space="preserve">
-    <value>Synchronizing GIF #{0} duration...</value>
+    <value>同步GIF #{0}持續時間...</value>
   </data>
   <data name="Status_MergingFrame" xml:space="preserve">
-    <value>Merging frame {0}/{1}...</value>
+    <value>正在合併影格 {0}/{1}...</value>
   </data>
   <data name="Title_Error" xml:space="preserve">
-    <value>Error</value>
+    <value>錯誤</value>
   </data>
   <data name="Title_Success" xml:space="preserve">
-    <value>Success</value>
+    <value>成功</value>
   </data>
   <data name="Title_Warning" xml:space="preserve">
-    <value>Warning</value>
+    <value>警告</value>
   </data>
   <data name="Title_Information" xml:space="preserve">
-    <value>Information</value>
+    <value>資訊</value>
   </data>
   <data name="Title_StartupError" xml:space="preserve">
-    <value>Startup Error</value>
+    <value>啟動錯誤</value>
   </data>
   <data name="Title_InitializationError" xml:space="preserve">
-    <value>Initialization Error</value>
+    <value>初始化錯誤</value>
   </data>
   <data name="Title_FFmpegRequired" xml:space="preserve">
-    <value>FFmpeg Required</value>
+    <value>需要FFmpeg</value>
   </data>
   <data name="Title_Mp4ToGifError" xml:space="preserve">
-    <value>MP4 to GIF Conversion Error</value>
+    <value>MP4轉GIF錯誤</value>
   </data>
   <data name="Title_MergeGifs" xml:space="preserve">
-    <value>Merge GIF Files</value>
+    <value>合併GIF</value>
   </data>
   <data name="Title_MergeGifError" xml:space="preserve">
-    <value>GIF Merge Error</value>
+    <value>GIF合併錯誤</value>
   </data>
   <data name="Title_TailByteRestoration" xml:space="preserve">
-    <value>Tail Byte Restoration</value>
+    <value>尾端位元組還原</value>
   </data>
   <data name="Title_FileProcessingError" xml:space="preserve">
-    <value>File Processing Error</value>
+    <value>檔案處理錯誤</value>
   </data>
   <data name="Title_InvalidColorType" xml:space="preserve">
-    <value>Invalid Color Type</value>
+    <value>無效的顏色類型</value>
   </data>
   <data name="Title_SelectionOrder" xml:space="preserve">
-    <value>Selection Order Information</value>
+    <value>選擇順序</value>
   </data>
   <data name="Message_ProcessingComplete" xml:space="preserve">
-    <value>GIF processing and splitting completed successfully!</value>
+    <value>處理完成！</value>
   </data>
   <data name="Message_PaletteProcessingComplete" xml:space="preserve">
-    <value>GIF processing with reduced palette completed successfully!</value>
+    <value>調色盤處理完成！</value>
   </data>
   <data name="Message_FiveGifMergeComplete" xml:space="preserve">
-    <value>Five GIF files have been merged and split into 5 parts successfully!</value>
+    <value>五個 GIF 檔案已成功合併並分割成 5 個部分！</value>
   </data>
   <data name="Message_GifMergeComplete" xml:space="preserve">
-    <value>GIF files merged successfully!\nSaved as: {0}</value>
+    <value>GIF合併完成！
+輸出檔案：{0}</value>
   </data>
   <data name="Message_SelectGifFiles" xml:space="preserve">
-    <value>Please select 2-5 GIF files to merge (in order from left to right):</value>
+    <value>請選擇2-5個GIF檔案進行合併</value>
   </data>
   <data name="Message_GifFileCount" xml:space="preserve">
-    <value>Please select between 2 and 5 GIF files.</value>
+    <value>請選擇 2 到 5 個 GIF 檔案。</value>
   </data>
   <data name="Message_AnalyzingGifs" xml:space="preserve">
-    <value>Analyzing GIF files...</value>
+    <value>分析GIF檔案...</value>
   </data>
   <data name="Message_MergingGifs" xml:space="preserve">
-    <value>Merging GIF files...</value>
+    <value>正在合併GIF檔案...</value>
   </data>
   <data name="Message_ResizeComplete" xml:space="preserve">
-    <value>GIF resizing completed successfully!\nSaved as: {0}</value>
+    <value>GIF 調整大小已成功完成！\n已儲存為: {0}</value>
   </data>
   <data name="Message_Mp4ConversionComplete" xml:space="preserve">
-    <value>MP4 to GIF conversion completed successfully!\nSaved as: {0}</value>
+    <value>MP4轉GIF完成！
+輸出檔案：{0}</value>
   </data>
   <data name="Message_ProcessedFiles" xml:space="preserve">
-    <value>{0} of {1} GIF files processed successfully!</value>
+    <value>{1} 個 GIF 檔案中的 {0} 個已成功處理！</value>
   </data>
   <data name="Message_RestorationComplete" xml:space="preserve">
-    <value>Restoration completed!\nFiles processed: {0}\nFiles skipped (not 0x21): {1}</value>
+    <value>還原已完成！\n已處理檔案: {0}\n已略過檔案 (非 0x21): {1}</value>
   </data>
   <data name="Error_UnsupportedWidth" xml:space="preserve">
-    <value>Unsupported GIF canvas width: {0}px. Only {1}px and {2}px are supported.</value>
+    <value>不支援的GIF寬度：{0}像素。此工具只支援{1}像素或{2}像素寬度的GIF檔案。</value>
   </data>
   <data name="Error_PaletteRange" xml:space="preserve">
-    <value>Palette size must be between 32 and 256.</value>
+    <value>調色盤大小必須在32到256之間。</value>
   </data>
   <data name="Error_Occurred" xml:space="preserve">
-    <value>An error occurred: {0}</value>
+    <value>發生錯誤：{0}</value>
   </data>
   <data name="Error_Processing" xml:space="preserve">
-    <value>Error processing five GIF merge and split: {0}</value>
+    <value>處理錯誤：{0}</value>
   </data>
   <data name="Error_ProcessingFile" xml:space="preserve">
-    <value>Error processing {0}: {1}</value>
+    <value>處理檔案時發生錯誤 {0}：{1}</value>
   </data>
   <data name="Error_ResizeFailed" xml:space="preserve">
-    <value>Resize operation failed: {0}</value>
+    <value>調整大小失敗：{0}</value>
   </data>
   <data name="Error_StartupFailed" xml:space="preserve">
-    <value>Application startup failed: {0}\n\nStack trace:\n{1}</value>
+    <value>啟動失敗：{0}\n\n堆疊追蹤：{1}</value>
   </data>
   <data name="Error_InitializationFailed" xml:space="preserve">
-    <value>Failed to initialize form: {0}</value>
+    <value>初始化失敗：{0}</value>
   </data>
   <data name="Error_UnhandledException" xml:space="preserve">
-    <value>Unhandled exception: {0}\n\nStack trace:\n{1}</value>
+    <value>發生未處理的例外狀況：{0}\n\n堆疊追蹤：{1}</value>
   </data>
   <data name="Error_InvalidColorType" xml:space="preserve">
-    <value>GIF #{0} ({1}) must have palette-based colors (8-bit).\nCurrent color type: {2}</value>
+    <value>GIF #{0} ({1}) 必須使用基於調色盤的顏色 (8 位元)。\n目前的顏色類型: {2}</value>
   </data>
   <data name="FileDialog_SelectGif" xml:space="preserve">
-    <value>Select a GIF file to process</value>
+    <value>選擇一個GIF檔案</value>
   </data>
   <data name="FileDialog_SelectGifResize" xml:space="preserve">
-    <value>Select a GIF file to resize</value>
+    <value>選擇要調整大小的GIF檔案</value>
   </data>
   <data name="FileDialog_SelectGifFiles" xml:space="preserve">
-    <value>Select GIF files to process</value>
+    <value>選擇GIF檔案</value>
   </data>
   <data name="FileDialog_SelectGifRestore" xml:space="preserve">
-    <value>Select GIF files to restore tail bytes from 0x21 to 0x3B</value>
+    <value>選擇要還原的GIF檔案</value>
   </data>
   <data name="FileDialog_GifFilter" xml:space="preserve">
-    <value>GIF Files (*.gif)|*.gif</value>
+    <value>GIF檔案 (*.gif)|*.gif</value>
   </data>
   <data name="FileDialog_SelectGifOrder" xml:space="preserve">
-    <value>Select GIF file #{0} (position {1} from left to right)</value>
+    <value>選擇 GIF 檔案 #{0}（從左至右的第 {1} 個位置）</value>
   </data>
   <data name="Instruction_SelectFiveGifs" xml:space="preserve">
-    <value>You will need to select 5 GIF files one by one in the desired order.\n\nFile 1: First position (leftmost)\nFile 2: Second position\nFile 3: Third position (center)\nFile 4: Fourth position\nFile 5: Fifth position (rightmost)</value>
+    <value>您需要按照所需順序逐一選擇5個GIF檔案。
+
+檔案1：第一個位置（最左邊）
+檔案2：第二個位置
+檔案3：第三個位置（中間）
+檔案4：第四個位置
+檔案5：第五個位置（最右邊）</value>
   </data>
   <data name="Mp4Dialog_InputFile" xml:space="preserve">
-    <value>Input MP4 file:</value>
+    <value>輸入檔案：</value>
   </data>
   <data name="Mp4Dialog_OutputFile" xml:space="preserve">
-    <value>Output GIF file:</value>
+    <value>輸出檔案：</value>
   </data>
   <data name="Mp4Dialog_StartTime" xml:space="preserve">
-    <value>Start time:</value>
+    <value>開始時間：</value>
   </data>
   <data name="Mp4Dialog_Minutes" xml:space="preserve">
-    <value>min:</value>
+    <value>分鐘</value>
   </data>
   <data name="Mp4Dialog_Seconds" xml:space="preserve">
-    <value>sec:</value>
+    <value>秒</value>
   </data>
   <data name="Mp4Dialog_Duration" xml:space="preserve">
-    <value>Duration:</value>
+    <value>持續時間：</value>
   </data>
   <data name="Mp4Dialog_UseGPU" xml:space="preserve">
-    <value>Use GPU acceleration (if available)</value>
+    <value>使用GPU加速(如可用)</value>
   </data>
   <data name="Group_Dither" xml:space="preserve">
-    <value>Dither</value>
+    <value>邊緣平滑</value>
   </data>
   <data name="Label_Optimize" xml:space="preserve">
-    <value>Optimize:</value>
+    <value>最佳化：</value>
   </data>
   <data name="Label_Palette" xml:space="preserve">
-    <value>Palette:</value>
+    <value>調色盤大小：</value>
   </data>
   <data name="Label_Lossy" xml:space="preserve">
-    <value>Lossy:</value>
+    <value>有損壓縮：</value>
   </data>
   <data name="Radio_Default" xml:space="preserve">
-    <value>Default</value>
+    <value>預設</value>
   </data>
   <data name="Radio_o8" xml:space="preserve">
     <value>o8</value>
@@ -373,96 +381,96 @@
     <value>ro64</value>
   </data>
   <data name="Radio_None" xml:space="preserve">
-    <value>None</value>
+    <value>無</value>
   </data>
   <data name="Label_Framerate" xml:space="preserve">
-    <value>Target framerate:</value>
+    <value>目標幀率：</value>
   </data>
   <data name="Label_FPS" xml:space="preserve">
     <value>fps</value>
   </data>
   <data name="Tooltip_Framerate" xml:space="preserve">
-    <value>Target framerate for all GIF outputs (frames per second)</value>
+    <value>所有輸出GIF的目標幀率(1-60 fps)</value>
   </data>
   <data name="CheckBox_FasterPalette" xml:space="preserve">
-    <value>Faster palette reduction (quality down)</value>
+    <value>使用較快的調色盤處理(品質較低)</value>
   </data>
   <data name="Button_ReverseGif" xml:space="preserve">
-    <value>FFMPEG: Reverse animated GIF</value>
+    <value>FFMPEG：反轉動畫GIF</value>
   </data>
   <data name="Status_ValidatingProcessing" xml:space="preserve">
-    <value>Validating and processing 5 GIF files...</value>
+    <value>驗證處理中...</value>
   </data>
   <data name="Status_SynchronizingDurations" xml:space="preserve">
-    <value>Synchronizing animation durations...</value>
+    <value>同步動畫持續時間...</value>
   </data>
   <data name="Status_ShortestDuration" xml:space="preserve">
-    <value>Shortest duration: {0:F1}s (GIF #{1})</value>
+    <value>最短持續時間：{0:F1}秒 (GIF #{1})</value>
   </data>
   <data name="Status_MergingHorizontally" xml:space="preserve">
-    <value>Merging GIFs horizontally to 766px width...</value>
+    <value>水平合併GIF至766px寬度...</value>
   </data>
   <data name="Status_FiveGifComplete" xml:space="preserve">
-    <value>Five GIF merge and split completed successfully!</value>
+    <value>五個GIF處理完成！</value>
   </data>
   <data name="Status_ErrorOccurred" xml:space="preserve">
-    <value>Error occurred during processing.</value>
+    <value>發生錯誤</value>
   </data>
   <data name="Status_ProcessingPalette" xml:space="preserve">
-    <value>Processing with reduced palette...</value>
+    <value>處理調色盤中...</value>
   </data>
   <data name="Status_ProcessingPartPalette" xml:space="preserve">
-    <value>Processing part {0} with palette reduction, frame {1}...</value>
+    <value>正在處理第{0}部分的調色盤，影格{1}...</value>
   </data>
   <data name="Status_Mp4ShortClip" xml:space="preserve">
-    <value>Short clip - CPU more efficient...</value>
+    <value>短片段：使用最佳化設定轉換MP4...</value>
   </data>
   <data name="Status_Mp4GPU" xml:space="preserve">
-    <value>GPU decode + CPU GIF encoding...</value>
+    <value>使用GPU加速轉換MP4為GIF...</value>
   </data>
   <data name="Status_Mp4GPUFailed" xml:space="preserve">
-    <value>GPU decode failed, using CPU...</value>
+    <value>GPU解碼失敗，使用CPU...</value>
   </data>
   <data name="Status_Mp4CPU" xml:space="preserve">
-    <value>Converting MP4 to GIF with optimized CPU...</value>
+    <value>使用最佳化CPU轉換MP4為GIF...</value>
   </data>
   <data name="Status_Mp4Complete" xml:space="preserve">
-    <value>MP4 to GIF conversion completed successfully!</value>
+    <value>MP4轉GIF轉換成功完成！</value>
   </data>
   <data name="FileDialog_SelectGifToReverse" xml:space="preserve">
-    <value>Select a GIF file to reverse</value>
+    <value>選擇要反轉的GIF檔案</value>
   </data>
   <data name="FileDialog_SaveReversedGif" xml:space="preserve">
-    <value>Save reversed GIF as</value>
+    <value>另存反轉的GIF為</value>
   </data>
   <data name="Status_ReversingGif" xml:space="preserve">
-    <value>Reversing GIF...</value>
+    <value>正在反轉GIF...</value>
   </data>
   <data name="Status_GifReversed" xml:space="preserve">
-    <value>GIF reversed successfully!</value>
+    <value>GIF反轉成功！</value>
   </data>
   <data name="Message_GifReversedSuccess" xml:space="preserve">
-    <value>GIF reversed successfully!</value>
+    <value>GIF反轉成功！</value>
   </data>
   <data name="Error_GifReverseFailed" xml:space="preserve">
-    <value>Failed to reverse GIF: {0}</value>
+    <value>GIF反轉失敗：{0}</value>
   </data>
   <data name="Error_FileValidationFailed" xml:space="preserve">
-    <value>File validation failed: {0}</value>
+    <value>檔案驗證失敗：{0}</value>
   </data>
   <data name="Error_GifMergeFailed" xml:space="preserve">
-    <value>GIF merge failed: {0}</value>
+    <value>GIF合併失敗：{0}</value>
   </data>
   <data name="FileDialog_Mp4Filter" xml:space="preserve">
-    <value>MP4 file (*.mp4)|*.mp4</value>
+    <value>MP4檔案 (*.mp4)|*.mp4</value>
   </data>
   <data name="FileDialog_SelectMp4" xml:space="preserve">
-    <value>Select MP4 file to convert</value>
+    <value>選擇一個MP4檔案來轉換</value>
   </data>
   <data name="Status_ConvertingMp4" xml:space="preserve">
-    <value>Converting to GIF...</value>
+    <value>正在轉換MP4為GIF...</value>
   </data>
   <data name="Title_Mp4ConversionError" xml:space="preserve">
-    <value>Conversion error</value>
+    <value>MP4轉換錯誤</value>
   </data>
 </root>

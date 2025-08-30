@@ -190,5 +190,51 @@ namespace GifProcessorApp
             _isDarkMode = !_isDarkMode;
             ApplyCurrentTheme();
         }
+
+        /// <summary>
+        /// Switch language for testing purposes
+        /// </summary>
+        /// <param name="culture">Culture code: "en", "zh-TW", or "ja"</param>
+        public void SwitchLanguage(string culture)
+        {
+            try
+            {
+                Program.InitializeLocalization(culture);
+                
+                // Update the form text and controls
+                UpdateUIText();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to switch language: {ex.Message}", "Language Switch Error", 
+                               MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        /// <summary>
+        /// Update all UI text elements with current culture
+        /// </summary>
+        private void UpdateUIText()
+        {
+            try
+            {
+                // Update main form elements - these will be picked up automatically on next access
+                this.Text = "Steam GIF Cropper"; // Keep main title in English
+                
+                // Update status
+                if (lblStatus.Text == "Ready" || lblStatus.Text == "就緒" || lblStatus.Text == "準備完了")
+                {
+                    lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready;
+                }
+
+                // Force repaint to show changes
+                this.Invalidate(true);
+                this.Update();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to update UI text: {ex.Message}");
+            }
+        }
     }
 }
