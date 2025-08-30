@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -218,22 +219,47 @@ namespace GifProcessorApp
         {
             try
             {
-                // Update main form elements - these will be picked up automatically on next access
+                var resources = new ComponentResourceManager(typeof(GifToolMainForm));
+
+                ApplyResourcesRecursively(this, resources);
+
+                resources.ApplyResources(conMenuLangSwitch, conMenuLangSwitch.Name);
+                ApplyToolStripItemsRecursively(conMenuLangSwitch.Items, resources);
+
                 this.Text = "Steam GIF Cropper"; // Keep main title in English
 
-                // Update status
                 if (lblStatus.Text == "Ready" || lblStatus.Text == "就緒" || lblStatus.Text == "準備完了")
                 {
                     lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready;
                 }
 
-                // Force repaint to show changes
                 this.Invalidate(true);
                 this.Update();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Failed to update UI text: {ex.Message}");
+            }
+        }
+
+        private void ApplyResourcesRecursively(Control control, ComponentResourceManager resources)
+        {
+            resources.ApplyResources(control, control.Name);
+            foreach (Control child in control.Controls)
+            {
+                ApplyResourcesRecursively(child, resources);
+            }
+        }
+
+        private void ApplyToolStripItemsRecursively(ToolStripItemCollection items, ComponentResourceManager resources)
+        {
+            foreach (ToolStripItem item in items)
+            {
+                resources.ApplyResources(item, item.Name);
+                if (item is ToolStripDropDownItem dropDownItem && dropDownItem.HasDropDownItems)
+                {
+                    ApplyToolStripItemsRecursively(dropDownItem.DropDownItems, resources);
+                }
             }
         }
 
