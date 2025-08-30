@@ -71,6 +71,54 @@ namespace GifProcessorApp
             }
         }
 
+        private static MagickImageCollection[] SynchronizeToShortestDuration(MagickImageCollection[] collections, GifToolMainForm mainForm)
+        {
+            var durations = new double[collections.Length];
+            for (int i = 0; i < collections.Length; i++)
+            {
+                durations[i] = collections[i].Sum(f => (double)f.AnimationDelay / f.AnimationTicksPerSecond);
+            }
+
+            double shortestDuration = durations.Min();
+            var synced = new MagickImageCollection[collections.Length];
+
+            for (int i = 0; i < collections.Length; i++)
+            {
+                synced[i] = new MagickImageCollection();
+                if (Math.Abs(durations[i] - shortestDuration) < 0.0001)
+                {
+                    foreach (var frame in collections[i])
+                    {
+                        synced[i].Add(frame.Clone());
+                    }
+                }
+                else
+                {
+                    double current = 0;
+                    foreach (var frame in collections[i])
+                    {
+                        double frameDuration = (double)frame.AnimationDelay / frame.AnimationTicksPerSecond;
+                        if (current + frameDuration <= shortestDuration)
+                        {
+                            synced[i].Add(frame.Clone());
+                            current += frameDuration;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                foreach (var frame in synced[i])
+                {
+                    frame.GifDisposeMethod = GifDisposeMethod.Background;
+                }
+            }
+
+            return synced;
+        }
+
         public static async Task MergeMultipleGifs(List<string> gifPaths, string outputPath, GifToolMainForm mainForm, int targetFramerate = 15, bool useFastPalette = false)
         {
             if (gifPaths == null || gifPaths.Count < 2 || gifPaths.Count > 5)
