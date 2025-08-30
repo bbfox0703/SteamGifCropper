@@ -224,8 +224,25 @@ namespace GifProcessorApp
 
                 ApplyResourcesRecursively(this, resources);
 
+                // Update context menu items if resource entries exist
                 resources.ApplyResources(conMenuLangSwitch, conMenuLangSwitch.Name);
                 ApplyToolStripItemsRecursively(conMenuLangSwitch.Items, resources);
+
+                // Reassign control captions from resources so they update with the culture
+                btnSplitGif.Text = SteamGifCropper.Properties.Resources.Button_SplitGif;
+                btnResizeGif766.Text = SteamGifCropper.Properties.Resources.Button_ResizeGif;
+                btnWriteTailByte.Text = SteamGifCropper.Properties.Resources.Button_WriteTailByte;
+                btnRestoreTailByte.Text = SteamGifCropper.Properties.Resources.Button_RestoreTailByte;
+                btnMergeAndSplit.Text = SteamGifCropper.Properties.Resources.Button_MergeAndSplit;
+                btnMp4ToGif.Text = SteamGifCropper.Properties.Resources.Button_Mp4ToGif;
+                radioBtnDDefault.Text = SteamGifCropper.Properties.Resources.Radio_Default;
+                radioBtnDo8.Text = SteamGifCropper.Properties.Resources.Radio_o8;
+                radioBtnDro64.Text = SteamGifCropper.Properties.Resources.Radio_ro64;
+                radioBtnDNone.Text = SteamGifCropper.Properties.Resources.Radio_None;
+                chkGifsicle.Text = SteamGifCropper.Properties.Resources.CheckBox_GifsicleOptimization;
+                btnMerge2to5GifToOne.Text = SteamGifCropper.Properties.Resources.Button_MergeGifs;
+                chk5GIFMergeFasterPaletteProcess.Text = SteamGifCropper.Properties.Resources.CheckBox_FasterPalette;
+                btnReverseGIF.Text = SteamGifCropper.Properties.Resources.Button_ReverseGif;
 
                 this.Text = "Steam GIF Cropper"; // Keep main title in English
 
