@@ -415,7 +415,6 @@
             Controls.Add(btnResizeGif766);
             Controls.Add(btnSplitGif);
             Controls.Add(btnMerge2to5GifToOne);
-            FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             Margin = new System.Windows.Forms.Padding(2);
             MaximizeBox = false;
             Name = "GifToolMainForm";
