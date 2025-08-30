@@ -467,6 +467,9 @@
   <data name="FileDialog_SelectMp4" xml:space="preserve">
     <value>変換するMP4ファイルを選択</value>
   </data>
+  <data name="FileDialog_SaveGif" xml:space="preserve">
+    <value>GIFファイルを名前を付けて保存...</value>
+  </data>
   <data name="Status_ConvertingMp4" xml:space="preserve">
     <value>MP4をGIFに変換しています...</value>
   </data>

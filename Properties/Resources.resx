@@ -459,6 +459,9 @@
   <data name="FileDialog_SelectMp4" xml:space="preserve">
     <value>Select MP4 file to convert</value>
   </data>
+  <data name="FileDialog_SaveGif" xml:space="preserve">
+    <value>Save GIF file as...</value>
+  </data>
   <data name="Status_ConvertingMp4" xml:space="preserve">
     <value>Converting to GIF...</value>
   </data>
