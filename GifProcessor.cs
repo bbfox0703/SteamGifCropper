@@ -526,7 +526,8 @@ namespace GifProcessorApp
 
                 paletteSamples.Quantize(settings);
 
-                return paletteSamples[0].Clone();
+                // Create a copy of the quantized sample to use as palette
+                return new MagickImage(paletteSamples[0]);
             }
             finally
             {
@@ -602,7 +603,10 @@ namespace GifProcessorApp
                     DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
                 };
 
-                mergedCollection.Map(palette, mapSettings);
+                foreach (var frame in mergedCollection)
+                {
+                    frame.Map(palette, mapSettings);
+                }
                 palette.Dispose();
 
                 return mergedCollection;
@@ -1216,7 +1220,10 @@ namespace GifProcessorApp
                         DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
                     };
 
-                    mergedCollection.Map(palette, mapSettings);
+                    foreach (var frame in mergedCollection)
+                    {
+                        frame.Map(palette, mapSettings);
+                    }
 
                     // Apply LZW compression
                     foreach (var frame in mergedCollection)
