@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Win32;
@@ -73,6 +74,14 @@ namespace GifProcessorApp
         {
             SystemEvents.UserPreferenceChanged -= SystemEvents_UserPreferenceChanged;
             base.OnHandleDestroyed(e);
+        }
+
+        protected override void OnDpiChanged(DpiChangedEventArgs e)
+        {
+            base.OnDpiChanged(e);
+            Bounds = e.SuggestedRectangle;
+            AutoScaleDimensions = new SizeF(e.DeviceDpiNew, e.DeviceDpiNew);
+            PerformLayout();
         }
 
         private async Task ExecuteWithErrorHandling(Func<Task> action, string operationName)
