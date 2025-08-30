@@ -413,18 +413,18 @@ namespace GifProcessorApp
             mainForm.lblStatus.Text = "Synchronizing animation durations...";
             Application.DoEvents();
 
-            // Calculate total duration for each GIF (frames * delay)
-            var durations = new int[5];
+            // Calculate total duration for each GIF in seconds
+            var durations = new double[5];
             for (int i = 0; i < 5; i++)
             {
-                durations[i] = (int)collections[i].Sum(frame => (long)frame.AnimationDelay);
+                durations[i] = collections[i].Sum(frame => (double)frame.AnimationDelay / frame.AnimationTicksPerSecond);
             }
 
             // Find shortest duration
-            int shortestDuration = durations.Min();
+            double shortestDuration = durations.Min();
             int shortestIndex = Array.IndexOf(durations, shortestDuration);
 
-            mainForm.lblStatus.Text = $"Shortest duration: {shortestDuration/100.0:F1}s (GIF #{shortestIndex + 1})";
+            mainForm.lblStatus.Text = $"Shortest duration: {shortestDuration:F1}s (GIF #{shortestIndex + 1})";
             Application.DoEvents();
 
             // Synchronize all GIFs to shortest duration
@@ -439,7 +439,7 @@ namespace GifProcessorApp
                     
                     syncedCollections[i] = new MagickImageCollection();
                     
-                    if (durations[i] == shortestDuration)
+                    if (Math.Abs(durations[i] - shortestDuration) < 0.0001)
                     {
                         // Already the shortest, copy as-is
                         int frameCount = 0;
@@ -457,15 +457,16 @@ namespace GifProcessorApp
                     else
                     {
                         // Trim to shortest duration
-                        int currentDuration = 0;
+                        double currentDuration = 0;
                         int frameCount = 0;
                         foreach (var frame in collections[i])
                         {
-                            if (currentDuration + (int)frame.AnimationDelay <= shortestDuration)
+                            double frameDuration = (double)frame.AnimationDelay / frame.AnimationTicksPerSecond;
+                            if (currentDuration + frameDuration <= shortestDuration)
                             {
                                 syncedCollections[i].Add(frame.Clone());
-                                currentDuration += (int)frame.AnimationDelay;
-                                
+                                currentDuration += frameDuration;
+
                                 // Update every 20 frames
                                 if (++frameCount % 20 == 0)
                                 {
@@ -578,8 +579,10 @@ namespace GifProcessorApp
                         canvas.Composite(frame, xPositions[gifIndex], 0, CompositeOperator.Over);
                     }
 
-                    // Set animation delay (use delay from first GIF)
-                    canvas.AnimationDelay = collections[0][frameIndex % collections[0].Count].AnimationDelay;
+                    // Set animation delay and timing from first GIF to maintain original speed
+                    var referenceFrame = collections[0][frameIndex % collections[0].Count];
+                    canvas.AnimationDelay = referenceFrame.AnimationDelay;
+                    canvas.AnimationTicksPerSecond = referenceFrame.AnimationTicksPerSecond;
 
                     mergedCollection.Add(canvas);
                 }
@@ -1133,25 +1136,28 @@ namespace GifProcessorApp
                     var collection = new MagickImageCollection(gifPath);
                     collection.Coalesce();
                     collections.Add(collection);
-                    
+
                     int width = (int)collection[0].Width;
                     widths.Add(width);
-                    
-                    // Calculate total duration
-                    double totalDuration = collection.Sum(frame => frame.AnimationDelay) / 100.0; // Convert to seconds
+
+                    // Calculate total duration in seconds accounting for ticks-per-second
+                    double totalDuration = collection.Sum(frame => (double)frame.AnimationDelay / frame.AnimationTicksPerSecond);
                     if (totalDuration < shortestDuration)
                     {
                         shortestDuration = totalDuration;
                     }
-                    
+
                     minFrameCount = Math.Min(minFrameCount, collection.Count);
                 }
 
+                // Determine timing based on first GIF
+                int ticksPerSecond = collections[0][0].AnimationTicksPerSecond;
+
                 // Calculate target frame count based on shortest duration and target framerate
                 int targetFrameCount = Math.Max(1, (int)(shortestDuration * targetFramerate));
-                
-                // Calculate target delay in centiseconds
-                uint targetDelay = (uint)Math.Round(100.0 / targetFramerate);
+
+                // Calculate target delay in ticks
+                uint targetDelay = (uint)Math.Round((double)ticksPerSecond / targetFramerate);
 
                 // Calculate total width
                 int totalWidth = widths.Sum();
@@ -1199,8 +1205,9 @@ namespace GifProcessorApp
                             currentX += widths[gifIndex];
                         }
 
-                        // Set animation delay to target framerate
+                        // Set animation delay and timing to maintain source speed
                         canvas.AnimationDelay = targetDelay;
+                        canvas.AnimationTicksPerSecond = ticksPerSecond;
                         canvas.GifDisposeMethod = GifDisposeMethod.Background;
                         
                         mergedCollection.Add(canvas);
