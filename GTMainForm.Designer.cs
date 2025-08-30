@@ -374,7 +374,7 @@
             // 
             // btnMerge2to5GifToOne
             // 
-            btnMerge2to5GifToOne.Location = new System.Drawing.Point(7, 125);
+            btnMerge2to5GifToOne.Location = new System.Drawing.Point(295, 7);
             btnMerge2to5GifToOne.Name = "btnMerge2to5GifToOne";
             btnMerge2to5GifToOne.Size = new System.Drawing.Size(284, 26);
             btnMerge2to5GifToOne.TabIndex = 23;
@@ -402,6 +402,7 @@
             Controls.Add(btnRestoreTailByte);
             Controls.Add(btnResizeGif766);
             Controls.Add(btnSplitGif);
+            Controls.Add(btnMerge2to5GifToOne);
             FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             Margin = new System.Windows.Forms.Padding(2);
             MaximizeBox = false;

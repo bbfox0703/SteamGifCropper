@@ -148,115 +148,140 @@ namespace GifProcessorApp
             btnOK = new Button();
             btnCancel = new Button();
             SuspendLayout();
-            
+            // 
             // lblInstructions
-            lblInstructions.Location = new System.Drawing.Point(8, 8);
+            // 
+            lblInstructions.Location = new System.Drawing.Point(14, 9);
+            lblInstructions.Margin = new Padding(41, 0, 41, 0);
             lblInstructions.Name = "lblInstructions";
-            lblInstructions.Size = new System.Drawing.Size(450, 30);
+            lblInstructions.Size = new System.Drawing.Size(371, 22);
             lblInstructions.TabIndex = 0;
-            lblInstructions.Text = SteamGifCropper.Properties.Resources.Message_SelectGifFiles;
-            
+            lblInstructions.Text = "Please select 2-5 GIF files to merge (in order from left to right):";
+            // 
             // lblGifFiles
-            lblGifFiles.Location = new System.Drawing.Point(8, 45);
+            // 
+            lblGifFiles.Location = new System.Drawing.Point(14, 42);
+            lblGifFiles.Margin = new Padding(41, 0, 41, 0);
             lblGifFiles.Name = "lblGifFiles";
-            lblGifFiles.Size = new System.Drawing.Size(150, 15);
+            lblGifFiles.Size = new System.Drawing.Size(108, 20);
             lblGifFiles.TabIndex = 1;
             lblGifFiles.Text = "GIF Files (2-5):";
-            
+            // 
             // lstGifFiles
-            lstGifFiles.Location = new System.Drawing.Point(8, 65);
+            // 
+            lstGifFiles.ItemHeight = 15;
+            lstGifFiles.Location = new System.Drawing.Point(14, 61);
+            lstGifFiles.Margin = new Padding(41, 19, 41, 19);
             lstGifFiles.Name = "lstGifFiles";
-            lstGifFiles.Size = new System.Drawing.Size(350, 150);
+            lstGifFiles.Size = new System.Drawing.Size(420, 169);
             lstGifFiles.TabIndex = 2;
-            lstGifFiles.SelectionMode = SelectionMode.One;
-            
+            // 
             // btnAddFiles
-            btnAddFiles.Location = new System.Drawing.Point(370, 65);
+            // 
+            btnAddFiles.Location = new System.Drawing.Point(440, 61);
+            btnAddFiles.Margin = new Padding(41, 19, 41, 19);
             btnAddFiles.Name = "btnAddFiles";
-            btnAddFiles.Size = new System.Drawing.Size(80, 25);
+            btnAddFiles.Size = new System.Drawing.Size(101, 28);
             btnAddFiles.TabIndex = 3;
             btnAddFiles.Text = "Add Files...";
             btnAddFiles.UseVisualStyleBackColor = true;
             btnAddFiles.Click += BtnAddFiles_Click;
-            
+            // 
             // btnRemoveSelected
-            btnRemoveSelected.Location = new System.Drawing.Point(370, 95);
+            // 
+            btnRemoveSelected.Location = new System.Drawing.Point(440, 127);
+            btnRemoveSelected.Margin = new Padding(41, 19, 41, 19);
             btnRemoveSelected.Name = "btnRemoveSelected";
-            btnRemoveSelected.Size = new System.Drawing.Size(80, 25);
+            btnRemoveSelected.Size = new System.Drawing.Size(101, 25);
             btnRemoveSelected.TabIndex = 4;
             btnRemoveSelected.Text = "Remove";
             btnRemoveSelected.UseVisualStyleBackColor = true;
             btnRemoveSelected.Click += BtnRemoveSelected_Click;
-            
+            // 
             // btnMoveUp
-            btnMoveUp.Location = new System.Drawing.Point(370, 130);
+            // 
+            btnMoveUp.Location = new System.Drawing.Point(440, 158);
+            btnMoveUp.Margin = new Padding(41, 19, 41, 19);
             btnMoveUp.Name = "btnMoveUp";
-            btnMoveUp.Size = new System.Drawing.Size(80, 25);
+            btnMoveUp.Size = new System.Drawing.Size(101, 25);
             btnMoveUp.TabIndex = 5;
             btnMoveUp.Text = "Move Up";
             btnMoveUp.UseVisualStyleBackColor = true;
             btnMoveUp.Click += BtnMoveUp_Click;
-            
+            // 
             // btnMoveDown
-            btnMoveDown.Location = new System.Drawing.Point(370, 160);
+            // 
+            btnMoveDown.Location = new System.Drawing.Point(440, 189);
+            btnMoveDown.Margin = new Padding(41, 19, 41, 19);
             btnMoveDown.Name = "btnMoveDown";
-            btnMoveDown.Size = new System.Drawing.Size(80, 25);
+            btnMoveDown.Size = new System.Drawing.Size(101, 25);
             btnMoveDown.TabIndex = 6;
             btnMoveDown.Text = "Move Down";
             btnMoveDown.UseVisualStyleBackColor = true;
             btnMoveDown.Click += BtnMoveDown_Click;
-            
+            // 
             // lblOutput
-            lblOutput.Location = new System.Drawing.Point(8, 230);
+            // 
+            lblOutput.Location = new System.Drawing.Point(14, 247);
+            lblOutput.Margin = new Padding(41, 0, 41, 0);
             lblOutput.Name = "lblOutput";
-            lblOutput.Size = new System.Drawing.Size(150, 15);
+            lblOutput.Size = new System.Drawing.Size(108, 20);
             lblOutput.TabIndex = 7;
             lblOutput.Text = "Output GIF file:";
-            
+            // 
             // txtOutputPath
-            txtOutputPath.Location = new System.Drawing.Point(8, 250);
+            // 
+            txtOutputPath.Location = new System.Drawing.Point(14, 268);
+            txtOutputPath.Margin = new Padding(41, 19, 41, 19);
             txtOutputPath.Name = "txtOutputPath";
             txtOutputPath.ReadOnly = true;
-            txtOutputPath.Size = new System.Drawing.Size(350, 23);
+            txtOutputPath.Size = new System.Drawing.Size(420, 23);
             txtOutputPath.TabIndex = 8;
-            
+            // 
             // btnBrowseOutput
-            btnBrowseOutput.Location = new System.Drawing.Point(370, 250);
+            // 
+            btnBrowseOutput.Location = new System.Drawing.Point(439, 95);
+            btnBrowseOutput.Margin = new Padding(41, 19, 41, 19);
             btnBrowseOutput.Name = "btnBrowseOutput";
-            btnBrowseOutput.Size = new System.Drawing.Size(80, 25);
+            btnBrowseOutput.Size = new System.Drawing.Size(101, 26);
             btnBrowseOutput.TabIndex = 9;
             btnBrowseOutput.Text = SteamGifCropper.Properties.Resources.Button_Browse;
             btnBrowseOutput.UseVisualStyleBackColor = true;
             btnBrowseOutput.Click += BtnBrowseOutput_Click;
-            
+            // 
             // btnOK
+            // 
             btnOK.DialogResult = DialogResult.OK;
-            btnOK.Location = new System.Drawing.Point(295, 290);
+            btnOK.Location = new System.Drawing.Point(334, 304);
+            btnOK.Margin = new Padding(41, 19, 41, 19);
             btnOK.Name = "btnOK";
-            btnOK.Size = new System.Drawing.Size(75, 25);
+            btnOK.Size = new System.Drawing.Size(100, 25);
             btnOK.TabIndex = 10;
             btnOK.Text = "Merge";
             btnOK.UseVisualStyleBackColor = true;
             btnOK.Click += BtnOK_Click;
-            
+            // 
             // btnCancel
+            // 
             btnCancel.DialogResult = DialogResult.Cancel;
-            btnCancel.Location = new System.Drawing.Point(375, 290);
+            btnCancel.Location = new System.Drawing.Point(440, 304);
+            btnCancel.Margin = new Padding(41, 19, 41, 19);
             btnCancel.Name = "btnCancel";
-            btnCancel.Size = new System.Drawing.Size(75, 25);
+            btnCancel.Size = new System.Drawing.Size(100, 25);
             btnCancel.TabIndex = 11;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
-            
+            // 
             // MergeGifsDialog
+            // 
             AcceptButton = btnOK;
-            CancelButton = btnCancel;
-            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
-            ClientSize = new System.Drawing.Size(460, 330);
+            CancelButton = btnCancel;
+            ClientSize = new System.Drawing.Size(556, 336);
+            Controls.Add(lstGifFiles);
             Controls.Add(lblInstructions);
             Controls.Add(lblGifFiles);
-            Controls.Add(lstGifFiles);
             Controls.Add(btnAddFiles);
             Controls.Add(btnRemoveSelected);
             Controls.Add(btnMoveUp);
@@ -267,11 +292,12 @@ namespace GifProcessorApp
             Controls.Add(btnOK);
             Controls.Add(btnCancel);
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            Margin = new Padding(41, 19, 41, 19);
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "MergeGifsDialog";
             StartPosition = FormStartPosition.CenterParent;
-            Text = SteamGifCropper.Properties.Resources.Title_MergeGifs;
+            Text = "Merge GIF Files";
             ResumeLayout(false);
             PerformLayout();
         }
