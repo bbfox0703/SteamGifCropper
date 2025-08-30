@@ -625,6 +625,57 @@
   <data name="Mp4Dialog_DirectoryError" xml:space="preserve">
     <value>目錄錯誤</value>
   </data>
+  <data name="Mp4ToGif_FFmpegRequiredMessage" xml:space="preserve">
+    <value>FFmpeg 未安裝或未在系統 PATH 中提供。&#x0A;&#x0A;FFmpeg 路徑: {0}&#x0A;版本: {1}&#x0A;{2}&#x0A;&#x0A;安裝 FFmpeg：&#x0A;1. 以系統管理員開啟命令提示字元或 PowerShell&#x0A;2. 執行: winget install ffmpeg&#x0A;3. 重新啟動本應用程式&#x0A;&#x0A;更多說明請點擊 MP4 轉 GIF 對話框中的連結。</value>
+  </data>
+  <data name="Mp4ToGif_ShortClipCpu" xml:space="preserve">
+    <value>短片段－CPU 更有效率...</value>
+  </data>
+  <data name="Mp4ToGif_GpuCpuEncoding" xml:space="preserve">
+    <value>GPU 解碼 + CPU GIF 編碼...</value>
+  </data>
+  <data name="Mp4ToGif_GpuDecodeFailed" xml:space="preserve">
+    <value>GPU 解碼失敗，改用 CPU...</value>
+  </data>
+  <data name="Mp4ToGif_FFmpegLog" xml:space="preserve">
+    <value> (FFmpeg 日誌: {0})</value>
+  </data>
+  <data name="Mp4ToGif_FFmpegOutput" xml:space="preserve">
+    <value> FFmpeg 輸出: {0}</value>
+  </data>
+  <data name="Mp4ToGif_Converting" xml:space="preserve">
+    <value>以最佳化 CPU 將 MP4 轉為 GIF...</value>
+  </data>
+  <data name="Mp4ToGif_Success" xml:space="preserve">
+    <value>MP4 轉 GIF 成功完成！</value>
+  </data>
+  <data name="Mp4ToGif_SuccessMessage" xml:space="preserve">
+    <value>MP4 轉 GIF 成功完成！&#x0A;已儲存為: {0}</value>
+  </data>
+  <data name="Mp4ToGif_Error_FFmpegNotFound" xml:space="preserve">
+    <value>找不到 FFmpeg 執行檔。請確保已安裝 FFmpeg 並可於系統 PATH 存取。&#x0A;&#x0A;安裝指令: winget install ffmpeg</value>
+  </data>
+  <data name="Mp4ToGif_Error_CorruptedInput" xml:space="preserve">
+    <value>輸入的影片檔案似乎已損毀或不完整。&#x0A;&#x0A;請嘗試使用其他影片檔案或重新下載原始檔案。</value>
+  </data>
+  <data name="Mp4ToGif_Error_GPUFailed" xml:space="preserve">
+    <value>GPU 加速失敗。轉換將自動改用 CPU 處理。&#x0A;&#x0A;若 GPU 驅動程式過舊或未正確安裝 CUDA，這是正常情況。</value>
+  </data>
+  <data name="Mp4ToGif_Error_PermissionDenied" xml:space="preserve">
+    <value>無法存取輸出目錄。請檢查檔案權限並確保目錄可寫入。</value>
+  </data>
+  <data name="Mp4ToGif_Error_Unexpected" xml:space="preserve">
+    <value>MP4 轉 GIF 時發生未預期的錯誤。</value>
+  </data>
+  <data name="Mp4ToGif_Error_DetailsSaved" xml:space="preserve">
+    <value>&#x0A;&#x0A;詳細的 FFmpeg 輸出已儲存至: {0}</value>
+  </data>
+  <data name="Mp4ToGif_Error_FFmpegOutputTruncated" xml:space="preserve">
+    <value>&#x0A;&#x0A;FFmpeg 輸出 (部分)：&#x0A;{0}</value>
+  </data>
+  <data name="Mp4ToGif_ErrorMessageDetails" xml:space="preserve">
+    <value>{0}&#x0A;&#x0A;輸入檔案: "{1}"&#x0A;輸出檔案: "{2}"&#x0A;開始時間: {3}&#x0A;持續時間: {4}&#x0A;&#x0A;技術詳細資訊: {5}</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\lang_switch.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

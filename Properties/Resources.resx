@@ -617,6 +617,57 @@ After installation, FFmpeg should be available in your system PATH.</value>
   <data name="Mp4Dialog_DirectoryError" xml:space="preserve">
     <value>Directory Error</value>
   </data>
+  <data name="Mp4ToGif_FFmpegRequiredMessage" xml:space="preserve">
+    <value>FFmpeg is not installed or not available in the system PATH.&#x0A;&#x0A;FFmpeg Path: {0}&#x0A;Version: {1}&#x0A;{2}&#x0A;&#x0A;To install FFmpeg:&#x0A;1. Open Command Prompt or PowerShell as Administrator&#x0A;2. Run: winget install ffmpeg&#x0A;3. Restart this application&#x0A;&#x0A;For more help, click the link in the MP4 to GIF dialog.</value>
+  </data>
+  <data name="Mp4ToGif_ShortClipCpu" xml:space="preserve">
+    <value>Short clip - CPU more efficient...</value>
+  </data>
+  <data name="Mp4ToGif_GpuCpuEncoding" xml:space="preserve">
+    <value>GPU decode + CPU GIF encoding...</value>
+  </data>
+  <data name="Mp4ToGif_GpuDecodeFailed" xml:space="preserve">
+    <value>GPU decode failed, using CPU...</value>
+  </data>
+  <data name="Mp4ToGif_FFmpegLog" xml:space="preserve">
+    <value> (FFmpeg log: {0})</value>
+  </data>
+  <data name="Mp4ToGif_FFmpegOutput" xml:space="preserve">
+    <value> FFmpeg output: {0}</value>
+  </data>
+  <data name="Mp4ToGif_Converting" xml:space="preserve">
+    <value>Converting MP4 to GIF with optimized CPU...</value>
+  </data>
+  <data name="Mp4ToGif_Success" xml:space="preserve">
+    <value>MP4 to GIF conversion completed successfully!</value>
+  </data>
+  <data name="Mp4ToGif_SuccessMessage" xml:space="preserve">
+    <value>MP4 to GIF conversion completed successfully!&#x0A;Saved as: {0}</value>
+  </data>
+  <data name="Mp4ToGif_Error_FFmpegNotFound" xml:space="preserve">
+    <value>FFmpeg executable not found. Please ensure FFmpeg is installed and available in your system PATH.&#x0A;&#x0A;Installation: winget install ffmpeg</value>
+  </data>
+  <data name="Mp4ToGif_Error_CorruptedInput" xml:space="preserve">
+    <value>The input video file appears to be corrupted or incomplete.&#x0A;&#x0A;Try using a different video file or re-download the original.</value>
+  </data>
+  <data name="Mp4ToGif_Error_GPUFailed" xml:space="preserve">
+    <value>GPU acceleration failed. The conversion will automatically retry with CPU processing.&#x0A;&#x0A;This is normal if your GPU drivers are outdated or CUDA is not properly installed.</value>
+  </data>
+  <data name="Mp4ToGif_Error_PermissionDenied" xml:space="preserve">
+    <value>Cannot access the output directory. Please check file permissions and ensure the directory is writable.</value>
+  </data>
+  <data name="Mp4ToGif_Error_Unexpected" xml:space="preserve">
+    <value>An unexpected error occurred during MP4 to GIF conversion.</value>
+  </data>
+  <data name="Mp4ToGif_Error_DetailsSaved" xml:space="preserve">
+    <value>&#x0A;&#x0A;Detailed FFmpeg output saved to: {0}</value>
+  </data>
+  <data name="Mp4ToGif_Error_FFmpegOutputTruncated" xml:space="preserve">
+    <value>&#x0A;&#x0A;FFmpeg output (truncated):&#x0A;{0}</value>
+  </data>
+  <data name="Mp4ToGif_ErrorMessageDetails" xml:space="preserve">
+    <value>{0}&#x0A;&#x0A;Input file: "{1}"&#x0A;Output file: "{2}"&#x0A;Start time: {3}&#x0A;Duration: {4}&#x0A;&#x0A;Technical details: {5}</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\lang_switch.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
