@@ -510,6 +510,15 @@
   <data name="MergeDialog_Title" xml:space="preserve">
     <value>Merge GIF Files</value>
   </data>
+  <data name="MergeDialog_FileNotFound" xml:space="preserve">
+    <value>File not found: {0}</value>
+  </data>
+  <data name="MergeDialog_RequireOutput" xml:space="preserve">
+    <value>Please specify an output GIF file.</value>
+  </data>
+  <data name="MergeDialog_CannotCreateDir" xml:space="preserve">
+    <value>Cannot create output directory:</value>
+  </data>
   <data name="Mp4Dialog_InputLabel" xml:space="preserve">
     <value>Input MP4 file:</value>
   </data>

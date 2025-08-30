@@ -518,6 +518,15 @@
   <data name="MergeDialog_Title" xml:space="preserve">
     <value>GIFファイルをマージ</value>
   </data>
+  <data name="MergeDialog_FileNotFound" xml:space="preserve">
+    <value>ファイルが見つかりません：{0}</value>
+  </data>
+  <data name="MergeDialog_RequireOutput" xml:space="preserve">
+    <value>出力GIFファイルを指定してください。</value>
+  </data>
+  <data name="MergeDialog_CannotCreateDir" xml:space="preserve">
+    <value>出力ディレクトリを作成できません：</value>
+  </data>
   <data name="Mp4Dialog_InputLabel" xml:space="preserve">
     <value>入力ファイル：</value>
   </data>

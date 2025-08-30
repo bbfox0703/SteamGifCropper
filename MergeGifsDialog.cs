@@ -425,18 +425,21 @@ namespace GifProcessorApp
             {
                 if (!File.Exists(filePath))
                 {
-                    MessageBox.Show($"File not found: {Path.GetFileName(filePath)}", 
-                                   SteamGifCropper.Properties.Resources.Title_Error, 
-                                   MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        string.Format(SteamGifCropper.Properties.Resources.MergeDialog_FileNotFound,
+                                      Path.GetFileName(filePath)),
+                        SteamGifCropper.Properties.Resources.Title_Error,
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }
 
             if (string.IsNullOrEmpty(txtOutputPath.Text))
             {
-                MessageBox.Show("Please specify an output GIF file.", 
-                               SteamGifCropper.Properties.Resources.Title_Warning, 
-                               MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(
+                    SteamGifCropper.Properties.Resources.MergeDialog_RequireOutput,
+                    SteamGifCropper.Properties.Resources.Title_Warning,
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -449,9 +452,10 @@ namespace GifProcessorApp
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Cannot create output directory:\n{ex.Message}", 
-                                   SteamGifCropper.Properties.Resources.Title_Error, 
-                                   MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        $"{SteamGifCropper.Properties.Resources.MergeDialog_CannotCreateDir}\n{ex.Message}",
+                        SteamGifCropper.Properties.Resources.Title_Error,
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }

@@ -518,6 +518,15 @@
   <data name="MergeDialog_Title" xml:space="preserve">
     <value>合併GIF檔案</value>
   </data>
+  <data name="MergeDialog_FileNotFound" xml:space="preserve">
+    <value>找不到檔案：{0}</value>
+  </data>
+  <data name="MergeDialog_RequireOutput" xml:space="preserve">
+    <value>請指定輸出的GIF檔案。</value>
+  </data>
+  <data name="MergeDialog_CannotCreateDir" xml:space="preserve">
+    <value>無法建立輸出目錄：</value>
+  </data>
   <data name="Mp4Dialog_InputLabel" xml:space="preserve">
     <value>輸入檔案：</value>
   </data>
