@@ -416,6 +416,12 @@
   <data name="Status_ErrorOccurred" xml:space="preserve">
     <value>エラーが発生しました</value>
   </data>
+  <data name="MergeFiveGif_Success" xml:space="preserve">
+    <value>5つのGIFの結合と分割が正常に完了しました！</value>
+  </data>
+  <data name="MergeFiveGif_Error" xml:space="preserve">
+    <value>処理中にエラーが発生しました。</value>
+  </data>
   <data name="Status_ProcessingPalette" xml:space="preserve">
     <value>パレット処理中...</value>
   </data>

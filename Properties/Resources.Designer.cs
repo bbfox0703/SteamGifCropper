@@ -383,7 +383,25 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Message_GifMergeComplete", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Five GIF merge and split completed successfully!.
+        /// </summary>
+        internal static string MergeFiveGif_Success {
+            get {
+                return ResourceManager.GetString("MergeFiveGif_Success", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Error occurred during processing..
+        /// </summary>
+        internal static string MergeFiveGif_Error {
+            get {
+                return ResourceManager.GetString("MergeFiveGif_Error", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Please select 2-5 GIF files to merge (in order from left to right):.
         /// </summary>

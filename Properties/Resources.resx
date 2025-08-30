@@ -408,6 +408,12 @@
   <data name="Status_ErrorOccurred" xml:space="preserve">
     <value>Error occurred during processing.</value>
   </data>
+  <data name="MergeFiveGif_Success" xml:space="preserve">
+    <value>Five GIF merge and split completed successfully!</value>
+  </data>
+  <data name="MergeFiveGif_Error" xml:space="preserve">
+    <value>Error occurred during processing.</value>
+  </data>
   <data name="Status_ProcessingPalette" xml:space="preserve">
     <value>Processing with reduced palette...</value>
   </data>
