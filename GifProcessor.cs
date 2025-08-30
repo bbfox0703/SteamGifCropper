@@ -1285,19 +1285,15 @@ namespace GifProcessorApp
             
             if (!isAvailable)
             {
-                string diagMessage = "FFmpeg is not installed or not available in the system PATH.\n\n";
-                diagMessage += $"FFmpeg Path: {ffmpegPath ?? "Not found"}\n";
-                diagMessage += $"Version: {ffmpegVersion ?? "N/A"}\n";
-                if (!string.IsNullOrEmpty(error))
-                    diagMessage += $"Error: {error}\n";
-                
-                diagMessage += "\nTo install FFmpeg:\n";
-                diagMessage += "1. Open Command Prompt or PowerShell as Administrator\n";
-                diagMessage += "2. Run: winget install ffmpeg\n";
-                diagMessage += "3. Restart this application\n\n";
-                diagMessage += "For more help, click the link in the MP4 to GIF dialog.";
-                
-                MessageBox.Show(diagMessage, "FFmpeg Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                string errorPart = string.IsNullOrEmpty(error) ? string.Empty : $"Error: {error}\n";
+                string diagMessage = string.Format(SteamGifCropper.Properties.Resources.Mp4ToGif_FFmpegRequiredMessage,
+                                                   ffmpegPath ?? "Not found",
+                                                   ffmpegVersion ?? "N/A",
+                                                   errorPart);
+                MessageBox.Show(diagMessage,
+                                SteamGifCropper.Properties.Resources.Title_FFmpegRequired,
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning);
                 return;
             }
 
@@ -1327,12 +1323,12 @@ namespace GifProcessorApp
                         bool preferCpu = duration.TotalSeconds < 8;
                         if (preferCpu)
                         {
-                            mainForm.lblStatus.Text = "Short clip - CPU more efficient...";
+                            mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Mp4ToGif_ShortClipCpu;
                             useGPU = false;
                         }
                         else
                         {
-                            mainForm.lblStatus.Text = "GPU decode + CPU GIF encoding...";
+                            mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Mp4ToGif_GpuCpuEncoding;
                         }
                         Application.DoEvents();
 
@@ -1386,7 +1382,7 @@ namespace GifProcessorApp
                         }
                             catch (Exception gpuEx)
                             {
-                                mainForm.lblStatus.Text = "GPU decode failed, using CPU...";
+                                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Mp4ToGif_GpuDecodeFailed;
                                 Application.DoEvents();
 
                             if (gpuEx is FFMpegException ffmpegException && !string.IsNullOrWhiteSpace(ffmpegException.FFMpegErrorOutput))
@@ -1400,14 +1396,14 @@ namespace GifProcessorApp
 
                                     logFilePath = Path.Combine(logDirectory, "ffmpeg_gpu_error.log");
                                     File.WriteAllText(logFilePath, ffmpegException.FFMpegErrorOutput);
-                                    mainForm.lblStatus.Text += $" (FFmpeg log: {logFilePath})";
+                                    mainForm.lblStatus.Text += string.Format(SteamGifCropper.Properties.Resources.Mp4ToGif_FFmpegLog, logFilePath);
                                 }
                                 catch
                                 {
                                     string truncated = ffmpegException.FFMpegErrorOutput.Length > 200
                                         ? ffmpegException.FFMpegErrorOutput.Substring(0, 200) + "..."
                                         : ffmpegException.FFMpegErrorOutput;
-                                    mainForm.lblStatus.Text += $" FFmpeg output: {truncated}";
+                                    mainForm.lblStatus.Text += string.Format(SteamGifCropper.Properties.Resources.Mp4ToGif_FFmpegOutput, truncated);
                                 }
                             }
 
@@ -1419,15 +1415,15 @@ namespace GifProcessorApp
                     
                     if (!useGPU)
                     {
-                        mainForm.lblStatus.Text = "Converting MP4 to GIF with optimized CPU...";
+                        mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Mp4ToGif_Converting;
                         Application.DoEvents();
                         await ProcessWithOptimizedCpu(inputPath, outputPath, startTime, duration, targetFramerate);
                     }
 
                     mainForm.pBarTaskStatus.Value = 100;
-                    mainForm.lblStatus.Text = "MP4 to GIF conversion completed successfully!";
+                    mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Mp4ToGif_Success;
                     
-                    MessageBox.Show($"MP4 to GIF conversion completed successfully!\nSaved as: {Path.GetFileName(outputPath)}",
+                    MessageBox.Show(string.Format(SteamGifCropper.Properties.Resources.Mp4ToGif_SuccessMessage, Path.GetFileName(outputPath)),
                                   SteamGifCropper.Properties.Resources.Title_Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
@@ -1458,26 +1454,23 @@ namespace GifProcessorApp
 
                     if (ex.Message.Contains("No such file or directory") || ex.Message.Contains("not found"))
                     {
-                        userFriendlyMessage = "FFmpeg executable not found. Please ensure FFmpeg is installed and available in your system PATH.\n\n" +
-                                            "Installation: winget install ffmpeg";
+                        userFriendlyMessage = SteamGifCropper.Properties.Resources.Mp4ToGif_Error_FFmpegNotFound;
                     }
                     else if (ex.Message.Contains("Invalid data found") || ex.Message.Contains("moov atom not found"))
                     {
-                        userFriendlyMessage = "The input video file appears to be corrupted or incomplete.\n\n" +
-                                            "Try using a different video file or re-download the original.";
+                        userFriendlyMessage = SteamGifCropper.Properties.Resources.Mp4ToGif_Error_CorruptedInput;
                     }
                     else if (ex.Message.Contains("cuda") || ex.Message.Contains("nvdec"))
                     {
-                        userFriendlyMessage = "GPU acceleration failed. The conversion will automatically retry with CPU processing.\n\n" +
-                                            "This is normal if your GPU drivers are outdated or CUDA is not properly installed.";
+                        userFriendlyMessage = SteamGifCropper.Properties.Resources.Mp4ToGif_Error_GPUFailed;
                     }
                     else if (ex.Message.Contains("Permission denied") || ex.Message.Contains("Access is denied"))
                     {
-                        userFriendlyMessage = "Cannot access the output directory. Please check file permissions and ensure the directory is writable.";
+                        userFriendlyMessage = SteamGifCropper.Properties.Resources.Mp4ToGif_Error_PermissionDenied;
                     }
                     else
                     {
-                        userFriendlyMessage = "An unexpected error occurred during MP4 to GIF conversion.";
+                        userFriendlyMessage = SteamGifCropper.Properties.Resources.Mp4ToGif_Error_Unexpected;
                     }
 
                     // Append FFmpeg stderr details
@@ -1485,22 +1478,18 @@ namespace GifProcessorApp
                     {
                         if (!string.IsNullOrEmpty(logFilePath))
                         {
-                            userFriendlyMessage += $"\n\nDetailed FFmpeg output saved to: {logFilePath}";
+                            userFriendlyMessage += string.Format(SteamGifCropper.Properties.Resources.Mp4ToGif_Error_DetailsSaved, logFilePath);
                         }
                         else
                         {
                             string truncated = ffmpegOutput.Length > 500 ? ffmpegOutput.Substring(0, 500) + "..." : ffmpegOutput;
-                            userFriendlyMessage += $"\n\nFFmpeg output (truncated):\n{truncated}";
+                            userFriendlyMessage += string.Format(SteamGifCropper.Properties.Resources.Mp4ToGif_Error_FFmpegOutputTruncated, truncated);
                         }
                     }
 
-                    MessageBox.Show($"{userFriendlyMessage}\n\n" +
-                                  $"Input file: \"{inputPath}\"\n" +
-                                  $"Output file: \"{outputPath}\"\n" +
-                                  $"Start time: {startTime}\n" +
-                                  $"Duration: {duration}\n\n" +
-                                  $"Technical details: {ex.Message}",
-                                  "MP4 to GIF Conversion Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(string.Format(SteamGifCropper.Properties.Resources.Mp4ToGif_ErrorMessageDetails,
+                                                  userFriendlyMessage, inputPath, outputPath, startTime, duration, ex.Message),
+                                  SteamGifCropper.Properties.Resources.Title_Mp4ToGifError, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 finally
                 {

@@ -1463,6 +1463,159 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Mp4Dialog_DirectoryError", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to FFmpeg is not installed or not available in the system PATH.\n\nFFmpeg Path: {0}\nVersion: {1}\n{2}\n\nTo install FFmpeg:\n1. Open Command Prompt or PowerShell as Administrator\n2. Run: winget install ffmpeg\n3. Restart this application\n\nFor more help, click the link in the MP4 to GIF dialog..
+        /// </summary>
+        internal static string Mp4ToGif_FFmpegRequiredMessage {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_FFmpegRequiredMessage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Short clip - CPU more efficient....
+        /// </summary>
+        internal static string Mp4ToGif_ShortClipCpu {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_ShortClipCpu", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to GPU decode + CPU GIF encoding....
+        /// </summary>
+        internal static string Mp4ToGif_GpuCpuEncoding {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_GpuCpuEncoding", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to GPU decode failed, using CPU....
+        /// </summary>
+        internal static string Mp4ToGif_GpuDecodeFailed {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_GpuDecodeFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to  (FFmpeg log: {0}).
+        /// </summary>
+        internal static string Mp4ToGif_FFmpegLog {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_FFmpegLog", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to  FFmpeg output: {0}.
+        /// </summary>
+        internal static string Mp4ToGif_FFmpegOutput {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_FFmpegOutput", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Converting MP4 to GIF with optimized CPU....
+        /// </summary>
+        internal static string Mp4ToGif_Converting {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_Converting", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to MP4 to GIF conversion completed successfully!.
+        /// </summary>
+        internal static string Mp4ToGif_Success {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_Success", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to MP4 to GIF conversion completed successfully!\nSaved as: {0}.
+        /// </summary>
+        internal static string Mp4ToGif_SuccessMessage {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_SuccessMessage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to FFmpeg executable not found. Please ensure FFmpeg is installed and available in your system PATH.\n\nInstallation: winget install ffmpeg.
+        /// </summary>
+        internal static string Mp4ToGif_Error_FFmpegNotFound {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_Error_FFmpegNotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The input video file appears to be corrupted or incomplete.\n\nTry using a different video file or re-download the original..
+        /// </summary>
+        internal static string Mp4ToGif_Error_CorruptedInput {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_Error_CorruptedInput", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to GPU acceleration failed. The conversion will automatically retry with CPU processing.\n\nThis is normal if your GPU drivers are outdated or CUDA is not properly installed..
+        /// </summary>
+        internal static string Mp4ToGif_Error_GPUFailed {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_Error_GPUFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot access the output directory. Please check file permissions and ensure the directory is writable..
+        /// </summary>
+        internal static string Mp4ToGif_Error_PermissionDenied {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_Error_PermissionDenied", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to An unexpected error occurred during MP4 to GIF conversion..
+        /// </summary>
+        internal static string Mp4ToGif_Error_Unexpected {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_Error_Unexpected", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to \n\nDetailed FFmpeg output saved to: {0}.
+        /// </summary>
+        internal static string Mp4ToGif_Error_DetailsSaved {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_Error_DetailsSaved", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to \n\nFFmpeg output (truncated):\n{0}.
+        /// </summary>
+        internal static string Mp4ToGif_Error_FFmpegOutputTruncated {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_Error_FFmpegOutputTruncated", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0}\n\nInput file: "{1}"\nOutput file: "{2}"\nStart time: {3}\nDuration: {4}\n\nTechnical details: {5}.
+        /// </summary>
+        internal static string Mp4ToGif_ErrorMessageDetails {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_ErrorMessageDetails", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to MP4 Files (*.mp4)|*.mp4|All Video Files|*.mp4;*.avi;*.mkv;*.mov.
