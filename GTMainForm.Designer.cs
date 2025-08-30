@@ -312,9 +312,9 @@
             label1.Location = new System.Drawing.Point(222, 3);
             label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             label1.Name = "label1";
-            label1.Size = new System.Drawing.Size(255, 15);
+            label1.Size = new System.Drawing.Size(282, 15);
             label1.TabIndex = 12;
-            label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
+            label1.Text = "Notice: gifsicle.exe must be in the \"System PATH\"";
             // 
             // chkGifsicle
             // 
@@ -425,31 +425,31 @@
             // 
             conMenuLangSwitch.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripLangEnglish, toolStripLangTradChinese, toolStripLangJapanese });
             conMenuLangSwitch.Name = "conMenuLangSwitch";
-            conMenuLangSwitch.Size = new System.Drawing.Size(181, 92);
+            conMenuLangSwitch.Size = new System.Drawing.Size(123, 70);
             // 
             // toolStripLangEnglish
             // 
             toolStripLangEnglish.Name = "toolStripLangEnglish";
-            toolStripLangEnglish.Size = new System.Drawing.Size(180, 22);
+            toolStripLangEnglish.Size = new System.Drawing.Size(122, 22);
             toolStripLangEnglish.Text = "English";
             toolStripLangEnglish.Click += toolStripLangEnglish_Click;
-            //
+            // 
             // toolStripLangTradChinese
-            //
+            // 
             toolStripLangTradChinese.Name = "toolStripLangTradChinese";
-            toolStripLangTradChinese.Size = new System.Drawing.Size(180, 22);
+            toolStripLangTradChinese.Size = new System.Drawing.Size(122, 22);
             toolStripLangTradChinese.Text = "繁體中文";
             toolStripLangTradChinese.Click += toolStripLangTradChinese_Click;
-            //
+            // 
             // toolStripLangJapanese
-            //
+            // 
             toolStripLangJapanese.Name = "toolStripLangJapanese";
-            toolStripLangJapanese.Size = new System.Drawing.Size(180, 22);
+            toolStripLangJapanese.Size = new System.Drawing.Size(122, 22);
             toolStripLangJapanese.Text = "日本語";
             toolStripLangJapanese.Click += toolStripLangJapanese_Click;
-            //
+            // 
             // GifToolMainForm
-            //
+            // 
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
