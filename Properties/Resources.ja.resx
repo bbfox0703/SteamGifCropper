@@ -477,7 +477,7 @@
     <value>gifsicle最適化を有効にする</value>
   </data>
   <data name="Label_GifsicleNotice" xml:space="preserve">
-    <value>注意：gifsicle.exeは「システムパス "PATH"」にある必要があります</value>
+    <value>注意：gifsicle.exe は「システム PATH」に存在する必要があります</value>
   </data>
   <data name="MergeDialog_Instructions" xml:space="preserve">
     <value>マージする2-5個のGIFファイルを選択してください（左から右の順序で）：</value>
@@ -609,6 +609,6 @@ Windows パッケージマネージャを使用した簡単なインストール
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>C:\Users\Andyc\Downloads\lang_switch.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\lang_switch.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
