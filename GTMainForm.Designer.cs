@@ -57,6 +57,7 @@
             lblPaletteDesc = new System.Windows.Forms.Label();
             btnMerge2to5GifToOne = new System.Windows.Forms.Button();
             chk5GIFMergeFasterPaletteProcess = new System.Windows.Forms.CheckBox();
+            btnReverseGIF = new System.Windows.Forms.Button();
             panelGifsicle.SuspendLayout();
             groupDither.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).BeginInit();
@@ -148,7 +149,7 @@
             btnMp4ToGif.Name = "btnMp4ToGif";
             btnMp4ToGif.Size = new System.Drawing.Size(284, 26);
             btnMp4ToGif.TabIndex = 7;
-            btnMp4ToGif.Text = SteamGifCropper.Properties.Resources.Button_Mp4ToGif;
+            btnMp4ToGif.Text = "FFMPEG: Convert MP4 to GIF (with time control)";
             btnMp4ToGif.UseVisualStyleBackColor = true;
             btnMp4ToGif.Click += btnMp4ToGif_Click;
             // 
@@ -393,12 +394,22 @@
             chk5GIFMergeFasterPaletteProcess.Text = SteamGifCropper.Properties.Resources.CheckBox_FasterPalette;
             chk5GIFMergeFasterPaletteProcess.UseVisualStyleBackColor = true;
             // 
+            // btnReverseGIF
+            // 
+            btnReverseGIF.Location = new System.Drawing.Point(295, 95);
+            btnReverseGIF.Name = "btnReverseGIF";
+            btnReverseGIF.Size = new System.Drawing.Size(284, 26);
+            btnReverseGIF.TabIndex = 25;
+            btnReverseGIF.Text = "FFMPEG: Reverse animated GIF";
+            btnReverseGIF.UseVisualStyleBackColor = true;
+            // 
             // GifToolMainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             ClientSize = new System.Drawing.Size(586, 444);
+            Controls.Add(btnReverseGIF);
             Controls.Add(chk5GIFMergeFasterPaletteProcess);
             Controls.Add(panelGifsicle);
             Controls.Add(numUpDownPalette);
@@ -464,5 +475,6 @@
         private System.Windows.Forms.Label lblFPS;
         private System.Windows.Forms.Button btnMerge2to5GifToOne;
         public System.Windows.Forms.CheckBox chk5GIFMergeFasterPaletteProcess;
+        private System.Windows.Forms.Button btnReverseGIF;
     }
 }
