@@ -508,7 +508,7 @@ namespace GifProcessorApp
                 {
                     if (c != null && c.Count > 0)
                     {
-                        paletteSamples.Add(c[0]);
+                        paletteSamples.Add((MagickImage)c[0].Clone());
                     }
                 }
 
@@ -605,7 +605,7 @@ namespace GifProcessorApp
 
                 foreach (MagickImage frame in mergedCollection)
                 {
-                    frame.Map(palette, mapSettings);
+                    frame.Remap(palette, mapSettings);
                 }
                 palette.Dispose();
 
@@ -1222,7 +1222,7 @@ namespace GifProcessorApp
 
                     foreach (MagickImage frame in mergedCollection)
                     {
-                        frame.Map(palette, mapSettings);
+                        frame.Remap(palette, mapSettings);
                     }
 
                     // Apply LZW compression
