@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using ImageMagick;
 
 namespace GifProcessorApp
@@ -11,6 +14,8 @@ namespace GifProcessorApp
         private const int HeightExtension = 100;
         private const uint SupportedWidth1 = 766;
         private const uint SupportedWidth2 = 774;
+
+        public static int PaletteQuantizeCallCount { get; set; }
 
         private static bool IsValidCanvasWidth(uint width) => width == SupportedWidth1 || width == SupportedWidth2;
 
@@ -29,6 +34,155 @@ namespace GifProcessorApp
             fileData[8] = (byte)(heightValue & 0xFF);
             fileData[9] = (byte)((heightValue >> 8) & 0xFF);
             File.WriteAllBytes(filePath, fileData);
+        }
+
+        private static MagickImage BuildSharedPalette(IEnumerable<MagickImageCollection> collections, bool useFastPalette)
+        {
+            PaletteQuantizeCallCount++;
+            var paletteSamples = new MagickImageCollection();
+            try
+            {
+                foreach (var c in collections)
+                {
+                    if (c != null && c.Count > 0)
+                    {
+                        paletteSamples.Add((MagickImage)c[0].Clone());
+                    }
+                }
+
+                var settings = new QuantizeSettings
+                {
+                    Colors = 256,
+                    ColorSpace = ColorSpace.RGB,
+                    DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+                };
+
+                if (useFastPalette)
+                {
+                    settings.TreeDepth = 5;
+                }
+
+                paletteSamples.Quantize(settings);
+                return new MagickImage(paletteSamples[0]);
+            }
+            finally
+            {
+                paletteSamples.Dispose();
+            }
+        }
+
+        public static async Task MergeMultipleGifs(List<string> gifPaths, string outputPath, GifToolMainForm mainForm, int targetFramerate = 15, bool useFastPalette = false)
+        {
+            if (gifPaths == null || gifPaths.Count < 2 || gifPaths.Count > 5)
+                throw new ArgumentException("Invalid gif count");
+
+            var collections = new List<MagickImageCollection>();
+            try
+            {
+                foreach (var path in gifPaths)
+                {
+                    var c = new MagickImageCollection(path);
+                    c.Coalesce();
+                    collections.Add(c);
+                }
+
+                var widths = collections.Select(c => (int)c[0].Width).ToList();
+                double shortestDuration = collections.Min(c => c.Sum(f => (double)f.AnimationDelay / f.AnimationTicksPerSecond));
+                int targetFrameCount = Math.Max(1, (int)(shortestDuration * targetFramerate));
+                int totalWidth = widths.Sum();
+                int maxHeight = collections.Max(c => (int)c[0].Height);
+                int ticksPerSecond = collections[0][0].AnimationTicksPerSecond;
+                uint targetDelay = (uint)Math.Round((double)ticksPerSecond / targetFramerate);
+
+                using var palette = BuildSharedPalette(collections, useFastPalette);
+                using var merged = new MagickImageCollection();
+
+                for (int frameIndex = 0; frameIndex < targetFrameCount; frameIndex++)
+                {
+                    var canvas = new MagickImage(MagickColors.Transparent, (uint)totalWidth, (uint)maxHeight);
+                    int currentX = 0;
+                    for (int gifIndex = 0; gifIndex < collections.Count; gifIndex++)
+                    {
+                        var col = collections[gifIndex];
+                        double progress = (double)frameIndex / targetFrameCount;
+                        int sourceIndex = Math.Min((int)(progress * col.Count), col.Count - 1);
+                        canvas.Composite(col[sourceIndex], currentX, 0, CompositeOperator.Over);
+                        currentX += widths[gifIndex];
+                    }
+                    canvas.AnimationDelay = targetDelay;
+                    canvas.AnimationTicksPerSecond = ticksPerSecond;
+                    canvas.GifDisposeMethod = GifDisposeMethod.Background;
+                    merged.Add(canvas);
+                }
+
+                var mapSettings = new QuantizeSettings
+                {
+                    Colors = 256,
+                    ColorSpace = ColorSpace.RGB,
+                    DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+                };
+
+                foreach (MagickImage frame in merged)
+                {
+                    frame.Remap(palette, mapSettings);
+                    frame.Format = MagickFormat.Gif;
+                    frame.Settings.SetDefine(MagickFormat.Gif, "optimize-transparency", "true");
+                }
+
+                merged.Write(outputPath);
+            }
+            finally
+            {
+                foreach (var c in collections)
+                {
+                    c.Dispose();
+                }
+            }
+
+            await Task.CompletedTask;
+        }
+
+        private static MagickImageCollection MergeGifsHorizontally(MagickImageCollection[] collections, GifToolMainForm mainForm, bool useFastPalette = false)
+        {
+            int maxHeight = collections.Max(c => (int)c[0].Height);
+            using var palette = BuildSharedPalette(collections, useFastPalette);
+            var merged = new MagickImageCollection();
+            int maxFrames = collections.Max(c => c.Count);
+            int[] xPositions = { 0, 153, 306, 460, 613 };
+
+            for (int frameIndex = 0; frameIndex < maxFrames; frameIndex++)
+            {
+                var canvas = new MagickImage(MagickColors.Transparent, 766, (uint)maxHeight);
+                for (int gifIndex = 0; gifIndex < 5; gifIndex++)
+                {
+                    var col = collections[gifIndex];
+                    var frame = col[frameIndex % col.Count];
+                    canvas.Composite(frame, xPositions[gifIndex], 0, CompositeOperator.Over);
+                }
+                var reference = collections[0][frameIndex % collections[0].Count];
+                canvas.AnimationDelay = reference.AnimationDelay;
+                canvas.AnimationTicksPerSecond = reference.AnimationTicksPerSecond;
+                merged.Add(canvas);
+            }
+
+            foreach (var frame in merged)
+            {
+                frame.GifDisposeMethod = GifDisposeMethod.Background;
+            }
+
+            var mapSettings = new QuantizeSettings
+            {
+                Colors = 256,
+                ColorSpace = ColorSpace.RGB,
+                DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+            };
+
+            foreach (MagickImage frame in merged)
+            {
+                frame.Remap(palette, mapSettings);
+            }
+
+            return merged;
         }
 
         public static void ResizeGifTo766(string inputFilePath, string outputFilePath)
@@ -82,7 +236,6 @@ namespace GifProcessorApp
                     partCollection.Add(newImage.Clone());
                 }
 
-                partCollection.Optimize();
                 foreach (var frame in partCollection)
                 {
                     frame.Settings.SetDefine("compress", "LZW");
@@ -90,7 +243,6 @@ namespace GifProcessorApp
 
                 string outputFile = Path.Combine(outputDirectory, $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}.gif");
                 partCollection.Write(outputFile);
-                ModifyGifFile(outputFile, canvasHeight);
             }
         }
     }

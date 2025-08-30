@@ -33,9 +33,8 @@ public class GifProcessorMagickTests
     [Fact]
     public void SplitGif_CreatesFivePartsWithCorrectWidth()
     {
-        string input = Path.Combine("TestData", "wide.gif");
-        bool created = EnsureGif(input, 766, 100);
         string tempDir = Directory.CreateTempSubdirectory().FullName;
+        string input = GifTestHelper.CreateGradientGif(tempDir, 766, 100, 1, "red", "black");
         try
         {
             GifProcessor.SplitGif(input, tempDir);
@@ -50,10 +49,6 @@ public class GifProcessorMagickTests
         finally
         {
             Directory.Delete(tempDir, true);
-            if (created)
-            {
-                //File.Delete(input);  // keep source file
-            }
         }
     }
 
