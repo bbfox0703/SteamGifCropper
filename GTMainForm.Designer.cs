@@ -416,7 +416,6 @@
             Controls.Add(btnSplitGif);
             Controls.Add(btnMerge2to5GifToOne);
             Margin = new System.Windows.Forms.Padding(2);
-            MaximizeBox = false;
             Name = "GifToolMainForm";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             Text = "Steam Gif tool";
