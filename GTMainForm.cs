@@ -62,6 +62,7 @@ namespace GifProcessorApp
             try
             {
                 WindowsThemeManager.ApplyThemeToControl(this, _isDarkMode);
+                WindowsThemeManager.ApplyThemeToControl(conMenuLangSwitch, _isDarkMode);
                 this.Refresh();
             }
             catch (Exception ex)
