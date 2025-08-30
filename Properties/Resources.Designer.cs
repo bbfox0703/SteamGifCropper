@@ -349,6 +349,24 @@ namespace SteamGifCropper.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Faster palette reduction (quality down).
+        /// </summary>
+        internal static string CheckBox_FasterPalette {
+            get {
+                return ResourceManager.GetString("CheckBox_FasterPalette", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FFMPEG: Reverse animated GIF.
+        /// </summary>
+        internal static string Button_ReverseGif {
+            get {
+                return ResourceManager.GetString("Button_ReverseGif", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Five GIF files have been merged and split into 5 parts successfully!.
         /// </summary>
         internal static string Message_FiveGifMergeComplete {
@@ -975,6 +993,450 @@ namespace SteamGifCropper.Properties {
         internal static string Title_Warning {
             get {
                 return ResourceManager.GetString("Title_Warning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a GIF file to reverse.
+        /// </summary>
+        internal static string FileDialog_SelectGifToReverse {
+            get {
+                return ResourceManager.GetString("FileDialog_SelectGifToReverse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save reversed GIF as.
+        /// </summary>
+        internal static string FileDialog_SaveReversedGif {
+            get {
+                return ResourceManager.GetString("FileDialog_SaveReversedGif", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reversing GIF....
+        /// </summary>
+        internal static string Status_ReversingGif {
+            get {
+                return ResourceManager.GetString("Status_ReversingGif", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GIF reversed successfully!.
+        /// </summary>
+        internal static string Status_GifReversed {
+            get {
+                return ResourceManager.GetString("Status_GifReversed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GIF reversed successfully!.
+        /// </summary>
+        internal static string Message_GifReversedSuccess {
+            get {
+                return ResourceManager.GetString("Message_GifReversedSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to reverse GIF: {0}.
+        /// </summary>
+        internal static string Error_GifReverseFailed {
+            get {
+                return ResourceManager.GetString("Error_GifReverseFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable gifsicle optimization.
+        /// </summary>
+        internal static string CheckBox_GifsicleOptimization {
+            get {
+                return ResourceManager.GetString("CheckBox_GifsicleOptimization", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notice: gifsicle.exe must be in "System Path".
+        /// </summary>
+        internal static string Label_GifsicleNotice {
+            get {
+                return ResourceManager.GetString("Label_GifsicleNotice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select 2-5 GIF files to merge (in order from left to right):.
+        /// </summary>
+        internal static string MergeDialog_Instructions {
+            get {
+                return ResourceManager.GetString("MergeDialog_Instructions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GIF Files (2-5):.
+        /// </summary>
+        internal static string MergeDialog_GifFiles {
+            get {
+                return ResourceManager.GetString("MergeDialog_GifFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Files....
+        /// </summary>
+        internal static string MergeDialog_AddFiles {
+            get {
+                return ResourceManager.GetString("MergeDialog_AddFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove.
+        /// </summary>
+        internal static string MergeDialog_Remove {
+            get {
+                return ResourceManager.GetString("MergeDialog_Remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Move Up.
+        /// </summary>
+        internal static string MergeDialog_MoveUp {
+            get {
+                return ResourceManager.GetString("MergeDialog_MoveUp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Move Down.
+        /// </summary>
+        internal static string MergeDialog_MoveDown {
+            get {
+                return ResourceManager.GetString("MergeDialog_MoveDown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Output GIF file:.
+        /// </summary>
+        internal static string MergeDialog_OutputFile {
+            get {
+                return ResourceManager.GetString("MergeDialog_OutputFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Merge.
+        /// </summary>
+        internal static string MergeDialog_Merge {
+            get {
+                return ResourceManager.GetString("MergeDialog_Merge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        internal static string MergeDialog_Cancel {
+            get {
+                return ResourceManager.GetString("MergeDialog_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Merge GIF Files.
+        /// </summary>
+        internal static string MergeDialog_Title {
+            get {
+                return ResourceManager.GetString("MergeDialog_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Input MP4 file:.
+        /// </summary>
+        internal static string Mp4Dialog_InputLabel {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_InputLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Browse....
+        /// </summary>
+        internal static string Mp4Dialog_Browse {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_Browse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Output GIF file:.
+        /// </summary>
+        internal static string Mp4Dialog_OutputLabel {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_OutputLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start time:.
+        /// </summary>
+        internal static string Mp4Dialog_StartTimeLabel {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_StartTimeLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to min:.
+        /// </summary>
+        internal static string Mp4Dialog_Min {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_Min", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to sec:.
+        /// </summary>
+        internal static string Mp4Dialog_Sec {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_Sec", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ms:.
+        /// </summary>
+        internal static string Mp4Dialog_Ms {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_Ms", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duration (max 30s):.
+        /// </summary>
+        internal static string Mp4Dialog_DurationLabel {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_DurationLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Convert.
+        /// </summary>
+        internal static string Mp4Dialog_Convert {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_Convert", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        internal static string Mp4Dialog_Cancel {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How to install FFmpeg? (Required for MP4 conversion).
+        /// </summary>
+        internal static string Mp4Dialog_FFmpegHelp {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_FFmpegHelp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GPU decode (decode only, GIF encode uses CPU).
+        /// </summary>
+        internal static string Mp4Dialog_GPUDecode {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_GPUDecode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Checking GPU....
+        /// </summary>
+        internal static string Mp4Dialog_CheckingGPU {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_CheckingGPU", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MP4 to GIF Converter.
+        /// </summary>
+        internal static string Mp4Dialog_Title {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NVIDIA GPU detected ✓.
+        /// </summary>
+        internal static string Mp4Dialog_NvidiaDetected {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_NvidiaDetected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No NVIDIA GPU detected.
+        /// </summary>
+        internal static string Mp4Dialog_NoNvidiaGPU {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_NoNvidiaGPU", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GPU detection failed.
+        /// </summary>
+        internal static string Mp4Dialog_GPUDetectionFailed {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_GPUDetectionFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GPU decode enabled ⚡.
+        /// </summary>
+        internal static string Mp4Dialog_GPUEnabled {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_GPUEnabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NVIDIA GPU detected (CPU decode) ✓.
+        /// </summary>
+        internal static string Mp4Dialog_NvidiaGPUCPU {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_NvidiaGPUCPU", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To use MP4 to GIF conversion, you need to install FFmpeg first....
+        /// </summary>
+        internal static string Mp4Dialog_FFmpegMessage {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_FFmpegMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FFmpeg Installation Guide.
+        /// </summary>
+        internal static string Mp4Dialog_FFmpegGuideTitle {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_FFmpegGuideTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select an input MP4 file..
+        /// </summary>
+        internal static string Mp4Dialog_SelectInputFile {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_SelectInputFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Input Required.
+        /// </summary>
+        internal static string Mp4Dialog_InputRequired {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_InputRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Input file does not exist..
+        /// </summary>
+        internal static string Mp4Dialog_FileNotFound {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_FileNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File Not Found.
+        /// </summary>
+        internal static string Mp4Dialog_FileNotFoundTitle {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_FileNotFoundTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please specify an output GIF file..
+        /// </summary>
+        internal static string Mp4Dialog_SpecifyOutput {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_SpecifyOutput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Output Required.
+        /// </summary>
+        internal static string Mp4Dialog_OutputRequired {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_OutputRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot create output directory:.
+        /// </summary>
+        internal static string Mp4Dialog_CannotCreateDir {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_CannotCreateDir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Directory Error.
+        /// </summary>
+        internal static string Mp4Dialog_DirectoryError {
+            get {
+                return ResourceManager.GetString("Mp4Dialog_DirectoryError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MP4 Files (*.mp4)|*.mp4|All Video Files|*.mp4;*.avi;*.mkv;*.mov.
+        /// </summary>
+        internal static string FileDialog_Mp4Filter {
+            get {
+                return ResourceManager.GetString("FileDialog_Mp4Filter", resourceCulture);
+            }
+        }
+
+        internal static string FileDialog_SelectMp4 {
+            get {
+                return ResourceManager.GetString("FileDialog_SelectMp4", resourceCulture);
+            }
+        }
+
+        internal static string FileDialog_SaveGif {
+            get {
+                return ResourceManager.GetString("FileDialog_SaveGif", resourceCulture);
             }
         }
     }

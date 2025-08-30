@@ -204,9 +204,21 @@ namespace GifProcessorApp
                 return; // User cancelled or didn't select exactly 5 files
             }
 
+            // Validate all source files exist
+            foreach (string gifPath in gifFiles)
+            {
+                if (!File.Exists(gifPath))
+                {
+                    MessageBox.Show($"Source file not found: {Path.GetFileName(gifPath)}", 
+                                   SteamGifCropper.Properties.Resources.Title_Error, 
+                                   MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
             try
             {
-                mainForm.lblStatus.Text = "Validating and processing 5 GIF files...";
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_ValidatingProcessing;
                 mainForm.pBarTaskStatus.Minimum = 0;
                 mainForm.pBarTaskStatus.Maximum = 100;
                 mainForm.pBarTaskStatus.Value = 0;
@@ -227,7 +239,8 @@ namespace GifProcessorApp
                 UpdateProgress(mainForm.pBarTaskStatus, 60, 100);
 
                 // Step 5: Merge horizontally to create 766px wide GIF
-                var mergedCollection = MergeGifsHorizontally(syncedCollections, mainForm);
+                bool useFastPalette = mainForm.chk5GIFMergeFasterPaletteProcess.Checked;
+                var mergedCollection = MergeGifsHorizontally(syncedCollections, mainForm, useFastPalette);
                 UpdateProgress(mainForm.pBarTaskStatus, 80, 100);
 
                 // Step 6: Apply existing split functionality
@@ -400,18 +413,18 @@ namespace GifProcessorApp
             mainForm.lblStatus.Text = "Synchronizing animation durations...";
             Application.DoEvents();
 
-            // Calculate total duration for each GIF (frames * delay)
-            var durations = new int[5];
+            // Calculate total duration for each GIF in seconds
+            var durations = new double[5];
             for (int i = 0; i < 5; i++)
             {
-                durations[i] = (int)collections[i].Sum(frame => (long)frame.AnimationDelay);
+                durations[i] = collections[i].Sum(frame => (double)frame.AnimationDelay / frame.AnimationTicksPerSecond);
             }
 
             // Find shortest duration
-            int shortestDuration = durations.Min();
+            double shortestDuration = durations.Min();
             int shortestIndex = Array.IndexOf(durations, shortestDuration);
 
-            mainForm.lblStatus.Text = $"Shortest duration: {shortestDuration/100.0:F1}s (GIF #{shortestIndex + 1})";
+            mainForm.lblStatus.Text = $"Shortest duration: {shortestDuration:F1}s (GIF #{shortestIndex + 1})";
             Application.DoEvents();
 
             // Synchronize all GIFs to shortest duration
@@ -426,7 +439,7 @@ namespace GifProcessorApp
                     
                     syncedCollections[i] = new MagickImageCollection();
                     
-                    if (durations[i] == shortestDuration)
+                    if (Math.Abs(durations[i] - shortestDuration) < 0.0001)
                     {
                         // Already the shortest, copy as-is
                         int frameCount = 0;
@@ -444,15 +457,16 @@ namespace GifProcessorApp
                     else
                     {
                         // Trim to shortest duration
-                        int currentDuration = 0;
+                        double currentDuration = 0;
                         int frameCount = 0;
                         foreach (var frame in collections[i])
                         {
-                            if (currentDuration + (int)frame.AnimationDelay <= shortestDuration)
+                            double frameDuration = (double)frame.AnimationDelay / frame.AnimationTicksPerSecond;
+                            if (currentDuration + frameDuration <= shortestDuration)
                             {
                                 syncedCollections[i].Add(frame.Clone());
-                                currentDuration += (int)frame.AnimationDelay;
-                                
+                                currentDuration += frameDuration;
+
                                 // Update every 20 frames
                                 if (++frameCount % 20 == 0)
                                 {
@@ -486,14 +500,53 @@ namespace GifProcessorApp
             }
         }
 
-        private static MagickImageCollection MergeGifsHorizontally(MagickImageCollection[] collections, GifToolMainForm mainForm)
+        private static MagickImage BuildSharedPalette(IEnumerable<MagickImageCollection> collections, bool useFastPalette)
+        {
+            var paletteSamples = new MagickImageCollection();
+            try
+            {
+                foreach (var c in collections)
+                {
+                    if (c != null && c.Count > 0)
+                    {
+                        paletteSamples.Add((MagickImage)c[0].Clone());
+                    }
+                }
+
+                var settings = new QuantizeSettings
+                {
+                    Colors = 256,
+                    ColorSpace = ColorSpace.RGB,
+                    DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+                };
+
+                if (useFastPalette)
+                {
+                    settings.TreeDepth = 5; // Lower tree depth for performance
+                }
+
+                paletteSamples.Quantize(settings);
+
+                // Create a copy of the quantized sample to use as palette
+                return new MagickImage(paletteSamples[0]);
+            }
+            finally
+            {
+                paletteSamples.Dispose();
+            }
+        }
+
+        private static MagickImageCollection MergeGifsHorizontally(MagickImageCollection[] collections, GifToolMainForm mainForm, bool useFastPalette = false)
         {
             mainForm.lblStatus.Text = "Merging GIFs horizontally to 766px width...";
             Application.DoEvents();
 
             // Calculate maximum height among all resized GIFs
             int maxHeight = collections.Max(c => (int)c[0].Height);
-            
+
+            // Build shared palette from first frames
+            var palette = BuildSharedPalette(collections, useFastPalette);
+
             // Create merged collection
             var mergedCollection = new MagickImageCollection();
             int maxFrames = collections.Max(c => c.Count);
@@ -508,27 +561,29 @@ namespace GifProcessorApp
                         mainForm.lblStatus.Text = $"Merging frame {frameIndex + 1}/{maxFrames}...";
                         Application.DoEvents();
                     }
-                    
+
                     // Create 766px wide canvas
                     var canvas = new MagickImage(MagickColors.Transparent, 766, (uint)maxHeight);
-                    
+
                     // X positions for each GIF: 0, 153, 306, 460, 613
                     int[] xPositions = { 0, 153, 306, 460, 613 };
-                    
+
                     for (int gifIndex = 0; gifIndex < 5; gifIndex++)
                     {
                         // Get frame (loop if GIF has fewer frames)
                         var collection = collections[gifIndex];
                         var frameIdx = frameIndex % collection.Count;
                         var frame = collection[frameIdx];
-                        
+
                         // Composite frame onto canvas at specific X position
                         canvas.Composite(frame, xPositions[gifIndex], 0, CompositeOperator.Over);
                     }
 
-                    // Set animation delay (use delay from first GIF)
-                    canvas.AnimationDelay = collections[0][frameIndex % collections[0].Count].AnimationDelay;
-                    
+                    // Set animation delay and timing from first GIF to maintain original speed
+                    var referenceFrame = collections[0][frameIndex % collections[0].Count];
+                    canvas.AnimationDelay = referenceFrame.AnimationDelay;
+                    canvas.AnimationTicksPerSecond = referenceFrame.AnimationTicksPerSecond;
+
                     mergedCollection.Add(canvas);
                 }
 
@@ -537,11 +592,31 @@ namespace GifProcessorApp
                 {
                     frame.GifDisposeMethod = GifDisposeMethod.Background;
                 }
-                
+
+                // Remap frames to shared palette
+                mainForm.lblStatus.Text = useFastPalette ?
+                    "Mapping with fast palette..." :
+                    "Mapping to shared palette...";
+                Application.DoEvents();
+
+                var mapSettings = new QuantizeSettings
+                {
+                    Colors = 256,
+                    ColorSpace = ColorSpace.RGB,
+                    DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+                };
+
+                foreach (MagickImage frame in mergedCollection)
+                {
+                    frame.Remap(palette, mapSettings);
+                }
+                palette.Dispose();
+
                 return mergedCollection;
             }
             catch (Exception ex)
             {
+                palette?.Dispose();
                 mergedCollection?.Dispose();
                 throw new InvalidOperationException($"Failed to merge GIFs horizontally: {ex.Message}", ex);
             }
@@ -608,7 +683,7 @@ namespace GifProcessorApp
         }
 
         [Obsolete("This method has been replaced with MergeAndSplitFiveGifs")]
-        public static void SplitGifWithReducedPaletteOld(GifToolMainForm mainForm)
+        public static async Task SplitGifWithReducedPaletteOld(GifToolMainForm mainForm)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
@@ -644,11 +719,23 @@ namespace GifProcessorApp
                         mainForm.pBarTaskStatus.Minimum = 0;
                         mainForm.pBarTaskStatus.Maximum = 100;
                         mainForm.pBarTaskStatus.Value = 0;
-                        Application.DoEvents();
 
                         var ranges = GetCropRanges(canvasWidth);
                         int targetFramerate = (int)mainForm.numUpDownFramerate.Value;
-                        ReducePaletteAndSplitGif(inputFilePath, mainForm, ranges, (int)canvasHeight, paletteSize, targetFramerate);
+
+                        var progress = new Progress<(int current, int total, string status)>(report =>
+                        {
+                            mainForm.Invoke((MethodInvoker)(() =>
+                            {
+                                if (report.total > 0)
+                                {
+                                    mainForm.pBarTaskStatus.Value = Math.Min(report.current * 100 / report.total, 100);
+                                }
+                                mainForm.lblStatus.Text = report.status;
+                            }));
+                        });
+
+                        await ReducePaletteAndSplitGif(inputFilePath, ranges, (int)canvasHeight, paletteSize, targetFramerate, progress);
                         mainForm.lblStatus.Text = "Done.";
                         MessageBox.Show("GIF processing with reduced palette completed successfully!",
                                         SteamGifCropper.Properties.Resources.Title_Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -668,96 +755,85 @@ namespace GifProcessorApp
             }
         }
 
-        private static void ReducePaletteAndSplitGif(string inputFilePath, GifToolMainForm mainForm, (int Start, int End)[] ranges, int canvasHeight, int paletteSize, int targetFramerate = 15)
+        private static async Task ReducePaletteAndSplitGif(string inputFilePath, (int Start, int End)[] ranges, int canvasHeight, int paletteSize, int targetFramerate, IProgress<(int current, int total, string status)> progress)
         {
-            using (var collection = new MagickImageCollection(inputFilePath))
+            await Task.Run(() =>
             {
-                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_CoalescingFrames;
-                Application.DoEvents();
-                collection.Coalesce();
-                Application.DoEvents();
-
-                int newHeight = canvasHeight + HeightExtension;
-                
-                // Calculate target frame delay in centiseconds (1/100th of a second)
-                uint targetDelay = (uint)Math.Round(100.0 / targetFramerate);
-
-                int totalSteps = (collection.Count * ranges.Length) + (ranges.Length * 3); // Processing + Palette reduction + LZW compression
-                int currentStep = 0;
-
-                for (int i = 0; i < ranges.Length; i++)
+                using (var collection = new MagickImageCollection(inputFilePath))
                 {
-                    using (var partCollection = new MagickImageCollection())
-                    {
-                        foreach (var frame in collection)
-                        {
-                            int copyWidth = ranges[i].End - ranges[i].Start + 1;
+                    progress?.Report((0, 1, SteamGifCropper.Properties.Resources.Status_CoalescingFrames));
+                    collection.Coalesce();
 
-                            mainForm.lblStatus.Text = string.Format(SteamGifCropper.Properties.Resources.Status_ProcessingPartPalette, i + 1, currentStep % collection.Count + 1);
-                            Application.DoEvents();
-                            
-                            // Create new image with correct dimensions
-                            using (var newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight))
+                    int newHeight = canvasHeight + HeightExtension;
+
+                    // Calculate target frame delay in centiseconds (1/100th of a second)
+                    uint targetDelay = (uint)Math.Round(100.0 / targetFramerate);
+
+                    int totalSteps = (collection.Count * ranges.Length) + (ranges.Length * 3); // Processing + Palette reduction + LZW compression
+                    int currentStep = 0;
+
+                    for (int i = 0; i < ranges.Length; i++)
+                    {
+                        using (var partCollection = new MagickImageCollection())
+                        {
+                            foreach (var frame in collection)
                             {
-                                // Crop the frame to the specific range
-                                var cropGeometry = new MagickGeometry(ranges[i].Start, 0, (uint)copyWidth, (uint)canvasHeight);
-                                using (var croppedFrame = frame.Clone())
+                                int copyWidth = ranges[i].End - ranges[i].Start + 1;
+
+                                // Create new image with correct dimensions
+                                using (var newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight))
                                 {
-                                    croppedFrame.Crop(cropGeometry);
-                                    croppedFrame.ResetPage();
-                                    
-                                    // Composite the cropped frame onto the new image
-                                    newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
+                                    // Crop the frame to the specific range
+                                    var cropGeometry = new MagickGeometry(ranges[i].Start, 0, (uint)copyWidth, (uint)canvasHeight);
+                                    using (var croppedFrame = frame.Clone())
+                                    {
+                                        croppedFrame.Crop(cropGeometry);
+                                        croppedFrame.ResetPage();
+
+                                        // Composite the cropped frame onto the new image
+                                        newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
+                                    }
+
+                                    // Set animation properties to target framerate
+                                    newImage.AnimationDelay = targetDelay;
+                                    newImage.GifDisposeMethod = GifDisposeMethod.Background;
+
+                                    // Apply palette reduction
+                                    newImage.Quantize(new QuantizeSettings { Colors = (uint)paletteSize });
+
+                                    partCollection.Add(newImage.Clone());
                                 }
 
-                                // Set animation properties to target framerate
-                                newImage.AnimationDelay = targetDelay;
-                                newImage.GifDisposeMethod = GifDisposeMethod.Background;
+                                currentStep++;
+                                progress?.Report((currentStep, totalSteps, string.Format(SteamGifCropper.Properties.Resources.Status_ProcessingPartPalette, i + 1, currentStep % collection.Count + 1)));
+                            }
 
-                                // Apply palette reduction
-                                newImage.Quantize(new QuantizeSettings { Colors = (uint)paletteSize });
+                            string outputFile = $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}_Palette{paletteSize}.gif";
+                            string outputDir = Path.GetDirectoryName(inputFilePath);
+                            string outputPath = Path.Combine(outputDir, outputFile);
 
-                                partCollection.Add(newImage.Clone());
+                            partCollection.Optimize();
+                            currentStep++;
+                            progress?.Report((currentStep, totalSteps, SteamGifCropper.Properties.Resources.Status_Compressing));
+
+                            foreach (var frame in partCollection)
+                            {
+                                frame.Settings.SetDefine("compress", "LZW");
                             }
 
                             currentStep++;
-                            UpdateProgress(mainForm.pBarTaskStatus, currentStep, totalSteps);
+                            progress?.Report((currentStep, totalSteps, SteamGifCropper.Properties.Resources.Status_Saving));
+
+                            partCollection.Write(outputPath);
+
+                            currentStep++;
+                            progress?.Report((currentStep, totalSteps, SteamGifCropper.Properties.Resources.Status_Saving));
+
+                            ModifyGifFile(outputPath, canvasHeight);
                         }
-
-                        string outputFile = $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}_Palette{paletteSize}.gif";
-                        string outputDir = Path.GetDirectoryName(inputFilePath);
-                        string outputPath = Path.Combine(outputDir, outputFile);
-
-                        partCollection.Optimize();
-                        mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Compressing;
-                        Application.DoEvents();
-                        int compressFrameCount = 0;
-                        foreach (var frame in partCollection)
-                        {
-                            frame.Settings.SetDefine("compress", "LZW");
-                            
-                            // Update every 25 frames during compression
-                            if (++compressFrameCount % 25 == 0)
-                            {
-                                Application.DoEvents();
-                            }
-                        }
-
-                        currentStep++;
-                        UpdateProgress(mainForm.pBarTaskStatus, currentStep, totalSteps);
-                        mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Saving;
-                        Application.DoEvents();
-
-                        partCollection.Write(outputPath);
-
-                        currentStep++;
-                        UpdateProgress(mainForm.pBarTaskStatus, currentStep, totalSteps);
-                        Application.DoEvents();
-
-                        ModifyGifFile(outputPath, canvasHeight);
                     }
                 }
-            }
+            });
         }
         private static void ModifyGifFile(string filePath, int adjustedHeight)
         {
@@ -1015,11 +1091,33 @@ namespace GifProcessorApp
             return false;
         }
 
-        public static void MergeMultipleGifs(List<string> gifPaths, string outputPath, GifToolMainForm mainForm, int targetFramerate = 15)
+        public static async Task MergeMultipleGifs(List<string> gifPaths, string outputPath, GifToolMainForm mainForm, int targetFramerate = 15, bool useFastPalette = false)
         {
             if (gifPaths == null || gifPaths.Count < 2 || gifPaths.Count > 5)
             {
                 throw new ArgumentException(SteamGifCropper.Properties.Resources.Message_GifFileCount);
+            }
+
+            // Validate source files and destination path
+            foreach (string gifPath in gifPaths)
+            {
+                if (!File.Exists(gifPath))
+                {
+                    throw new FileNotFoundException($"Source file not found: {Path.GetFileName(gifPath)}");
+                }
+            }
+            
+            var outputDir = Path.GetDirectoryName(outputPath);
+            if (!string.IsNullOrEmpty(outputDir) && !Directory.Exists(outputDir))
+            {
+                try
+                {
+                    Directory.CreateDirectory(outputDir);
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException($"Cannot create output directory: {ex.Message}");
+                }
             }
 
             var collections = new List<MagickImageCollection>();
@@ -1027,6 +1125,7 @@ namespace GifProcessorApp
             try
             {
                 mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Message_AnalyzingGifs;
+                await Task.Delay(1); // Allow UI update
                 Application.DoEvents();
                 var widths = new List<int>();
                 int minFrameCount = int.MaxValue;
@@ -1038,32 +1137,39 @@ namespace GifProcessorApp
                     var collection = new MagickImageCollection(gifPath);
                     collection.Coalesce();
                     collections.Add(collection);
-                    
+
                     int width = (int)collection[0].Width;
                     widths.Add(width);
-                    
-                    // Calculate total duration
-                    double totalDuration = collection.Sum(frame => frame.AnimationDelay) / 100.0; // Convert to seconds
+
+                    // Calculate total duration in seconds accounting for ticks-per-second
+                    double totalDuration = collection.Sum(frame => (double)frame.AnimationDelay / frame.AnimationTicksPerSecond);
                     if (totalDuration < shortestDuration)
                     {
                         shortestDuration = totalDuration;
                     }
-                    
+
                     minFrameCount = Math.Min(minFrameCount, collection.Count);
                 }
 
+                // Determine timing based on first GIF
+                int ticksPerSecond = collections[0][0].AnimationTicksPerSecond;
+
                 // Calculate target frame count based on shortest duration and target framerate
                 int targetFrameCount = Math.Max(1, (int)(shortestDuration * targetFramerate));
-                
-                // Calculate target delay in centiseconds
-                uint targetDelay = (uint)Math.Round(100.0 / targetFramerate);
+
+                // Calculate target delay in ticks
+                uint targetDelay = (uint)Math.Round((double)ticksPerSecond / targetFramerate);
 
                 // Calculate total width
                 int totalWidth = widths.Sum();
                 int maxHeight = collections.Max(c => (int)c[0].Height);
 
                 mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Message_MergingGifs;
+                await Task.Delay(1); // Allow UI update
                 Application.DoEvents();
+
+                // Build shared palette from first frames
+                var palette = BuildSharedPalette(collections, useFastPalette);
 
                 var mergedCollection = new MagickImageCollection();
 
@@ -1071,10 +1177,11 @@ namespace GifProcessorApp
                 {
                     for (int frameIndex = 0; frameIndex < targetFrameCount; frameIndex++)
                     {
-                        // Update progress
+                        // Update progress and allow UI updates
                         if (frameIndex % 5 == 0)
                         {
                             mainForm.lblStatus.Text = $"{SteamGifCropper.Properties.Resources.Message_MergingGifs} ({frameIndex + 1}/{targetFrameCount})";
+                            await Task.Delay(1); // Allow UI update
                             Application.DoEvents();
                         }
 
@@ -1099,23 +1206,32 @@ namespace GifProcessorApp
                             currentX += widths[gifIndex];
                         }
 
-                        // Set animation delay to target framerate
+                        // Set animation delay and timing to maintain source speed
                         canvas.AnimationDelay = targetDelay;
+                        canvas.AnimationTicksPerSecond = ticksPerSecond;
                         canvas.GifDisposeMethod = GifDisposeMethod.Background;
                         
                         mergedCollection.Add(canvas);
                     }
 
-                    // Reduce to 256 colors palette
-                    mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_ReducingPalette;
+                    // Remap frames to shared palette
+                    mainForm.lblStatus.Text = useFastPalette ?
+                        "Mapping with fast palette..." :
+                        SteamGifCropper.Properties.Resources.Status_ReducingPalette;
+                    await Task.Delay(1); // Allow UI update
                     Application.DoEvents();
 
-                    mergedCollection.Quantize(new QuantizeSettings
+                    var mapSettings = new QuantizeSettings
                     {
                         Colors = 256,
                         ColorSpace = ColorSpace.RGB,
-                        DitherMethod = DitherMethod.No
-                    });
+                        DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+                    };
+
+                    foreach (MagickImage frame in mergedCollection)
+                    {
+                        frame.Remap(palette, mapSettings);
+                    }
 
                     // Apply LZW compression
                     foreach (var frame in mergedCollection)
@@ -1126,6 +1242,7 @@ namespace GifProcessorApp
 
                     // Save the merged GIF
                     mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Saving;
+                    await Task.Delay(1); // Allow UI update
                     Application.DoEvents();
                     
                     mergedCollection.Write(outputPath);
@@ -1137,6 +1254,7 @@ namespace GifProcessorApp
                 }
                 finally
                 {
+                    palette.Dispose();
                     mergedCollection?.Dispose();
                 }
             }
@@ -1465,6 +1583,143 @@ namespace GifProcessorApp
             catch (Exception ex)
             {
                 return (false, null, null, ex.Message);
+            }
+        }
+
+        public static async Task ReverseGif(GifToolMainForm mainForm)
+        {
+            using (var openFileDialog = new OpenFileDialog
+            {
+                Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
+                Title = SteamGifCropper.Properties.Resources.FileDialog_SelectGifToReverse ?? "Select a GIF file to reverse"
+            })
+            {
+                if (openFileDialog.ShowDialog() != DialogResult.OK) return;
+
+                string inputFilePath = openFileDialog.FileName;
+                string inputFileName = Path.GetFileNameWithoutExtension(inputFilePath);
+                string inputDirectory = Path.GetDirectoryName(inputFilePath);
+                string outputFilePath = Path.Combine(inputDirectory, $"{inputFileName}_reversed.gif");
+
+                using (var saveFileDialog = new SaveFileDialog
+                {
+                    Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
+                    Title = SteamGifCropper.Properties.Resources.FileDialog_SaveReversedGif ?? "Save reversed GIF as",
+                    FileName = Path.GetFileName(outputFilePath)
+                })
+                {
+                    if (saveFileDialog.ShowDialog() != DialogResult.OK) return;
+                    outputFilePath = saveFileDialog.FileName;
+                }
+
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_ReversingGif ?? "Reversing GIF...";
+                mainForm.pBarTaskStatus.Visible = true;
+                mainForm.pBarTaskStatus.Value = 0;
+
+                try
+                {
+                    // Check FFmpeg availability
+                    var (isAvailable, ffmpegPath, version, error) = GetFFmpegDiagnostics();
+                    if (!isAvailable)
+                    {
+                        throw new InvalidOperationException($"FFmpeg not available: {error}");
+                    }
+
+                    // Get target framerate from main form
+                    int targetFramerate = (int)mainForm.numUpDownFramerate.Value;
+
+                    mainForm.pBarTaskStatus.Value = 25;
+                    await Task.Delay(1);
+
+                    // Use FFMpegCore to reverse the GIF
+                    var inputAnalysis = await FFProbe.AnalyseAsync(inputFilePath);
+                    var totalDuration = inputAnalysis.Duration;
+
+                    mainForm.pBarTaskStatus.Value = 50;
+                    await Task.Delay(1);
+                    // Reverse GIF directly with palettegen + paletteuse
+                    mainForm.pBarTaskStatus.Value = 75;
+                    await FFMpegArguments
+                        .FromFileInput(inputFilePath) // Only one input
+                        .OutputToFile(
+                            outputFilePath,
+                            overwrite: true,
+                            options => options
+                                .WithCustomArgument(
+                                    @"-filter_complex ""[0:v]reverse,split[s0][s1];[s0]palettegen=stats_mode=single[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3"""
+                                )
+                                .WithFramerate(targetFramerate)
+                        )
+                        .ProcessAsynchronously();
+
+                    mainForm.pBarTaskStatus.Value = 100;
+                    await Task.Delay(1);
+
+                    mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_GifReversed ?? "GIF reversed successfully!";
+                    MessageBox.Show(
+                        (SteamGifCropper.Properties.Resources.Message_GifReversedSuccess ?? "GIF reversed successfully!") + $"\n{outputFilePath}",
+                        SteamGifCropper.Properties.Resources.Title_Success ?? "Success",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    // Fallback to ImageMagick if FFmpeg fails
+                    try
+                    {
+                        mainForm.lblStatus.Text = "FFmpeg failed, trying ImageMagick fallback...";
+                        mainForm.pBarTaskStatus.Value = 25;
+                        
+                        // Get target framerate from main form
+                        int fallbackFramerate = (int)mainForm.numUpDownFramerate.Value;
+                        
+                        using (var collection = new MagickImageCollection(inputFilePath))
+                        {
+                            mainForm.pBarTaskStatus.Value = 50;
+                            await Task.Delay(1);
+                            
+                            // Reverse the frame order
+                            collection.Reverse();
+                            
+                            mainForm.pBarTaskStatus.Value = 75;
+                            await Task.Delay(1);
+                            
+                            // Apply framerate setting to all frames
+                            uint frameDelay = (uint)(100.0 / fallbackFramerate); // Convert fps to delay (in 1/100th seconds)
+                            foreach (var frame in collection)
+                            {
+                                frame.AnimationDelay = frameDelay;
+                            }
+                            
+                            mainForm.pBarTaskStatus.Value = 90;
+                            await Task.Delay(1);
+                            
+                            collection.Write(outputFilePath);
+                            
+                            mainForm.pBarTaskStatus.Value = 100;
+                            mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_GifReversed ?? "GIF reversed successfully!";
+                            MessageBox.Show(
+                                (SteamGifCropper.Properties.Resources.Message_GifReversedSuccess ?? "GIF reversed successfully!") + $"\n{outputFilePath}",
+                                SteamGifCropper.Properties.Resources.Title_Success ?? "Success",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+                        }
+                    }
+                    catch (Exception fallbackEx)
+                    {
+                        mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Error ?? "Error";
+                        MessageBox.Show(
+                            string.Format(SteamGifCropper.Properties.Resources.Error_GifReverseFailed ?? "Failed to reverse GIF: {0}", $"FFmpeg: {ex.Message}, ImageMagick: {fallbackEx.Message}"),
+                            SteamGifCropper.Properties.Resources.Title_Error ?? "Error",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
+                finally
+                {
+                    mainForm.pBarTaskStatus.Visible = false;
+                    mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready ?? "Ready";
+                }
             }
         }
 

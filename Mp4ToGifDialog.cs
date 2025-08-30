@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
+using SteamGifCropper.Properties;
 
 namespace GifProcessorApp
 {
@@ -37,8 +38,33 @@ namespace GifProcessorApp
         public Mp4ToGifDialog()
         {
             InitializeComponent();
-            CheckGPUAvailability();
+            UpdateUIText();
             ApplyTheme();
+        }
+
+        /// <summary>
+        /// Refreshes all user-facing text based on the current culture.
+        /// </summary>
+        public void UpdateUIText()
+        {
+            lblInput.Text = Resources.Mp4Dialog_InputLabel;
+            lblOutput.Text = Resources.Mp4Dialog_OutputLabel;
+            lblStartTime.Text = Resources.Mp4Dialog_StartTimeLabel;
+            lblMinutes.Text = Resources.Mp4Dialog_Min;
+            lblSeconds.Text = Resources.Mp4Dialog_Sec;
+            lblMs.Text = Resources.Mp4Dialog_Ms;
+            lblDuration.Text = Resources.Mp4Dialog_DurationLabel;
+            lblDurationUnit.Text = Resources.Mp4Dialog_Seconds;
+            btnBrowseInput.Text = Resources.Mp4Dialog_Browse;
+            btnBrowseOutput.Text = Resources.Mp4Dialog_Browse;
+            btnOK.Text = Resources.Mp4Dialog_Convert;
+            btnCancel.Text = Resources.Mp4Dialog_Cancel;
+            linkFFmpegHelp.Text = Resources.Mp4Dialog_FFmpegHelp;
+            chkUseGPU.Text = Resources.Mp4Dialog_GPUDecode;
+            Text = Resources.Mp4Dialog_Title;
+
+            lblGPUStatus.Text = Resources.Mp4Dialog_CheckingGPU;
+            CheckGPUAvailability();
         }
 
         private void ApplyTheme()
@@ -211,7 +237,7 @@ namespace GifProcessorApp
             lblInput.Name = "lblInput";
             lblInput.Size = new System.Drawing.Size(132, 20);
             lblInput.TabIndex = 0;
-            lblInput.Text = "Input MP4 file:";
+            lblInput.Text = Resources.Mp4Dialog_InputLabel;
             // 
             // txtInputPath
             // 
@@ -229,7 +255,7 @@ namespace GifProcessorApp
             btnBrowseInput.Name = "btnBrowseInput";
             btnBrowseInput.Size = new System.Drawing.Size(88, 25);
             btnBrowseInput.TabIndex = 2;
-            btnBrowseInput.Text = "Browse...";
+            btnBrowseInput.Text = Resources.Mp4Dialog_Browse;
             btnBrowseInput.UseVisualStyleBackColor = true;
             btnBrowseInput.Click += BtnBrowseInput_Click;
             // 
@@ -240,7 +266,7 @@ namespace GifProcessorApp
             lblOutput.Name = "lblOutput";
             lblOutput.Size = new System.Drawing.Size(110, 22);
             lblOutput.TabIndex = 3;
-            lblOutput.Text = "Output GIF file:";
+            lblOutput.Text = Resources.Mp4Dialog_OutputLabel;
             // 
             // txtOutputPath
             // 
@@ -258,7 +284,7 @@ namespace GifProcessorApp
             btnBrowseOutput.Name = "btnBrowseOutput";
             btnBrowseOutput.Size = new System.Drawing.Size(88, 25);
             btnBrowseOutput.TabIndex = 5;
-            btnBrowseOutput.Text = "Browse...";
+            btnBrowseOutput.Text = Resources.Mp4Dialog_Browse;
             btnBrowseOutput.UseVisualStyleBackColor = true;
             btnBrowseOutput.Click += BtnBrowseOutput_Click;
             // 
@@ -269,7 +295,7 @@ namespace GifProcessorApp
             lblStartTime.Name = "lblStartTime";
             lblStartTime.Size = new System.Drawing.Size(68, 23);
             lblStartTime.TabIndex = 6;
-            lblStartTime.Text = "Start time:";
+            lblStartTime.Text = Resources.Mp4Dialog_StartTimeLabel;
             // 
             // lblMinutes
             // 
@@ -278,7 +304,7 @@ namespace GifProcessorApp
             lblMinutes.Name = "lblMinutes";
             lblMinutes.Size = new System.Drawing.Size(39, 23);
             lblMinutes.TabIndex = 7;
-            lblMinutes.Text = "min:";
+            lblMinutes.Text = Resources.Mp4Dialog_Min;
             // 
             // numStartMinutes
             // 
@@ -296,7 +322,7 @@ namespace GifProcessorApp
             lblSeconds.Name = "lblSeconds";
             lblSeconds.Size = new System.Drawing.Size(39, 23);
             lblSeconds.TabIndex = 9;
-            lblSeconds.Text = "sec:";
+            lblSeconds.Text = Resources.Mp4Dialog_Sec;
             // 
             // numStartSeconds
             // 
@@ -314,7 +340,7 @@ namespace GifProcessorApp
             lblMs.Name = "lblMs";
             lblMs.Size = new System.Drawing.Size(40, 23);
             lblMs.TabIndex = 11;
-            lblMs.Text = "ms:";
+            lblMs.Text = Resources.Mp4Dialog_Ms;
             // 
             // numStartMilliseconds
             // 
@@ -333,13 +359,13 @@ namespace GifProcessorApp
             lblDuration.Name = "lblDuration";
             lblDuration.Size = new System.Drawing.Size(132, 23);
             lblDuration.TabIndex = 13;
-            lblDuration.Text = "Duration (max 30s):";
+            lblDuration.Text = Resources.Mp4Dialog_DurationLabel;
             // 
             // numDurationSeconds
             // 
             numDurationSeconds.DecimalPlaces = 2;
             numDurationSeconds.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
-            numDurationSeconds.Location = new System.Drawing.Point(136, 187);
+            numDurationSeconds.Location = new System.Drawing.Point(151, 187);
             numDurationSeconds.Margin = new Padding(41, 19, 41, 19);
             numDurationSeconds.Maximum = new decimal(new int[] { 30, 0, 0, 0 });
             numDurationSeconds.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
@@ -350,12 +376,12 @@ namespace GifProcessorApp
             // 
             // lblDurationUnit
             // 
-            lblDurationUnit.Location = new System.Drawing.Point(207, 189);
+            lblDurationUnit.Location = new System.Drawing.Point(222, 189);
             lblDurationUnit.Margin = new Padding(41, 0, 41, 0);
             lblDurationUnit.Name = "lblDurationUnit";
             lblDurationUnit.Size = new System.Drawing.Size(71, 24);
             lblDurationUnit.TabIndex = 15;
-            lblDurationUnit.Text = "seconds";
+            lblDurationUnit.Text = Resources.Mp4Dialog_Seconds;
             // 
             // btnOK
             // 
@@ -365,7 +391,7 @@ namespace GifProcessorApp
             btnOK.Name = "btnOK";
             btnOK.Size = new System.Drawing.Size(83, 25);
             btnOK.TabIndex = 16;
-            btnOK.Text = "Convert";
+            btnOK.Text = Resources.Mp4Dialog_Convert;
             btnOK.UseVisualStyleBackColor = true;
             btnOK.Click += BtnOK_Click;
             // 
@@ -377,7 +403,7 @@ namespace GifProcessorApp
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new System.Drawing.Size(73, 25);
             btnCancel.TabIndex = 17;
-            btnCancel.Text = "Cancel";
+            btnCancel.Text = Resources.Mp4Dialog_Cancel;
             btnCancel.UseVisualStyleBackColor = true;
             // 
             // linkFFmpegHelp
@@ -388,7 +414,7 @@ namespace GifProcessorApp
             linkFFmpegHelp.Size = new System.Drawing.Size(266, 42);
             linkFFmpegHelp.TabIndex = 18;
             linkFFmpegHelp.TabStop = true;
-            linkFFmpegHelp.Text = "How to install FFmpeg? (Required for MP4 conversion)";
+            linkFFmpegHelp.Text = Resources.Mp4Dialog_FFmpegHelp;
             linkFFmpegHelp.LinkClicked += LinkFFmpegHelp_LinkClicked;
             // 
             // chkUseGPU
@@ -398,7 +424,7 @@ namespace GifProcessorApp
             chkUseGPU.Name = "chkUseGPU";
             chkUseGPU.Size = new System.Drawing.Size(320, 25);
             chkUseGPU.TabIndex = 18;
-            chkUseGPU.Text = "GPU decode (decode only, GIF encode uses CPU)";
+            chkUseGPU.Text = Resources.Mp4Dialog_GPUDecode;
             chkUseGPU.UseVisualStyleBackColor = true;
             chkUseGPU.Visible = false;
             chkUseGPU.CheckedChanged += ChkUseGPU_CheckedChanged;
@@ -411,7 +437,7 @@ namespace GifProcessorApp
             lblGPUStatus.Name = "lblGPUStatus";
             lblGPUStatus.Size = new System.Drawing.Size(110, 23);
             lblGPUStatus.TabIndex = 19;
-            lblGPUStatus.Text = "Checking GPU...";
+            lblGPUStatus.Text = Resources.Mp4Dialog_CheckingGPU;
             lblGPUStatus.Visible = false;
             // 
             // Mp4ToGifDialog
@@ -449,7 +475,7 @@ namespace GifProcessorApp
             MinimizeBox = false;
             Name = "Mp4ToGifDialog";
             StartPosition = FormStartPosition.CenterParent;
-            Text = "MP4 to GIF Converter";
+            Text = Resources.Mp4Dialog_Title;
             ((System.ComponentModel.ISupportInitialize)numStartMinutes).EndInit();
             ((System.ComponentModel.ISupportInitialize)numStartSeconds).EndInit();
             ((System.ComponentModel.ISupportInitialize)numStartMilliseconds).EndInit();
@@ -462,8 +488,8 @@ namespace GifProcessorApp
         {
             using (var openFileDialog = new OpenFileDialog
             {
-                Filter = "MP4 Files (*.mp4)|*.mp4|All Video Files|*.mp4;*.avi;*.mkv;*.mov",
-                Title = "Select MP4 file to convert"
+                Filter = Resources.FileDialog_Mp4Filter,
+                Title = Resources.FileDialog_SelectMp4
             })
             {
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -482,8 +508,8 @@ namespace GifProcessorApp
         {
             using (var saveFileDialog = new SaveFileDialog
             {
-                Filter = "GIF Files (*.gif)|*.gif",
-                Title = "Save GIF file as...",
+                Filter = Resources.FileDialog_GifFilter,
+                Title = Resources.FileDialog_SaveGif,
                 FileName = txtOutputPath.Text
             })
             {
@@ -496,17 +522,9 @@ namespace GifProcessorApp
 
         private void LinkFFmpegHelp_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            var message = "To use MP4 to GIF conversion, you need to install FFmpeg first.\n\n" +
-                         "Easy installation using Windows Package Manager:\n" +
-                         "1. Open Command Prompt or PowerShell as Administrator\n" +
-                         "2. Run: winget install ffmpeg\n" +
-                         "3. Restart this application\n\n" +
-                         "Alternative methods:\n" +
-                         "• Download from: https://ffmpeg.org/download.html\n" +
-                         "• Or use Chocolatey: choco install ffmpeg\n\n" +
-                         "After installation, FFmpeg should be available in your system PATH.";
-
-            MessageBox.Show(message, "FFmpeg Installation Guide", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(Resources.Mp4Dialog_FFmpegMessage,
+                          Resources.Mp4Dialog_FFmpegGuideTitle,
+                          MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void CheckGPUAvailability()
@@ -516,14 +534,14 @@ namespace GifProcessorApp
                 bool gpuAvailable = IsNVIDIAGPUAvailable();
                 if (gpuAvailable)
                 {
-                    lblGPUStatus.Text = "NVIDIA GPU detected ✓";
+                    lblGPUStatus.Text = Resources.Mp4Dialog_NvidiaDetected;
                     lblGPUStatus.ForeColor = System.Drawing.Color.Green;
                     chkUseGPU.Enabled = true;
                     chkUseGPU.Checked = false; // Default to CPU for better compatibility
                 }
                 else
                 {
-                    lblGPUStatus.Text = "No NVIDIA GPU detected";
+                    lblGPUStatus.Text = Resources.Mp4Dialog_NoNvidiaGPU;
                     lblGPUStatus.ForeColor = System.Drawing.Color.Red;
                     chkUseGPU.Enabled = false;
                     chkUseGPU.Checked = false;
@@ -531,7 +549,7 @@ namespace GifProcessorApp
             }
             catch
             {
-                lblGPUStatus.Text = "GPU detection failed";
+                lblGPUStatus.Text = Resources.Mp4Dialog_GPUDetectionFailed;
                 lblGPUStatus.ForeColor = System.Drawing.Color.Orange;
                 chkUseGPU.Enabled = false;
                 chkUseGPU.Checked = false;
@@ -543,12 +561,12 @@ namespace GifProcessorApp
             // Update status text based on selection
             if (chkUseGPU.Checked && chkUseGPU.Enabled)
             {
-                lblGPUStatus.Text = "GPU decode enabled ⚡";
+                lblGPUStatus.Text = Resources.Mp4Dialog_GPUEnabled;
                 lblGPUStatus.ForeColor = System.Drawing.Color.Blue;
             }
             else if (chkUseGPU.Enabled)
             {
-                lblGPUStatus.Text = "NVIDIA GPU detected (CPU decode) ✓";
+                lblGPUStatus.Text = Resources.Mp4Dialog_NvidiaGPUCPU;
                 lblGPUStatus.ForeColor = System.Drawing.Color.Green;
             }
         }
@@ -589,19 +607,25 @@ namespace GifProcessorApp
             // Validate inputs
             if (string.IsNullOrEmpty(txtInputPath.Text))
             {
-                MessageBox.Show("Please select an input MP4 file.", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(Resources.Mp4Dialog_SelectInputFile,
+                              Resources.Mp4Dialog_InputRequired,
+                              MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (!File.Exists(txtInputPath.Text))
             {
-                MessageBox.Show("Input file does not exist.", "File Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Resources.Mp4Dialog_FileNotFound,
+                              Resources.Mp4Dialog_FileNotFoundTitle,
+                              MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             if (string.IsNullOrEmpty(txtOutputPath.Text))
             {
-                MessageBox.Show("Please specify an output GIF file.", "Output Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(Resources.Mp4Dialog_SpecifyOutput,
+                              Resources.Mp4Dialog_OutputRequired,
+                              MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -615,7 +639,9 @@ namespace GifProcessorApp
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Cannot create output directory:\n{ex.Message}", "Directory Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"{Resources.Mp4Dialog_CannotCreateDir}\n{ex.Message}",
+                                  Resources.Mp4Dialog_DirectoryError,
+                                  MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }

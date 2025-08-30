@@ -59,29 +59,47 @@ namespace GifProcessorApp
         /// </summary>
         private static void InitializeLocalization()
         {
+            InitializeLocalization(null);
+        }
+
+        /// <summary>
+        /// Initialize localization with specific culture or auto-detect
+        /// </summary>
+        /// <param name="forceCulture">Specific culture to use, or null for auto-detection</param>
+        public static void InitializeLocalization(string forceCulture)
+        {
             try
             {
-                // Get the OS UI culture
-                var systemCulture = CultureInfo.InstalledUICulture;
                 CultureInfo targetCulture;
 
-                // Determine target culture based on OS language
-                if (systemCulture.Name.StartsWith("zh-TW") || 
-                    systemCulture.Name.StartsWith("zh-Hant") ||
-                    systemCulture.Name == "zh-CHT")
+                if (!string.IsNullOrEmpty(forceCulture))
                 {
-                    // Traditional Chinese
-                    targetCulture = new CultureInfo("zh-TW");
-                }
-                else if (systemCulture.Name.StartsWith("ja"))
-                {
-                    // Japanese
-                    targetCulture = new CultureInfo("ja");
+                    // Use forced culture
+                    targetCulture = new CultureInfo(forceCulture);
                 }
                 else
                 {
-                    // Default to English for all other languages
-                    targetCulture = new CultureInfo("en");
+                    // Get the OS UI culture
+                    var systemCulture = CultureInfo.InstalledUICulture;
+
+                    // Determine target culture based on OS language
+                    if (systemCulture.Name.StartsWith("zh-TW") || 
+                        systemCulture.Name.StartsWith("zh-Hant") ||
+                        systemCulture.Name == "zh-CHT")
+                    {
+                        // Traditional Chinese
+                        targetCulture = new CultureInfo("zh-TW");
+                    }
+                    else if (systemCulture.Name.StartsWith("ja"))
+                    {
+                        // Japanese
+                        targetCulture = new CultureInfo("ja");
+                    }
+                    else
+                    {
+                        // Default to English for all other languages
+                        targetCulture = new CultureInfo("en");
+                    }
                 }
 
                 // Set both current culture and UI culture
@@ -91,6 +109,9 @@ namespace GifProcessorApp
                 // Set default culture for new threads
                 CultureInfo.DefaultThreadCurrentCulture = targetCulture;
                 CultureInfo.DefaultThreadCurrentUICulture = targetCulture;
+
+                // Debug logging
+                System.Diagnostics.Debug.WriteLine($"Localization initialized: {targetCulture.Name} ({targetCulture.DisplayName})");
             }
             catch (Exception ex)
             {
