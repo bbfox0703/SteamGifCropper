@@ -241,5 +241,23 @@ namespace GifProcessorApp
         {
             conMenuLangSwitch.Show(btnLanguageChange, new Point(0, btnLanguageChange.Height));
         }
+
+        private void toolStripLangEnglish_Click(object sender, EventArgs e)
+        {
+            SwitchLanguage("en");
+            conMenuLangSwitch.Close();
+        }
+
+        private void toolStripLangTradChinese_Click(object sender, EventArgs e)
+        {
+            SwitchLanguage("zh-TW");
+            conMenuLangSwitch.Close();
+        }
+
+        private void toolStripLangJapanese_Click(object sender, EventArgs e)
+        {
+            SwitchLanguage("ja");
+            conMenuLangSwitch.Close();
+        }
     }
 }

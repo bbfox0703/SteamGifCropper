@@ -432,21 +432,24 @@
             toolStripLangEnglish.Name = "toolStripLangEnglish";
             toolStripLangEnglish.Size = new System.Drawing.Size(180, 22);
             toolStripLangEnglish.Text = "English";
-            // 
+            toolStripLangEnglish.Click += toolStripLangEnglish_Click;
+            //
             // toolStripLangTradChinese
-            // 
+            //
             toolStripLangTradChinese.Name = "toolStripLangTradChinese";
             toolStripLangTradChinese.Size = new System.Drawing.Size(180, 22);
             toolStripLangTradChinese.Text = "繁體中文";
-            // 
+            toolStripLangTradChinese.Click += toolStripLangTradChinese_Click;
+            //
             // toolStripLangJapanese
-            // 
+            //
             toolStripLangJapanese.Name = "toolStripLangJapanese";
             toolStripLangJapanese.Size = new System.Drawing.Size(180, 22);
             toolStripLangJapanese.Text = "日本語";
-            // 
+            toolStripLangJapanese.Click += toolStripLangJapanese_Click;
+            //
             // GifToolMainForm
-            // 
+            //
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
