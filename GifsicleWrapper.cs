@@ -25,7 +25,7 @@ public class GifsicleWrapper
         return (output, error);
     }
 
-    public static void OptimizeGif(string inputPath, string outputPath, GifsicleOptions options = null)
+    public static void OptimizeGif(string inputPath, string outputPath, GifsicleOptions? options = null)
     {
         if (options == null) options = new GifsicleOptions();
 
