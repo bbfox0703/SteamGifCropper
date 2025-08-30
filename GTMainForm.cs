@@ -25,6 +25,7 @@ namespace GifProcessorApp
                 // Set initial state
                 lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready;
                 pBarTaskStatus.Visible = false;
+                label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
 
                 // Ensure proper form state
                 this.WindowState = FormWindowState.Normal;
@@ -243,6 +244,8 @@ namespace GifProcessorApp
                 btnMerge2to5GifToOne.Text = SteamGifCropper.Properties.Resources.Button_MergeGifs;
                 chk5GIFMergeFasterPaletteProcess.Text = SteamGifCropper.Properties.Resources.CheckBox_FasterPalette;
                 btnReverseGIF.Text = SteamGifCropper.Properties.Resources.Button_ReverseGif;
+                label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
+
 
                 this.Text = "Steam GIF Cropper"; // Keep main title in English
 
