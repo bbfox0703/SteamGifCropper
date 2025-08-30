@@ -465,4 +465,100 @@
   <data name="Title_Mp4ConversionError" xml:space="preserve">
     <value>Conversion error</value>
   </data>
+  <data name="CheckBox_GifsicleOptimization" xml:space="preserve">
+    <value>Enable gifsicle optimization</value>
+  </data>
+  <data name="Label_GifsicleNotice" xml:space="preserve">
+    <value>Notice: gifsicle.exe must be in "System Path"</value>
+  </data>
+  <data name="MergeDialog_Instructions" xml:space="preserve">
+    <value>Please select 2-5 GIF files to merge (in order from left to right):</value>
+  </data>
+  <data name="MergeDialog_GifFiles" xml:space="preserve">
+    <value>GIF Files (2-5):</value>
+  </data>
+  <data name="MergeDialog_AddFiles" xml:space="preserve">
+    <value>Add Files...</value>
+  </data>
+  <data name="MergeDialog_Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="MergeDialog_MoveUp" xml:space="preserve">
+    <value>Move Up</value>
+  </data>
+  <data name="MergeDialog_MoveDown" xml:space="preserve">
+    <value>Move Down</value>
+  </data>
+  <data name="MergeDialog_OutputFile" xml:space="preserve">
+    <value>Output GIF file:</value>
+  </data>
+  <data name="MergeDialog_Merge" xml:space="preserve">
+    <value>Merge</value>
+  </data>
+  <data name="MergeDialog_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="MergeDialog_Title" xml:space="preserve">
+    <value>Merge GIF Files</value>
+  </data>
+  <data name="Mp4Dialog_InputLabel" xml:space="preserve">
+    <value>Input MP4 file:</value>
+  </data>
+  <data name="Mp4Dialog_Browse" xml:space="preserve">
+    <value>Browse...</value>
+  </data>
+  <data name="Mp4Dialog_OutputLabel" xml:space="preserve">
+    <value>Output GIF file:</value>
+  </data>
+  <data name="Mp4Dialog_StartTimeLabel" xml:space="preserve">
+    <value>Start time:</value>
+  </data>
+  <data name="Mp4Dialog_Min" xml:space="preserve">
+    <value>min:</value>
+  </data>
+  <data name="Mp4Dialog_Sec" xml:space="preserve">
+    <value>sec:</value>
+  </data>
+  <data name="Mp4Dialog_Ms" xml:space="preserve">
+    <value>ms:</value>
+  </data>
+  <data name="Mp4Dialog_DurationLabel" xml:space="preserve">
+    <value>Duration (max 30s):</value>
+  </data>
+  <data name="Mp4Dialog_Seconds" xml:space="preserve">
+    <value>seconds</value>
+  </data>
+  <data name="Mp4Dialog_Convert" xml:space="preserve">
+    <value>Convert</value>
+  </data>
+  <data name="Mp4Dialog_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Mp4Dialog_FFmpegHelp" xml:space="preserve">
+    <value>How to install FFmpeg? (Required for MP4 conversion)</value>
+  </data>
+  <data name="Mp4Dialog_GPUDecode" xml:space="preserve">
+    <value>GPU decode (decode only, GIF encode uses CPU)</value>
+  </data>
+  <data name="Mp4Dialog_CheckingGPU" xml:space="preserve">
+    <value>Checking GPU...</value>
+  </data>
+  <data name="Mp4Dialog_Title" xml:space="preserve">
+    <value>MP4 to GIF Converter</value>
+  </data>
+  <data name="Mp4Dialog_NvidiaDetected" xml:space="preserve">
+    <value>NVIDIA GPU detected ✓</value>
+  </data>
+  <data name="Mp4Dialog_NoNvidiaGPU" xml:space="preserve">
+    <value>No NVIDIA GPU detected</value>
+  </data>
+  <data name="Mp4Dialog_GPUDetectionFailed" xml:space="preserve">
+    <value>GPU detection failed</value>
+  </data>
+  <data name="Mp4Dialog_GPUEnabled" xml:space="preserve">
+    <value>GPU decode enabled ⚡</value>
+  </data>
+  <data name="Mp4Dialog_NvidiaGPUCPU" xml:space="preserve">
+    <value>NVIDIA GPU detected (CPU decode) ✓</value>
+  </data>
 </root>

@@ -345,7 +345,7 @@
     <value>出力ファイル：</value>
   </data>
   <data name="Mp4Dialog_StartTime" xml:space="preserve">
-    <value>開始時間：</value>
+    <value>開始時刻:</value>
   </data>
   <data name="Mp4Dialog_Minutes" xml:space="preserve">
     <value>分</value>
@@ -472,5 +472,98 @@
   </data>
   <data name="Title_Mp4ConversionError" xml:space="preserve">
     <value>MP4変換エラー</value>
+  </data>
+  <data name="CheckBox_GifsicleOptimization" xml:space="preserve">
+    <value>gifsicle最適化を有効にする</value>
+  </data>
+  <data name="Label_GifsicleNotice" xml:space="preserve">
+    <value>注意：gifsicle.exeは「システムパス」にある必要があります</value>
+  </data>
+  <data name="MergeDialog_Instructions" xml:space="preserve">
+    <value>マージする2-5個のGIFファイルを選択してください（左から右の順序で）：</value>
+  </data>
+  <data name="MergeDialog_GifFiles" xml:space="preserve">
+    <value>GIFファイル（2-5個）：</value>
+  </data>
+  <data name="MergeDialog_AddFiles" xml:space="preserve">
+    <value>ファイルを追加...</value>
+  </data>
+  <data name="MergeDialog_Remove" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="MergeDialog_MoveUp" xml:space="preserve">
+    <value>上に移動</value>
+  </data>
+  <data name="MergeDialog_MoveDown" xml:space="preserve">
+    <value>下に移動</value>
+  </data>
+  <data name="MergeDialog_OutputFile" xml:space="preserve">
+    <value>出力GIFファイル：</value>
+  </data>
+  <data name="MergeDialog_Merge" xml:space="preserve">
+    <value>マージ</value>
+  </data>
+  <data name="MergeDialog_Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="MergeDialog_Title" xml:space="preserve">
+    <value>GIFファイルをマージ</value>
+  </data>
+  <data name="Mp4Dialog_InputLabel" xml:space="preserve">
+    <value>入力ファイル：</value>
+  </data>
+  <data name="Mp4Dialog_Browse" xml:space="preserve">
+    <value>参照...</value>
+  </data>
+  <data name="Mp4Dialog_OutputLabel" xml:space="preserve">
+    <value>出力ファイル：</value>
+  </data>
+  <data name="Mp4Dialog_StartTimeLabel" xml:space="preserve">
+    <value>開始時刻:</value>
+  </data>
+  <data name="Mp4Dialog_Min" xml:space="preserve">
+    <value>分</value>
+  </data>
+  <data name="Mp4Dialog_Sec" xml:space="preserve">
+    <value>秒</value>
+  </data>
+  <data name="Mp4Dialog_Ms" xml:space="preserve">
+    <value>ミリ秒</value>
+  </data>
+  <data name="Mp4Dialog_DurationLabel" xml:space="preserve">
+    <value>時間 (最大 30 秒):</value>
+  </data>
+  <data name="Mp4Dialog_Convert" xml:space="preserve">
+    <value>変換</value>
+  </data>
+  <data name="Mp4Dialog_Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="Mp4Dialog_FFmpegHelp" xml:space="preserve">
+    <value>FFmpeg をインストールする方法は？（MP4 変換に必須）</value>
+  </data>
+  <data name="Mp4Dialog_GPUDecode" xml:space="preserve">
+    <value>GPU デコード（デコードのみ、GIF のエンコードは CPU を使用）</value>
+  </data>
+  <data name="Mp4Dialog_CheckingGPU" xml:space="preserve">
+    <value>GPU を確認中...</value>
+  </data>
+  <data name="Mp4Dialog_Title" xml:space="preserve">
+    <value>MP4 → GIF コンバーター</value>
+  </data>
+  <data name="Mp4Dialog_NvidiaDetected" xml:space="preserve">
+    <value>NVIDIA GPU が検出されました ✓</value>
+  </data>
+  <data name="Mp4Dialog_NoNvidiaGPU" xml:space="preserve">
+    <value>NVIDIA GPU が検出されませんでした</value>
+  </data>
+  <data name="Mp4Dialog_GPUDetectionFailed" xml:space="preserve">
+    <value>GPU の検出に失敗しました</value>
+  </data>
+  <data name="Mp4Dialog_GPUEnabled" xml:space="preserve">
+    <value>GPU デコードが有効になりました⚡</value>
+  </data>
+  <data name="Mp4Dialog_NvidiaGPUCPU" xml:space="preserve">
+    <value>NVIDIA GPU が検出されました（CPU デコード）✓</value>
   </data>
 </root>

@@ -473,4 +473,97 @@
   <data name="Title_Mp4ConversionError" xml:space="preserve">
     <value>MP4轉換錯誤</value>
   </data>
+  <data name="CheckBox_GifsicleOptimization" xml:space="preserve">
+    <value>啟用gifsicle最佳化</value>
+  </data>
+  <data name="Label_GifsicleNotice" xml:space="preserve">
+    <value>注意：gifsicle.exe必須在「系統路徑」中</value>
+  </data>
+  <data name="MergeDialog_Instructions" xml:space="preserve">
+    <value>請選擇2-5個GIF檔案進行合併（順序為由左至右）：</value>
+  </data>
+  <data name="MergeDialog_GifFiles" xml:space="preserve">
+    <value>GIF檔案（2-5個）：</value>
+  </data>
+  <data name="MergeDialog_AddFiles" xml:space="preserve">
+    <value>新增檔案...</value>
+  </data>
+  <data name="MergeDialog_Remove" xml:space="preserve">
+    <value>移除</value>
+  </data>
+  <data name="MergeDialog_MoveUp" xml:space="preserve">
+    <value>向上移動</value>
+  </data>
+  <data name="MergeDialog_MoveDown" xml:space="preserve">
+    <value>向下移動</value>
+  </data>
+  <data name="MergeDialog_OutputFile" xml:space="preserve">
+    <value>輸出GIF檔案：</value>
+  </data>
+  <data name="MergeDialog_Merge" xml:space="preserve">
+    <value>合併</value>
+  </data>
+  <data name="MergeDialog_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="MergeDialog_Title" xml:space="preserve">
+    <value>合併GIF檔案</value>
+  </data>
+  <data name="Mp4Dialog_InputLabel" xml:space="preserve">
+    <value>輸入檔案：</value>
+  </data>
+  <data name="Mp4Dialog_Browse" xml:space="preserve">
+    <value>瀏覽...</value>
+  </data>
+  <data name="Mp4Dialog_OutputLabel" xml:space="preserve">
+    <value>輸出檔案：</value>
+  </data>
+  <data name="Mp4Dialog_StartTimeLabel" xml:space="preserve">
+    <value>開始時間：</value>
+  </data>
+  <data name="Mp4Dialog_Min" xml:space="preserve">
+    <value>分鐘</value>
+  </data>
+  <data name="Mp4Dialog_Sec" xml:space="preserve">
+    <value>秒</value>
+  </data>
+  <data name="Mp4Dialog_Ms" xml:space="preserve">
+    <value>毫秒</value>
+  </data>
+  <data name="Mp4Dialog_DurationLabel" xml:space="preserve">
+    <value>持續時間 (最長 30 秒):</value>
+  </data>
+  <data name="Mp4Dialog_Convert" xml:space="preserve">
+    <value>轉換</value>
+  </data>
+  <data name="Mp4Dialog_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Mp4Dialog_FFmpegHelp" xml:space="preserve">
+    <value>如何安裝 FFmpeg？（MP4 轉換需要）</value>
+  </data>
+  <data name="Mp4Dialog_GPUDecode" xml:space="preserve">
+    <value>GPU 解碼（僅解碼，GIF 編碼使用 CPU）</value>
+  </data>
+  <data name="Mp4Dialog_CheckingGPU" xml:space="preserve">
+    <value>正在檢查 GPU...</value>
+  </data>
+  <data name="Mp4Dialog_Title" xml:space="preserve">
+    <value>MP4 轉 GIF 轉換器</value>
+  </data>
+  <data name="Mp4Dialog_NvidiaDetected" xml:space="preserve">
+    <value>已偵測到 NVIDIA GPU ✓</value>
+  </data>
+  <data name="Mp4Dialog_NoNvidiaGPU" xml:space="preserve">
+    <value>未偵測到 NVIDIA GPU</value>
+  </data>
+  <data name="Mp4Dialog_GPUDetectionFailed" xml:space="preserve">
+    <value>GPU 偵測失敗</value>
+  </data>
+  <data name="Mp4Dialog_GPUEnabled" xml:space="preserve">
+    <value>GPU 解碼已啟用⚡</value>
+  </data>
+  <data name="Mp4Dialog_NvidiaGPUCPU" xml:space="preserve">
+    <value>已偵測到 NVIDIA GPU（CPU 解碼）✓</value>
+  </data>
 </root>

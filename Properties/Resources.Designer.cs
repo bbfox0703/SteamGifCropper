@@ -1049,5 +1049,113 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Error_GifReverseFailed", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable gifsicle optimization.
+        /// </summary>
+        internal static string CheckBox_GifsicleOptimization {
+            get {
+                return ResourceManager.GetString("CheckBox_GifsicleOptimization", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notice: gifsicle.exe must be in "System Path".
+        /// </summary>
+        internal static string Label_GifsicleNotice {
+            get {
+                return ResourceManager.GetString("Label_GifsicleNotice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select 2-5 GIF files to merge (in order from left to right):.
+        /// </summary>
+        internal static string MergeDialog_Instructions {
+            get {
+                return ResourceManager.GetString("MergeDialog_Instructions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GIF Files (2-5):.
+        /// </summary>
+        internal static string MergeDialog_GifFiles {
+            get {
+                return ResourceManager.GetString("MergeDialog_GifFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Files....
+        /// </summary>
+        internal static string MergeDialog_AddFiles {
+            get {
+                return ResourceManager.GetString("MergeDialog_AddFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove.
+        /// </summary>
+        internal static string MergeDialog_Remove {
+            get {
+                return ResourceManager.GetString("MergeDialog_Remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Move Up.
+        /// </summary>
+        internal static string MergeDialog_MoveUp {
+            get {
+                return ResourceManager.GetString("MergeDialog_MoveUp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Move Down.
+        /// </summary>
+        internal static string MergeDialog_MoveDown {
+            get {
+                return ResourceManager.GetString("MergeDialog_MoveDown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Output GIF file:.
+        /// </summary>
+        internal static string MergeDialog_OutputFile {
+            get {
+                return ResourceManager.GetString("MergeDialog_OutputFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Merge.
+        /// </summary>
+        internal static string MergeDialog_Merge {
+            get {
+                return ResourceManager.GetString("MergeDialog_Merge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        internal static string MergeDialog_Cancel {
+            get {
+                return ResourceManager.GetString("MergeDialog_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Merge GIF Files.
+        /// </summary>
+        internal static string MergeDialog_Title {
+            get {
+                return ResourceManager.GetString("MergeDialog_Title", resourceCulture);
+            }
+        }
     }
 }

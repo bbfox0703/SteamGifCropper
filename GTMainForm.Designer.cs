@@ -74,7 +74,7 @@
             btnSplitGif.Name = "btnSplitGif";
             btnSplitGif.Size = new System.Drawing.Size(284, 26);
             btnSplitGif.TabIndex = 0;
-            btnSplitGif.Text = "Split GIF file into 5 parts with gifsicle";
+            btnSplitGif.Text = SteamGifCropper.Properties.Resources.Button_SplitGif;
             btnSplitGif.UseVisualStyleBackColor = true;
             btnSplitGif.Click += btnSplitGif_Click;
             // 
@@ -96,7 +96,7 @@
             btnWriteTailByte.Name = "btnWriteTailByte";
             btnWriteTailByte.Size = new System.Drawing.Size(284, 26);
             btnWriteTailByte.TabIndex = 2;
-            btnWriteTailByte.Text = "Write GIF files last byte as 0x21";
+            btnWriteTailByte.Text = SteamGifCropper.Properties.Resources.Button_WriteTailByte;
             btnWriteTailByte.UseVisualStyleBackColor = true;
             btnWriteTailByte.Click += btnWriteTailByte_Click;
             // 
@@ -107,7 +107,7 @@
             btnRestoreTailByte.Name = "btnRestoreTailByte";
             btnRestoreTailByte.Size = new System.Drawing.Size(284, 26);
             btnRestoreTailByte.TabIndex = 6;
-            btnRestoreTailByte.Text = "Restore GIF files last byte from 0x21 to 0x3B";
+            btnRestoreTailByte.Text = SteamGifCropper.Properties.Resources.Button_RestoreTailByte;
             btnRestoreTailByte.UseVisualStyleBackColor = true;
             btnRestoreTailByte.Click += btnRestoreTailByte_Click;
             // 
@@ -138,7 +138,7 @@
             btnMergeAndSplit.Name = "btnMergeAndSplit";
             btnMergeAndSplit.Size = new System.Drawing.Size(312, 26);
             btnMergeAndSplit.TabIndex = 5;
-            btnMergeAndSplit.Text = "Merge 5 GIF files into 1 part (766px), each ~153px";
+            btnMergeAndSplit.Text = SteamGifCropper.Properties.Resources.Button_MergeAndSplit;
             btnMergeAndSplit.UseVisualStyleBackColor = true;
             btnMergeAndSplit.Click += btnSplitGIFWithReducedPalette_Click;
             // 
@@ -149,7 +149,7 @@
             btnMp4ToGif.Name = "btnMp4ToGif";
             btnMp4ToGif.Size = new System.Drawing.Size(284, 26);
             btnMp4ToGif.TabIndex = 7;
-            btnMp4ToGif.Text = "FFMPEG: Convert MP4 to GIF (with time control)";
+            btnMp4ToGif.Text = SteamGifCropper.Properties.Resources.Button_Mp4ToGif;
             btnMp4ToGif.UseVisualStyleBackColor = true;
             btnMp4ToGif.Click += btnMp4ToGif_Click;
             // 
@@ -185,7 +185,7 @@
             groupDither.Size = new System.Drawing.Size(586, 53);
             groupDither.TabIndex = 19;
             groupDither.TabStop = false;
-            groupDither.Text = "Dither";
+            groupDither.Text = SteamGifCropper.Properties.Resources.Group_Dither;
             // 
             // radioBtnDDefault
             // 
@@ -277,7 +277,7 @@
             label4.Name = "label4";
             label4.Size = new System.Drawing.Size(62, 15);
             label4.TabIndex = 15;
-            label4.Text = "Optimize:";
+            label4.Text = SteamGifCropper.Properties.Resources.Label_Optimize;
             // 
             // label3
             // 
@@ -287,7 +287,7 @@
             label3.Name = "label3";
             label3.Size = new System.Drawing.Size(49, 15);
             label3.TabIndex = 14;
-            label3.Text = "Palette:";
+            label3.Text = SteamGifCropper.Properties.Resources.Label_Palette;
             // 
             // label2
             // 
@@ -297,7 +297,7 @@
             label2.Name = "label2";
             label2.Size = new System.Drawing.Size(40, 15);
             label2.TabIndex = 13;
-            label2.Text = "Lossy:";
+            label2.Text = SteamGifCropper.Properties.Resources.Label_Lossy;
             // 
             // label1
             // 
@@ -307,7 +307,7 @@
             label1.Name = "label1";
             label1.Size = new System.Drawing.Size(255, 15);
             label1.TabIndex = 12;
-            label1.Text = "Notice: gifsicle.exe must be in \"System Path\"";
+            label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
             // 
             // chkGifsicle
             // 
@@ -317,7 +317,7 @@
             chkGifsicle.Name = "chkGifsicle";
             chkGifsicle.Size = new System.Drawing.Size(182, 19);
             chkGifsicle.TabIndex = 11;
-            chkGifsicle.Text = "Enable gifsicle optimization";
+            chkGifsicle.Text = SteamGifCropper.Properties.Resources.CheckBox_GifsicleOptimization ?? "Enable gifsicle optimization";
             chkGifsicle.UseVisualStyleBackColor = true;
             // 
             // numUpDownFramerate
@@ -339,7 +339,7 @@
             lblFramerate.Name = "lblFramerate";
             lblFramerate.Size = new System.Drawing.Size(105, 15);
             lblFramerate.TabIndex = 21;
-            lblFramerate.Text = "Target framerate:";
+            lblFramerate.Text = SteamGifCropper.Properties.Resources.Label_Framerate;
             // 
             // lblFPS
             // 
@@ -349,7 +349,7 @@
             lblFPS.Name = "lblFPS";
             lblFPS.Size = new System.Drawing.Size(24, 15);
             lblFPS.TabIndex = 22;
-            lblFPS.Text = "fps";
+            lblFPS.Text = SteamGifCropper.Properties.Resources.Label_FPS;
             // 
             // numUpDownPalette
             // 
