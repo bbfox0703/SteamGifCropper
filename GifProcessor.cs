@@ -1747,5 +1747,120 @@ namespace GifProcessorApp
             }
         }
 
+        public static void ScrollStaticImage(string inputFilePath, string outputFilePath,
+            ScrollDirection direction, int stepPixels, int durationSeconds, bool fullCycle, int targetFramerate = 15)
+        {
+            using var baseImage = new MagickImage(inputFilePath);
+            int width = (int)baseImage.Width;
+            int height = (int)baseImage.Height;
+
+            int dx = 0, dy = 0;
+            switch (direction)
+            {
+                case ScrollDirection.Right: dx = stepPixels; break;
+                case ScrollDirection.Left: dx = -stepPixels; break;
+                case ScrollDirection.Down: dy = stepPixels; break;
+                case ScrollDirection.Up: dy = -stepPixels; break;
+                case ScrollDirection.LeftUp: dx = -stepPixels; dy = -stepPixels; break;
+                case ScrollDirection.LeftDown: dx = -stepPixels; dy = stepPixels; break;
+                case ScrollDirection.RightUp: dx = stepPixels; dy = -stepPixels; break;
+                case ScrollDirection.RightDown: dx = stepPixels; dy = stepPixels; break;
+            }
+
+            int frames;
+            if (fullCycle)
+            {
+                int stepsX = dx != 0 ? (int)Math.Ceiling((double)width / Math.Abs(dx)) : 0;
+                int stepsY = dy != 0 ? (int)Math.Ceiling((double)height / Math.Abs(dy)) : 0;
+                frames = Math.Max(stepsX, stepsY);
+                if (frames <= 0) frames = 1;
+            }
+            else
+            {
+                frames = Math.Max(1, durationSeconds * targetFramerate);
+            }
+
+            uint delay = (uint)Math.Round(100.0 / targetFramerate);
+            using var collection = new MagickImageCollection();
+
+            for (int i = 0; i < frames; i++)
+            {
+                var frame = baseImage.Clone();
+                int offsetX = dx * i;
+                int offsetY = dy * i;
+                if (width > 0)
+                {
+                    offsetX %= width;
+                    if (offsetX < 0) offsetX += width;
+                }
+                if (height > 0)
+                {
+                    offsetY %= height;
+                    if (offsetY < 0) offsetY += height;
+                }
+                frame.Roll(offsetX, offsetY);
+                frame.AnimationDelay = delay;
+                frame.GifDisposeMethod = GifDisposeMethod.Background;
+                collection.Add(frame);
+            }
+
+            collection.Optimize();
+            collection.Write(outputFilePath);
+        }
+
+        public static async Task ScrollStaticImage(GifToolMainForm mainForm)
+        {
+            using var dialog = new ScrollStaticImageDialog();
+            if (dialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            string inputPath = dialog.InputFilePath;
+            string outputPath = dialog.OutputFilePath;
+            ScrollDirection direction = dialog.Direction;
+            int step = dialog.StepPixels;
+            int duration = dialog.DurationSeconds;
+            bool fullCycle = dialog.FullCycle;
+            int targetFramerate = (int)mainForm.numUpDownFramerate.Value;
+
+            try
+            {
+                mainForm.pBarTaskStatus.Visible = true;
+                mainForm.pBarTaskStatus.Value = 0;
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Processing;
+
+                await Task.Run(() => ScrollStaticImage(inputPath, outputPath, direction, step, duration, fullCycle, targetFramerate));
+
+                if (mainForm.chkGifsicle.Checked)
+                {
+                    var options = new GifsicleWrapper.GifsicleOptions
+                    {
+                        Colors = (int)mainForm.numUpDownPaletteSicle.Value,
+                        Lossy = (int)mainForm.numUpDownLossy.Value,
+                        OptimizeLevel = (int)mainForm.numUpDownOptimize.Value,
+                        Dither = mainForm.DitherMethod
+                    };
+                    GifsicleWrapper.OptimizeGif(outputPath, outputPath, options);
+                }
+
+                mainForm.pBarTaskStatus.Value = 100;
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Done;
+                MessageBox.Show(SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
+                                SteamGifCropper.Properties.Resources.Title_Success,
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Error;
+                MessageBox.Show(string.Format(SteamGifCropper.Properties.Resources.Error_Occurred, ex.Message),
+                                SteamGifCropper.Properties.Resources.Title_Error,
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                mainForm.pBarTaskStatus.Visible = false;
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready;
+            }
+        }
+
     }
 }
