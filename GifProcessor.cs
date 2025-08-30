@@ -261,7 +261,7 @@ namespace GifProcessorApp
                 // Note: mergedFilePath is kept as the intermediate merged file
 
                 UpdateProgress(mainForm.pBarTaskStatus, 100, 100);
-                mainForm.lblStatus.Text = "Five GIF merge and split completed successfully!";
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.MergeFiveGif_Success;
                 MessageBox.Show("Five GIF files have been merged and split into 5 parts successfully!",
                               SteamGifCropper.Properties.Resources.Title_Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -274,7 +274,7 @@ namespace GifProcessorApp
             }
             catch (Exception ex)
             {
-                mainForm.lblStatus.Text = "Error occurred during processing.";
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.MergeFiveGif_Error;
                 MessageBox.Show($"Error processing five GIF merge and split: {ex.Message}",
                               SteamGifCropper.Properties.Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
