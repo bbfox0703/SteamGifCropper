@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
 using GifProcessorApp;
+using ImageMagick;
 
 namespace SteamGifCropper.Tests;
 
@@ -96,6 +97,59 @@ public class GifProcessorTests
             {
                 File.Delete(tempFile);
             }
+        }
+    }
+
+    [Fact]
+    public void SynchronizeToShortestDuration_TrimsAndClonesFrames()
+    {
+        static MagickImageCollection Create(int frames)
+        {
+            var collection = new MagickImageCollection();
+            for (int i = 0; i < frames; i++)
+            {
+                var img = new MagickImage(MagickColors.Red, 1, 1)
+                {
+                    AnimationDelay = 10,
+                    AnimationTicksPerSecond = 100
+                };
+                collection.Add(img);
+            }
+            return collection;
+        }
+
+        var shortGif = Create(2);      // 0.2s total
+        var longGif = Create(3);       // 0.3s total
+        var collections = new[]
+        {
+            shortGif,
+            longGif,
+            Create(2),
+            Create(2),
+            Create(2)
+        };
+
+        var method = GetMethod("SynchronizeToShortestDuration");
+        var form = new GifToolMainForm();
+        var result = (MagickImageCollection[])method.Invoke(null, new object?[] { collections, form })!;
+
+        double expected = shortGif.Sum(f => (double)f.AnimationDelay / f.AnimationTicksPerSecond);
+        double duration0 = result[0].Sum(f => (double)f.AnimationDelay / f.AnimationTicksPerSecond);
+        double duration1 = result[1].Sum(f => (double)f.AnimationDelay / f.AnimationTicksPerSecond);
+
+        Assert.Equal(expected, duration0, 3); // unchanged
+        Assert.Equal(expected, duration1, 3); // trimmed
+        Assert.NotSame(shortGif[0], result[0][0]); // frames cloned
+        Assert.Equal(2, result[0].Count);
+        Assert.Equal(2, result[1].Count); // frame dropped from longGif
+
+        foreach (var col in result)
+        {
+            col.Dispose();
+        }
+        foreach (var col in collections)
+        {
+            col.Dispose();
         }
     }
 }
