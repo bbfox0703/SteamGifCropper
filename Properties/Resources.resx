@@ -46,7 +46,7 @@
     
     mimetype: application/x-microsoft.net.object.binary.base64
     value   : The object must be serialized with 
-            : System.Serialization.Formatters.Binary.BinaryFormatter
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
     
     mimetype: application/x-microsoft.net.object.soap.base64
@@ -60,6 +60,7 @@
             : and then encoded with base64 encoding.
     -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
@@ -68,9 +69,10 @@
               <xsd:sequence>
                 <xsd:element name="value" type="xsd:string" minOccurs="0" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="name" use="required" type="xsd:string" />
               <xsd:attribute name="type" type="xsd:string" />
               <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
@@ -85,9 +87,10 @@
                 <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
                 <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
               <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
               <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
@@ -109,36 +112,35 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  
-  <!-- UI Button Text -->
   <data name="Button_SplitGif" xml:space="preserve">
-    <value>Split Gif file into 5 parts with gifsicle</value>
+    <value>Split GIF file into 5 parts with gifsicle</value>
   </data>
   <data name="Button_ResizeGif" xml:space="preserve">
     <value>Resize GIF file to 766px width</value>
   </data>
   <data name="Button_WriteTailByte" xml:space="preserve">
-    <value>Write Gif files last byte as 0x21</value>
+    <value>Write GIF files last byte as 0x21</value>
   </data>
   <data name="Button_RestoreTailByte" xml:space="preserve">
-    <value>Restore Gif files last byte from 0x21 to 0x3B</value>
+    <value>Restore GIF files last byte from 0x21 to 0x3B</value>
   </data>
   <data name="Button_MergeAndSplit" xml:space="preserve">
-    <value>Merge 5 gif files into 1 part (766px)</value>
+    <value>Merge 5 GIF files into 1 part (766px)</value>
   </data>
   <data name="Button_Mp4ToGif" xml:space="preserve">
     <value>Convert MP4 to GIF (with time control)</value>
   </data>
+  <data name="Button_MergeGifs" xml:space="preserve">
+    <value>Merge 2-5 GIF files into one</value>
+  </data>
   <data name="Button_Browse" xml:space="preserve">
     <value>Browse...</value>
   </data>
-  
-  <!-- Status Messages -->
   <data name="Status_Idle" xml:space="preserve">
     <value>Idle.</value>
   </data>
@@ -160,6 +162,9 @@
   <data name="Status_Saving" xml:space="preserve">
     <value>Saving...</value>
   </data>
+  <data name="Status_ReducingPalette" xml:space="preserve">
+    <value>Reducing palette...</value>
+  </data>
   <data name="Status_CoalescingFrames" xml:space="preserve">
     <value>Coalescing frames...</value>
   </data>
@@ -178,8 +183,6 @@
   <data name="Status_RestoringTailBytes" xml:space="preserve">
     <value>Restoring tail bytes...</value>
   </data>
-  
-  <!-- Dynamic Status Messages -->
   <data name="Status_ProcessingPart" xml:space="preserve">
     <value>Processing part {0}, frame {1}...</value>
   </data>
@@ -198,8 +201,6 @@
   <data name="Status_MergingFrame" xml:space="preserve">
     <value>Merging frame {0}/{1}...</value>
   </data>
-  
-  <!-- Dialog Titles -->
   <data name="Title_Error" xml:space="preserve">
     <value>Error</value>
   </data>
@@ -224,6 +225,12 @@
   <data name="Title_Mp4ToGifError" xml:space="preserve">
     <value>MP4 to GIF Conversion Error</value>
   </data>
+  <data name="Title_MergeGifs" xml:space="preserve">
+    <value>Merge GIF Files</value>
+  </data>
+  <data name="Title_MergeGifError" xml:space="preserve">
+    <value>GIF Merge Error</value>
+  </data>
   <data name="Title_TailByteRestoration" xml:space="preserve">
     <value>Tail Byte Restoration</value>
   </data>
@@ -236,8 +243,6 @@
   <data name="Title_SelectionOrder" xml:space="preserve">
     <value>Selection Order Information</value>
   </data>
-  
-  <!-- Success Messages -->
   <data name="Message_ProcessingComplete" xml:space="preserve">
     <value>GIF processing and splitting completed successfully!</value>
   </data>
@@ -246,6 +251,21 @@
   </data>
   <data name="Message_FiveGifMergeComplete" xml:space="preserve">
     <value>Five GIF files have been merged and split into 5 parts successfully!</value>
+  </data>
+  <data name="Message_GifMergeComplete" xml:space="preserve">
+    <value>GIF files merged successfully!\nSaved as: {0}</value>
+  </data>
+  <data name="Message_SelectGifFiles" xml:space="preserve">
+    <value>Please select 2-5 GIF files to merge (in order from left to right):</value>
+  </data>
+  <data name="Message_GifFileCount" xml:space="preserve">
+    <value>Please select between 2 and 5 GIF files.</value>
+  </data>
+  <data name="Message_AnalyzingGifs" xml:space="preserve">
+    <value>Analyzing GIF files...</value>
+  </data>
+  <data name="Message_MergingGifs" xml:space="preserve">
+    <value>Merging GIF files...</value>
   </data>
   <data name="Message_ResizeComplete" xml:space="preserve">
     <value>GIF resizing completed successfully!\nSaved as: {0}</value>
@@ -259,8 +279,6 @@
   <data name="Message_RestorationComplete" xml:space="preserve">
     <value>Restoration completed!\nFiles processed: {0}\nFiles skipped (not 0x21): {1}</value>
   </data>
-  
-  <!-- Error Messages -->
   <data name="Error_UnsupportedWidth" xml:space="preserve">
     <value>Unsupported GIF canvas width: {0}px. Only {1}px and {2}px are supported.</value>
   </data>
@@ -291,8 +309,6 @@
   <data name="Error_InvalidColorType" xml:space="preserve">
     <value>GIF #{0} ({1}) must have palette-based colors (8-bit).\nCurrent color type: {2}</value>
   </data>
-  
-  <!-- File Dialog -->
   <data name="FileDialog_SelectGif" xml:space="preserve">
     <value>Select a GIF file to process</value>
   </data>
@@ -311,13 +327,9 @@
   <data name="FileDialog_SelectGifOrder" xml:space="preserve">
     <value>Select GIF file #{0} (position {1} from left to right)</value>
   </data>
-  
-  <!-- Instruction Messages -->
   <data name="Instruction_SelectFiveGifs" xml:space="preserve">
     <value>You will need to select 5 GIF files one by one in the desired order.\n\nFile 1: First position (leftmost)\nFile 2: Second position\nFile 3: Third position (center)\nFile 4: Fourth position\nFile 5: Fifth position (rightmost)</value>
   </data>
-  
-  <!-- MP4 Dialog -->
   <data name="Mp4Dialog_InputFile" xml:space="preserve">
     <value>Input MP4 file:</value>
   </data>
@@ -339,8 +351,6 @@
   <data name="Mp4Dialog_UseGPU" xml:space="preserve">
     <value>Use GPU acceleration (if available)</value>
   </data>
-  
-  <!-- Group Labels -->
   <data name="Group_Dither" xml:space="preserve">
     <value>Dither</value>
   </data>
@@ -353,8 +363,6 @@
   <data name="Label_Lossy" xml:space="preserve">
     <value>Lossy:</value>
   </data>
-  
-  <!-- Radio Button Options -->
   <data name="Radio_Default" xml:space="preserve">
     <value>Default</value>
   </data>
@@ -367,8 +375,6 @@
   <data name="Radio_None" xml:space="preserve">
     <value>None</value>
   </data>
-  
-  <!-- Framerate Settings -->
   <data name="Label_Framerate" xml:space="preserve">
     <value>Framerate:</value>
   </data>
@@ -378,8 +384,6 @@
   <data name="Tooltip_Framerate" xml:space="preserve">
     <value>Target framerate for all GIF outputs (frames per second)</value>
   </data>
-  
-  <!-- Complex Status Messages -->
   <data name="Status_ValidatingProcessing" xml:space="preserve">
     <value>Validating and processing 5 GIF files...</value>
   </data>
@@ -404,8 +408,6 @@
   <data name="Status_ProcessingPartPalette" xml:space="preserve">
     <value>Processing part {0} with palette reduction, frame {1}...</value>
   </data>
-  
-  <!-- MP4 Conversion Status -->
   <data name="Status_Mp4ShortClip" xml:space="preserve">
     <value>Short clip - CPU more efficient...</value>
   </data>

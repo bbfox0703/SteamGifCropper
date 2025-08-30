@@ -2,7 +2,8 @@ using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Microsoft.Win32;
+
+#nullable enable
 
 namespace GifProcessorApp
 {
@@ -15,17 +16,15 @@ namespace GifProcessorApp
         private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
 
         [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
-        private static extern int SetWindowTheme(IntPtr hwnd, string pszSubAppName, string pszSubIdList);
+        private static extern int SetWindowTheme(IntPtr hwnd, string? pszSubAppName, string? pszSubIdList);
 
-        public static bool IsDarkModeEnabled()
+        public static bool IsDarkModeEnabled(IRegistryProvider? registryProvider = null)
         {
             try
             {
-                using (var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
-                {
-                    var value = key?.GetValue("AppsUseLightTheme");
-                    return value is int intValue && intValue == 0;
-                }
+                registryProvider ??= new RegistryProvider();
+                var value = registryProvider.GetValue(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "AppsUseLightTheme");
+                return value is int intValue && intValue == 0;
             }
             catch
             {

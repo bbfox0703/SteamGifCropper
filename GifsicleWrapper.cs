@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
+#nullable enable
+
 public class GifsicleWrapper
 {
     public class GifsicleOptions
@@ -13,7 +15,19 @@ public class GifsicleWrapper
         public int Dither { get; set; } = 0;
     }
 
-    public static void OptimizeGif(string inputPath, string outputPath, GifsicleOptions options = null)
+    public static Func<ProcessStartInfo, (string Output, string Error)> ProcessRunner = DefaultProcessRunner;
+
+    private static (string Output, string Error) DefaultProcessRunner(ProcessStartInfo startInfo)
+    {
+        using Process gifsicleProcess = new Process { StartInfo = startInfo };
+        gifsicleProcess.Start();
+        string output = gifsicleProcess.StandardOutput.ReadToEnd();
+        string error = gifsicleProcess.StandardError.ReadToEnd();
+        gifsicleProcess.WaitForExit();
+        return (output, error);
+    }
+
+    public static void OptimizeGif(string inputPath, string outputPath, GifsicleOptions? options = null)
     {
         if (options == null) options = new GifsicleOptions();
 
@@ -48,36 +62,28 @@ public class GifsicleWrapper
 
             argsBuilder.Append($"\"{inputPath}\" -o \"{outputPath}\"");
 
-            // Prepare and start the process
-            using (Process gifsicleProcess = new Process())
+            ProcessStartInfo startInfo = new ProcessStartInfo
             {
-                gifsicleProcess.StartInfo = new ProcessStartInfo
-                {
-                    FileName = "gifsicle", // ensure gifsicle is in system PATH
-                    Arguments = argsBuilder.ToString(),
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
+                FileName = "gifsicle", // ensure gifsicle is in system PATH
+                Arguments = argsBuilder.ToString(),
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
 
-                gifsicleProcess.Start();
+            var (output, error) = ProcessRunner(startInfo);
 
-                string output = gifsicleProcess.StandardOutput.ReadToEnd();
-                string error = gifsicleProcess.StandardError.ReadToEnd();
-
-                gifsicleProcess.WaitForExit();
-
-                if (!string.IsNullOrEmpty(error))
-                {
-                    throw new Exception($"Gifsicle Error: {error}");
-                }
+            if (!string.IsNullOrEmpty(error))
+            {
+                throw new Exception($"Gifsicle Error: {error}");
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error optimizing GIF: {ex.Message}");
             Console.WriteLine(ex.StackTrace);
+            throw;
         }
     }
 }
