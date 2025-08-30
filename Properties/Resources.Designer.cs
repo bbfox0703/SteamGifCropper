@@ -1175,7 +1175,34 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("MergeDialog_Title", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to File not found: {0}.
+        /// </summary>
+        internal static string MergeDialog_FileNotFound {
+            get {
+                return ResourceManager.GetString("MergeDialog_FileNotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Please specify an output GIF file..
+        /// </summary>
+        internal static string MergeDialog_RequireOutput {
+            get {
+                return ResourceManager.GetString("MergeDialog_RequireOutput", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot create output directory:.
+        /// </summary>
+        internal static string MergeDialog_CannotCreateDir {
+            get {
+                return ResourceManager.GetString("MergeDialog_CannotCreateDir", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Input MP4 file:.
         /// </summary>
