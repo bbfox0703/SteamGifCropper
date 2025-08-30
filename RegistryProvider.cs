@@ -1,5 +1,7 @@
 using Microsoft.Win32;
 
+#nullable enable
+
 namespace GifProcessorApp;
 
 public interface IRegistryProvider

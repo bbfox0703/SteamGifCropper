@@ -3,6 +3,8 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
+#nullable enable
+
 namespace GifProcessorApp
 {
     public static class WindowsThemeManager
@@ -14,7 +16,7 @@ namespace GifProcessorApp
         private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
 
         [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
-        private static extern int SetWindowTheme(IntPtr hwnd, string pszSubAppName, string pszSubIdList);
+        private static extern int SetWindowTheme(IntPtr hwnd, string? pszSubAppName, string? pszSubIdList);
 
         public static bool IsDarkModeEnabled(IRegistryProvider? registryProvider = null)
         {
