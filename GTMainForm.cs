@@ -17,6 +17,7 @@ namespace GifProcessorApp
             try
             {
                 InitializeComponent();
+                UpdateUIText();
 
                 // Initialize theme
                 _isDarkMode = WindowsThemeManager.IsDarkModeEnabled();
@@ -171,6 +172,11 @@ namespace GifProcessorApp
             await ExecuteWithErrorHandling(async () => await GifProcessor.ReverseGif(this), "GIF reversal");
         }
 
+        private async void btnScrollStaticImage_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(async () => await GifProcessor.ScrollStaticImage(this), "static image scroll");
+        }
+
         private void label2_Click(object sender, EventArgs e)
         {
 
@@ -244,6 +250,7 @@ namespace GifProcessorApp
                 btnMerge2to5GifToOne.Text = SteamGifCropper.Properties.Resources.Button_MergeGifs;
                 chk5GIFMergeFasterPaletteProcess.Text = SteamGifCropper.Properties.Resources.CheckBox_FasterPalette;
                 btnReverseGIF.Text = SteamGifCropper.Properties.Resources.Button_ReverseGif;
+                btnScrollStaticImage.Text = SteamGifCropper.Properties.Resources.Button_ScrollStaticImage;
                 label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
 
 

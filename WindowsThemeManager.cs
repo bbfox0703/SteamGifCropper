@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -79,6 +80,99 @@ namespace GifProcessorApp
             {
                 // Silently fail
             }
+        }
+
+        public static DialogResult ShowThemeAwareMessageBox(IWin32Window? owner, string text, string caption,
+            MessageBoxButtons buttons = MessageBoxButtons.OK, MessageBoxIcon icon = MessageBoxIcon.None)
+        {
+            bool isDark = IsDarkModeEnabled();
+
+            // On older systems fall back to standard MessageBox
+            if (!IsWindows10OrGreater())
+            {
+                return owner != null
+                    ? MessageBox.Show(owner, text, caption, buttons, icon)
+                    : MessageBox.Show(text, caption, buttons, icon);
+            }
+
+            var page = new TaskDialogPage
+            {
+                Caption = caption,
+                Heading = caption,
+                Text = text,
+                Icon = icon switch
+                {
+                    MessageBoxIcon.Error => TaskDialogIcon.Error,
+                    MessageBoxIcon.Warning => TaskDialogIcon.Warning,
+                    MessageBoxIcon.Information => TaskDialogIcon.Information,
+                    MessageBoxIcon.Question => TaskDialogIcon.Information,
+                    _ => TaskDialogIcon.None
+                }
+            };
+
+            var map = new Dictionary<TaskDialogButton, DialogResult>();
+            switch (buttons)
+            {
+                case MessageBoxButtons.OK:
+                    map[TaskDialogButton.OK] = DialogResult.OK;
+                    page.Buttons.Add(TaskDialogButton.OK);
+                    break;
+                case MessageBoxButtons.OKCancel:
+                    map[TaskDialogButton.OK] = DialogResult.OK;
+                    map[TaskDialogButton.Cancel] = DialogResult.Cancel;
+                    page.Buttons.Add(TaskDialogButton.OK);
+                    page.Buttons.Add(TaskDialogButton.Cancel);
+                    break;
+                case MessageBoxButtons.YesNo:
+                    map[TaskDialogButton.Yes] = DialogResult.Yes;
+                    map[TaskDialogButton.No] = DialogResult.No;
+                    page.Buttons.Add(TaskDialogButton.Yes);
+                    page.Buttons.Add(TaskDialogButton.No);
+                    break;
+                case MessageBoxButtons.YesNoCancel:
+                    map[TaskDialogButton.Yes] = DialogResult.Yes;
+                    map[TaskDialogButton.No] = DialogResult.No;
+                    map[TaskDialogButton.Cancel] = DialogResult.Cancel;
+                    page.Buttons.Add(TaskDialogButton.Yes);
+                    page.Buttons.Add(TaskDialogButton.No);
+                    page.Buttons.Add(TaskDialogButton.Cancel);
+                    break;
+                case MessageBoxButtons.RetryCancel:
+                    map[TaskDialogButton.Retry] = DialogResult.Retry;
+                    map[TaskDialogButton.Cancel] = DialogResult.Cancel;
+                    page.Buttons.Add(TaskDialogButton.Retry);
+                    page.Buttons.Add(TaskDialogButton.Cancel);
+                    break;
+                case MessageBoxButtons.AbortRetryIgnore:
+                    var abort = new TaskDialogButton("Abort");
+                    var retry = TaskDialogButton.Retry;
+                    var ignore = new TaskDialogButton("Ignore");
+                    map[abort] = DialogResult.Abort;
+                    map[retry] = DialogResult.Retry;
+                    map[ignore] = DialogResult.Ignore;
+                    page.Buttons.Add(abort);
+                    page.Buttons.Add(retry);
+                    page.Buttons.Add(ignore);
+                    break;
+                default:
+                    map[TaskDialogButton.OK] = DialogResult.OK;
+                    page.Buttons.Add(TaskDialogButton.OK);
+                    break;
+            }
+
+            page.Created += (s, e) =>
+            {
+                if (page.BoundDialog is { } dialog)
+                {
+                    SetDarkModeForWindow(dialog.Handle, isDark);
+                }
+            };
+
+            TaskDialogButton result = owner != null
+                ? TaskDialog.ShowDialog(owner, page)
+                : TaskDialog.ShowDialog(page);
+
+            return map.TryGetValue(result, out var dr) ? dr : DialogResult.OK;
         }
 
         public static void ApplyThemeToControl(Control control, bool isDarkMode)
