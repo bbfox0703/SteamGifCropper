@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Forms;
 using ImageMagick;
 
@@ -12,12 +13,16 @@ namespace GifProcessorApp
         public int OverlayX => (int)numX.Value;
         public int OverlayY => (int)numY.Value;
 
+        private readonly ComponentResourceManager _resources = new(typeof(OverlayGifDialog));
+
         private TextBox txtBaseGif;
         private Button btnBrowseBase;
         private TextBox txtOverlayGif;
         private Button btnBrowseOverlay;
         private Label lblBase;
         private Label lblOverlay;
+        private Label lblBaseInfo;
+        private Label lblOverlayInfo;
         private Label lblX;
         private Label lblY;
         private NumericUpDown numX;
@@ -43,8 +48,18 @@ namespace GifProcessorApp
                 try
                 {
                     using var collection = new MagickImageCollection(dialog.FileName);
-                    numX.Maximum = collection[0].Width > 0 ? collection[0].Width - 1 : 0;
-                    numY.Maximum = collection[0].Height > 0 ? collection[0].Height - 1 : 0;
+                    int width = collection[0].Width;
+                    int height = collection[0].Height;
+                    numX.Maximum = width > 0 ? width - 1 : 0;
+                    numY.Maximum = height > 0 ? height - 1 : 0;
+
+                    double avgDelay = collection.Average(img => (double)img.AnimationDelay);
+                    double fps = avgDelay > 0 ? 100.0 / avgDelay : 0;
+                    lblBaseInfo.Text = string.Format(
+                        _resources.GetString("GifInfoFormat") ?? "{0}×{1}, {2} fps",
+                        width,
+                        height,
+                        fps.ToString("0.##"));
                 }
                 catch
                 {
@@ -62,6 +77,24 @@ namespace GifProcessorApp
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 txtOverlayGif.Text = dialog.FileName;
+                try
+                {
+                    using var collection = new MagickImageCollection(dialog.FileName);
+                    int width = collection[0].Width;
+                    int height = collection[0].Height;
+
+                    double avgDelay = collection.Average(img => (double)img.AnimationDelay);
+                    double fps = avgDelay > 0 ? 100.0 / avgDelay : 0;
+                    lblOverlayInfo.Text = string.Format(
+                        _resources.GetString("GifInfoFormat") ?? "{0}×{1}, {2} fps",
+                        width,
+                        height,
+                        fps.ToString("0.##"));
+                }
+                catch
+                {
+                    // Ignore errors determining dimensions
+                }
             }
         }
 
@@ -74,6 +107,8 @@ namespace GifProcessorApp
             lblOverlay = new Label();
             txtOverlayGif = new TextBox();
             btnBrowseOverlay = new Button();
+            lblBaseInfo = new Label();
+            lblOverlayInfo = new Label();
             lblX = new Label();
             numX = new NumericUpDown();
             lblY = new Label();
@@ -109,6 +144,13 @@ namespace GifProcessorApp
             btnBrowseBase.UseVisualStyleBackColor = true;
             btnBrowseBase.Click += BtnBrowseBase_Click;
             //
+            // lblBaseInfo
+            //
+            lblBaseInfo.AutoSize = true;
+            lblBaseInfo.Name = "lblBaseInfo";
+            lblBaseInfo.Location = new System.Drawing.Point(96, 38);
+            resources.ApplyResources(lblBaseInfo, "lblBaseInfo");
+            //
             // lblOverlay
             //
             lblOverlay.AutoSize = true;
@@ -134,17 +176,24 @@ namespace GifProcessorApp
             btnBrowseOverlay.UseVisualStyleBackColor = true;
             btnBrowseOverlay.Click += BtnBrowseOverlay_Click;
             //
+            // lblOverlayInfo
+            //
+            lblOverlayInfo.AutoSize = true;
+            lblOverlayInfo.Name = "lblOverlayInfo";
+            lblOverlayInfo.Location = new System.Drawing.Point(96, 76);
+            resources.ApplyResources(lblOverlayInfo, "lblOverlayInfo");
+            //
             // lblX
             //
             lblX.AutoSize = true;
             lblX.Name = "lblX";
-            lblX.Location = new System.Drawing.Point(12, 91);
+            lblX.Location = new System.Drawing.Point(12, 115);
             resources.ApplyResources(lblX, "lblX");
             //
             // numX
             //
             numX.Name = "numX";
-            numX.Location = new System.Drawing.Point(96, 89);
+            numX.Location = new System.Drawing.Point(96, 113);
             numX.Maximum = int.MaxValue;
             numX.Size = new System.Drawing.Size(120, 23);
             numX.TabIndex = 4;
@@ -154,13 +203,13 @@ namespace GifProcessorApp
             //
             lblY.AutoSize = true;
             lblY.Name = "lblY";
-            lblY.Location = new System.Drawing.Point(230, 91);
+            lblY.Location = new System.Drawing.Point(230, 115);
             resources.ApplyResources(lblY, "lblY");
             //
             // numY
             //
             numY.Name = "numY";
-            numY.Location = new System.Drawing.Point(264, 89);
+            numY.Location = new System.Drawing.Point(264, 113);
             numY.Maximum = int.MaxValue;
             numY.Size = new System.Drawing.Size(120, 23);
             numY.TabIndex = 5;
@@ -170,7 +219,7 @@ namespace GifProcessorApp
             //
             btnOK.DialogResult = DialogResult.OK;
             btnOK.Name = "btnOK";
-            btnOK.Location = new System.Drawing.Point(96, 128);
+            btnOK.Location = new System.Drawing.Point(96, 152);
             btnOK.Size = new System.Drawing.Size(100, 27);
             btnOK.TabIndex = 6;
             resources.ApplyResources(btnOK, "btnOK");
@@ -180,7 +229,7 @@ namespace GifProcessorApp
             //
             btnCancel.DialogResult = DialogResult.Cancel;
             btnCancel.Name = "btnCancel";
-            btnCancel.Location = new System.Drawing.Point(206, 128);
+            btnCancel.Location = new System.Drawing.Point(206, 152);
             btnCancel.Size = new System.Drawing.Size(100, 27);
             btnCancel.TabIndex = 7;
             resources.ApplyResources(btnCancel, "btnCancel");
@@ -192,16 +241,18 @@ namespace GifProcessorApp
             CancelButton = btnCancel;
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(450, 170);
+            ClientSize = new System.Drawing.Size(450, 210);
             Controls.Add(btnCancel);
             Controls.Add(btnOK);
             Controls.Add(numY);
             Controls.Add(lblY);
             Controls.Add(numX);
             Controls.Add(lblX);
+            Controls.Add(lblOverlayInfo);
             Controls.Add(btnBrowseOverlay);
             Controls.Add(txtOverlayGif);
             Controls.Add(lblOverlay);
+            Controls.Add(lblBaseInfo);
             Controls.Add(btnBrowseBase);
             Controls.Add(txtBaseGif);
             Controls.Add(lblBase);
