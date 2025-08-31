@@ -177,6 +177,15 @@ namespace GifProcessorApp
             await ExecuteWithErrorHandling(async () => await GifProcessor.ScrollStaticImage(this), "static image scroll");
         }
 
+        private async void btnOverlayGIF_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(() =>
+            {
+                GifProcessor.OverlayGif(this);
+                return Task.CompletedTask;
+            }, "GIF overlay");
+        }
+
         private void label2_Click(object sender, EventArgs e)
         {
 
@@ -251,6 +260,7 @@ namespace GifProcessorApp
                 chk5GIFMergeFasterPaletteProcess.Text = SteamGifCropper.Properties.Resources.CheckBox_FasterPalette;
                 btnReverseGIF.Text = SteamGifCropper.Properties.Resources.Button_ReverseGif;
                 btnScrollStaticImage.Text = SteamGifCropper.Properties.Resources.Button_ScrollStaticImage;
+                btnOverlayGIF.Text = SteamGifCropper.Properties.Resources.Button_OverlayGif;
                 label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
 
 

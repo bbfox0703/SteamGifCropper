@@ -416,6 +416,9 @@
   <data name="Button_ScrollStaticImage" xml:space="preserve">
     <value>捲動靜態圖</value>
   </data>
+  <data name="Button_OverlayGif" xml:space="preserve">
+    <value>將GIF疊加在GIF上</value>
+  </data>
   <data name="Status_ValidatingProcessing" xml:space="preserve">
     <value>驗證處理中...</value>
   </data>

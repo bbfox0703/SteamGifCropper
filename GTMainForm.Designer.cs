@@ -466,8 +466,9 @@
             btnOverlayGIF.Name = "btnOverlayGIF";
             btnOverlayGIF.Size = new System.Drawing.Size(300, 26);
             btnOverlayGIF.TabIndex = 28;
-            btnOverlayGIF.Text = "Overlay GIF over GIF";
+            btnOverlayGIF.Text = SteamGifCropper.Properties.Resources.Button_OverlayGif;
             btnOverlayGIF.UseVisualStyleBackColor = true;
+            btnOverlayGIF.Click += btnOverlayGIF_Click;
             // 
             // GifToolMainForm
             // 
