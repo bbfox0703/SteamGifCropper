@@ -36,6 +36,15 @@
   <data name="btnCancel.Text" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="lblBaseInfo.Text" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="lblOverlayInfo.Text" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GifInfoFormat" xml:space="preserve">
+    <value>{0} × {1}, {2} fps</value>
+  </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Overlay GIF</value>
   </data>
