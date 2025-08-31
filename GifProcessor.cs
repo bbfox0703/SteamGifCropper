@@ -578,9 +578,9 @@ namespace GifProcessorApp
             Application.DoEvents();
 
             // Enable disk caching to limit memory usage
-            MagickNET.SetCacheDirectory(Path.GetTempPath());
-            MagickNET.SetResourceLimits(ResourceLimit.Memory, 256);
-            MagickNET.SetResourceLimits(ResourceLimit.Map, 256);
+            MagickNET.SetTempDirectory(Path.GetTempPath());
+            ResourceLimits.Memory = 256;
+            ResourceLimits.Map = 256;
 
             // Calculate maximum height among all resized GIFs
             int maxHeight = collections.Max(c => (int)c[0].Height);
@@ -596,11 +596,8 @@ namespace GifProcessorApp
                 DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
             };
 
-            // Create merged collection with disk cache
-            var mergedCollection = new MagickImageCollection
-            {
-                Settings = { CacheDirectory = MagickNET.CacheDirectory }
-            };
+            // Create merged collection
+            var mergedCollection = new MagickImageCollection();
 
             int maxFrames = collections.Max(c => c.Count);
 
