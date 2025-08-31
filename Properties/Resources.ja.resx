@@ -416,6 +416,9 @@
   <data name="Button_ScrollStaticImage" xml:space="preserve">
     <value>静止画像スクロール</value>
   </data>
+  <data name="Button_OverlayGif" xml:space="preserve">
+    <value>GIFを別のGIFに重ねる</value>
+  </data>
   <data name="Status_ValidatingProcessing" xml:space="preserve">
     <value>処理を検証中...</value>
   </data>

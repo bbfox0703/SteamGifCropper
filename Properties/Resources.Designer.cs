@@ -1693,6 +1693,15 @@ namespace SteamGifCropper.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Overlay GIF over GIF.
+        /// </summary>
+        internal static string Button_OverlayGif {
+            get {
+                return ResourceManager.GetString("Button_OverlayGif", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Image Files (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp.
         /// </summary>
         internal static string FileDialog_ImageFilter {

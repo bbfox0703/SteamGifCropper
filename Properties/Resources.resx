@@ -408,6 +408,9 @@
   <data name="Button_ScrollStaticImage" xml:space="preserve">
     <value>Scroll static image</value>
   </data>
+  <data name="Button_OverlayGif" xml:space="preserve">
+    <value>Overlay GIF over GIF</value>
+  </data>
   <data name="Status_ValidatingProcessing" xml:space="preserve">
     <value>Validating and processing 5 GIF files...</value>
   </data>
