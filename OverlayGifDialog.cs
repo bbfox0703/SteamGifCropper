@@ -35,7 +35,25 @@ namespace GifProcessorApp
         public OverlayGifDialog()
         {
             InitializeComponent();
+            UpdateUIText();
             WindowsThemeManager.ApplyThemeToControl(this, WindowsThemeManager.IsDarkModeEnabled());
+        }
+
+        /// <summary>
+        /// Refreshes user interface text based on the current culture.
+        /// </summary>
+        public void UpdateUIText()
+        {
+            lblBase.Text = _resources.GetString("lblBase.Text") ?? lblBase.Text;
+            btnBrowseBase.Text = _resources.GetString("btnBrowseBase.Text") ?? btnBrowseBase.Text;
+            lblOverlay.Text = _resources.GetString("lblOverlay.Text") ?? lblOverlay.Text;
+            btnBrowseOverlay.Text = _resources.GetString("btnBrowseOverlay.Text") ?? btnBrowseOverlay.Text;
+            chkResampleBase.Text = _resources.GetString("chkResampleBase.Text") ?? chkResampleBase.Text;
+            lblX.Text = _resources.GetString("lblX.Text") ?? lblX.Text;
+            lblY.Text = _resources.GetString("lblY.Text") ?? lblY.Text;
+            btnOK.Text = _resources.GetString("btnOK.Text") ?? btnOK.Text;
+            btnCancel.Text = _resources.GetString("btnCancel.Text") ?? btnCancel.Text;
+            Text = _resources.GetString("$this.Text") ?? Text;
         }
 
         private void BtnBrowseBase_Click(object sender, EventArgs e)

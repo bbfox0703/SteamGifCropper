@@ -174,6 +174,9 @@
   <data name="Status_Loading" xml:space="preserve">
     <value>Loading...</value>
   </data>
+  <data name="Status_Overlaying" xml:space="preserve">
+    <value>Overlaying...</value>
+  </data>
   <data name="Status_ResizingFrames" xml:space="preserve">
     <value>Resizing frames...</value>
   </data>
@@ -281,6 +284,9 @@
   </data>
   <data name="Message_Mp4ConversionComplete" xml:space="preserve">
     <value>MP4 to GIF conversion completed successfully!\nSaved as: {0}</value>
+  </data>
+  <data name="Message_OverlayComplete" xml:space="preserve">
+    <value>Overlay complete.</value>
   </data>
   <data name="Message_ProcessedFiles" xml:space="preserve">
     <value>{0} of {1} GIF files processed successfully!</value>

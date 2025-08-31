@@ -2133,7 +2133,7 @@ namespace GifProcessorApp
 
             try
             {
-                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Processing;
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Loading;
                 mainForm.pBarTaskStatus.Minimum = 0;
                 mainForm.pBarTaskStatus.Maximum = 100;
                 mainForm.pBarTaskStatus.Value = 0;
@@ -2148,6 +2148,9 @@ namespace GifProcessorApp
 
                 baseCollection.Coalesce();
                 overlayCollection.Coalesce();
+
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Overlaying;
+                Application.DoEvents();
 
                 if (resampleBase)
                 {
@@ -2276,7 +2279,7 @@ namespace GifProcessorApp
 
             mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Done;
             WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
-                "Overlay complete.",
+                SteamGifCropper.Properties.Resources.Message_OverlayComplete,
                 SteamGifCropper.Properties.Resources.Title_Success,
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
