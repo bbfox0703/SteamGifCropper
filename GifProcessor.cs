@@ -41,6 +41,32 @@ namespace GifProcessorApp
             }
         }
 
+        private static void UpdateFrameProgress(GifToolMainForm mainForm, int currentFrame, int totalFrames)
+        {
+            if (totalFrames <= 0)
+            {
+                return;
+            }
+
+            void UpdateUI()
+            {
+                int percent = Math.Min((int)((double)currentFrame / totalFrames * 100), 100);
+                mainForm.pBarTaskStatus.Value = percent;
+                mainForm.lblStatus.Text = $"{currentFrame}/{totalFrames} ({percent}%)";
+            }
+
+            if (mainForm.InvokeRequired)
+            {
+                mainForm.Invoke((Action)UpdateUI);
+            }
+            else
+            {
+                UpdateUI();
+            }
+
+            Application.DoEvents();
+        }
+
         public static void StartProcessing(GifToolMainForm mainForm)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -106,19 +132,19 @@ namespace GifProcessorApp
             // For 15fps: 100/15 ≈ 6.67 centiseconds, rounded to 7
             uint targetDelay = (uint)Math.Round(100.0 / targetFramerate);
 
-            int totalSteps = (collection.Count * ranges.Length) + (ranges.Length * 2);
-            int currentStep = 0;
+            int totalFrames = collection.Count * ranges.Length;
+            int currentFrame = 0;
 
-                for (int i = 0; i < ranges.Length; i++)
+            for (int i = 0; i < ranges.Length; i++)
+            {
+                using (var partCollection = new MagickImageCollection())
                 {
-                    using (var partCollection = new MagickImageCollection())
+                    foreach (var frame in collection)
                     {
-                        foreach (var frame in collection)
-                        {
-                            int copyWidth = ranges[i].End - ranges[i].Start + 1;
+                        int copyWidth = ranges[i].End - ranges[i].Start + 1;
 
-                            mainForm.lblStatus.Text = string.Format(SteamGifCropper.Properties.Resources.Status_ProcessingPart, i + 1, currentStep % collection.Count + 1);
-                            Application.DoEvents();
+                        mainForm.lblStatus.Text = string.Format(SteamGifCropper.Properties.Resources.Status_ProcessingPart, i + 1, (currentFrame % collection.Count) + 1);
+                        Application.DoEvents();
                             
                             // Create new image with correct dimensions
                             using (var newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight))
@@ -141,8 +167,8 @@ namespace GifProcessorApp
                                 partCollection.Add(newImage.Clone());
                             }
 
-                            currentStep++;
-                            UpdateProgress(mainForm.pBarTaskStatus, currentStep, totalSteps);
+                            currentFrame++;
+                            UpdateFrameProgress(mainForm, currentFrame, totalFrames);
                         }
 
                         string outputFile = $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}.gif";
@@ -156,7 +182,7 @@ namespace GifProcessorApp
                         foreach (var frame in partCollection)
                         {
                             frame.Settings.SetDefine("compress", "LZW");
-                            
+
                             // Update every 25 frames during compression
                             if (++compressFrameCount % 25 == 0)
                             {
@@ -164,8 +190,6 @@ namespace GifProcessorApp
                             }
                         }
 
-                        currentStep++;
-                        UpdateProgress(mainForm.pBarTaskStatus, currentStep, totalSteps);
                         mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Saving;
                         Application.DoEvents();
 
@@ -186,14 +210,10 @@ namespace GifProcessorApp
                             GifsicleWrapper.OptimizeGif(outputPath, outputPath, options);
                         }
 
-                        currentStep++;
-                        UpdateProgress(mainForm.pBarTaskStatus, currentStep, totalSteps);
-                        Application.DoEvents();
-
                         ModifyGifFile(outputPath, canvasHeight);
-                  }
-              }
-          }
+                }
+            }
+        }
 
         public static void MergeAndSplitFiveGifs(GifToolMainForm mainForm)
         {

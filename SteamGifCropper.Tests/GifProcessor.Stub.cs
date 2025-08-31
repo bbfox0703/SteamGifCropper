@@ -249,7 +249,7 @@ namespace GifProcessorApp
             collection.Write(outputFilePath);
         }
 
-        public static void SplitGif(string inputFilePath, string outputDirectory, int targetFramerate = 15)
+        public static void SplitGif(string inputFilePath, string outputDirectory, int targetFramerate = 15, GifToolMainForm? mainForm = null)
         {
             using var collection = new MagickImageCollection(inputFilePath);
             collection.Coalesce();
@@ -267,6 +267,9 @@ namespace GifProcessorApp
 
             Directory.CreateDirectory(outputDirectory);
 
+            int totalFrames = collection.Count * ranges.Length;
+            int currentFrame = 0;
+
             for (int i = 0; i < ranges.Length; i++)
             {
                 using var partCollection = new MagickImageCollection();
@@ -282,6 +285,14 @@ namespace GifProcessorApp
                     newImage.AnimationDelay = targetDelay;
                     newImage.GifDisposeMethod = GifDisposeMethod.Background;
                     partCollection.Add(newImage.Clone());
+
+                    currentFrame++;
+                    if (mainForm != null)
+                    {
+                        int percent = (int)Math.Min((double)currentFrame / totalFrames * 100, 100);
+                        mainForm.pBarTaskStatus.Value = percent;
+                        mainForm.lblStatus.Text = $"{currentFrame}/{totalFrames} ({percent}%)";
+                    }
                 }
 
                 foreach (var frame in partCollection)
