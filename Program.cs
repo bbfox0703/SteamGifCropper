@@ -15,8 +15,8 @@ namespace GifProcessorApp
             try
             {
                 // Configure ImageMagick resource limits to avoid excessive memory usage
-                ResourceLimits.Memory = 256UL * 1024UL * 1024UL; // 256 MB memory limit
-                ResourceLimits.Disk = 1024UL * 1024UL * 1024UL;  // 1 GB disk limit
+                ResourceLimits.Memory = 512UL * 1024UL * 1024UL; // 512 MB memory limit
+                ResourceLimits.Disk = 4096UL * 1024UL * 1024UL;  // 4 GB disk limit
 
                 // Initialize localization based on OS language
                 InitializeLocalization();
