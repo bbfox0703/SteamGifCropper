@@ -1972,6 +1972,7 @@ namespace GifProcessorApp
             bool fullCycle = dialog.FullCycle;
             int targetFramerate = (int)mainForm.numUpDownFramerate.Value;
 
+            mainForm.Enabled = false;
             try
             {
                 mainForm.pBarTaskStatus.Visible = true;
@@ -2011,6 +2012,7 @@ namespace GifProcessorApp
             }
             finally
             {
+                mainForm.Enabled = true;
                 mainForm.pBarTaskStatus.Visible = false;
                 mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready;
             }
