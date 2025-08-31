@@ -36,7 +36,7 @@ namespace GifProcessorApp
             WindowsThemeManager.ApplyThemeToControl(this, WindowsThemeManager.IsDarkModeEnabled());
         }
 
-        private void BtnBrowseBase_Click(object? sender, EventArgs e)
+        private void BtnBrowseBase_Click(object sender, EventArgs e)
         {
             using var dialog = new OpenFileDialog
             {
@@ -48,8 +48,8 @@ namespace GifProcessorApp
                 try
                 {
                     using var collection = new MagickImageCollection(dialog.FileName);
-                    int width = collection[0].Width;
-                    int height = collection[0].Height;
+                    int width = (int)collection[0].Width;
+                    int height = (int)collection[0].Height;
                     numX.Maximum = width > 0 ? width - 1 : 0;
                     numY.Maximum = height > 0 ? height - 1 : 0;
 
@@ -68,7 +68,7 @@ namespace GifProcessorApp
             }
         }
 
-        private void BtnBrowseOverlay_Click(object? sender, EventArgs e)
+        private void BtnBrowseOverlay_Click(object sender, EventArgs e)
         {
             using var dialog = new OpenFileDialog
             {
@@ -80,8 +80,8 @@ namespace GifProcessorApp
                 try
                 {
                     using var collection = new MagickImageCollection(dialog.FileName);
-                    int width = collection[0].Width;
-                    int height = collection[0].Height;
+                    int width = (int)collection[0].Width;
+                    int height = (int)collection[0].Height;
 
                     double avgDelay = collection.Average(img => (double)img.AnimationDelay);
                     double fps = avgDelay > 0 ? 100.0 / avgDelay : 0;
