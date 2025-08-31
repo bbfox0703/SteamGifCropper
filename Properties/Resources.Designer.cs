@@ -1737,6 +1737,12 @@ namespace SteamGifCropper.Properties {
             }
         }
 
+        internal static string ScrollDialog_MoveCount {
+            get {
+                return ResourceManager.GetString("ScrollDialog_MoveCount", resourceCulture);
+            }
+        }
+
         internal static string ScrollDialog_FullCycle {
             get {
                 return ResourceManager.GetString("ScrollDialog_FullCycle", resourceCulture);

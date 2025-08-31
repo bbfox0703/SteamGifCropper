@@ -306,7 +306,7 @@ namespace GifProcessorApp
         }
 
         public static void ScrollStaticImage(string inputFilePath, string outputFilePath,
-            ScrollDirection direction, int stepPixels, int durationSeconds, bool fullCycle, int targetFramerate = 15)
+            ScrollDirection direction, int stepPixels, int durationSeconds, bool fullCycle, int moveCount, int targetFramerate = 15)
         {
             using var baseImage = new MagickImage(inputFilePath);
             int width = (int)baseImage.Width;
@@ -337,12 +337,24 @@ namespace GifProcessorApp
                 case ScrollDirection.RightDown: dx = stepPixels; dy = stepPixels; break;
             }
 
-            if (durationSeconds <= 0 && fullCycle)
+            if (durationSeconds <= 0)
             {
-                int stepsX = dx != 0 ? (int)Math.Ceiling((double)width / Math.Abs(dx)) : 0;
-                int stepsY = dy != 0 ? (int)Math.Ceiling((double)height / Math.Abs(dy)) : 0;
-                frames = Math.Max(stepsX, stepsY);
-                if (frames <= 0) frames = 1;
+                if (fullCycle)
+                {
+                    int stepsX = dx != 0 ? (int)Math.Ceiling((double)width / Math.Abs(dx)) : 0;
+                    int stepsY = dy != 0 ? (int)Math.Ceiling((double)height / Math.Abs(dy)) : 0;
+                    frames = Math.Max(stepsX, stepsY);
+                    if (frames <= 0) frames = 1;
+                }
+                else
+                {
+                    int maxMoves = moveCount;
+                    if (dx != 0)
+                        maxMoves = Math.Min(maxMoves, width / Math.Abs(dx));
+                    if (dy != 0)
+                        maxMoves = Math.Min(maxMoves, height / Math.Abs(dy));
+                    frames = Math.Max(1, maxMoves);
+                }
             }
 
             uint delay = (uint)Math.Round(100.0 / targetFramerate);
