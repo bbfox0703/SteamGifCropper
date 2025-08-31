@@ -47,6 +47,26 @@ SteamGifCropper 是一個設計為 **Steam 工作坊個人展示櫃**的小工�
 - **gifsicle.exe外部程式**：自行使用關鍵字例如「gifsicle for Windows」尋找、下載並設定；gifsicle.exe的位置必須包含在OS系統環境變數**PATH **中，否則會無法呼叫。
 ---
 
+## 資源限制設定
+
+預設情況下，程式會限制 ImageMagick 的資源使用，以避免過度消耗系統資源：
+
+- 記憶體限制：**1024 MB**
+- 磁碟暫存限制：**4096 MB**
+
+這些值可以透過以下方式覆寫：
+
+1. **修改 `App.config`**：在 `<appSettings>` 中設定 `ResourceLimits.MemoryMB` 與 `ResourceLimits.DiskMB`。
+2. **命令列參數**：啟動程式時加入 `--memory-limit=<MB>` 或 `--disk-limit=<MB>`。
+
+例如：
+
+```
+SteamGifCropper.exe --memory-limit=2048 --disk-limit=8192
+```
+
+---
+
 ## 安裝與使用
 
 ### 查看GIF切割結果
