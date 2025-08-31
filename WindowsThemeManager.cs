@@ -162,7 +162,10 @@ namespace GifProcessorApp
 
             page.Created += (s, e) =>
             {
-                SetDarkModeForWindow(e.Handle, isDark);
+                if (page.BoundDialog is { } dialog)
+                {
+                    SetDarkModeForWindow(dialog.Handle, isDark);
+                }
             };
 
             TaskDialogButton result = owner != null
