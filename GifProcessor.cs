@@ -101,7 +101,7 @@ namespace GifProcessorApp
 
                         var ranges = GetCropRanges(canvasWidth);
                         int targetFramerate = (int)mainForm.numUpDownFramerate.Value;
-                        SplitGif(collection, inputFilePath, mainForm, ranges, (int)canvasHeight, targetFramerate);
+                        SplitGif(inputFilePath, mainForm, ranges, (int)canvasHeight, targetFramerate);
                         mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Done;
                         WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
                                         SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
