@@ -23,7 +23,22 @@ namespace GifProcessorApp
         {
             InitializeComponent();
             UpdateUIText();
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
             WindowsThemeManager.ApplyThemeToControl(this, WindowsThemeManager.IsDarkModeEnabled());
+        }
+
+        protected override void SetVisibleCore(bool value)
+        {
+            base.SetVisibleCore(value);
+
+            if (value && IsHandleCreated)
+            {
+                WindowsThemeManager.SetDarkModeForWindow(this.Handle, WindowsThemeManager.IsDarkModeEnabled());
+            }
         }
 
         /// <summary>

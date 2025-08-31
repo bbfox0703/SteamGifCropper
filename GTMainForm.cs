@@ -65,6 +65,7 @@ namespace GifProcessorApp
             {
                 WindowsThemeManager.ApplyThemeToControl(this, _isDarkMode);
                 WindowsThemeManager.ApplyThemeToControl(conMenuLangSwitch, _isDarkMode);
+                WindowsThemeManager.ApplyThemeToControl(btnResizeNfpsGIF, _isDarkMode);
                 this.Refresh();
             }
             catch (Exception ex)
