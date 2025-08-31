@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
+using System.Resources;
 using FFMpegCore;
 using FFMpegCore.Pipes;
 using ImageMagick;
@@ -16,11 +17,30 @@ namespace GifProcessorApp
 
         private double _aspectRatio = 1.0;
         private bool _suppressEvents;
+        private readonly ResourceManager _resources = new("SteamGifCropper.Resources.ResizeNfpsGifDialog", typeof(ResizeNfpsGifDialog).Assembly);
 
         public ResizeNfpsGifDialog()
         {
             InitializeComponent();
+            UpdateUIText();
             WindowsThemeManager.ApplyThemeToControl(this, WindowsThemeManager.IsDarkModeEnabled());
+        }
+
+        /// <summary>
+        /// Refreshes user interface text based on the current culture.
+        /// </summary>
+        public void UpdateUIText()
+        {
+            lblGif.Text = _resources.GetString("lblGif.Text") ?? lblGif.Text;
+            btnBrowse.Text = _resources.GetString("btnBrowse.Text") ?? btnBrowse.Text;
+            lblOriginalLabel.Text = _resources.GetString("lblOriginalLabel.Text") ?? lblOriginalLabel.Text;
+            lblWidth.Text = _resources.GetString("lblWidth.Text") ?? lblWidth.Text;
+            lblHeight.Text = _resources.GetString("lblHeight.Text") ?? lblHeight.Text;
+            lblFps.Text = _resources.GetString("lblFps.Text") ?? lblFps.Text;
+            chkLockRatio.Text = _resources.GetString("chkLockRatio.Text") ?? chkLockRatio.Text;
+            btnOk.Text = _resources.GetString("btnOk.Text") ?? btnOk.Text;
+            btnCancel.Text = _resources.GetString("btnCancel.Text") ?? btnCancel.Text;
+            Text = _resources.GetString("$this.Text") ?? Text;
         }
 
         private void BtnBrowse_Click(object sender, EventArgs e)
@@ -96,7 +116,12 @@ namespace GifProcessorApp
         {
             if (!File.Exists(InputGifPath))
             {
-                WindowsThemeManager.ShowThemeAwareMessageBox(this, "Please select a GIF file.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                WindowsThemeManager.ShowThemeAwareMessageBox(
+                    this,
+                    SteamGifCropper.Properties.Resources.Error_SelectGif,
+                    SteamGifCropper.Properties.Resources.Title_Error,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
                 return;
             }
 
@@ -110,11 +135,21 @@ namespace GifProcessorApp
                 try
                 {
                     ConvertWithFfmpeg(InputGifPath, saveDialog.FileName, NewWidth, NewHeight, NewFps);
-                    WindowsThemeManager.ShowThemeAwareMessageBox(this, SteamGifCropper.Properties.Resources.Message_ResizeComplete, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    WindowsThemeManager.ShowThemeAwareMessageBox(
+                        this,
+                        SteamGifCropper.Properties.Resources.Message_ResizeComplete,
+                        SteamGifCropper.Properties.Resources.Title_Success,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
-                    WindowsThemeManager.ShowThemeAwareMessageBox(this, string.Format(SteamGifCropper.Properties.Resources.Error_ResizeFailed, ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    WindowsThemeManager.ShowThemeAwareMessageBox(
+                        this,
+                        string.Format(SteamGifCropper.Properties.Resources.Error_ResizeFailed, ex.Message),
+                        SteamGifCropper.Properties.Resources.Title_Error,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
                 }
             }
         }

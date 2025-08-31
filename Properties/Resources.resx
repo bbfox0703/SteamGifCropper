@@ -312,6 +312,9 @@
   <data name="Error_ResizeFailed" xml:space="preserve">
     <value>Resize operation failed: {0}</value>
   </data>
+  <data name="Error_SelectGif" xml:space="preserve">
+    <value>Please select a GIF file.</value>
+  </data>
   <data name="Error_StartupFailed" xml:space="preserve">
     <value>Application startup failed: {0}\n\nStack trace:\n{1}</value>
   </data>
@@ -416,6 +419,9 @@
   </data>
   <data name="Button_OverlayGif" xml:space="preserve">
     <value>Overlay GIF over GIF</value>
+  </data>
+  <data name="Button_ResizeNfpsGif" xml:space="preserve">
+    <value>Resize / re-FPS GIF</value>
   </data>
   <data name="Status_ValidatingProcessing" xml:space="preserve">
     <value>Validating and processing 5 GIF files...</value>
