@@ -72,7 +72,7 @@ public class ScrollStaticImageTests
             ScrollDirection.Up or ScrollDirection.Down => (int)baseImg.Height,
             _ => (int)baseImg.Width
         };
-        int expectedFrames = duration * framerate;
+        int expectedFrames = Math.Min(duration * framerate, distance);
 
         using var collection = new MagickImageCollection(output);
         Assert.Equal(expectedFrames, collection.Count);
@@ -90,7 +90,8 @@ public class ScrollStaticImageTests
             _ => 0
         };
 
-        int lastOffset = (int)Math.Round((double)distance * (expectedFrames - 1) / expectedFrames);
+        double step = (double)distance / expectedFrames;
+        int lastOffset = (int)Math.Round(step * (expectedFrames - 1));
         int offsetX = 0, offsetY = 0;
         if (signX != 0)
         {
@@ -108,8 +109,7 @@ public class ScrollStaticImageTests
         double diff = collection[collection.Count - 1].Compare(expectedLast, ErrorMetric.RootMeanSquared);
         Assert.True(diff < 0.02);
 
-        int step = (int)Math.Round((double)distance / expectedFrames);
-        int totalScroll = lastOffset + step;
+        double totalScroll = lastOffset + step;
         Assert.InRange(totalScroll, distance - step, distance + step);
 
         Directory.Delete(tempDir, true);
