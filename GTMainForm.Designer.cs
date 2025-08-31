@@ -66,6 +66,7 @@
             toolStripLangJapanese = new System.Windows.Forms.ToolStripMenuItem();
             btnScrollStaticImage = new System.Windows.Forms.Button();
             btnOverlayGIF = new System.Windows.Forms.Button();
+            btnResizeNfpsGIF = new System.Windows.Forms.Button();
             panelGifsicle.SuspendLayout();
             groupDither.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).BeginInit();
@@ -385,7 +386,7 @@
             // 
             // btnMerge2to5GifToOne
             // 
-            btnMerge2to5GifToOne.Location = new System.Drawing.Point(312, 7);
+            btnMerge2to5GifToOne.Location = new System.Drawing.Point(313, 7);
             btnMerge2to5GifToOne.Name = "btnMerge2to5GifToOne";
             btnMerge2to5GifToOne.Size = new System.Drawing.Size(300, 26);
             btnMerge2to5GifToOne.TabIndex = 23;
@@ -470,12 +471,22 @@
             btnOverlayGIF.UseVisualStyleBackColor = true;
             btnOverlayGIF.Click += btnOverlayGIF_Click;
             // 
+            // btnResizeNfpsGIF
+            // 
+            btnResizeNfpsGIF.Location = new System.Drawing.Point(313, 187);
+            btnResizeNfpsGIF.Name = "btnResizeNfpsGIF";
+            btnResizeNfpsGIF.Size = new System.Drawing.Size(300, 26);
+            btnResizeNfpsGIF.TabIndex = 29;
+            btnResizeNfpsGIF.Text = "Resize / re-FPS GIF";
+            btnResizeNfpsGIF.UseVisualStyleBackColor = true;
+            // 
             // GifToolMainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             ClientSize = new System.Drawing.Size(619, 444);
+            Controls.Add(btnResizeNfpsGIF);
             Controls.Add(btnOverlayGIF);
             Controls.Add(btnScrollStaticImage);
             Controls.Add(btnLanguageChange);
@@ -554,5 +565,6 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripLangJapanese;
         private System.Windows.Forms.Button btnScrollStaticImage;
         private System.Windows.Forms.Button btnOverlayGIF;
+        private System.Windows.Forms.Button btnResizeNfpsGIF;
     }
 }
