@@ -333,9 +333,12 @@ namespace GifProcessorApp
 
             int frames;
             int dx = 0, dy = 0;
+            double step = 0;
             if (durationSeconds > 0)
             {
                 frames = Math.Max(1, durationSeconds * targetFramerate);
+                frames = Math.Min(frames, distance);
+                step = (double)distance / frames;
             }
             else
             {
@@ -367,7 +370,7 @@ namespace GifProcessorApp
                 int offsetX, offsetY;
                 if (durationSeconds > 0)
                 {
-                    int offset = (int)Math.Round((double)distance * i / frames);
+                    int offset = (int)Math.Round(step * i);
                     offsetX = signX * offset;
                     offsetY = signY * offset;
                 }
