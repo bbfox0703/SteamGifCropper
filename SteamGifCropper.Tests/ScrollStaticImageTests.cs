@@ -18,7 +18,7 @@ public class ScrollStaticImageTests
         }
         string output = Path.Combine(tempDir, "out.gif");
 
-        GifProcessor.ScrollStaticImage(input, output, ScrollDirection.Right, 1, 1, true, 10);
+        GifProcessor.ScrollStaticImage(input, output, ScrollDirection.Right, 1, 1, true, 0, 10);
 
         using var collection = new MagickImageCollection(output);
         Assert.Equal(10, collection.Count);
@@ -42,7 +42,7 @@ public class ScrollStaticImageTests
             ResourceLimits.Memory = 8UL * 1024UL * 1024UL;   // 8 MB to force disk fallback
             ResourceLimits.Disk = 128UL * 1024UL * 1024UL;  // 128 MB temporary disk space
 
-            GifProcessor.ScrollStaticImage(input, output, ScrollDirection.Right, 0, 1, true, 10);
+            GifProcessor.ScrollStaticImage(input, output, ScrollDirection.Right, 0, 1, true, 0, 10);
         
             using var collection = new MagickImageCollection(output);
             Assert.True(collection.Count > 1);
@@ -64,7 +64,7 @@ public class ScrollStaticImageTests
         string tempDir = Directory.CreateTempSubdirectory().FullName;
         string output = Path.Combine(tempDir, "out.gif");
 
-        GifProcessor.ScrollStaticImage(input, output, direction, 0, duration, true, framerate);
+        GifProcessor.ScrollStaticImage(input, output, direction, 0, duration, true, 0, framerate);
 
         using var baseImg = new MagickImage(input);
         int distance = direction switch
@@ -102,13 +102,33 @@ public class ScrollStaticImageTests
         string tempDir = Directory.CreateTempSubdirectory().FullName;
         string output = Path.Combine(tempDir, "out.gif");
 
-        GifProcessor.ScrollStaticImage(input, output, ScrollDirection.Right, 0, 2, true, 10);
+        GifProcessor.ScrollStaticImage(input, output, ScrollDirection.Right, 0, 2, true, 0, 10);
 
         using var collection = new MagickImageCollection(output);
         Assert.True(collection.Count > 1);
         Assert.Equal((ushort)0, collection[0].AnimationIterations);
         double diff = collection[0].Compare(collection[1], ErrorMetric.RootMeanSquared);
         Assert.True(diff > 0.0);
+
+        Directory.Delete(tempDir, true);
+    }
+
+    [Fact]
+    public void ScrollStaticImage_MoveCountLimitsFrames()
+    {
+        string tempDir = Directory.CreateTempSubdirectory().FullName;
+        string input = Path.Combine(tempDir, "input.png");
+        using (var img = new MagickImage(MagickColors.Red, 10, 1))
+        {
+            img.Write(input);
+        }
+        string output = Path.Combine(tempDir, "out.gif");
+
+        GifProcessor.ScrollStaticImage(input, output, ScrollDirection.Right, 4, 0, false, 5, 10);
+
+        using var collection = new MagickImageCollection(output);
+        // step 4 with width 10 caps moves to floor(10/4)=2
+        Assert.Equal(2, collection.Count);
 
         Directory.Delete(tempDir, true);
     }
