@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Globalization;
+using System.Configuration;
 using System.Threading;
 using System.Windows.Forms;
 using ImageMagick;
@@ -10,13 +11,12 @@ namespace GifProcessorApp
     static class Program
     {
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
             try
             {
-                // Configure ImageMagick resource limits to avoid excessive memory usage
-                ResourceLimits.Memory = 1024UL * 1024UL * 1024UL; // 1GB memory limit
-                ResourceLimits.Disk = 4096UL * 1024UL * 1024UL;  // 4 GB disk limit
+                // Configure ImageMagick resource limits, allowing overrides via config or command line
+                ConfigureResourceLimits(args);
 
                 // Initialize localization based on OS language
                 InitializeLocalization();
@@ -44,11 +44,66 @@ namespace GifProcessorApp
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format(SteamGifCropper.Properties.Resources.Error_StartupFailed, ex.Message, ex.StackTrace), 
-                               SteamGifCropper.Properties.Resources.Title_StartupError, 
-                               MessageBoxButtons.OK, 
+                MessageBox.Show(string.Format(SteamGifCropper.Properties.Resources.Error_StartupFailed, ex.Message, ex.StackTrace),
+                               SteamGifCropper.Properties.Resources.Title_StartupError,
+                               MessageBoxButtons.OK,
                                MessageBoxIcon.Error);
             }
+        }
+
+        /// <summary>
+        /// Configure ImageMagick resource limits from app settings or command line arguments.
+        /// </summary>
+        private static void ConfigureResourceLimits(string[] args)
+        {
+            ulong memoryMb = GetAppSettingULong("ResourceLimits.MemoryMB", 1024UL);
+            ulong diskMb = GetAppSettingULong("ResourceLimits.DiskMB", 4096UL);
+
+            if (args != null)
+            {
+                foreach (var arg in args)
+                {
+                    if (arg.StartsWith("--memory-limit=", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var value = arg.Substring("--memory-limit=".Length);
+                        if (ulong.TryParse(value, out var parsed))
+                        {
+                            memoryMb = parsed;
+                        }
+                    }
+                    else if (arg.StartsWith("--disk-limit=", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var value = arg.Substring("--disk-limit=".Length);
+                        if (ulong.TryParse(value, out var parsed))
+                        {
+                            diskMb = parsed;
+                        }
+                    }
+                }
+            }
+
+            ResourceLimits.Memory = memoryMb * 1024UL * 1024UL;
+            ResourceLimits.Disk = diskMb * 1024UL * 1024UL;
+        }
+
+        /// <summary>
+        /// Helper to retrieve ulong values from App.config.
+        /// </summary>
+        private static ulong GetAppSettingULong(string key, ulong defaultValue)
+        {
+            try
+            {
+                var value = ConfigurationManager.AppSettings[key];
+                if (!string.IsNullOrEmpty(value) && ulong.TryParse(value, out var result))
+                {
+                    return result;
+                }
+            }
+            catch
+            {
+                // ignore configuration errors and fallback to default
+            }
+            return defaultValue;
         }
 
         private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
