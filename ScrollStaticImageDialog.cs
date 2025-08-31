@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.IO;
 using System.Windows.Forms;
@@ -12,6 +13,7 @@ namespace GifProcessorApp
         public ScrollDirection Direction { get; private set; } = ScrollDirection.Right;
         public int StepPixels { get; private set; } = 1;
         public int DurationSeconds { get; private set; } = 0;
+        public int MoveCount { get; private set; } = 0;
         public bool FullCycle { get; private set; }
 
         private TextBox txtInputPath = null!;
@@ -21,6 +23,7 @@ namespace GifProcessorApp
         private ComboBox cmbDirection = null!;
         private NumericUpDown numStep = null!;
         private NumericUpDown numDuration = null!;
+        private NumericUpDown numMoveCount = null!;
         private CheckBox chkFullCycle = null!;
         private Button btnOK = null!;
         private Button btnCancel = null!;
@@ -29,6 +32,7 @@ namespace GifProcessorApp
         private Label lblDirection = null!;
         private Label lblStep = null!;
         private Label lblDuration = null!;
+        private Label lblMoveCount = null!;
 
         public ScrollStaticImageDialog()
         {
@@ -47,6 +51,7 @@ namespace GifProcessorApp
             lblDirection.Text = Resources.ScrollDialog_Direction;
             lblStep.Text = Resources.ScrollDialog_Step;
             lblDuration.Text = Resources.ScrollDialog_Duration;
+            lblMoveCount.Text = Resources.ScrollDialog_MoveCount;
             chkFullCycle.Text = Resources.ScrollDialog_FullCycle;
             btnBrowseInput.Text = Resources.ScrollDialog_Browse;
             btnBrowseOutput.Text = Resources.ScrollDialog_Browse;
@@ -210,13 +215,24 @@ namespace GifProcessorApp
         {
             numDuration.Enabled = chkFullCycle.Checked;
             NumDuration_ValueChanged(sender, e);
+            UpdateMoveCountVisibility();
         }
 
         private void NumDuration_ValueChanged(object? sender, EventArgs e)
         {
             bool useDuration = numDuration.Enabled && numDuration.Value > 0;
             numStep.Visible = !useDuration;
+            numStep.Enabled = !useDuration;
             lblStep.Visible = !useDuration;
+            UpdateMoveCountVisibility();
+        }
+
+        private void UpdateMoveCountVisibility()
+        {
+            bool showMoveCount = !chkFullCycle.Checked && numDuration.Value == 0;
+            numMoveCount.Visible = showMoveCount;
+            numMoveCount.Enabled = showMoveCount;
+            lblMoveCount.Visible = showMoveCount;
         }
 
         private void BtnOK_Click(object? sender, EventArgs e)
@@ -236,6 +252,7 @@ namespace GifProcessorApp
             Direction = (ScrollDirection)cmbDirection.SelectedIndex;
             StepPixels = numStep.Visible ? (int)numStep.Value : 0;
             DurationSeconds = numDuration.Enabled ? (int)numDuration.Value : 0;
+            MoveCount = numMoveCount.Visible ? (int)numMoveCount.Value : 0;
             FullCycle = chkFullCycle.Checked;
             DialogResult = DialogResult.OK;
             Close();
@@ -253,12 +270,15 @@ namespace GifProcessorApp
             cmbDirection = new ComboBox();
             lblStep = new Label();
             numStep = new NumericUpDown();
+            lblMoveCount = new Label();
+            numMoveCount = new NumericUpDown();
             lblDuration = new Label();
             numDuration = new NumericUpDown();
             chkFullCycle = new CheckBox();
             btnOK = new Button();
             btnCancel = new Button();
             ((System.ComponentModel.ISupportInitialize)numStep).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numMoveCount).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numDuration).BeginInit();
             SuspendLayout();
             // 
@@ -347,12 +367,31 @@ namespace GifProcessorApp
             numStep.TabIndex = 9;
             numStep.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
+            // lblMoveCount
+            // 
+            lblMoveCount.Location = new System.Drawing.Point(220, 167);
+            lblMoveCount.Name = "lblMoveCount";
+            lblMoveCount.Size = new System.Drawing.Size(120, 20);
+            lblMoveCount.TabIndex = 10;
+            lblMoveCount.Text = "Moves";
+            lblMoveCount.Visible = false;
+            // 
+            // numMoveCount
+            // 
+            numMoveCount.Location = new System.Drawing.Point(280, 165);
+            numMoveCount.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numMoveCount.Name = "numMoveCount";
+            numMoveCount.Size = new System.Drawing.Size(60, 23);
+            numMoveCount.TabIndex = 11;
+            numMoveCount.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            numMoveCount.Visible = false;
+            // 
             // lblDuration
             // 
             lblDuration.Location = new System.Drawing.Point(14, 200);
             lblDuration.Name = "lblDuration";
             lblDuration.Size = new System.Drawing.Size(120, 20);
-            lblDuration.TabIndex = 10;
+            lblDuration.TabIndex = 12;
             lblDuration.Text = "秒數";
             // 
             // numDuration
@@ -361,14 +400,14 @@ namespace GifProcessorApp
             numDuration.Maximum = new decimal(new int[] { 600, 0, 0, 0 });
             numDuration.Name = "numDuration";
             numDuration.Size = new System.Drawing.Size(60, 23);
-            numDuration.TabIndex = 11;
+            numDuration.TabIndex = 13;
             // 
             // chkFullCycle
             // 
             chkFullCycle.Location = new System.Drawing.Point(220, 198);
             chkFullCycle.Name = "chkFullCycle";
             chkFullCycle.Size = new System.Drawing.Size(130, 24);
-            chkFullCycle.TabIndex = 12;
+            chkFullCycle.TabIndex = 14;
             chkFullCycle.Text = "整個捲動一次";
             // 
             // btnOK
@@ -376,7 +415,7 @@ namespace GifProcessorApp
             btnOK.Location = new System.Drawing.Point(272, 238);
             btnOK.Name = "btnOK";
             btnOK.Size = new System.Drawing.Size(75, 25);
-            btnOK.TabIndex = 13;
+            btnOK.TabIndex = 15;
             btnOK.Text = "OK";
             btnOK.UseVisualStyleBackColor = true;
             btnOK.Click += BtnOK_Click;
@@ -387,7 +426,7 @@ namespace GifProcessorApp
             btnCancel.Location = new System.Drawing.Point(353, 238);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new System.Drawing.Size(88, 25);
-            btnCancel.TabIndex = 14;
+            btnCancel.TabIndex = 16;
             btnCancel.Text = Resources.ScrollDialog_Cancel;
             btnCancel.UseVisualStyleBackColor = true;
             // 
@@ -401,6 +440,8 @@ namespace GifProcessorApp
             Controls.Add(chkFullCycle);
             Controls.Add(numDuration);
             Controls.Add(lblDuration);
+            Controls.Add(numMoveCount);
+            Controls.Add(lblMoveCount);
             Controls.Add(numStep);
             Controls.Add(lblStep);
             Controls.Add(cmbDirection);
@@ -418,6 +459,7 @@ namespace GifProcessorApp
             StartPosition = FormStartPosition.CenterParent;
             Text = "靜態轉動態捲動";
             ((System.ComponentModel.ISupportInitialize)numStep).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numMoveCount).EndInit();
             ((System.ComponentModel.ISupportInitialize)numDuration).EndInit();
             ResumeLayout(false);
             PerformLayout();

@@ -737,6 +737,9 @@ Technical details: {5}</value>
   <data name="ScrollDialog_Duration" xml:space="preserve">
     <value>Seconds per full scroll</value>
   </data>
+  <data name="ScrollDialog_MoveCount" xml:space="preserve">
+    <value>Number of moves</value>
+  </data>
   <data name="ScrollDialog_FullCycle" xml:space="preserve">
     <value>Scroll full cycle</value>
   </data>

@@ -745,6 +745,9 @@ FFmpeg 輸出 (部分)：
   <data name="ScrollDialog_Duration" xml:space="preserve">
     <value>每次完整捲動秒數</value>
   </data>
+  <data name="ScrollDialog_MoveCount" xml:space="preserve">
+    <value>移動次數</value>
+  </data>
   <data name="ScrollDialog_FullCycle" xml:space="preserve">
     <value>整張圖捲動一次</value>
   </data>
