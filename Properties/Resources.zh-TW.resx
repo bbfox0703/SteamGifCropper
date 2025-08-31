@@ -320,6 +320,9 @@
   <data name="Error_InvalidColorType" xml:space="preserve">
     <value>GIF #{0} ({1}) 必須使用基於調色盤的顏色 (8 位元)。\n目前的顏色類型: {2}</value>
   </data>
+  <data name="Error_CacheResourcesExhausted" xml:space="preserve">
+    <value>快取資源不足。請減少圖片大小或提高記憶體/磁碟限制。</value>
+  </data>
   <data name="FileDialog_SelectGif" xml:space="preserve">
     <value>選擇一個GIF檔案</value>
   </data>

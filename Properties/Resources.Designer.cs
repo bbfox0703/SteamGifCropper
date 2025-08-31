@@ -149,7 +149,16 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Error_InvalidColorType", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Insufficient cache resources. Reduce image size or increase memory/disk limits.
+        /// </summary>
+        internal static string Error_CacheResourcesExhausted {
+            get {
+                return ResourceManager.GetString("Error_CacheResourcesExhausted", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to An error occurred: {0}.
         /// </summary>

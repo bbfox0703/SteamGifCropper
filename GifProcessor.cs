@@ -2002,6 +2002,14 @@ namespace GifProcessorApp
                                 SteamGifCropper.Properties.Resources.Title_Success,
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+            catch (MagickResourceLimitErrorException)
+            {
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Error;
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                                SteamGifCropper.Properties.Resources.Error_CacheResourcesExhausted,
+                                SteamGifCropper.Properties.Resources.Title_Error,
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
             catch (Exception ex)
             {
                 mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Error;
