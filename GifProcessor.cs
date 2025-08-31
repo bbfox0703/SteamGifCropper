@@ -579,8 +579,8 @@ namespace GifProcessorApp
 
             // Enable disk caching to limit memory usage
             MagickNET.SetTempDirectory(Path.GetTempPath());
-            ResourceLimits.Memory = 256;
-            ResourceLimits.Disk = 512;
+            ResourceLimits.Memory = 1024; // 1G
+            ResourceLimits.Disk = 4096; // 4G
 
             // Calculate maximum height among all resized GIFs
             int maxHeight = collections.Max(c => (int)c[0].Height);
