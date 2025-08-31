@@ -2004,7 +2004,25 @@ namespace GifProcessorApp
                 RepeatCount = 0
             };
 
+            if (mainForm != null)
+            {
+                mainForm.Invoke((Action)(() =>
+                {
+                    mainForm.lblStatus.Text = Resources.Status_Saving;
+                    Application.DoEvents();
+                }));
+            }
+
             collection.Write(outputFilePath, defines);
+
+            if (mainForm != null)
+            {
+                mainForm.Invoke((Action)(() =>
+                {
+                    mainForm.lblStatus.Text = Resources.Status_Done;
+                    Application.DoEvents();
+                }));
+            }
         }
 
         public static async Task ScrollStaticImage(GifToolMainForm mainForm)
