@@ -42,6 +42,9 @@
   <data name="lblOverlayInfo.Text" xml:space="preserve">
     <value></value>
   </data>
+  <data name="chkResampleBase.Text" xml:space="preserve">
+    <value>Resample base GIF to overlay FPS</value>
+  </data>
   <data name="GifInfoFormat" xml:space="preserve">
     <value>{0} × {1}, {2} fps</value>
   </data>

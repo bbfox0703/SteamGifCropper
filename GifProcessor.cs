@@ -2128,6 +2128,7 @@ namespace GifProcessorApp
             string overlayPath = dialog.OverlayGifPath;
             int offsetX = dialog.OverlayX;
             int offsetY = dialog.OverlayY;
+            bool resampleBase = dialog.ResampleBaseFrames;
             string outputPath = null;
 
             try
@@ -2148,33 +2149,82 @@ namespace GifProcessorApp
                 baseCollection.Coalesce();
                 overlayCollection.Coalesce();
 
-                var resampledBaseFrames = ResampleBaseFrames(baseCollection, overlayCollection);
-                int overlayCount = overlayCollection.Count;
-
-                for (int i = 0; i < overlayCount; i++)
+                if (resampleBase)
                 {
-                    using var baseFrame = resampledBaseFrames[i];
-                    using var overlayFrame = overlayCollection[i].Clone();
+                    var resampledBaseFrames = ResampleBaseFrames(baseCollection, overlayCollection);
+                    int overlayCount = overlayCollection.Count;
 
-                    int width = (int)Math.Min(overlayFrame.Width, baseWidth - (uint)offsetX);
-                    int height = (int)Math.Min(overlayFrame.Height, baseHeight - (uint)offsetY);
-                    if (width <= 0 || height <= 0)
-                        continue;
+                    for (int i = 0; i < overlayCount; i++)
+                    {
+                        using var baseFrame = resampledBaseFrames[i];
+                        using var overlayFrame = overlayCollection[i].Clone();
 
-                    overlayFrame.Crop(new MagickGeometry(0, 0, (uint)width, (uint)height));
-                    overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
+                        int width = (int)Math.Min(overlayFrame.Width, baseWidth - (uint)offsetX);
+                        int height = (int)Math.Min(overlayFrame.Height, baseHeight - (uint)offsetY);
+                        if (width <= 0 || height <= 0)
+                            continue;
 
-                    baseFrame.Composite(overlayFrame, offsetX, offsetY, CompositeOperator.Over);
-                    baseFrame.AnimationDelay = overlayFrame.AnimationDelay;
-                    baseFrame.AnimationTicksPerSecond = overlayFrame.AnimationTicksPerSecond;
-                    baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
+                        overlayFrame.Crop(new MagickGeometry(0, 0, (uint)width, (uint)height));
+                        overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
 
-                    resultCollection.Add(baseFrame.Clone());
+                        baseFrame.Composite(overlayFrame, offsetX, offsetY, CompositeOperator.Over);
+                        baseFrame.AnimationDelay = overlayFrame.AnimationDelay;
+                        baseFrame.AnimationTicksPerSecond = overlayFrame.AnimationTicksPerSecond;
+                        baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
 
-                    UpdateFrameProgress(mainForm, i + 1, overlayCount);
+                        resultCollection.Add(baseFrame.Clone());
+
+                        UpdateFrameProgress(mainForm, i + 1, overlayCount);
+                    }
+
+                    resampledBaseFrames.Clear();
                 }
+                else
+                {
+                    int baseCount = baseCollection.Count;
+                    var overlayDelays = overlayCollection.Select(f => (int)f.AnimationDelay).ToArray();
+                    int overlayTotalDelay = overlayDelays.Sum();
+                    int baseElapsed = 0;
 
-                resampledBaseFrames.Clear();
+                    for (int i = 0; i < baseCount; i++)
+                    {
+                        using var baseFrame = (MagickImage)baseCollection[i].Clone();
+
+                        int startTime = overlayTotalDelay == 0 ? 0 : baseElapsed % overlayTotalDelay;
+                        int cumulative = 0;
+                        int overlayIndex = 0;
+                        for (int j = 0; j < overlayDelays.Length; j++)
+                        {
+                            cumulative += overlayDelays[j];
+                            if (startTime < cumulative)
+                            {
+                                overlayIndex = j;
+                                break;
+                            }
+                        }
+
+                        using var overlayFrame = overlayCollection[overlayIndex].Clone();
+
+                        int width = (int)Math.Min(overlayFrame.Width, baseWidth - (uint)offsetX);
+                        int height = (int)Math.Min(overlayFrame.Height, baseHeight - (uint)offsetY);
+                        if (width <= 0 || height <= 0)
+                        {
+                            baseElapsed += (int)baseCollection[i].AnimationDelay;
+                            continue;
+                        }
+
+                        overlayFrame.Crop(new MagickGeometry(0, 0, (uint)width, (uint)height));
+                        overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
+
+                        baseFrame.Composite(overlayFrame, offsetX, offsetY, CompositeOperator.Over);
+                        baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
+
+                        resultCollection.Add(baseFrame.Clone());
+
+                        baseElapsed += (int)baseCollection[i].AnimationDelay;
+                        UpdateFrameProgress(mainForm, i + 1, baseCount);
+                    }
+                }
 
                 resultCollection.Quantize();
                 resultCollection.Optimize();

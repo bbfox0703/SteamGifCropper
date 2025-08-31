@@ -12,6 +12,7 @@ namespace GifProcessorApp
         public string OverlayGifPath => txtOverlayGif.Text;
         public int OverlayX => (int)numX.Value;
         public int OverlayY => (int)numY.Value;
+        public bool ResampleBaseFrames => chkResampleBase.Checked;
 
         private readonly ComponentResourceManager _resources = new(typeof(OverlayGifDialog));
 
@@ -25,6 +26,7 @@ namespace GifProcessorApp
         private Label lblOverlayInfo;
         private Label lblX;
         private Label lblY;
+        private CheckBox chkResampleBase;
         private NumericUpDown numX;
         private NumericUpDown numY;
         private Button btnOK;
@@ -109,6 +111,7 @@ namespace GifProcessorApp
             btnBrowseOverlay = new Button();
             lblBaseInfo = new Label();
             lblOverlayInfo = new Label();
+            chkResampleBase = new CheckBox();
             lblX = new Label();
             numX = new NumericUpDown();
             lblY = new Label();
@@ -183,36 +186,46 @@ namespace GifProcessorApp
             lblOverlayInfo.Location = new System.Drawing.Point(96, 76);
             resources.ApplyResources(lblOverlayInfo, "lblOverlayInfo");
             //
+            // chkResampleBase
+            //
+            chkResampleBase.Name = "chkResampleBase";
+            chkResampleBase.Location = new System.Drawing.Point(96, 95);
+            chkResampleBase.Size = new System.Drawing.Size(260, 19);
+            chkResampleBase.TabIndex = 4;
+            chkResampleBase.Checked = true;
+            resources.ApplyResources(chkResampleBase, "chkResampleBase");
+            chkResampleBase.UseVisualStyleBackColor = true;
+            //
             // lblX
             //
             lblX.AutoSize = true;
             lblX.Name = "lblX";
-            lblX.Location = new System.Drawing.Point(12, 115);
+            lblX.Location = new System.Drawing.Point(12, 117);
             resources.ApplyResources(lblX, "lblX");
             //
             // numX
             //
             numX.Name = "numX";
-            numX.Location = new System.Drawing.Point(96, 113);
+            numX.Location = new System.Drawing.Point(96, 115);
             numX.Maximum = int.MaxValue;
             numX.Size = new System.Drawing.Size(120, 23);
-            numX.TabIndex = 4;
+            numX.TabIndex = 5;
             resources.ApplyResources(numX, "numX");
             //
             // lblY
             //
             lblY.AutoSize = true;
             lblY.Name = "lblY";
-            lblY.Location = new System.Drawing.Point(230, 115);
+            lblY.Location = new System.Drawing.Point(230, 117);
             resources.ApplyResources(lblY, "lblY");
             //
             // numY
             //
             numY.Name = "numY";
-            numY.Location = new System.Drawing.Point(264, 113);
+            numY.Location = new System.Drawing.Point(264, 115);
             numY.Maximum = int.MaxValue;
             numY.Size = new System.Drawing.Size(120, 23);
-            numY.TabIndex = 5;
+            numY.TabIndex = 6;
             resources.ApplyResources(numY, "numY");
             //
             // btnOK
@@ -221,7 +234,7 @@ namespace GifProcessorApp
             btnOK.Name = "btnOK";
             btnOK.Location = new System.Drawing.Point(96, 152);
             btnOK.Size = new System.Drawing.Size(100, 27);
-            btnOK.TabIndex = 6;
+            btnOK.TabIndex = 7;
             resources.ApplyResources(btnOK, "btnOK");
             btnOK.UseVisualStyleBackColor = true;
             //
@@ -231,7 +244,7 @@ namespace GifProcessorApp
             btnCancel.Name = "btnCancel";
             btnCancel.Location = new System.Drawing.Point(206, 152);
             btnCancel.Size = new System.Drawing.Size(100, 27);
-            btnCancel.TabIndex = 7;
+            btnCancel.TabIndex = 8;
             resources.ApplyResources(btnCancel, "btnCancel");
             btnCancel.UseVisualStyleBackColor = true;
             //
@@ -248,6 +261,7 @@ namespace GifProcessorApp
             Controls.Add(lblY);
             Controls.Add(numX);
             Controls.Add(lblX);
+            Controls.Add(chkResampleBase);
             Controls.Add(lblOverlayInfo);
             Controls.Add(btnBrowseOverlay);
             Controls.Add(txtOverlayGif);
