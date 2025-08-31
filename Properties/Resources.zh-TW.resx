@@ -189,6 +189,9 @@
   <data name="Status_ProcessingCount" xml:space="preserve">
     <value>處理中... {0}/{1}</value>
   </data>
+  <data name="Status_ProcessingFrame" xml:space="preserve">
+    <value>處理影格 {0}/{1}</value>
+  </data>
   <data name="Status_ResizingGif" xml:space="preserve">
     <value>調整GIF #{0}至{1}px寬度...</value>
   </data>
