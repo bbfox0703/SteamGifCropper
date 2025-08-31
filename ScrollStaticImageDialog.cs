@@ -248,131 +248,141 @@ namespace GifProcessorApp
             ((System.ComponentModel.ISupportInitialize)numStep).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numDuration).BeginInit();
             SuspendLayout();
-            //
+            // 
             // lblInput
-            //
+            // 
             lblInput.Location = new System.Drawing.Point(14, 9);
             lblInput.Name = "lblInput";
             lblInput.Size = new System.Drawing.Size(120, 20);
             lblInput.TabIndex = 0;
-            //
+            lblInput.Text = "輸入圖像";
+            // 
             // txtInputPath
-            //
+            // 
             txtInputPath.Location = new System.Drawing.Point(14, 29);
             txtInputPath.Name = "txtInputPath";
             txtInputPath.ReadOnly = true;
             txtInputPath.Size = new System.Drawing.Size(333, 23);
             txtInputPath.TabIndex = 1;
-            //
+            // 
             // btnBrowseInput
-            //
+            // 
             btnBrowseInput.Location = new System.Drawing.Point(353, 27);
             btnBrowseInput.Name = "btnBrowseInput";
             btnBrowseInput.Size = new System.Drawing.Size(88, 25);
             btnBrowseInput.TabIndex = 2;
+            btnBrowseInput.Text = "Browse";
             btnBrowseInput.UseVisualStyleBackColor = true;
             btnBrowseInput.Click += BtnBrowseInput_Click;
-            //
+            // 
             // lblOutput
-            //
+            // 
             lblOutput.Location = new System.Drawing.Point(14, 71);
             lblOutput.Name = "lblOutput";
             lblOutput.Size = new System.Drawing.Size(120, 20);
             lblOutput.TabIndex = 3;
-            //
+            lblOutput.Text = "輸出GIF";
+            // 
             // txtOutputPath
-            //
+            // 
             txtOutputPath.Location = new System.Drawing.Point(14, 92);
             txtOutputPath.Name = "txtOutputPath";
             txtOutputPath.ReadOnly = true;
             txtOutputPath.Size = new System.Drawing.Size(333, 23);
             txtOutputPath.TabIndex = 4;
-            //
+            // 
             // btnBrowseOutput
-            //
+            // 
             btnBrowseOutput.Location = new System.Drawing.Point(353, 90);
             btnBrowseOutput.Name = "btnBrowseOutput";
             btnBrowseOutput.Size = new System.Drawing.Size(88, 25);
             btnBrowseOutput.TabIndex = 5;
+            btnBrowseOutput.Text = "Browse";
             btnBrowseOutput.UseVisualStyleBackColor = true;
             btnBrowseOutput.Click += BtnBrowseOutput_Click;
-            //
+            // 
             // lblDirection
-            //
+            // 
             lblDirection.Location = new System.Drawing.Point(14, 134);
             lblDirection.Name = "lblDirection";
             lblDirection.Size = new System.Drawing.Size(120, 20);
             lblDirection.TabIndex = 6;
-            //
+            lblDirection.Text = "Direction";
+            // 
             // cmbDirection
-            //
+            // 
             cmbDirection.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbDirection.Location = new System.Drawing.Point(140, 132);
             cmbDirection.Name = "cmbDirection";
             cmbDirection.Size = new System.Drawing.Size(141, 23);
             cmbDirection.TabIndex = 7;
-            //
+            // 
             // lblStep
-            //
+            // 
             lblStep.Location = new System.Drawing.Point(14, 167);
             lblStep.Name = "lblStep";
             lblStep.Size = new System.Drawing.Size(120, 20);
             lblStep.TabIndex = 8;
-            //
+            lblStep.Text = "每步像素";
+            // 
             // numStep
-            //
+            // 
             numStep.Location = new System.Drawing.Point(140, 165);
-            numStep.Minimum = new decimal(new int[] {1,0,0,0});
-            numStep.Maximum = new decimal(new int[] {100,0,0,0});
-            numStep.Value = new decimal(new int[] {1,0,0,0});
-            numStep.Size = new System.Drawing.Size(60,23);
+            numStep.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numStep.Name = "numStep";
+            numStep.Size = new System.Drawing.Size(60, 23);
             numStep.TabIndex = 9;
-            //
+            numStep.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            // 
             // lblDuration
-            //
+            // 
             lblDuration.Location = new System.Drawing.Point(14, 200);
             lblDuration.Name = "lblDuration";
             lblDuration.Size = new System.Drawing.Size(120, 20);
             lblDuration.TabIndex = 10;
-            //
+            lblDuration.Text = "持續秒數";
+            // 
             // numDuration
-            //
+            // 
             numDuration.Location = new System.Drawing.Point(140, 198);
-            numDuration.Maximum = new decimal(new int[] {600,0,0,0});
-            numDuration.Minimum = new decimal(new int[] {1,0,0,0});
-            numDuration.Value = new decimal(new int[] {5,0,0,0});
-            numDuration.Size = new System.Drawing.Size(60,23);
+            numDuration.Maximum = new decimal(new int[] { 600, 0, 0, 0 });
+            numDuration.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numDuration.Name = "numDuration";
+            numDuration.Size = new System.Drawing.Size(60, 23);
             numDuration.TabIndex = 11;
-            //
+            numDuration.Value = new decimal(new int[] { 5, 0, 0, 0 });
+            // 
             // chkFullCycle
-            //
+            // 
             chkFullCycle.Location = new System.Drawing.Point(220, 198);
             chkFullCycle.Name = "chkFullCycle";
             chkFullCycle.Size = new System.Drawing.Size(130, 24);
             chkFullCycle.TabIndex = 12;
-            //
+            chkFullCycle.Text = "整張圖捲動一次";
+            // 
             // btnOK
-            //
+            // 
             btnOK.Location = new System.Drawing.Point(272, 238);
             btnOK.Name = "btnOK";
             btnOK.Size = new System.Drawing.Size(75, 25);
             btnOK.TabIndex = 13;
+            btnOK.Text = "取消";
             btnOK.UseVisualStyleBackColor = true;
             btnOK.Click += BtnOK_Click;
-            //
+            // 
             // btnCancel
-            //
+            // 
+            btnCancel.DialogResult = DialogResult.Cancel;
             btnCancel.Location = new System.Drawing.Point(353, 238);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new System.Drawing.Size(88, 25);
             btnCancel.TabIndex = 14;
             btnCancel.Text = Resources.ScrollDialog_Cancel;
             btnCancel.UseVisualStyleBackColor = true;
-            btnCancel.DialogResult = DialogResult.Cancel;
-            //
+            // 
             // ScrollStaticImageDialog
-            //
-            AutoScaleDimensions = new System.Drawing.SizeF(7F,15F);
+            // 
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(455, 275);
             Controls.Add(btnCancel);
@@ -393,7 +403,9 @@ namespace GifProcessorApp
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
+            Name = "ScrollStaticImageDialog";
             StartPosition = FormStartPosition.CenterParent;
+            Text = "靜態圖捲動";
             ((System.ComponentModel.ISupportInitialize)numStep).EndInit();
             ((System.ComponentModel.ISupportInitialize)numDuration).EndInit();
             ResumeLayout(false);
