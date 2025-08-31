@@ -477,8 +477,9 @@
             btnResizeNfpsGIF.Name = "btnResizeNfpsGIF";
             btnResizeNfpsGIF.Size = new System.Drawing.Size(300, 26);
             btnResizeNfpsGIF.TabIndex = 29;
-            btnResizeNfpsGIF.Text = "Resize / re-FPS GIF";
+            btnResizeNfpsGIF.Text = SteamGifCropper.Properties.Resources.Button_ResizeNfpsGif;
             btnResizeNfpsGIF.UseVisualStyleBackColor = true;
+            btnResizeNfpsGIF.Click += btnResizeNfpsGIF_Click;
             // 
             // GifToolMainForm
             // 
