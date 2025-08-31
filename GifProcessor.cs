@@ -2089,6 +2089,35 @@ namespace GifProcessorApp
             }
         }
 
+        private static List<MagickImage> ResampleBaseFrames(MagickImageCollection baseCollection, MagickImageCollection overlayCollection)
+        {
+            var baseDelays = baseCollection.Select(f => (int)f.AnimationDelay).ToArray();
+            int baseTotalDelay = baseDelays.Sum();
+            var resampled = new List<MagickImage>(overlayCollection.Count);
+
+            int overlayElapsed = 0;
+            foreach (var overlayFrame in overlayCollection)
+            {
+                int startTime = baseTotalDelay == 0 ? 0 : overlayElapsed % baseTotalDelay;
+                int cumulative = 0;
+                int baseIndex = 0;
+                for (int i = 0; i < baseDelays.Length; i++)
+                {
+                    cumulative += baseDelays[i];
+                    if (startTime < cumulative)
+                    {
+                        baseIndex = i;
+                        break;
+                    }
+                }
+
+                resampled.Add((MagickImage)baseCollection[baseIndex].Clone());
+                overlayElapsed += (int)overlayFrame.AnimationDelay;
+            }
+
+            return resampled;
+        }
+
         public static void OverlayGif(GifToolMainForm mainForm)
         {
             using var dialog = new OverlayGifDialog();
@@ -2119,12 +2148,12 @@ namespace GifProcessorApp
                 baseCollection.Coalesce();
                 overlayCollection.Coalesce();
 
+                var resampledBaseFrames = ResampleBaseFrames(baseCollection, overlayCollection);
                 int overlayCount = overlayCollection.Count;
-                int baseCount = baseCollection.Count;
 
                 for (int i = 0; i < overlayCount; i++)
                 {
-                    using var baseFrame = baseCollection[i % baseCount].Clone();
+                    using var baseFrame = resampledBaseFrames[i];
                     using var overlayFrame = overlayCollection[i].Clone();
 
                     int width = (int)Math.Min(overlayFrame.Width, baseWidth - (uint)offsetX);
@@ -2137,12 +2166,15 @@ namespace GifProcessorApp
 
                     baseFrame.Composite(overlayFrame, offsetX, offsetY, CompositeOperator.Over);
                     baseFrame.AnimationDelay = overlayFrame.AnimationDelay;
+                    baseFrame.AnimationTicksPerSecond = overlayFrame.AnimationTicksPerSecond;
                     baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
 
                     resultCollection.Add(baseFrame.Clone());
 
                     UpdateFrameProgress(mainForm, i + 1, overlayCount);
                 }
+
+                resampledBaseFrames.Clear();
 
                 resultCollection.Quantize();
                 resultCollection.Optimize();
