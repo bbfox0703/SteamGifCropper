@@ -66,6 +66,7 @@
             toolStripLangJapanese = new System.Windows.Forms.ToolStripMenuItem();
             btnScrollStaticImage = new System.Windows.Forms.Button();
             btnOverlayGIF = new System.Windows.Forms.Button();
+            btnResizeNfpsGIF = new System.Windows.Forms.Button();
             panelGifsicle.SuspendLayout();
             groupDither.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).BeginInit();
@@ -248,7 +249,7 @@
             // 
             // numUpDownOptimize
             // 
-            numUpDownOptimize.Location = new System.Drawing.Point(305, 21);
+            numUpDownOptimize.Location = new System.Drawing.Point(305, 26);
             numUpDownOptimize.Margin = new System.Windows.Forms.Padding(2);
             numUpDownOptimize.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
             numUpDownOptimize.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
@@ -259,7 +260,7 @@
             // 
             // numUpDownPaletteSicle
             // 
-            numUpDownPaletteSicle.Location = new System.Drawing.Point(175, 21);
+            numUpDownPaletteSicle.Location = new System.Drawing.Point(175, 26);
             numUpDownPaletteSicle.Margin = new System.Windows.Forms.Padding(2);
             numUpDownPaletteSicle.Maximum = new decimal(new int[] { 256, 0, 0, 0 });
             numUpDownPaletteSicle.Minimum = new decimal(new int[] { 32, 0, 0, 0 });
@@ -270,7 +271,7 @@
             // 
             // numUpDownLossy
             // 
-            numUpDownLossy.Location = new System.Drawing.Point(56, 21);
+            numUpDownLossy.Location = new System.Drawing.Point(56, 26);
             numUpDownLossy.Margin = new System.Windows.Forms.Padding(2);
             numUpDownLossy.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
             numUpDownLossy.Name = "numUpDownLossy";
@@ -281,7 +282,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new System.Drawing.Point(239, 23);
+            label4.Location = new System.Drawing.Point(239, 28);
             label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             label4.Name = "label4";
             label4.Size = new System.Drawing.Size(62, 15);
@@ -291,7 +292,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new System.Drawing.Point(122, 23);
+            label3.Location = new System.Drawing.Point(122, 28);
             label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             label3.Name = "label3";
             label3.Size = new System.Drawing.Size(49, 15);
@@ -301,7 +302,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new System.Drawing.Point(7, 23);
+            label2.Location = new System.Drawing.Point(7, 28);
             label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             label2.Name = "label2";
             label2.Size = new System.Drawing.Size(40, 15);
@@ -385,7 +386,7 @@
             // 
             // btnMerge2to5GifToOne
             // 
-            btnMerge2to5GifToOne.Location = new System.Drawing.Point(312, 7);
+            btnMerge2to5GifToOne.Location = new System.Drawing.Point(313, 7);
             btnMerge2to5GifToOne.Name = "btnMerge2to5GifToOne";
             btnMerge2to5GifToOne.Size = new System.Drawing.Size(300, 26);
             btnMerge2to5GifToOne.TabIndex = 23;
@@ -466,8 +467,18 @@
             btnOverlayGIF.Name = "btnOverlayGIF";
             btnOverlayGIF.Size = new System.Drawing.Size(300, 26);
             btnOverlayGIF.TabIndex = 28;
-            btnOverlayGIF.Text = "Overlay GIF over GIF";
+            btnOverlayGIF.Text = SteamGifCropper.Properties.Resources.Button_OverlayGif;
             btnOverlayGIF.UseVisualStyleBackColor = true;
+            btnOverlayGIF.Click += btnOverlayGIF_Click;
+            // 
+            // btnResizeNfpsGIF
+            // 
+            btnResizeNfpsGIF.Location = new System.Drawing.Point(313, 187);
+            btnResizeNfpsGIF.Name = "btnResizeNfpsGIF";
+            btnResizeNfpsGIF.Size = new System.Drawing.Size(300, 26);
+            btnResizeNfpsGIF.TabIndex = 29;
+            btnResizeNfpsGIF.Text = "Resize / re-FPS GIF";
+            btnResizeNfpsGIF.UseVisualStyleBackColor = true;
             // 
             // GifToolMainForm
             // 
@@ -475,6 +486,7 @@
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             ClientSize = new System.Drawing.Size(619, 444);
+            Controls.Add(btnResizeNfpsGIF);
             Controls.Add(btnOverlayGIF);
             Controls.Add(btnScrollStaticImage);
             Controls.Add(btnLanguageChange);
@@ -553,5 +565,6 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripLangJapanese;
         private System.Windows.Forms.Button btnScrollStaticImage;
         private System.Windows.Forms.Button btnOverlayGIF;
+        private System.Windows.Forms.Button btnResizeNfpsGIF;
     }
 }

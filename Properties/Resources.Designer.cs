@@ -455,6 +455,15 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Message_Mp4ConversionComplete", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Overlay complete..
+        /// </summary>
+        internal static string Message_OverlayComplete {
+            get {
+                return ResourceManager.GetString("Message_OverlayComplete", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to GIF processing with reduced palette completed successfully!.
@@ -678,6 +687,15 @@ namespace SteamGifCropper.Properties {
         internal static string Status_Loading {
             get {
                 return ResourceManager.GetString("Status_Loading", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Overlaying....
+        /// </summary>
+        internal static string Status_Overlaying {
+            get {
+                return ResourceManager.GetString("Status_Overlaying", resourceCulture);
             }
         }
 
@@ -1689,6 +1707,15 @@ namespace SteamGifCropper.Properties {
         internal static string Button_ScrollStaticImage {
             get {
                 return ResourceManager.GetString("Button_ScrollStaticImage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Overlay GIF over GIF.
+        /// </summary>
+        internal static string Button_OverlayGif {
+            get {
+                return ResourceManager.GetString("Button_OverlayGif", resourceCulture);
             }
         }
 

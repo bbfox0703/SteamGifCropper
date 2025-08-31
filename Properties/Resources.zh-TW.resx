@@ -174,6 +174,9 @@
   <data name="Status_Loading" xml:space="preserve">
     <value>載入中...</value>
   </data>
+  <data name="Status_Overlaying" xml:space="preserve">
+    <value>正在覆蓋...</value>
+  </data>
   <data name="Status_ResizingFrames" xml:space="preserve">
     <value>調整影格大小中...</value>
   </data>
@@ -283,6 +286,9 @@
   <data name="Message_Mp4ConversionComplete" xml:space="preserve">
     <value>MP4轉GIF完成！
 輸出檔案：{0}</value>
+  </data>
+  <data name="Message_OverlayComplete" xml:space="preserve">
+    <value>覆蓋完成。</value>
   </data>
   <data name="Message_ProcessedFiles" xml:space="preserve">
     <value>{1} 個 GIF 檔案中的 {0} 個已成功處理！</value>
@@ -415,6 +421,9 @@
   </data>
   <data name="Button_ScrollStaticImage" xml:space="preserve">
     <value>捲動靜態圖</value>
+  </data>
+  <data name="Button_OverlayGif" xml:space="preserve">
+    <value>將GIF疊加在GIF上</value>
   </data>
   <data name="Status_ValidatingProcessing" xml:space="preserve">
     <value>驗證處理中...</value>

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing;
 using FFMpegCore;
 using FFMpegCore.Exceptions;
 using ImageMagick;
@@ -2087,6 +2088,202 @@ namespace GifProcessorApp
                 mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready;
             }
         }
+
+        private static List<MagickImage> ResampleBaseFrames(MagickImageCollection baseCollection, MagickImageCollection overlayCollection)
+        {
+            var baseDelays = baseCollection.Select(f => (int)f.AnimationDelay).ToArray();
+            int baseTotalDelay = baseDelays.Sum();
+            var resampled = new List<MagickImage>(overlayCollection.Count);
+
+            int overlayElapsed = 0;
+            foreach (var overlayFrame in overlayCollection)
+            {
+                int startTime = baseTotalDelay == 0 ? 0 : overlayElapsed % baseTotalDelay;
+                int cumulative = 0;
+                int baseIndex = 0;
+                for (int i = 0; i < baseDelays.Length; i++)
+                {
+                    cumulative += baseDelays[i];
+                    if (startTime < cumulative)
+                    {
+                        baseIndex = i;
+                        break;
+                    }
+                }
+
+                resampled.Add((MagickImage)baseCollection[baseIndex].Clone());
+                overlayElapsed += (int)overlayFrame.AnimationDelay;
+            }
+
+            return resampled;
+        }
+
+        public static void OverlayGif(GifToolMainForm mainForm)
+        {
+            using var dialog = new OverlayGifDialog();
+            if (dialog.ShowDialog(mainForm) != DialogResult.OK)
+                return;
+
+            string basePath = dialog.BaseGifPath;
+            string overlayPath = dialog.OverlayGifPath;
+            int offsetX = dialog.OverlayX;
+            int offsetY = dialog.OverlayY;
+            bool resampleBase = dialog.ResampleBaseFrames;
+            string outputPath = null;
+
+            try
+            {
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Loading;
+                mainForm.pBarTaskStatus.Minimum = 0;
+                mainForm.pBarTaskStatus.Maximum = 100;
+                mainForm.pBarTaskStatus.Value = 0;
+                Application.DoEvents();
+
+                using var baseCollection = new MagickImageCollection(basePath);
+                using var overlayCollection = new MagickImageCollection(overlayPath);
+                using var resultCollection = new MagickImageCollection();
+
+                uint baseWidth = baseCollection[0].Width;
+                uint baseHeight = baseCollection[0].Height;
+
+                baseCollection.Coalesce();
+                overlayCollection.Coalesce();
+
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Overlaying;
+                Application.DoEvents();
+
+                if (resampleBase)
+                {
+                    var resampledBaseFrames = ResampleBaseFrames(baseCollection, overlayCollection);
+                    int overlayCount = overlayCollection.Count;
+
+                    for (int i = 0; i < overlayCount; i++)
+                    {
+                        using var baseFrame = resampledBaseFrames[i];
+                        using var overlayFrame = overlayCollection[i].Clone();
+
+                        int width = (int)Math.Min(overlayFrame.Width, baseWidth - (uint)offsetX);
+                        int height = (int)Math.Min(overlayFrame.Height, baseHeight - (uint)offsetY);
+                        if (width <= 0 || height <= 0)
+                            continue;
+
+                        overlayFrame.Crop(new MagickGeometry(0, 0, (uint)width, (uint)height));
+                        overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
+
+                        baseFrame.Composite(overlayFrame, offsetX, offsetY, CompositeOperator.Over);
+                        baseFrame.AnimationDelay = overlayFrame.AnimationDelay;
+                        baseFrame.AnimationTicksPerSecond = overlayFrame.AnimationTicksPerSecond;
+                        baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
+
+                        resultCollection.Add(baseFrame.Clone());
+
+                        UpdateFrameProgress(mainForm, i + 1, overlayCount);
+                    }
+
+                    resampledBaseFrames.Clear();
+                }
+                else
+                {
+                    int baseCount = baseCollection.Count;
+                    var overlayDelays = overlayCollection.Select(f => (int)f.AnimationDelay).ToArray();
+                    int overlayTotalDelay = overlayDelays.Sum();
+                    int baseElapsed = 0;
+
+                    for (int i = 0; i < baseCount; i++)
+                    {
+                        using var baseFrame = (MagickImage)baseCollection[i].Clone();
+
+                        int startTime = overlayTotalDelay == 0 ? 0 : baseElapsed % overlayTotalDelay;
+                        int cumulative = 0;
+                        int overlayIndex = 0;
+                        for (int j = 0; j < overlayDelays.Length; j++)
+                        {
+                            cumulative += overlayDelays[j];
+                            if (startTime < cumulative)
+                            {
+                                overlayIndex = j;
+                                break;
+                            }
+                        }
+
+                        using var overlayFrame = overlayCollection[overlayIndex].Clone();
+
+                        int width = (int)Math.Min(overlayFrame.Width, baseWidth - (uint)offsetX);
+                        int height = (int)Math.Min(overlayFrame.Height, baseHeight - (uint)offsetY);
+                        if (width <= 0 || height <= 0)
+                        {
+                            baseElapsed += (int)baseCollection[i].AnimationDelay;
+                            continue;
+                        }
+
+                        overlayFrame.Crop(new MagickGeometry(0, 0, (uint)width, (uint)height));
+                        overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
+
+                        baseFrame.Composite(overlayFrame, offsetX, offsetY, CompositeOperator.Over);
+                        baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
+
+                        resultCollection.Add(baseFrame.Clone());
+
+                        baseElapsed += (int)baseCollection[i].AnimationDelay;
+                        UpdateFrameProgress(mainForm, i + 1, baseCount);
+                    }
+                }
+
+                resultCollection.Quantize();
+                resultCollection.Optimize();
+
+                using var saveDialog = new SaveFileDialog
+                {
+                    Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
+                    FileName = Path.GetFileNameWithoutExtension(basePath) + "_overlay.gif",
+                    Title = "Save GIF",
+                };
+                if (saveDialog.ShowDialog() != DialogResult.OK)
+                    return;
+
+                outputPath = saveDialog.FileName;
+
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Saving;
+                Application.DoEvents();
+                resultCollection.Write(outputPath);
+            }
+            catch (Exception ex)
+            {
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Error;
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                    $"Error: {ex.Message}",
+                    SteamGifCropper.Properties.Resources.Title_Error,
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            finally
+            {
+                mainForm.pBarTaskStatus.Value = 0;
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Idle;
+            }
+
+            if (!string.IsNullOrEmpty(outputPath) && mainForm.chkGifsicle.Checked)
+            {
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing;
+                Application.DoEvents();
+                var options = new GifsicleWrapper.GifsicleOptions
+                {
+                    Colors = (int)mainForm.numUpDownPaletteSicle.Value,
+                    Lossy = (int)mainForm.numUpDownLossy.Value,
+                    OptimizeLevel = (int)mainForm.numUpDownOptimize.Value,
+                    Dither = mainForm.DitherMethod,
+                };
+
+                GifsicleWrapper.OptimizeGif(outputPath, outputPath, options);
+            }
+
+            mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Done;
+            WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                SteamGifCropper.Properties.Resources.Message_OverlayComplete,
+                SteamGifCropper.Properties.Resources.Title_Success,
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
 
     }
 }

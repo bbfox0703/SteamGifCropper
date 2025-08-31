@@ -408,5 +408,125 @@ namespace GifProcessorApp
 
             collection.Write(outputFilePath, defines);
         }
+
+        private static List<MagickImage> ResampleBaseFrames(MagickImageCollection baseCollection, MagickImageCollection overlayCollection)
+        {
+            var baseDelays = baseCollection.Select(f => (int)f.AnimationDelay).ToArray();
+            int baseTotalDelay = baseDelays.Sum();
+            var resampled = new List<MagickImage>(overlayCollection.Count);
+
+            int overlayElapsed = 0;
+            foreach (var overlayFrame in overlayCollection)
+            {
+                int startTime = baseTotalDelay == 0 ? 0 : overlayElapsed % baseTotalDelay;
+                int cumulative = 0;
+                int baseIndex = 0;
+                for (int i = 0; i < baseDelays.Length; i++)
+                {
+                    cumulative += baseDelays[i];
+                    if (startTime < cumulative)
+                    {
+                        baseIndex = i;
+                        break;
+                    }
+                }
+
+                resampled.Add((MagickImage)baseCollection[baseIndex].Clone());
+                overlayElapsed += (int)overlayFrame.AnimationDelay;
+            }
+
+            return resampled;
+        }
+
+        public static void OverlayGif(string basePath, string overlayPath, string outputPath, int offsetX = 0, int offsetY = 0, bool resampleBase = true)
+        {
+            using var baseCollection = new MagickImageCollection(basePath);
+            using var overlayCollection = new MagickImageCollection(overlayPath);
+            using var resultCollection = new MagickImageCollection();
+
+            uint baseWidth = baseCollection[0].Width;
+            uint baseHeight = baseCollection[0].Height;
+
+            baseCollection.Coalesce();
+            overlayCollection.Coalesce();
+
+            if (resampleBase)
+            {
+                var resampledBaseFrames = ResampleBaseFrames(baseCollection, overlayCollection);
+                int overlayCount = overlayCollection.Count;
+
+                for (int i = 0; i < overlayCount; i++)
+                {
+                    using var baseFrame = resampledBaseFrames[i];
+                    using var overlayFrame = overlayCollection[i].Clone();
+
+                    int width = (int)Math.Min(overlayFrame.Width, baseWidth - (uint)offsetX);
+                    int height = (int)Math.Min(overlayFrame.Height, baseHeight - (uint)offsetY);
+                    if (width <= 0 || height <= 0)
+                        continue;
+
+                    overlayFrame.Crop(new MagickGeometry(0, 0, (uint)width, (uint)height));
+                    overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
+
+                    baseFrame.Composite(overlayFrame, offsetX, offsetY, CompositeOperator.Over);
+                    baseFrame.AnimationDelay = overlayFrame.AnimationDelay;
+                    baseFrame.AnimationTicksPerSecond = overlayFrame.AnimationTicksPerSecond;
+                    baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
+
+                    resultCollection.Add(baseFrame.Clone());
+                }
+
+                resampledBaseFrames.Clear();
+            }
+            else
+            {
+                int baseCount = baseCollection.Count;
+                var overlayDelays = overlayCollection.Select(f => (int)f.AnimationDelay).ToArray();
+                int overlayTotalDelay = overlayDelays.Sum();
+                int baseElapsed = 0;
+
+                for (int i = 0; i < baseCount; i++)
+                {
+                    using var baseFrame = (MagickImage)baseCollection[i].Clone();
+
+                    int startTime = overlayTotalDelay == 0 ? 0 : baseElapsed % overlayTotalDelay;
+                    int cumulative = 0;
+                    int overlayIndex = 0;
+                    for (int j = 0; j < overlayDelays.Length; j++)
+                    {
+                        cumulative += overlayDelays[j];
+                        if (startTime < cumulative)
+                        {
+                            overlayIndex = j;
+                            break;
+                        }
+                    }
+
+                    using var overlayFrame = overlayCollection[overlayIndex].Clone();
+
+                    int width = (int)Math.Min(overlayFrame.Width, baseWidth - (uint)offsetX);
+                    int height = (int)Math.Min(overlayFrame.Height, baseHeight - (uint)offsetY);
+                    if (width <= 0 || height <= 0)
+                    {
+                        baseElapsed += (int)baseCollection[i].AnimationDelay;
+                        continue;
+                    }
+
+                    overlayFrame.Crop(new MagickGeometry(0, 0, (uint)width, (uint)height));
+                    overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
+
+                    baseFrame.Composite(overlayFrame, offsetX, offsetY, CompositeOperator.Over);
+                    baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
+
+                    resultCollection.Add(baseFrame.Clone());
+
+                    baseElapsed += (int)baseCollection[i].AnimationDelay;
+                }
+            }
+
+            resultCollection.Quantize();
+            resultCollection.Optimize();
+            resultCollection.Write(outputPath);
+        }
     }
 }
