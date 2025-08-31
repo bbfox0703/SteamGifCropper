@@ -1844,6 +1844,101 @@ namespace GifProcessorApp
             collection.Write(outputFilePath, defines);
         }
 
+        public static void ScrollStaticImage(string inputFilePath, string outputFilePath,
+            ScrollDirection direction, int stepPixels, int durationSeconds, bool fullCycle, int targetFramerate,
+            GifToolMainForm mainForm)
+        {
+            using var baseImage = new MagickImage(inputFilePath);
+            int width = (int)baseImage.Width;
+            int height = (int)baseImage.Height;
+
+            int distance = direction switch
+            {
+                ScrollDirection.Up or ScrollDirection.Down => height,
+                _ => width
+            };
+
+            int frames = Math.Max(1, durationSeconds * targetFramerate);
+            if (durationSeconds > 0)
+            {
+                stepPixels = Math.Max(1, (int)Math.Round((double)distance / frames));
+            }
+
+            int dx = 0, dy = 0;
+            switch (direction)
+            {
+                case ScrollDirection.Right: dx = stepPixels; break;
+                case ScrollDirection.Left: dx = -stepPixels; break;
+                case ScrollDirection.Down: dy = stepPixels; break;
+                case ScrollDirection.Up: dy = -stepPixels; break;
+                case ScrollDirection.LeftUp: dx = -stepPixels; dy = -stepPixels; break;
+                case ScrollDirection.LeftDown: dx = -stepPixels; dy = stepPixels; break;
+                case ScrollDirection.RightUp: dx = stepPixels; dy = -stepPixels; break;
+                case ScrollDirection.RightDown: dx = stepPixels; dy = stepPixels; break;
+            }
+
+            if (durationSeconds <= 0 && fullCycle)
+            {
+                int stepsX = dx != 0 ? (int)Math.Ceiling((double)width / Math.Abs(dx)) : 0;
+                int stepsY = dy != 0 ? (int)Math.Ceiling((double)height / Math.Abs(dy)) : 0;
+                frames = Math.Max(stepsX, stepsY);
+                if (frames <= 0) frames = 1;
+            }
+
+            uint delay = (uint)Math.Round(100.0 / targetFramerate);
+
+            if (File.Exists(outputFilePath))
+                File.Delete(outputFilePath);
+
+            using var collection = new MagickImageCollection();
+
+            mainForm?.Invoke((Action)(() =>
+            {
+                mainForm.pBarTaskStatus.Maximum = frames;
+                mainForm.pBarTaskStatus.Value = 0;
+                mainForm.lblStatus.Text = $"Processing frame 0/{frames}";
+            }));
+
+            for (int i = 0; i < frames; i++)
+            {
+                var frame = baseImage.Clone();
+                int offsetX = dx * i;
+                int offsetY = dy * i;
+                if (width > 0)
+                {
+                    offsetX %= width;
+                    if (offsetX < 0) offsetX += width;
+                }
+                if (height > 0)
+                {
+                    offsetY %= height;
+                    if (offsetY < 0) offsetY += height;
+                }
+                frame.Roll(offsetX, offsetY);
+                frame.AnimationDelay = delay;
+                frame.GifDisposeMethod = GifDisposeMethod.Background;
+
+                collection.Add(frame);
+
+                if (mainForm != null)
+                {
+                    int current = i + 1;
+                    mainForm.Invoke((Action)(() =>
+                    {
+                        mainForm.pBarTaskStatus.Value = current;
+                        mainForm.lblStatus.Text = $"Processing frame {current}/{frames}";
+                    }));
+                }
+            }
+
+            var defines = new GifWriteDefines
+            {
+                RepeatCount = 0
+            };
+
+            collection.Write(outputFilePath, defines);
+        }
+
         public static async Task ScrollStaticImage(GifToolMainForm mainForm)
         {
             using var dialog = new ScrollStaticImageDialog();
@@ -1864,7 +1959,7 @@ namespace GifProcessorApp
                 mainForm.pBarTaskStatus.Value = 0;
                 mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Processing;
 
-                await Task.Run(() => ScrollStaticImage(inputPath, outputPath, direction, step, duration, fullCycle, targetFramerate));
+                await Task.Run(() => ScrollStaticImage(inputPath, outputPath, direction, step, duration, fullCycle, targetFramerate, mainForm));
 
                 if (mainForm.chkGifsicle.Checked)
                 {
@@ -1878,7 +1973,7 @@ namespace GifProcessorApp
                     GifsicleWrapper.OptimizeGif(outputPath, outputPath, options);
                 }
 
-                mainForm.pBarTaskStatus.Value = 100;
+                mainForm.pBarTaskStatus.Value = mainForm.pBarTaskStatus.Maximum;
                 mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Done;
                 MessageBox.Show(SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
                                 SteamGifCropper.Properties.Resources.Title_Success,
