@@ -17,6 +17,7 @@ namespace GifProcessorApp
             try
             {
                 InitializeComponent();
+                UpdateUIText();
 
                 // Initialize theme
                 _isDarkMode = WindowsThemeManager.IsDarkModeEnabled();
