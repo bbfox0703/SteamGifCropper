@@ -2091,39 +2091,20 @@ namespace GifProcessorApp
 
         public static void OverlayGif(GifToolMainForm mainForm)
         {
-            using var baseDialog = new OpenFileDialog
-            {
-                Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
-                Title = "Select base GIF"
-            };
-            if (baseDialog.ShowDialog() != DialogResult.OK)
+            using var dialog = new OverlayGifDialog();
+            if (dialog.ShowDialog(mainForm) != DialogResult.OK)
                 return;
 
-            uint baseWidth;
-            uint baseHeight;
-            using (var info = new MagickImageCollection(baseDialog.FileName))
-            {
-                baseWidth = info[0].Width;
-                baseHeight = info[0].Height;
-            }
+            string basePath = dialog.BaseGifPath;
+            string overlayPath = dialog.OverlayGifPath;
+            int offsetX = dialog.OverlayX;
+            int offsetY = dialog.OverlayY;
 
-            using var overlayDialog = new OpenFileDialog
-            {
-                Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
-                Title = "Select overlay GIF"
-            };
-            if (overlayDialog.ShowDialog() != DialogResult.OK)
-                return;
-
-            using var coordDialog = new OverlayPositionDialog(baseWidth, baseHeight);
-            if (coordDialog.ShowDialog(mainForm) != DialogResult.OK)
-                return;
-            int offsetX = coordDialog.OverlayX;
-            int offsetY = coordDialog.OverlayY;
-
-            using var baseCollection = new MagickImageCollection(baseDialog.FileName);
-            using var overlayCollection = new MagickImageCollection(overlayDialog.FileName);
+            using var baseCollection = new MagickImageCollection(basePath);
+            using var overlayCollection = new MagickImageCollection(overlayPath);
             using var resultCollection = new MagickImageCollection();
+            uint baseWidth = baseCollection[0].Width;
+            uint baseHeight = baseCollection[0].Height;
 
             try
             {
@@ -2166,7 +2147,7 @@ namespace GifProcessorApp
                 using var saveDialog = new SaveFileDialog
                 {
                     Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
-                    FileName = Path.GetFileNameWithoutExtension(baseDialog.FileName) + "_overlay.gif",
+                    FileName = Path.GetFileNameWithoutExtension(basePath) + "_overlay.gif",
                     Title = "Save GIF"
                 };
                 if (saveDialog.ShowDialog() != DialogResult.OK)
