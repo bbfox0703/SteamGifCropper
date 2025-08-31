@@ -94,4 +94,22 @@ public class ScrollStaticImageTests
 
         Directory.Delete(tempDir, true);
     }
+
+    [Fact]
+    public void ScrollStaticImage_WithDuration_ProducesAnimatedGif()
+    {
+        string input = Path.Combine("TestData", "Scroll_test_1.png");
+        string tempDir = Directory.CreateTempSubdirectory().FullName;
+        string output = Path.Combine(tempDir, "out.gif");
+
+        GifProcessor.ScrollStaticImage(input, output, ScrollDirection.Right, 0, 2, true, 10);
+
+        using var collection = new MagickImageCollection(output);
+        Assert.True(collection.Count > 1);
+        Assert.Equal((ushort)0, collection[0].AnimationIterations);
+        double diff = collection[0].Compare(collection[1], ErrorMetric.RootMeanSquared);
+        Assert.True(diff > 0.0);
+
+        Directory.Delete(tempDir, true);
+    }
 }
