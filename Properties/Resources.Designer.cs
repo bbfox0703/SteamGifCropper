@@ -779,6 +779,15 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Status_ProcessingCount", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Processing frame {0}/{1}.
+        /// </summary>
+        internal static string Status_ProcessingFrame {
+            get {
+                return ResourceManager.GetString("Status_ProcessingFrame", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Processing with reduced palette....

@@ -189,6 +189,9 @@
   <data name="Status_ProcessingCount" xml:space="preserve">
     <value>処理中... {0}/{1}</value>
   </data>
+  <data name="Status_ProcessingFrame" xml:space="preserve">
+    <value>フレーム{0}/{1}を処理中</value>
+  </data>
   <data name="Status_ResizingGif" xml:space="preserve">
     <value>GIF #{0}を{1}px幅にサイズ変更中...</value>
   </data>

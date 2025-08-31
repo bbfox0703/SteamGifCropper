@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using FFMpegCore;
 using FFMpegCore.Exceptions;
 using ImageMagick;
+using SteamGifCropper.Properties;
 
 namespace GifProcessorApp
 {
@@ -1909,7 +1910,7 @@ namespace GifProcessorApp
             {
                 mainForm.pBarTaskStatus.Maximum = frames;
                 mainForm.pBarTaskStatus.Value = 0;
-                mainForm.lblStatus.Text = $"Processing frame 0/{frames}";
+                mainForm.lblStatus.Text = string.Format(Resources.Status_ProcessingFrame, 0, frames);
             }));
 
             for (int i = 0; i < frames; i++)
@@ -1939,7 +1940,7 @@ namespace GifProcessorApp
                     mainForm.Invoke((Action)(() =>
                     {
                         mainForm.pBarTaskStatus.Value = current;
-                        mainForm.lblStatus.Text = $"Processing frame {current}/{frames}";
+                        mainForm.lblStatus.Text = string.Format(Resources.Status_ProcessingFrame, current, frames);
                     }));
                 }
             }

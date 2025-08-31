@@ -189,6 +189,9 @@
   <data name="Status_ProcessingCount" xml:space="preserve">
     <value>Processing... {0}/{1}</value>
   </data>
+  <data name="Status_ProcessingFrame" xml:space="preserve">
+    <value>Processing frame {0}/{1}</value>
+  </data>
   <data name="Status_ResizingGif" xml:space="preserve">
     <value>Resizing GIF #{0} to {1}px width...</value>
   </data>
