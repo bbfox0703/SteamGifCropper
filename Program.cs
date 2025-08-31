@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Threading;
 using System.Windows.Forms;
+using ImageMagick;
 
 namespace GifProcessorApp
 {
@@ -13,9 +14,13 @@ namespace GifProcessorApp
         {
             try
             {
+                // Configure ImageMagick resource limits to avoid excessive memory usage
+                ResourceLimits.Memory = 256UL * 1024UL * 1024UL; // 256 MB memory limit
+                ResourceLimits.Disk = 1024UL * 1024UL * 1024UL;  // 1 GB disk limit
+
                 // Initialize localization based on OS language
                 InitializeLocalization();
-                
+
                 // .NET 8 modern high DPI support
                 Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
                 
