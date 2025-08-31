@@ -190,47 +190,53 @@ namespace GifProcessorApp
             await Task.CompletedTask;
         }
 
-        private static MagickImageCollection MergeGifsHorizontally(MagickImageCollection[] collections, GifToolMainForm mainForm, bool useFastPalette = false)
+        private static void MergeGifsHorizontally(MagickImageCollection[] collections, string outputPath, GifToolMainForm mainForm, bool useFastPalette = false)
         {
             int maxHeight = collections.Max(c => (int)c[0].Height);
             using var palette = BuildSharedPalette(collections, useFastPalette);
-            var merged = new MagickImageCollection();
-            int maxFrames = collections.Max(c => c.Count);
-            int[] xPositions = { 0, 153, 306, 460, 613 };
-
-            for (int frameIndex = 0; frameIndex < maxFrames; frameIndex++)
-            {
-                var canvas = new MagickImage(MagickColors.Transparent, 766, (uint)maxHeight);
-                for (int gifIndex = 0; gifIndex < 5; gifIndex++)
-                {
-                    var col = collections[gifIndex];
-                    var frame = col[frameIndex % col.Count];
-                    canvas.Composite(frame, xPositions[gifIndex], 0, CompositeOperator.Over);
-                }
-                var reference = collections[0][frameIndex % collections[0].Count];
-                canvas.AnimationDelay = reference.AnimationDelay;
-                canvas.AnimationTicksPerSecond = reference.AnimationTicksPerSecond;
-                merged.Add(canvas);
-            }
-
-            foreach (var frame in merged)
-            {
-                frame.GifDisposeMethod = GifDisposeMethod.Background;
-            }
-
             var mapSettings = new QuantizeSettings
             {
                 Colors = 256,
                 ColorSpace = ColorSpace.RGB,
                 DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
             };
+            int maxFrames = collections.Max(c => c.Count);
+            int[] xPositions = { 0, 153, 306, 460, 613 };
+            var enumerators = collections.Select(c => c.GetEnumerator()).ToArray();
 
-            foreach (MagickImage frame in merged)
+            using var stream = File.Open(outputPath, FileMode.Create);
+            var defines = new GifWriteDefines { RepeatCount = 0, WriteMode = GifWriteMode.Gif };
+
+            for (int frameIndex = 0; frameIndex < maxFrames; frameIndex++)
             {
-                frame.Remap(palette, mapSettings);
+                var canvas = new MagickImage(MagickColors.Transparent, 766, (uint)maxHeight);
+                for (int gifIndex = 0; gifIndex < 5; gifIndex++)
+                {
+                    var enumerator = enumerators[gifIndex];
+                    if (!enumerator.MoveNext())
+                    {
+                        enumerator.Dispose();
+                        enumerator = collections[gifIndex].GetEnumerator();
+                        enumerator.MoveNext();
+                        enumerators[gifIndex] = enumerator;
+                    }
+                    using var frame = (MagickImage)enumerator.Current.Clone();
+                    canvas.Composite(frame, xPositions[gifIndex], 0, CompositeOperator.Over);
+                }
+                var reference = (MagickImage)enumerators[0].Current;
+                canvas.AnimationDelay = reference.AnimationDelay;
+                canvas.AnimationTicksPerSecond = reference.AnimationTicksPerSecond;
+                canvas.GifDisposeMethod = GifDisposeMethod.Background;
+                canvas.Remap(palette, mapSettings);
+                canvas.Write(stream, defines);
+                defines.WriteMode = GifWriteMode.Frame;
+                canvas.Dispose();
             }
 
-            return merged;
+            foreach (var e in enumerators)
+            {
+                e.Dispose();
+            }
         }
 
         public static void ResizeGifTo766(string inputFilePath, string outputFilePath)

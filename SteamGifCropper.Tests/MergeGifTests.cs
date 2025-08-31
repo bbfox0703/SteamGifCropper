@@ -150,11 +150,11 @@ public class MergeGifTests
             GifProcessor.PaletteQuantizeCallCount = 0;
             var form = new GifToolMainForm();
             var method = typeof(GifProcessor).GetMethod("MergeGifsHorizontally", BindingFlags.NonPublic | BindingFlags.Static)!;
-            using var merged = (MagickImageCollection)method.Invoke(null, new object?[] { collections, form, false })!;
+            string mergedPath = Path.Combine(tempDir, "merged.gif");
+            method.Invoke(null, new object?[] { collections, mergedPath, form, false });
+            using var merged = new MagickImageCollection(mergedPath);
             Assert.Equal(766U, merged[0].Width);
 
-            string mergedPath = Path.Combine(tempDir, "merged.gif");
-            merged.Write(mergedPath);
             GifProcessor.SplitGif(mergedPath, tempDir);
             var files = Directory.GetFiles(tempDir, "*_Part*.gif");
             Assert.Equal(5, files.Length);
@@ -197,11 +197,10 @@ public class MergeGifTests
 
             var form = new GifToolMainForm();
             var method = typeof(GifProcessor).GetMethod("MergeGifsHorizontally", BindingFlags.NonPublic | BindingFlags.Static)!;
-            using var merged = (MagickImageCollection)method.Invoke(null, new object?[] { collections, form, false })!;
-
             string outputPath = Path.Combine(tempDir, "merged.gif");
-            merged.Write(outputPath);
+            method.Invoke(null, new object?[] { collections, outputPath, form, false });
 
+            using var merged = new MagickImageCollection(outputPath);
             Assert.Equal(766, (int)merged[0].Width);
             Assert.Equal(expectedHeight, (int)merged[0].Height);
             Assert.Equal(expectedFrames, merged.Count);
