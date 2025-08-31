@@ -152,5 +152,82 @@ public class GifProcessorTests
             col.Dispose();
         }
     }
+
+    private static string CreateGif(string directory, string name, int frames, int delay, MagickColor color)
+    {
+        string path = Path.Combine(directory, name);
+        using var collection = new MagickImageCollection();
+        for (int i = 0; i < frames; i++)
+        {
+            var frame = new MagickImage(color, 1, 1)
+            {
+                AnimationDelay = (ushort)delay,
+                AnimationTicksPerSecond = 100
+            };
+            collection.Add(frame);
+        }
+        collection.Write(path);
+        return path;
+    }
+
+    [Fact]
+    public void OverlayGif_OverlayFasterThanBase_UsesOverlayTiming()
+    {
+        string tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        Directory.CreateDirectory(tempDir);
+        try
+        {
+            string basePath = CreateGif(tempDir, "base.gif", 2, 10, MagickColors.Red);
+            string overlayPath = CreateGif(tempDir, "overlay.gif", 4, 5, MagickColors.Blue);
+            string outputPath = Path.Combine(tempDir, "output.gif");
+
+            GifProcessor.OverlayGif(basePath, overlayPath, outputPath);
+
+            using var overlay = new MagickImageCollection(overlayPath);
+            overlay.Coalesce();
+            using var result = new MagickImageCollection(outputPath);
+            result.Coalesce();
+
+            Assert.Equal(overlay.Count, result.Count);
+            for (int i = 0; i < overlay.Count; i++)
+            {
+                Assert.Equal(overlay[i].AnimationDelay, result[i].AnimationDelay);
+            }
+        }
+        finally
+        {
+            Directory.Delete(tempDir, true);
+        }
+    }
+
+    [Fact]
+    public void OverlayGif_BaseFasterThanOverlay_UsesOverlayTiming()
+    {
+        string tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        Directory.CreateDirectory(tempDir);
+        try
+        {
+            string basePath = CreateGif(tempDir, "base.gif", 4, 5, MagickColors.Red);
+            string overlayPath = CreateGif(tempDir, "overlay.gif", 2, 10, MagickColors.Blue);
+            string outputPath = Path.Combine(tempDir, "output.gif");
+
+            GifProcessor.OverlayGif(basePath, overlayPath, outputPath);
+
+            using var overlay = new MagickImageCollection(overlayPath);
+            overlay.Coalesce();
+            using var result = new MagickImageCollection(outputPath);
+            result.Coalesce();
+
+            Assert.Equal(overlay.Count, result.Count);
+            for (int i = 0; i < overlay.Count; i++)
+            {
+                Assert.Equal(overlay[i].AnimationDelay, result[i].AnimationDelay);
+            }
+        }
+        finally
+        {
+            Directory.Delete(tempDir, true);
+        }
+    }
 }
 
