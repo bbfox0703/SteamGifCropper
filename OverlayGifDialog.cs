@@ -102,7 +102,6 @@ namespace GifProcessorApp
 
         private void InitializeComponent()
         {
-            ComponentResourceManager resources = new ComponentResourceManager(typeof(OverlayGifDialog));
             lblBase = new Label();
             txtBaseGif = new TextBox();
             btnBrowseBase = new Button();
@@ -121,139 +120,146 @@ namespace GifProcessorApp
             ((ISupportInitialize)numX).BeginInit();
             ((ISupportInitialize)numY).BeginInit();
             SuspendLayout();
-            //
+            // 
             // lblBase
-            //
+            // 
             lblBase.AutoSize = true;
-            lblBase.Name = "lblBase";
             lblBase.Location = new System.Drawing.Point(12, 15);
-            resources.ApplyResources(lblBase, "lblBase");
-            //
+            lblBase.Name = "lblBase";
+            lblBase.Size = new System.Drawing.Size(57, 15);
+            lblBase.TabIndex = 14;
+            lblBase.Text = "Base GIF:";
+            // 
             // txtBaseGif
-            //
-            txtBaseGif.Name = "txtBaseGif";
+            // 
             txtBaseGif.Location = new System.Drawing.Point(96, 12);
+            txtBaseGif.Name = "txtBaseGif";
             txtBaseGif.Size = new System.Drawing.Size(260, 23);
             txtBaseGif.TabIndex = 0;
-            resources.ApplyResources(txtBaseGif, "txtBaseGif");
-            //
+            // 
             // btnBrowseBase
-            //
+            // 
+            btnBrowseBase.Location = new System.Drawing.Point(362, 12);
             btnBrowseBase.Name = "btnBrowseBase";
-            btnBrowseBase.Location = new System.Drawing.Point(362, 11);
-            btnBrowseBase.Size = new System.Drawing.Size(75, 25);
+            btnBrowseBase.Size = new System.Drawing.Size(75, 26);
             btnBrowseBase.TabIndex = 1;
-            resources.ApplyResources(btnBrowseBase, "btnBrowseBase");
+            btnBrowseBase.Text = "Browse...";
             btnBrowseBase.UseVisualStyleBackColor = true;
             btnBrowseBase.Click += BtnBrowseBase_Click;
-            //
-            // lblBaseInfo
-            //
-            lblBaseInfo.AutoSize = true;
-            lblBaseInfo.Name = "lblBaseInfo";
-            lblBaseInfo.Location = new System.Drawing.Point(96, 38);
-            resources.ApplyResources(lblBaseInfo, "lblBaseInfo");
-            //
+            // 
             // lblOverlay
-            //
+            // 
             lblOverlay.AutoSize = true;
+            lblOverlay.Location = new System.Drawing.Point(12, 65);
             lblOverlay.Name = "lblOverlay";
-            lblOverlay.Location = new System.Drawing.Point(12, 53);
-            resources.ApplyResources(lblOverlay, "lblOverlay");
-            //
+            lblOverlay.Size = new System.Drawing.Size(74, 15);
+            lblOverlay.TabIndex = 12;
+            lblOverlay.Text = "Overlay GIF:";
+            // 
             // txtOverlayGif
-            //
+            // 
+            txtOverlayGif.Location = new System.Drawing.Point(96, 62);
             txtOverlayGif.Name = "txtOverlayGif";
-            txtOverlayGif.Location = new System.Drawing.Point(96, 50);
             txtOverlayGif.Size = new System.Drawing.Size(260, 23);
             txtOverlayGif.TabIndex = 2;
-            resources.ApplyResources(txtOverlayGif, "txtOverlayGif");
-            //
+            // 
             // btnBrowseOverlay
-            //
+            // 
+            btnBrowseOverlay.Location = new System.Drawing.Point(362, 62);
             btnBrowseOverlay.Name = "btnBrowseOverlay";
-            btnBrowseOverlay.Location = new System.Drawing.Point(362, 49);
-            btnBrowseOverlay.Size = new System.Drawing.Size(75, 25);
+            btnBrowseOverlay.Size = new System.Drawing.Size(75, 26);
             btnBrowseOverlay.TabIndex = 3;
-            resources.ApplyResources(btnBrowseOverlay, "btnBrowseOverlay");
+            btnBrowseOverlay.Text = "Browse...";
             btnBrowseOverlay.UseVisualStyleBackColor = true;
             btnBrowseOverlay.Click += BtnBrowseOverlay_Click;
-            //
+            // 
+            // lblBaseInfo
+            // 
+            lblBaseInfo.AutoSize = true;
+            lblBaseInfo.Location = new System.Drawing.Point(96, 37);
+            lblBaseInfo.Name = "lblBaseInfo";
+            lblBaseInfo.Size = new System.Drawing.Size(0, 15);
+            lblBaseInfo.TabIndex = 13;
+            // 
             // lblOverlayInfo
-            //
+            // 
             lblOverlayInfo.AutoSize = true;
+            lblOverlayInfo.Location = new System.Drawing.Point(96, 92);
             lblOverlayInfo.Name = "lblOverlayInfo";
-            lblOverlayInfo.Location = new System.Drawing.Point(96, 76);
-            resources.ApplyResources(lblOverlayInfo, "lblOverlayInfo");
-            //
+            lblOverlayInfo.Size = new System.Drawing.Size(0, 15);
+            lblOverlayInfo.TabIndex = 11;
+            // 
             // chkResampleBase
-            //
+            // 
+            chkResampleBase.Checked = true;
+            chkResampleBase.CheckState = CheckState.Checked;
+            chkResampleBase.Location = new System.Drawing.Point(94, 116);
             chkResampleBase.Name = "chkResampleBase";
-            chkResampleBase.Location = new System.Drawing.Point(96, 95);
             chkResampleBase.Size = new System.Drawing.Size(260, 19);
             chkResampleBase.TabIndex = 4;
-            chkResampleBase.Checked = true;
-            resources.ApplyResources(chkResampleBase, "chkResampleBase");
+            chkResampleBase.Text = "Resample base GIF to overlay FPS";
             chkResampleBase.UseVisualStyleBackColor = true;
-            //
+            // 
             // lblX
-            //
+            // 
             lblX.AutoSize = true;
+            lblX.Location = new System.Drawing.Point(51, 144);
             lblX.Name = "lblX";
-            lblX.Location = new System.Drawing.Point(12, 117);
-            resources.ApplyResources(lblX, "lblX");
-            //
+            lblX.Size = new System.Drawing.Size(18, 15);
+            lblX.TabIndex = 10;
+            lblX.Text = "X:";
+            // 
             // numX
-            //
+            // 
+            numX.Location = new System.Drawing.Point(94, 142);
+            numX.Maximum = new decimal(new int[] { int.MaxValue, 0, 0, 0 });
             numX.Name = "numX";
-            numX.Location = new System.Drawing.Point(96, 115);
-            numX.Maximum = int.MaxValue;
             numX.Size = new System.Drawing.Size(120, 23);
             numX.TabIndex = 5;
-            resources.ApplyResources(numX, "numX");
-            //
+            // 
             // lblY
-            //
+            // 
             lblY.AutoSize = true;
+            lblY.Location = new System.Drawing.Point(228, 144);
             lblY.Name = "lblY";
-            lblY.Location = new System.Drawing.Point(230, 117);
-            resources.ApplyResources(lblY, "lblY");
-            //
+            lblY.Size = new System.Drawing.Size(17, 15);
+            lblY.TabIndex = 9;
+            lblY.Text = "Y:";
+            // 
             // numY
-            //
+            // 
+            numY.Location = new System.Drawing.Point(262, 142);
+            numY.Maximum = new decimal(new int[] { int.MaxValue, 0, 0, 0 });
             numY.Name = "numY";
-            numY.Location = new System.Drawing.Point(264, 115);
-            numY.Maximum = int.MaxValue;
             numY.Size = new System.Drawing.Size(120, 23);
             numY.TabIndex = 6;
-            resources.ApplyResources(numY, "numY");
-            //
+            // 
             // btnOK
-            //
+            // 
             btnOK.DialogResult = DialogResult.OK;
+            btnOK.Location = new System.Drawing.Point(281, 172);
             btnOK.Name = "btnOK";
-            btnOK.Location = new System.Drawing.Point(96, 152);
-            btnOK.Size = new System.Drawing.Size(100, 27);
+            btnOK.Size = new System.Drawing.Size(75, 26);
             btnOK.TabIndex = 7;
-            resources.ApplyResources(btnOK, "btnOK");
+            btnOK.Text = "OK";
             btnOK.UseVisualStyleBackColor = true;
-            //
+            // 
             // btnCancel
-            //
+            // 
             btnCancel.DialogResult = DialogResult.Cancel;
+            btnCancel.Location = new System.Drawing.Point(362, 172);
             btnCancel.Name = "btnCancel";
-            btnCancel.Location = new System.Drawing.Point(206, 152);
-            btnCancel.Size = new System.Drawing.Size(100, 27);
+            btnCancel.Size = new System.Drawing.Size(75, 26);
             btnCancel.TabIndex = 8;
-            resources.ApplyResources(btnCancel, "btnCancel");
+            btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
-            //
+            // 
             // OverlayGifDialog
-            //
+            // 
             AcceptButton = btnOK;
-            CancelButton = btnCancel;
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            CancelButton = btnCancel;
             ClientSize = new System.Drawing.Size(450, 210);
             Controls.Add(btnCancel);
             Controls.Add(btnOK);
@@ -275,7 +281,7 @@ namespace GifProcessorApp
             MinimizeBox = false;
             Name = "OverlayGifDialog";
             StartPosition = FormStartPosition.CenterParent;
-            resources.ApplyResources(this, "$this");
+            Text = "Overlay GIF";
             ((ISupportInitialize)numX).EndInit();
             ((ISupportInitialize)numY).EndInit();
             ResumeLayout(false);
