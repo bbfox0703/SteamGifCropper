@@ -2150,7 +2150,7 @@ namespace GifProcessorApp
                         continue;
 
                     overlayFrame.Crop(new MagickGeometry(0, 0, (uint)width, (uint)height));
-                    overlayFrame.RePage();
+                    overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
 
                     baseFrame.Composite(overlayFrame, offsetX, offsetY, CompositeOperator.Over);
                     baseFrame.AnimationDelay = overlayFrame.AnimationDelay;
