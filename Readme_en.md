@@ -50,6 +50,14 @@ Each file must be below **5MB** to upload to Steam. Adjust or optimize if necess
 ### Scaling
 The scaling feature is provided for convenience. Large GIFs may require significant memory and time.
 
+### Overlay GIF
+1. Click **Overlay GIF** and select the base GIF.
+2. Choose the GIF to overlay and set the X/Y offset.
+3. Confirm to create a new GIF with the overlay applied.
+
+The dialog is localized (English, Traditional Chinese, Japanese) and works with both light and dark themes.
+**Note:** Overlaying large or high-resolution GIFs can consume a lot of memory.
+
 ### Merging 2–5 GIFs
 A basic merging function that keeps the original width. It is not memory efficient and may be slow.
 
