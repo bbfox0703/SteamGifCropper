@@ -268,7 +268,7 @@ namespace GifProcessorApp
             lblInput.Name = "lblInput";
             lblInput.Size = new System.Drawing.Size(120, 20);
             lblInput.TabIndex = 0;
-            lblInput.Text = "JϹ";
+            lblInput.Text = "輸入檔案";
             // 
             // txtInputPath
             // 
@@ -294,7 +294,7 @@ namespace GifProcessorApp
             lblOutput.Name = "lblOutput";
             lblOutput.Size = new System.Drawing.Size(120, 20);
             lblOutput.TabIndex = 3;
-            lblOutput.Text = "XGIF";
+            lblOutput.Text = "輸出GIF";
             // 
             // txtOutputPath
             // 
@@ -336,7 +336,7 @@ namespace GifProcessorApp
             lblStep.Name = "lblStep";
             lblStep.Size = new System.Drawing.Size(120, 20);
             lblStep.TabIndex = 8;
-            lblStep.Text = "CB";
+            lblStep.Text = "每次移動像素";
             // 
             // numStep
             // 
@@ -353,17 +353,15 @@ namespace GifProcessorApp
             lblDuration.Name = "lblDuration";
             lblDuration.Size = new System.Drawing.Size(120, 20);
             lblDuration.TabIndex = 10;
-            lblDuration.Text = "";
+            lblDuration.Text = "秒數";
             // 
             // numDuration
             // 
             numDuration.Location = new System.Drawing.Point(140, 198);
             numDuration.Maximum = new decimal(new int[] { 600, 0, 0, 0 });
-            numDuration.Minimum = new decimal(new int[] { 0, 0, 0, 0 });
             numDuration.Name = "numDuration";
             numDuration.Size = new System.Drawing.Size(60, 23);
             numDuration.TabIndex = 11;
-            numDuration.Value = new decimal(new int[] { 0, 0, 0, 0 });
             // 
             // chkFullCycle
             // 
@@ -371,7 +369,7 @@ namespace GifProcessorApp
             chkFullCycle.Name = "chkFullCycle";
             chkFullCycle.Size = new System.Drawing.Size(130, 24);
             chkFullCycle.TabIndex = 12;
-            chkFullCycle.Text = "iϱʤ@";
+            chkFullCycle.Text = "整個捲動一次";
             // 
             // btnOK
             // 
@@ -379,7 +377,7 @@ namespace GifProcessorApp
             btnOK.Name = "btnOK";
             btnOK.Size = new System.Drawing.Size(75, 25);
             btnOK.TabIndex = 13;
-            btnOK.Text = "";
+            btnOK.Text = "OK";
             btnOK.UseVisualStyleBackColor = true;
             btnOK.Click += BtnOK_Click;
             // 
@@ -418,7 +416,7 @@ namespace GifProcessorApp
             MinimizeBox = false;
             Name = "ScrollStaticImageDialog";
             StartPosition = FormStartPosition.CenterParent;
-            Text = "RAϱ";
+            Text = "靜態轉動態捲動";
             ((System.ComponentModel.ISupportInitialize)numStep).EndInit();
             ((System.ComponentModel.ISupportInitialize)numDuration).EndInit();
             ResumeLayout(false);
