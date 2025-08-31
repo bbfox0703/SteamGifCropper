@@ -101,7 +101,7 @@ namespace GifProcessorApp
 
                         var ranges = GetCropRanges(canvasWidth);
                         int targetFramerate = (int)mainForm.numUpDownFramerate.Value;
-                        SplitGif(collection, inputFilePath, mainForm, ranges, (int)canvasHeight, targetFramerate);
+                        SplitGif(inputFilePath, mainForm, ranges, (int)canvasHeight, targetFramerate);
                         mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Done;
                         WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
                                         SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
@@ -123,10 +123,11 @@ namespace GifProcessorApp
                 }
             }
         }
-        private static void SplitGif(MagickImageCollection collection, string inputFilePath, GifToolMainForm mainForm, (int Start, int End)[] ranges, int canvasHeight, int targetFramerate = 15)
+        private static void SplitGif(string inputFilePath, GifToolMainForm mainForm, (int Start, int End)[] ranges, int canvasHeight, int targetFramerate = 15)
         {
             mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_CoalescingFrames;
             Application.DoEvents();
+            using var collection = new MagickImageCollection(inputFilePath);
             collection.Coalesce();
             Application.DoEvents();
             int newHeight = canvasHeight + HeightExtension;
@@ -265,23 +266,19 @@ namespace GifProcessorApp
 
                 // Step 5: Merge horizontally to create 766px wide GIF
                 bool useFastPalette = mainForm.chk5GIFMergeFasterPaletteProcess.Checked;
-                var mergedCollection = MergeGifsHorizontally(syncedCollections, mainForm, useFastPalette);
-                UpdateProgress(mainForm.pBarTaskStatus, 80, 100);
-
-                // Step 6: Apply existing split functionality
-                // Create merged filename based on first selected GIF
                 string firstGifPath = gifFiles[0];
                 string mergedFileName = $"{Path.GetFileNameWithoutExtension(firstGifPath)}_merged.gif";
                 string outputDir = Path.GetDirectoryName(firstGifPath);
                 string mergedFilePath = Path.Combine(outputDir, mergedFileName);
-                
-                mergedCollection.Write(mergedFilePath);
 
-                // Use existing split logic
+                MergeGifsHorizontally(syncedCollections, mergedFilePath, mainForm, useFastPalette);
+                UpdateProgress(mainForm.pBarTaskStatus, 80, 100);
+
+                // Step 6: Apply existing split functionality
                 var ranges = GetCropRanges(SupportedWidth1); // Use 766px ranges
-                int adjustedHeight = CalculateAdjustedHeight(mergedCollection);
+                int adjustedHeight = (int)syncedCollections[0][0].Height + HeightExtension;
                 int targetFramerate = (int)mainForm.numUpDownFramerate.Value;
-                SplitGif(mergedCollection, mergedFilePath, mainForm, ranges, adjustedHeight, targetFramerate);
+                SplitGif(mergedFilePath, mainForm, ranges, adjustedHeight, targetFramerate);
 
                 // Note: mergedFilePath is kept as the intermediate merged file
 
@@ -297,7 +294,6 @@ namespace GifProcessorApp
                 {
                     collection.Dispose();
                 }
-                mergedCollection.Dispose();
             }
             catch (Exception ex)
             {
@@ -572,10 +568,15 @@ namespace GifProcessorApp
             }
         }
 
-        private static MagickImageCollection MergeGifsHorizontally(MagickImageCollection[] collections, GifToolMainForm mainForm, bool useFastPalette = false)
+        private static void MergeGifsHorizontally(MagickImageCollection[] collections, string outputPath, GifToolMainForm mainForm, bool useFastPalette = false)
         {
             mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_MergingHorizontally;
             Application.DoEvents();
+
+            // Enable disk caching to limit memory usage
+            MagickNET.SetTempDirectory(Path.GetTempPath());
+            ResourceLimits.Memory = 1024; // 1G
+            ResourceLimits.Disk = 4096; // 4G
 
             // Calculate maximum height among all resized GIFs
             int maxHeight = collections.Max(c => (int)c[0].Height);
@@ -583,12 +584,24 @@ namespace GifProcessorApp
             // Build shared palette from first frames
             var palette = BuildSharedPalette(collections, useFastPalette);
 
-            // Create merged collection
-            var mergedCollection = new MagickImageCollection();
+            // Prepare remap settings once
+            var mapSettings = new QuantizeSettings
+            {
+                Colors = 256,
+                ColorSpace = ColorSpace.RGB,
+                DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+            };
+
             int maxFrames = collections.Max(c => c.Count);
+
+            // Create enumerators for each collection to fetch frames on demand
+            var enumerators = collections.Select(c => c.GetEnumerator()).ToArray();
 
             try
             {
+                using var stream = File.Open(outputPath, FileMode.Create);
+                var defines = new GifWriteDefines { RepeatCount = 0, WriteMode = GifWriteMode.Gif };
+
                 for (int frameIndex = 0; frameIndex < maxFrames; frameIndex++)
                 {
                     // Update UI every 10 frames during merging
@@ -600,69 +613,50 @@ namespace GifProcessorApp
                         Application.DoEvents();
                     }
 
-                    // Create 766px wide canvas
-                    var canvas = new MagickImage(MagickColors.Transparent, 766, (uint)maxHeight);
+                    using var canvas = new MagickImage(MagickColors.Transparent, 766, (uint)maxHeight);
 
                     // X positions for each GIF: 0, 153, 306, 460, 613
                     int[] xPositions = { 0, 153, 306, 460, 613 };
 
                     for (int gifIndex = 0; gifIndex < 5; gifIndex++)
                     {
-                        // Get frame (loop if GIF has fewer frames)
-                        var collection = collections[gifIndex];
-                        var frameIdx = frameIndex % collection.Count;
-                        var frame = collection[frameIdx];
+                        var enumerator = enumerators[gifIndex];
+                        if (!enumerator.MoveNext())
+                        {
+                            enumerator.Dispose();
+                            enumerator = collections[gifIndex].GetEnumerator();
+                            enumerator.MoveNext();
+                            enumerators[gifIndex] = enumerator;
+                        }
+
+                        using var frame = (MagickImage)enumerator.Current.Clone();
 
                         // Composite frame onto canvas at specific X position
                         canvas.Composite(frame, xPositions[gifIndex], 0, CompositeOperator.Over);
                     }
 
                     // Set animation delay and timing from first GIF to maintain original speed
-                    var referenceFrame = collections[0][frameIndex % collections[0].Count];
+                    var referenceFrame = (MagickImage)enumerators[0].Current;
                     canvas.AnimationDelay = referenceFrame.AnimationDelay;
                     canvas.AnimationTicksPerSecond = referenceFrame.AnimationTicksPerSecond;
 
-                    mergedCollection.Add(canvas);
+                    canvas.GifDisposeMethod = GifDisposeMethod.Background;
+
+                    // Remap frame to shared palette before writing
+                    canvas.Remap(palette, mapSettings);
+
+                    canvas.Write(stream, defines);
+                    defines.WriteMode = GifWriteMode.Frame;
                 }
-
-                // Set infinite loop for each frame
-                foreach (var frame in mergedCollection)
+            }
+            finally
+            {
+                foreach (var e in enumerators)
                 {
-                    frame.GifDisposeMethod = GifDisposeMethod.Background;
-                }
-
-                // Remap frames to shared palette
-                mainForm.lblStatus.Text = useFastPalette ?
-                    SteamGifCropper.Properties.Resources.Status_MappingFastPalette :
-                    SteamGifCropper.Properties.Resources.Status_MappingSharedPalette;
-                Application.DoEvents();
-
-                var mapSettings = new QuantizeSettings
-                {
-                    Colors = 256,
-                    ColorSpace = ColorSpace.RGB,
-                    DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
-                };
-
-                foreach (MagickImage frame in mergedCollection)
-                {
-                    frame.Remap(palette, mapSettings);
+                    e.Dispose();
                 }
                 palette.Dispose();
-
-                return mergedCollection;
             }
-            catch (Exception ex)
-            {
-                palette?.Dispose();
-                mergedCollection?.Dispose();
-                throw new InvalidOperationException($"Failed to merge GIFs horizontally: {ex.Message}", ex);
-            }
-        }
-
-        private static int CalculateAdjustedHeight(MagickImageCollection collection)
-        {
-            return (int)collection[0].Height + HeightExtension;
         }
 
         public static void SplitGif(string inputFilePath, string outputDirectory, int targetFramerate = 15)
@@ -2004,7 +1998,25 @@ namespace GifProcessorApp
                 RepeatCount = 0
             };
 
+            if (mainForm != null)
+            {
+                mainForm.Invoke((Action)(() =>
+                {
+                    mainForm.lblStatus.Text = Resources.Status_Saving;
+                    Application.DoEvents();
+                }));
+            }
+
             collection.Write(outputFilePath, defines);
+
+            if (mainForm != null)
+            {
+                mainForm.Invoke((Action)(() =>
+                {
+                    mainForm.lblStatus.Text = Resources.Status_Done;
+                    Application.DoEvents();
+                }));
+            }
         }
 
         public static async Task ScrollStaticImage(GifToolMainForm mainForm)
