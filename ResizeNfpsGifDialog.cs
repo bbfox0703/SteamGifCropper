@@ -138,7 +138,7 @@ namespace GifProcessorApp
             foreach (var frame in collection)
             {
                 frame.Resize((uint)width, (uint)height);
-                frame.AnimationDelay = fps > 0 ? (int)Math.Round(100.0 / fps) : frame.AnimationDelay;
+                frame.AnimationDelay = fps > 0 ? (uint)Math.Round(100.0 / fps) : frame.AnimationDelay;
             }
             collection.Write(output);
         }
