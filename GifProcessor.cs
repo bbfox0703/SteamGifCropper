@@ -1812,17 +1812,11 @@ namespace GifProcessorApp
             if (File.Exists(outputFilePath))
                 File.Delete(outputFilePath);
 
-            var defines = new GifWriteDefines
-            {
-                RepeatCount = 0,
-                WriteMode = GifWriteMode.Gif
-            };
-
-            using var stream = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write);
+            using var collection = new MagickImageCollection();
 
             for (int i = 0; i < frames; i++)
             {
-                using var frame = baseImage.Clone();
+                var frame = baseImage.Clone();
                 int offsetX = dx * i;
                 int offsetY = dy * i;
                 if (width > 0)
@@ -1839,12 +1833,15 @@ namespace GifProcessorApp
                 frame.AnimationDelay = delay;
                 frame.GifDisposeMethod = GifDisposeMethod.Background;
 
-                using var collection = new MagickImageCollection();
                 collection.Add(frame);
-                collection.Write(stream, defines);
-
-                defines.WriteMode = GifWriteMode.Frame;
             }
+
+            var defines = new GifWriteDefines
+            {
+                RepeatCount = 0
+            };
+
+            collection.Write(outputFilePath, defines);
         }
 
         public static async Task ScrollStaticImage(GifToolMainForm mainForm)

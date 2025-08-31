@@ -367,8 +367,13 @@ namespace GifProcessorApp
                 frame.GifDisposeMethod = GifDisposeMethod.Background;
                 collection.Add(frame);
             }
-            collection.Optimize();
-            collection.Write(outputFilePath);
+
+            var defines = new GifWriteDefines
+            {
+                RepeatCount = 0
+            };
+
+            collection.Write(outputFilePath, defines);
         }
     }
 }

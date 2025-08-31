@@ -28,6 +28,7 @@
     <Compile Include="..\GifsicleWrapper.cs" Link="GifsicleWrapper.cs" />
     <Compile Include="..\RegistryProvider.cs" Link="RegistryProvider.cs" />
     <Compile Include="..\ScrollDirection.cs" Link="ScrollDirection.cs" />
+    <Compile Include="..\GifWriteDefines.cs" Link="GifWriteDefines.cs" />
   </ItemGroup>
 
   <ItemGroup>
