@@ -1855,11 +1855,6 @@ namespace GifProcessorApp
                 RepeatCount = 0
             };
 
-            mainForm?.Invoke((Action)(() =>
-            {
-                mainForm.lblStatus.Text = Resources.Status_Saving;
-            }));
-
             collection.Write(outputFilePath, defines);
         }
 
