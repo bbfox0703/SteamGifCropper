@@ -457,6 +457,7 @@
             btnScrollStaticImage.TabIndex = 27;
             btnScrollStaticImage.Text = "Scroll static image";
             btnScrollStaticImage.UseVisualStyleBackColor = true;
+            btnScrollStaticImage.Click += btnScrollStaticImage_Click;
             // 
             // GifToolMainForm
             // 

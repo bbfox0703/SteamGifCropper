@@ -1664,5 +1664,155 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("FileDialog_SaveGif", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Scroll static image.
+        /// </summary>
+        internal static string Button_ScrollStaticImage {
+            get {
+                return ResourceManager.GetString("Button_ScrollStaticImage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Image Files (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp.
+        /// </summary>
+        internal static string FileDialog_ImageFilter {
+            get {
+                return ResourceManager.GetString("FileDialog_ImageFilter", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_Title {
+            get {
+                return ResourceManager.GetString("ScrollDialog_Title", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_InputLabel {
+            get {
+                return ResourceManager.GetString("ScrollDialog_InputLabel", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_OutputLabel {
+            get {
+                return ResourceManager.GetString("ScrollDialog_OutputLabel", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_Direction {
+            get {
+                return ResourceManager.GetString("ScrollDialog_Direction", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_Step {
+            get {
+                return ResourceManager.GetString("ScrollDialog_Step", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_Duration {
+            get {
+                return ResourceManager.GetString("ScrollDialog_Duration", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_FullCycle {
+            get {
+                return ResourceManager.GetString("ScrollDialog_FullCycle", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_Browse {
+            get {
+                return ResourceManager.GetString("ScrollDialog_Browse", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_OK {
+            get {
+                return ResourceManager.GetString("ScrollDialog_OK", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_Cancel {
+            get {
+                return ResourceManager.GetString("ScrollDialog_Cancel", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_SelectInput {
+            get {
+                return ResourceManager.GetString("ScrollDialog_SelectInput", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_SelectOutput {
+            get {
+                return ResourceManager.GetString("ScrollDialog_SelectOutput", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_InputRequired {
+            get {
+                return ResourceManager.GetString("ScrollDialog_InputRequired", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_OutputRequired {
+            get {
+                return ResourceManager.GetString("ScrollDialog_OutputRequired", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_DirRight {
+            get {
+                return ResourceManager.GetString("ScrollDialog_DirRight", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_DirLeft {
+            get {
+                return ResourceManager.GetString("ScrollDialog_DirLeft", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_DirDown {
+            get {
+                return ResourceManager.GetString("ScrollDialog_DirDown", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_DirUp {
+            get {
+                return ResourceManager.GetString("ScrollDialog_DirUp", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_DirLeftUp {
+            get {
+                return ResourceManager.GetString("ScrollDialog_DirLeftUp", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_DirLeftDown {
+            get {
+                return ResourceManager.GetString("ScrollDialog_DirLeftDown", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_DirRightUp {
+            get {
+                return ResourceManager.GetString("ScrollDialog_DirRightUp", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_DirRightDown {
+            get {
+                return ResourceManager.GetString("ScrollDialog_DirRightDown", resourceCulture);
+            }
+        }
     }
 }
