@@ -20,6 +20,15 @@ public class MergeGifTests
         new object[] { 5 }
     };
 
+    private static readonly string[] SampleGifFiles =
+    {
+        Path.Combine("TestData", "test1_400x400_10s.gif"),
+        Path.Combine("TestData", "test2_100x250_15s.gif"),
+        Path.Combine("TestData", "test3_150x1920_8s.gif"),
+        Path.Combine("TestData", "test4_1920x1080_10s.gif"),
+        Path.Combine("TestData", "test5_886x1920_12s.gif")
+    };
+
     [Theory]
     [MemberData(nameof(GifCounts))]
     public async Task MergeMultipleGifs_MergesCorrectly(int gifCount)
@@ -59,6 +68,63 @@ public class MergeGifTests
         }
         finally
         {
+            Directory.Delete(tempDir, true);
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(GifCounts))]
+    public async Task MergeMultipleGifs_UsingSampleGifs_MergesCorrectly(int gifCount)
+    {
+        string tempDir = Directory.CreateTempSubdirectory().FullName;
+        ulong originalMemory = ResourceLimits.Memory;
+        ulong originalDisk = ResourceLimits.Disk;
+        try
+        {
+            ResourceLimits.Memory = 2UL * 1024UL * 1024UL * 1024UL;
+            ResourceLimits.Disk = 4UL * 1024UL * 1024UL * 1024UL;
+
+            var gifPaths = SampleGifFiles.Take(gifCount).ToList();
+
+            int expectedWidth = 0;
+            int expectedHeight = 0;
+            double shortestDuration = double.MaxValue;
+            foreach (var path in gifPaths)
+            {
+                using var col = new MagickImageCollection(path);
+                col.Coalesce();
+                expectedWidth += (int)col[0].Width;
+                expectedHeight = Math.Max(expectedHeight, (int)col[0].Height);
+                double duration = col.Sum(f => (double)f.AnimationDelay / f.AnimationTicksPerSecond);
+                shortestDuration = Math.Min(shortestDuration, duration);
+            }
+
+            var form = new GifToolMainForm();
+            int targetFramerate = 10;
+            int expectedFrames = Math.Max(1, (int)(shortestDuration * targetFramerate));
+
+            string fastOutput = Path.Combine(tempDir, "merged_fast.gif");
+            await GifProcessor.MergeMultipleGifs(gifPaths, fastOutput, form, targetFramerate, true);
+            using var fast = new MagickImageCollection(fastOutput);
+            Assert.Equal(expectedWidth, (int)fast[0].Width);
+            Assert.Equal(expectedHeight, (int)fast[0].Height);
+            Assert.Equal(expectedFrames, fast.Count);
+            int fastColors = (int)fast[0].TotalColors;
+            Assert.True(fastColors <= 256);
+
+            string qualityOutput = Path.Combine(tempDir, "merged_quality.gif");
+            await GifProcessor.MergeMultipleGifs(gifPaths, qualityOutput, form, targetFramerate, false);
+            using var quality = new MagickImageCollection(qualityOutput);
+            Assert.Equal(expectedWidth, (int)quality[0].Width);
+            Assert.Equal(expectedHeight, (int)quality[0].Height);
+            Assert.Equal(expectedFrames, quality.Count);
+            int qualityColors = (int)quality[0].TotalColors;
+            Assert.True(qualityColors <= 256);
+        }
+        finally
+        {
+            ResourceLimits.Memory = originalMemory;
+            ResourceLimits.Disk = originalDisk;
             Directory.Delete(tempDir, true);
         }
     }
@@ -103,6 +169,53 @@ public class MergeGifTests
         }
         finally
         {
+            Directory.Delete(tempDir, true);
+        }
+    }
+
+    [Fact]
+    public void MergeGifsHorizontally_UsingSampleGifs_MergesCorrectly()
+    {
+        string tempDir = Directory.CreateTempSubdirectory().FullName;
+        var collections = new MagickImageCollection[5];
+        ulong originalMemory = ResourceLimits.Memory;
+        ulong originalDisk = ResourceLimits.Disk;
+        try
+        {
+            ResourceLimits.Memory = 2UL * 1024UL * 1024UL * 1024UL;
+            ResourceLimits.Disk = 4UL * 1024UL * 1024UL * 1024UL;
+
+            for (int i = 0; i < 5; i++)
+            {
+                var col = new MagickImageCollection(SampleGifFiles[i]);
+                col.Coalesce();
+                collections[i] = col;
+            }
+
+            int expectedHeight = collections.Max(c => (int)c[0].Height);
+            int expectedFrames = collections.Max(c => c.Count);
+
+            var form = new GifToolMainForm();
+            var method = typeof(GifProcessor).GetMethod("MergeGifsHorizontally", BindingFlags.NonPublic | BindingFlags.Static)!;
+            using var merged = (MagickImageCollection)method.Invoke(null, new object?[] { collections, form, false })!;
+
+            string outputPath = Path.Combine(tempDir, "merged.gif");
+            merged.Write(outputPath);
+
+            Assert.Equal(766, (int)merged[0].Width);
+            Assert.Equal(expectedHeight, (int)merged[0].Height);
+            Assert.Equal(expectedFrames, merged.Count);
+            Assert.True(merged[0].TotalColors <= 256);
+        }
+        finally
+        {
+            foreach (var c in collections)
+            {
+                c?.Dispose();
+            }
+
+            ResourceLimits.Memory = originalMemory;
+            ResourceLimits.Disk = originalDisk;
             Directory.Delete(tempDir, true);
         }
     }
