@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -11,12 +12,14 @@ namespace GifProcessorApp
     {
         public int DitherMethod { get; private set; } = 0;
         private bool _isDarkMode;
+        private readonly bool _useFfmpegForResize;
 
         public GifToolMainForm()
         {
             try
             {
                 InitializeComponent();
+                _useFfmpegForResize = CheckFfmpegAvailable();
                 UpdateUIText();
 
                 // Initialize theme
@@ -99,6 +102,32 @@ namespace GifProcessorApp
             {
                 MessageBox.Show(this, $"An error occurred during {operationName}: {ex.Message}",
                                 "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static bool CheckFfmpegAvailable()
+        {
+            try
+            {
+                using var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "ffmpeg",
+                        Arguments = "-version",
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        CreateNoWindow = true
+                    }
+                };
+                process.Start();
+                process.WaitForExit(1000);
+                return process.ExitCode == 0;
+            }
+            catch
+            {
+                return false;
             }
         }
 
@@ -187,6 +216,16 @@ namespace GifProcessorApp
             }, "GIF overlay");
         }
 
+        private async void btnResizeNfpsGIF_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(() =>
+            {
+                using var dialog = new ResizeNfpsGifDialog();
+                dialog.ShowDialog(this);
+                return Task.CompletedTask;
+            }, "GIF resize / re-FPS");
+        }
+
         private void label2_Click(object sender, EventArgs e)
         {
 
@@ -263,6 +302,10 @@ namespace GifProcessorApp
                 btnScrollStaticImage.Text = SteamGifCropper.Properties.Resources.Button_ScrollStaticImage;
                 btnOverlayGIF.Text = SteamGifCropper.Properties.Resources.Button_OverlayGif;
                 btnResizeNfpsGIF.Text = SteamGifCropper.Properties.Resources.Button_ResizeNfpsGif;
+                if (_useFfmpegForResize)
+                {
+                    btnResizeNfpsGIF.Text = "FFMPEG: " + btnResizeNfpsGIF.Text;
+                }
                 label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
 
 
