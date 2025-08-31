@@ -320,6 +320,9 @@
   <data name="Error_InvalidColorType" xml:space="preserve">
     <value>GIF #{0} ({1}) はパレットベースの色 (8ビット) でなければなりません。\n現在の色タイプ: {2}</value>
   </data>
+  <data name="Error_CacheResourcesExhausted" xml:space="preserve">
+    <value>キャッシュリソースが不足しています。画像サイズを小さくするか、メモリ/ディスクの制限を増やしてください。</value>
+  </data>
   <data name="FileDialog_SelectGif" xml:space="preserve">
     <value>GIFファイルを選択</value>
   </data>

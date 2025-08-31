@@ -1855,11 +1855,6 @@ namespace GifProcessorApp
                 RepeatCount = 0
             };
 
-            mainForm?.Invoke((Action)(() =>
-            {
-                mainForm.lblStatus.Text = Resources.Status_Saving;
-            }));
-
             collection.Write(outputFilePath, defines);
         }
 
@@ -2001,6 +1996,14 @@ namespace GifProcessorApp
                                 SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
                                 SteamGifCropper.Properties.Resources.Title_Success,
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (MagickResourceLimitErrorException)
+            {
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Error;
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                                SteamGifCropper.Properties.Resources.Error_CacheResourcesExhausted,
+                                SteamGifCropper.Properties.Resources.Title_Error,
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (Exception ex)
             {
