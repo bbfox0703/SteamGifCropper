@@ -82,5 +82,16 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\ResizeNfpsGifDialog.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\ResizeNfpsGifDialog.zh-TW.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\ResizeNfpsGifDialog.ja.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
+  </ItemGroup>
 
 </Project>

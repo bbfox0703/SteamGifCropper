@@ -314,6 +314,9 @@
   <data name="Error_ResizeFailed" xml:space="preserve">
     <value>サイズ変更に失敗しました：{0}</value>
   </data>
+  <data name="Error_SelectGif" xml:space="preserve">
+    <value>GIF ファイルを選択してください。</value>
+  </data>
   <data name="Error_StartupFailed" xml:space="preserve">
     <value>起動に失敗しました：{0}\n\nスタックトレース：{1}</value>
   </data>
@@ -424,6 +427,9 @@
   </data>
   <data name="Button_OverlayGif" xml:space="preserve">
     <value>GIFを別のGIFに重ねる</value>
+  </data>
+  <data name="Button_ResizeNfpsGif" xml:space="preserve">
+    <value>GIF のサイズ/FPS を変更</value>
   </data>
   <data name="Status_ValidatingProcessing" xml:space="preserve">
     <value>処理を検証中...</value>

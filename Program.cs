@@ -165,10 +165,13 @@ namespace GifProcessorApp
                 // Set both current culture and UI culture
                 Thread.CurrentThread.CurrentCulture = targetCulture;
                 Thread.CurrentThread.CurrentUICulture = targetCulture;
-                
+
                 // Set default culture for new threads
                 CultureInfo.DefaultThreadCurrentCulture = targetCulture;
                 CultureInfo.DefaultThreadCurrentUICulture = targetCulture;
+
+                // Ensure resources use the selected culture
+                SteamGifCropper.Properties.Resources.Culture = targetCulture;
 
                 // Debug logging
                 System.Diagnostics.Debug.WriteLine($"Localization initialized: {targetCulture.Name} ({targetCulture.DisplayName})");

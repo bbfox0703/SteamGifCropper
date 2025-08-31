@@ -261,6 +261,7 @@ namespace GifProcessorApp
                 btnReverseGIF.Text = SteamGifCropper.Properties.Resources.Button_ReverseGif;
                 btnScrollStaticImage.Text = SteamGifCropper.Properties.Resources.Button_ScrollStaticImage;
                 btnOverlayGIF.Text = SteamGifCropper.Properties.Resources.Button_OverlayGif;
+                btnResizeNfpsGIF.Text = SteamGifCropper.Properties.Resources.Button_ResizeNfpsGif;
                 label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
 
 
