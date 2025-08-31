@@ -577,14 +577,31 @@ namespace GifProcessorApp
             mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_MergingHorizontally;
             Application.DoEvents();
 
+            // Enable disk caching to limit memory usage
+            MagickNET.SetCacheDirectory(Path.GetTempPath());
+            MagickNET.SetResourceLimits(ResourceLimit.Memory, 256);
+            MagickNET.SetResourceLimits(ResourceLimit.Map, 256);
+
             // Calculate maximum height among all resized GIFs
             int maxHeight = collections.Max(c => (int)c[0].Height);
 
             // Build shared palette from first frames
             var palette = BuildSharedPalette(collections, useFastPalette);
 
-            // Create merged collection
-            var mergedCollection = new MagickImageCollection();
+            // Prepare remap settings once
+            var mapSettings = new QuantizeSettings
+            {
+                Colors = 256,
+                ColorSpace = ColorSpace.RGB,
+                DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+            };
+
+            // Create merged collection with disk cache
+            var mergedCollection = new MagickImageCollection
+            {
+                Settings = { CacheDirectory = MagickNET.CacheDirectory }
+            };
+
             int maxFrames = collections.Max(c => c.Count);
 
             try
@@ -600,18 +617,17 @@ namespace GifProcessorApp
                         Application.DoEvents();
                     }
 
-                    // Create 766px wide canvas
-                    var canvas = new MagickImage(MagickColors.Transparent, 766, (uint)maxHeight);
+                    using var canvas = new MagickImage(MagickColors.Transparent, 766, (uint)maxHeight);
 
                     // X positions for each GIF: 0, 153, 306, 460, 613
                     int[] xPositions = { 0, 153, 306, 460, 613 };
 
                     for (int gifIndex = 0; gifIndex < 5; gifIndex++)
                     {
-                        // Get frame (loop if GIF has fewer frames)
+                        // Get frame (loop if GIF has fewer frames) and dispose immediately after use
                         var collection = collections[gifIndex];
                         var frameIdx = frameIndex % collection.Count;
-                        var frame = collection[frameIdx];
+                        using var frame = (MagickImage)collection[frameIdx].Clone();
 
                         // Composite frame onto canvas at specific X position
                         canvas.Composite(frame, xPositions[gifIndex], 0, CompositeOperator.Over);
@@ -622,7 +638,10 @@ namespace GifProcessorApp
                     canvas.AnimationDelay = referenceFrame.AnimationDelay;
                     canvas.AnimationTicksPerSecond = referenceFrame.AnimationTicksPerSecond;
 
-                    mergedCollection.Add(canvas);
+                    // Remap frame to shared palette before adding
+                    canvas.Remap(palette, mapSettings);
+
+                    mergedCollection.Add(canvas.Clone());
                 }
 
                 // Set infinite loop for each frame
@@ -631,25 +650,7 @@ namespace GifProcessorApp
                     frame.GifDisposeMethod = GifDisposeMethod.Background;
                 }
 
-                // Remap frames to shared palette
-                mainForm.lblStatus.Text = useFastPalette ?
-                    SteamGifCropper.Properties.Resources.Status_MappingFastPalette :
-                    SteamGifCropper.Properties.Resources.Status_MappingSharedPalette;
-                Application.DoEvents();
-
-                var mapSettings = new QuantizeSettings
-                {
-                    Colors = 256,
-                    ColorSpace = ColorSpace.RGB,
-                    DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
-                };
-
-                foreach (MagickImage frame in mergedCollection)
-                {
-                    frame.Remap(palette, mapSettings);
-                }
                 palette.Dispose();
-
                 return mergedCollection;
             }
             catch (Exception ex)
