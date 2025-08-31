@@ -1774,6 +1774,18 @@ namespace GifProcessorApp
             int width = (int)baseImage.Width;
             int height = (int)baseImage.Height;
 
+            int distance = direction switch
+            {
+                ScrollDirection.Up or ScrollDirection.Down => height,
+                _ => width
+            };
+
+            int frames = Math.Max(1, durationSeconds * targetFramerate);
+            if (durationSeconds > 0)
+            {
+                stepPixels = Math.Max(1, (int)Math.Round((double)distance / frames));
+            }
+
             int dx = 0, dy = 0;
             switch (direction)
             {
@@ -1787,17 +1799,12 @@ namespace GifProcessorApp
                 case ScrollDirection.RightDown: dx = stepPixels; dy = stepPixels; break;
             }
 
-            int frames;
-            if (fullCycle)
+            if (durationSeconds <= 0 && fullCycle)
             {
                 int stepsX = dx != 0 ? (int)Math.Ceiling((double)width / Math.Abs(dx)) : 0;
                 int stepsY = dy != 0 ? (int)Math.Ceiling((double)height / Math.Abs(dy)) : 0;
                 frames = Math.Max(stepsX, stepsY);
                 if (frames <= 0) frames = 1;
-            }
-            else
-            {
-                frames = Math.Max(1, durationSeconds * targetFramerate);
             }
 
             uint delay = (uint)Math.Round(100.0 / targetFramerate);

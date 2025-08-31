@@ -11,7 +11,7 @@ namespace GifProcessorApp
         public string OutputFilePath { get; private set; } = string.Empty;
         public ScrollDirection Direction { get; private set; } = ScrollDirection.Right;
         public int StepPixels { get; private set; } = 1;
-        public int DurationSeconds { get; private set; } = 5;
+        public int DurationSeconds { get; private set; } = 0;
         public bool FullCycle { get; private set; }
 
         private TextBox txtInputPath = null!;
@@ -34,6 +34,8 @@ namespace GifProcessorApp
         {
             InitializeComponent();
             chkFullCycle.CheckedChanged += ChkFullCycle_CheckedChanged;
+            numDuration.ValueChanged += NumDuration_ValueChanged;
+            ChkFullCycle_CheckedChanged(null, EventArgs.Empty);
             UpdateUIText();
             ApplyTheme();
         }
@@ -204,7 +206,18 @@ namespace GifProcessorApp
             }
         }
 
-        private void ChkFullCycle_CheckedChanged(object? sender, EventArgs e) => numDuration.Enabled = !chkFullCycle.Checked;
+        private void ChkFullCycle_CheckedChanged(object? sender, EventArgs e)
+        {
+            numDuration.Enabled = chkFullCycle.Checked;
+            NumDuration_ValueChanged(sender, e);
+        }
+
+        private void NumDuration_ValueChanged(object? sender, EventArgs e)
+        {
+            bool useDuration = numDuration.Enabled && numDuration.Value > 0;
+            numStep.Visible = !useDuration;
+            lblStep.Visible = !useDuration;
+        }
 
         private void BtnOK_Click(object? sender, EventArgs e)
         {
@@ -221,8 +234,8 @@ namespace GifProcessorApp
             InputFilePath = txtInputPath.Text;
             OutputFilePath = txtOutputPath.Text;
             Direction = (ScrollDirection)cmbDirection.SelectedIndex;
-            StepPixels = (int)numStep.Value;
-            DurationSeconds = (int)numDuration.Value;
+            StepPixels = numStep.Visible ? (int)numStep.Value : 0;
+            DurationSeconds = numDuration.Enabled ? (int)numDuration.Value : 0;
             FullCycle = chkFullCycle.Checked;
             DialogResult = DialogResult.OK;
             Close();
@@ -255,7 +268,7 @@ namespace GifProcessorApp
             lblInput.Name = "lblInput";
             lblInput.Size = new System.Drawing.Size(120, 20);
             lblInput.TabIndex = 0;
-            lblInput.Text = "輸入圖像";
+            lblInput.Text = "J牊";
             // 
             // txtInputPath
             // 
@@ -281,7 +294,7 @@ namespace GifProcessorApp
             lblOutput.Name = "lblOutput";
             lblOutput.Size = new System.Drawing.Size(120, 20);
             lblOutput.TabIndex = 3;
-            lblOutput.Text = "輸出GIF";
+            lblOutput.Text = "XGIF";
             // 
             // txtOutputPath
             // 
@@ -323,7 +336,7 @@ namespace GifProcessorApp
             lblStep.Name = "lblStep";
             lblStep.Size = new System.Drawing.Size(120, 20);
             lblStep.TabIndex = 8;
-            lblStep.Text = "每步像素";
+            lblStep.Text = "CB";
             // 
             // numStep
             // 
@@ -340,17 +353,17 @@ namespace GifProcessorApp
             lblDuration.Name = "lblDuration";
             lblDuration.Size = new System.Drawing.Size(120, 20);
             lblDuration.TabIndex = 10;
-            lblDuration.Text = "持續秒數";
+            lblDuration.Text = "";
             // 
             // numDuration
             // 
             numDuration.Location = new System.Drawing.Point(140, 198);
             numDuration.Maximum = new decimal(new int[] { 600, 0, 0, 0 });
-            numDuration.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numDuration.Minimum = new decimal(new int[] { 0, 0, 0, 0 });
             numDuration.Name = "numDuration";
             numDuration.Size = new System.Drawing.Size(60, 23);
             numDuration.TabIndex = 11;
-            numDuration.Value = new decimal(new int[] { 5, 0, 0, 0 });
+            numDuration.Value = new decimal(new int[] { 0, 0, 0, 0 });
             // 
             // chkFullCycle
             // 
@@ -358,7 +371,7 @@ namespace GifProcessorApp
             chkFullCycle.Name = "chkFullCycle";
             chkFullCycle.Size = new System.Drawing.Size(130, 24);
             chkFullCycle.TabIndex = 12;
-            chkFullCycle.Text = "整張圖捲動一次";
+            chkFullCycle.Text = "i炱吨@";
             // 
             // btnOK
             // 
@@ -366,7 +379,7 @@ namespace GifProcessorApp
             btnOK.Name = "btnOK";
             btnOK.Size = new System.Drawing.Size(75, 25);
             btnOK.TabIndex = 13;
-            btnOK.Text = "取消";
+            btnOK.Text = "";
             btnOK.UseVisualStyleBackColor = true;
             btnOK.Click += BtnOK_Click;
             // 
@@ -405,7 +418,7 @@ namespace GifProcessorApp
             MinimizeBox = false;
             Name = "ScrollStaticImageDialog";
             StartPosition = FormStartPosition.CenterParent;
-            Text = "靜態圖捲動";
+            Text = "RA炱";
             ((System.ComponentModel.ISupportInitialize)numStep).EndInit();
             ((System.ComponentModel.ISupportInitialize)numDuration).EndInit();
             ResumeLayout(false);
