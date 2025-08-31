@@ -73,24 +73,44 @@ public class ScrollStaticImageTests
             _ => (int)baseImg.Width
         };
         int expectedFrames = duration * framerate;
-        int expectedStep = Math.Max(1, (int)Math.Round((double)distance / expectedFrames));
 
         using var collection = new MagickImageCollection(output);
         Assert.Equal(expectedFrames, collection.Count);
 
+        int signX = direction switch
+        {
+            ScrollDirection.Right or ScrollDirection.RightUp or ScrollDirection.RightDown => 1,
+            ScrollDirection.Left or ScrollDirection.LeftUp or ScrollDirection.LeftDown => -1,
+            _ => 0
+        };
+        int signY = direction switch
+        {
+            ScrollDirection.Down or ScrollDirection.LeftDown or ScrollDirection.RightDown => 1,
+            ScrollDirection.Up or ScrollDirection.LeftUp or ScrollDirection.RightUp => -1,
+            _ => 0
+        };
+
+        int lastOffset = (int)Math.Round((double)distance * (expectedFrames - 1) / expectedFrames);
         int offsetX = 0, offsetY = 0;
-        if (direction is ScrollDirection.Right or ScrollDirection.Left or ScrollDirection.LeftUp or ScrollDirection.LeftDown or ScrollDirection.RightUp or ScrollDirection.RightDown)
-            offsetX = expectedStep * (expectedFrames - 1) % (int)baseImg.Width;
-        if (direction is ScrollDirection.Up or ScrollDirection.Down or ScrollDirection.LeftUp or ScrollDirection.RightUp or ScrollDirection.LeftDown or ScrollDirection.RightDown)
-            offsetY = expectedStep * (expectedFrames - 1) % (int)baseImg.Height;
+        if (signX != 0)
+        {
+            offsetX = (signX * lastOffset) % (int)baseImg.Width;
+            if (offsetX < 0) offsetX += (int)baseImg.Width;
+        }
+        if (signY != 0)
+        {
+            offsetY = (signY * lastOffset) % (int)baseImg.Height;
+            if (offsetY < 0) offsetY += (int)baseImg.Height;
+        }
 
         using var expectedLast = baseImg.Clone();
         expectedLast.Roll(offsetX, offsetY);
         double diff = collection[collection.Count - 1].Compare(expectedLast, ErrorMetric.RootMeanSquared);
         Assert.True(diff < 0.02);
 
-        int totalScroll = expectedStep * expectedFrames;
-        Assert.InRange(totalScroll, distance - expectedStep, distance + expectedStep);
+        int step = (int)Math.Round((double)distance / expectedFrames);
+        int totalScroll = lastOffset + step;
+        Assert.InRange(totalScroll, distance - step, distance + step);
 
         Directory.Delete(tempDir, true);
     }

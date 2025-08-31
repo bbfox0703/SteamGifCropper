@@ -221,6 +221,7 @@ namespace GifProcessorApp
         {
             bool useDuration = numDuration.Enabled && numDuration.Value > 0;
             numStep.Visible = !useDuration;
+            numStep.Enabled = !useDuration;
             lblStep.Visible = !useDuration;
             UpdateMoveCountVisibility();
         }
@@ -229,6 +230,7 @@ namespace GifProcessorApp
         {
             bool showMoveCount = !chkFullCycle.Checked && numDuration.Value == 0;
             numMoveCount.Visible = showMoveCount;
+            numMoveCount.Enabled = showMoveCount;
             lblMoveCount.Visible = showMoveCount;
         }
 
