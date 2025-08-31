@@ -366,52 +366,52 @@ namespace GifProcessorApp
             numStep.Size = new System.Drawing.Size(60, 23);
             numStep.TabIndex = 9;
             numStep.Value = new decimal(new int[] { 1, 0, 0, 0 });
-            //
+            // 
             // lblMoveCount
-            //
+            // 
             lblMoveCount.Location = new System.Drawing.Point(220, 167);
             lblMoveCount.Name = "lblMoveCount";
             lblMoveCount.Size = new System.Drawing.Size(120, 20);
             lblMoveCount.TabIndex = 10;
             lblMoveCount.Text = "Moves";
             lblMoveCount.Visible = false;
-            //
+            // 
             // numMoveCount
-            //
-            numMoveCount.Location = new System.Drawing.Point(346, 165);
+            // 
+            numMoveCount.Location = new System.Drawing.Point(280, 165);
             numMoveCount.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numMoveCount.Name = "numMoveCount";
             numMoveCount.Size = new System.Drawing.Size(60, 23);
             numMoveCount.TabIndex = 11;
             numMoveCount.Value = new decimal(new int[] { 1, 0, 0, 0 });
             numMoveCount.Visible = false;
-            //
+            // 
             // lblDuration
-            //
+            // 
             lblDuration.Location = new System.Drawing.Point(14, 200);
             lblDuration.Name = "lblDuration";
             lblDuration.Size = new System.Drawing.Size(120, 20);
             lblDuration.TabIndex = 12;
             lblDuration.Text = "秒數";
-            //
+            // 
             // numDuration
-            //
+            // 
             numDuration.Location = new System.Drawing.Point(140, 198);
             numDuration.Maximum = new decimal(new int[] { 600, 0, 0, 0 });
             numDuration.Name = "numDuration";
             numDuration.Size = new System.Drawing.Size(60, 23);
             numDuration.TabIndex = 13;
-            //
+            // 
             // chkFullCycle
-            //
+            // 
             chkFullCycle.Location = new System.Drawing.Point(220, 198);
             chkFullCycle.Name = "chkFullCycle";
             chkFullCycle.Size = new System.Drawing.Size(130, 24);
             chkFullCycle.TabIndex = 14;
             chkFullCycle.Text = "整個捲動一次";
-            //
+            // 
             // btnOK
-            //
+            // 
             btnOK.Location = new System.Drawing.Point(272, 238);
             btnOK.Name = "btnOK";
             btnOK.Size = new System.Drawing.Size(75, 25);
@@ -419,9 +419,9 @@ namespace GifProcessorApp
             btnOK.Text = "OK";
             btnOK.UseVisualStyleBackColor = true;
             btnOK.Click += BtnOK_Click;
-            //
+            // 
             // btnCancel
-            //
+            // 
             btnCancel.DialogResult = DialogResult.Cancel;
             btnCancel.Location = new System.Drawing.Point(353, 238);
             btnCancel.Name = "btnCancel";
