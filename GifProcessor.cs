@@ -2099,12 +2099,7 @@ namespace GifProcessorApp
             string overlayPath = dialog.OverlayGifPath;
             int offsetX = dialog.OverlayX;
             int offsetY = dialog.OverlayY;
-
-            using var baseCollection = new MagickImageCollection(basePath);
-            using var overlayCollection = new MagickImageCollection(overlayPath);
-            using var resultCollection = new MagickImageCollection();
-            uint baseWidth = baseCollection[0].Width;
-            uint baseHeight = baseCollection[0].Height;
+            string outputPath = null;
 
             try
             {
@@ -2113,6 +2108,13 @@ namespace GifProcessorApp
                 mainForm.pBarTaskStatus.Maximum = 100;
                 mainForm.pBarTaskStatus.Value = 0;
                 Application.DoEvents();
+
+                using var baseCollection = new MagickImageCollection(basePath);
+                using var overlayCollection = new MagickImageCollection(overlayPath);
+                using var resultCollection = new MagickImageCollection();
+
+                uint baseWidth = baseCollection[0].Width;
+                uint baseHeight = baseCollection[0].Height;
 
                 baseCollection.Coalesce();
                 overlayCollection.Coalesce();
@@ -2142,26 +2144,23 @@ namespace GifProcessorApp
                     UpdateFrameProgress(mainForm, i + 1, overlayCount);
                 }
 
+                resultCollection.Quantize();
                 resultCollection.Optimize();
 
                 using var saveDialog = new SaveFileDialog
                 {
                     Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
                     FileName = Path.GetFileNameWithoutExtension(basePath) + "_overlay.gif",
-                    Title = "Save GIF"
+                    Title = "Save GIF",
                 };
                 if (saveDialog.ShowDialog() != DialogResult.OK)
                     return;
 
+                outputPath = saveDialog.FileName;
+
                 mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Saving;
                 Application.DoEvents();
-                resultCollection.Write(saveDialog.FileName);
-
-                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Done;
-                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
-                    "Overlay complete.",
-                    SteamGifCropper.Properties.Resources.Title_Success,
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                resultCollection.Write(outputPath);
             }
             catch (Exception ex)
             {
@@ -2170,13 +2169,36 @@ namespace GifProcessorApp
                     $"Error: {ex.Message}",
                     SteamGifCropper.Properties.Resources.Title_Error,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
             finally
             {
                 mainForm.pBarTaskStatus.Value = 0;
                 mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Idle;
             }
+
+            if (!string.IsNullOrEmpty(outputPath) && mainForm.chkGifsicle.Checked)
+            {
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing;
+                Application.DoEvents();
+                var options = new GifsicleWrapper.GifsicleOptions
+                {
+                    Colors = (int)mainForm.numUpDownPaletteSicle.Value,
+                    Lossy = (int)mainForm.numUpDownLossy.Value,
+                    OptimizeLevel = (int)mainForm.numUpDownOptimize.Value,
+                    Dither = mainForm.DitherMethod,
+                };
+
+                GifsicleWrapper.OptimizeGif(outputPath, outputPath, options);
+            }
+
+            mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Done;
+            WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                "Overlay complete.",
+                SteamGifCropper.Properties.Resources.Title_Success,
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+
 
     }
 }
