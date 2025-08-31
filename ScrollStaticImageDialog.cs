@@ -33,6 +33,7 @@ namespace GifProcessorApp
         public ScrollStaticImageDialog()
         {
             InitializeComponent();
+            chkFullCycle.CheckedChanged += ChkFullCycle_CheckedChanged;
             UpdateUIText();
             ApplyTheme();
         }
@@ -203,6 +204,8 @@ namespace GifProcessorApp
             }
         }
 
+        private void ChkFullCycle_CheckedChanged(object? sender, EventArgs e) => numDuration.Enabled = !chkFullCycle.Checked;
+
         private void BtnOK_Click(object? sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtInputPath.Text) || !File.Exists(txtInputPath.Text))
@@ -347,7 +350,6 @@ namespace GifProcessorApp
             chkFullCycle.Name = "chkFullCycle";
             chkFullCycle.Size = new System.Drawing.Size(130, 24);
             chkFullCycle.TabIndex = 12;
-            chkFullCycle.CheckedChanged += (s,e)=>{ numDuration.Enabled = !chkFullCycle.Checked; };
             //
             // btnOK
             //
