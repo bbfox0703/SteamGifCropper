@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing;
 using FFMpegCore;
 using FFMpegCore.Exceptions;
 using ImageMagick;
@@ -2085,6 +2086,114 @@ namespace GifProcessorApp
                 mainForm.Enabled = true;
                 mainForm.pBarTaskStatus.Visible = false;
                 mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready;
+            }
+        }
+
+        public static void OverlayGif(GifToolMainForm mainForm)
+        {
+            using var baseDialog = new OpenFileDialog
+            {
+                Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
+                Title = "Select base GIF"
+            };
+            if (baseDialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            uint baseWidth;
+            uint baseHeight;
+            using (var info = new MagickImageCollection(baseDialog.FileName))
+            {
+                baseWidth = info[0].Width;
+                baseHeight = info[0].Height;
+            }
+
+            using var overlayDialog = new OpenFileDialog
+            {
+                Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
+                Title = "Select overlay GIF"
+            };
+            if (overlayDialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            using var coordDialog = new OverlayPositionDialog(baseWidth, baseHeight);
+            if (coordDialog.ShowDialog(mainForm) != DialogResult.OK)
+                return;
+            int offsetX = coordDialog.OverlayX;
+            int offsetY = coordDialog.OverlayY;
+
+            using var baseCollection = new MagickImageCollection(baseDialog.FileName);
+            using var overlayCollection = new MagickImageCollection(overlayDialog.FileName);
+            using var resultCollection = new MagickImageCollection();
+
+            try
+            {
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Processing;
+                mainForm.pBarTaskStatus.Minimum = 0;
+                mainForm.pBarTaskStatus.Maximum = 100;
+                mainForm.pBarTaskStatus.Value = 0;
+                Application.DoEvents();
+
+                baseCollection.Coalesce();
+                overlayCollection.Coalesce();
+
+                int overlayCount = overlayCollection.Count;
+                int baseCount = baseCollection.Count;
+
+                for (int i = 0; i < overlayCount; i++)
+                {
+                    using var baseFrame = baseCollection[i % baseCount].Clone();
+                    using var overlayFrame = overlayCollection[i].Clone();
+
+                    int width = (int)Math.Min(overlayFrame.Width, baseWidth - (uint)offsetX);
+                    int height = (int)Math.Min(overlayFrame.Height, baseHeight - (uint)offsetY);
+                    if (width <= 0 || height <= 0)
+                        continue;
+
+                    overlayFrame.Crop(new MagickGeometry(0, 0, (uint)width, (uint)height));
+                    overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
+
+                    baseFrame.Composite(overlayFrame, offsetX, offsetY, CompositeOperator.Over);
+                    baseFrame.AnimationDelay = overlayFrame.AnimationDelay;
+                    baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
+
+                    resultCollection.Add(baseFrame.Clone());
+
+                    UpdateFrameProgress(mainForm, i + 1, overlayCount);
+                }
+
+                resultCollection.Optimize();
+
+                using var saveDialog = new SaveFileDialog
+                {
+                    Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
+                    FileName = Path.GetFileNameWithoutExtension(baseDialog.FileName) + "_overlay.gif",
+                    Title = "Save GIF"
+                };
+                if (saveDialog.ShowDialog() != DialogResult.OK)
+                    return;
+
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Saving;
+                Application.DoEvents();
+                resultCollection.Write(saveDialog.FileName);
+
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Done;
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                    "Overlay complete.",
+                    SteamGifCropper.Properties.Resources.Title_Success,
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Error;
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                    $"Error: {ex.Message}",
+                    SteamGifCropper.Properties.Resources.Title_Error,
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                mainForm.pBarTaskStatus.Value = 0;
+                mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Idle;
             }
         }
 
