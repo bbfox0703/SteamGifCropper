@@ -729,7 +729,7 @@ Technical details: {5}</value>
     <value>Pixels per step</value>
   </data>
   <data name="ScrollDialog_Duration" xml:space="preserve">
-    <value>Duration (sec)</value>
+    <value>Seconds per full scroll</value>
   </data>
   <data name="ScrollDialog_FullCycle" xml:space="preserve">
     <value>Scroll full cycle</value>

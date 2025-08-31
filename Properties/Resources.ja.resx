@@ -737,7 +737,7 @@ FFmpeg 出力（切り捨て）:
     <value>ピクセル/ステップ</value>
   </data>
   <data name="ScrollDialog_Duration" xml:space="preserve">
-    <value>秒数</value>
+    <value>スクロール1周の秒数</value>
   </data>
   <data name="ScrollDialog_FullCycle" xml:space="preserve">
     <value>一周させる</value>
