@@ -1855,6 +1855,11 @@ namespace GifProcessorApp
                 RepeatCount = 0
             };
 
+            mainForm?.Invoke((Action)(() =>
+            {
+                mainForm.lblStatus.Text = Resources.Status_Saving;
+            }));
+
             collection.Write(outputFilePath, defines);
         }
 
@@ -1984,6 +1989,8 @@ namespace GifProcessorApp
                         OptimizeLevel = (int)mainForm.numUpDownOptimize.Value,
                         Dither = mainForm.DitherMethod
                     };
+                    mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing;
+                    Application.DoEvents();
                     GifsicleWrapper.OptimizeGif(outputPath, outputPath, options);
                 }
 
