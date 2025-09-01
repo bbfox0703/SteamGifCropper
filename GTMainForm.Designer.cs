@@ -51,11 +51,11 @@
             label2 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             chkGifsicle = new System.Windows.Forms.CheckBox();
+            numUpDownPalette = new System.Windows.Forms.NumericUpDown();
+            lblPaletteDesc = new System.Windows.Forms.Label();
             numUpDownFramerate = new System.Windows.Forms.NumericUpDown();
             lblFramerate = new System.Windows.Forms.Label();
             lblFPS = new System.Windows.Forms.Label();
-            numUpDownPalette = new System.Windows.Forms.NumericUpDown();
-            lblPaletteDesc = new System.Windows.Forms.Label();
             btnMerge2to5GifToOne = new System.Windows.Forms.Button();
             chk5GIFMergeFasterPaletteProcess = new System.Windows.Forms.CheckBox();
             btnReverseGIF = new System.Windows.Forms.Button();
@@ -67,13 +67,14 @@
             btnScrollStaticImage = new System.Windows.Forms.Button();
             btnOverlayGIF = new System.Windows.Forms.Button();
             btnResizeNfpsGIF = new System.Windows.Forms.Button();
+            lblResourceLimitDesc = new System.Windows.Forms.Label();
             panelGifsicle.SuspendLayout();
             groupDither.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPaletteSicle).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownLossy).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numUpDownFramerate).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPalette).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numUpDownFramerate).BeginInit();
             conMenuLangSwitch.SuspendLayout();
             SuspendLayout();
             // 
@@ -94,7 +95,7 @@
             btnResizeGif766.Margin = new System.Windows.Forms.Padding(2);
             btnResizeGif766.Name = "btnResizeGif766";
             btnResizeGif766.Size = new System.Drawing.Size(300, 26);
-            btnResizeGif766.TabIndex = 1;
+            btnResizeGif766.TabIndex = 4;
             btnResizeGif766.Text = SteamGifCropper.Properties.Resources.Button_ResizeGif;
             btnResizeGif766.UseVisualStyleBackColor = true;
             btnResizeGif766.Click += btnResizeGif766_Click;
@@ -105,7 +106,7 @@
             btnWriteTailByte.Margin = new System.Windows.Forms.Padding(2);
             btnWriteTailByte.Name = "btnWriteTailByte";
             btnWriteTailByte.Size = new System.Drawing.Size(300, 26);
-            btnWriteTailByte.TabIndex = 2;
+            btnWriteTailByte.TabIndex = 8;
             btnWriteTailByte.Text = SteamGifCropper.Properties.Resources.Button_WriteTailByte;
             btnWriteTailByte.UseVisualStyleBackColor = true;
             btnWriteTailByte.Click += btnWriteTailByte_Click;
@@ -116,7 +117,7 @@
             btnRestoreTailByte.Margin = new System.Windows.Forms.Padding(2);
             btnRestoreTailByte.Name = "btnRestoreTailByte";
             btnRestoreTailByte.Size = new System.Drawing.Size(300, 26);
-            btnRestoreTailByte.TabIndex = 6;
+            btnRestoreTailByte.TabIndex = 9;
             btnRestoreTailByte.Text = SteamGifCropper.Properties.Resources.Button_RestoreTailByte;
             btnRestoreTailByte.UseVisualStyleBackColor = true;
             btnRestoreTailByte.Click += btnRestoreTailByte_Click;
@@ -138,7 +139,7 @@
             lblStatus.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new System.Drawing.Size(31, 15);
-            lblStatus.TabIndex = 4;
+            lblStatus.TabIndex = 18;
             lblStatus.Text = "Idle.";
             // 
             // btnMergeAndSplit
@@ -147,7 +148,7 @@
             btnMergeAndSplit.Margin = new System.Windows.Forms.Padding(2);
             btnMergeAndSplit.Name = "btnMergeAndSplit";
             btnMergeAndSplit.Size = new System.Drawing.Size(300, 52);
-            btnMergeAndSplit.TabIndex = 5;
+            btnMergeAndSplit.TabIndex = 2;
             btnMergeAndSplit.Text = SteamGifCropper.Properties.Resources.Button_MergeAndSplit;
             btnMergeAndSplit.UseVisualStyleBackColor = true;
             btnMergeAndSplit.Click += btnSplitGIFWithReducedPalette_Click;
@@ -158,7 +159,7 @@
             btnMp4ToGif.Margin = new System.Windows.Forms.Padding(2);
             btnMp4ToGif.Name = "btnMp4ToGif";
             btnMp4ToGif.Size = new System.Drawing.Size(300, 26);
-            btnMp4ToGif.TabIndex = 7;
+            btnMp4ToGif.TabIndex = 6;
             btnMp4ToGif.Text = "FFMPEG: Convert MP4 to GIF (with time control)";
             btnMp4ToGif.UseVisualStyleBackColor = true;
             btnMp4ToGif.Click += btnMp4ToGif_Click;
@@ -174,12 +175,14 @@
             panelGifsicle.Controls.Add(label2);
             panelGifsicle.Controls.Add(label1);
             panelGifsicle.Controls.Add(chkGifsicle);
+            panelGifsicle.Controls.Add(numUpDownPalette);
+            panelGifsicle.Controls.Add(lblPaletteDesc);
             panelGifsicle.Dock = System.Windows.Forms.DockStyle.Bottom;
             panelGifsicle.Location = new System.Drawing.Point(0, 290);
             panelGifsicle.Margin = new System.Windows.Forms.Padding(2);
             panelGifsicle.Name = "panelGifsicle";
             panelGifsicle.Size = new System.Drawing.Size(619, 119);
-            panelGifsicle.TabIndex = 11;
+            panelGifsicle.TabIndex = 17;
             // 
             // groupDither
             // 
@@ -193,7 +196,7 @@
             groupDither.Name = "groupDither";
             groupDither.Padding = new System.Windows.Forms.Padding(2);
             groupDither.Size = new System.Drawing.Size(619, 53);
-            groupDither.TabIndex = 19;
+            groupDither.TabIndex = 10;
             groupDither.TabStop = false;
             groupDither.Text = "Dither";
             // 
@@ -255,7 +258,7 @@
             numUpDownOptimize.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numUpDownOptimize.Name = "numUpDownOptimize";
             numUpDownOptimize.Size = new System.Drawing.Size(35, 23);
-            numUpDownOptimize.TabIndex = 18;
+            numUpDownOptimize.TabIndex = 7;
             numUpDownOptimize.Value = new decimal(new int[] { 3, 0, 0, 0 });
             // 
             // numUpDownPaletteSicle
@@ -266,7 +269,7 @@
             numUpDownPaletteSicle.Minimum = new decimal(new int[] { 32, 0, 0, 0 });
             numUpDownPaletteSicle.Name = "numUpDownPaletteSicle";
             numUpDownPaletteSicle.Size = new System.Drawing.Size(46, 23);
-            numUpDownPaletteSicle.TabIndex = 17;
+            numUpDownPaletteSicle.TabIndex = 5;
             numUpDownPaletteSicle.Value = new decimal(new int[] { 256, 0, 0, 0 });
             // 
             // numUpDownLossy
@@ -276,7 +279,7 @@
             numUpDownLossy.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
             numUpDownLossy.Name = "numUpDownLossy";
             numUpDownLossy.Size = new System.Drawing.Size(46, 23);
-            numUpDownLossy.TabIndex = 16;
+            numUpDownLossy.TabIndex = 3;
             numUpDownLossy.Value = new decimal(new int[] { 20, 0, 0, 0 });
             // 
             // label4
@@ -286,7 +289,7 @@
             label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             label4.Name = "label4";
             label4.Size = new System.Drawing.Size(62, 15);
-            label4.TabIndex = 15;
+            label4.TabIndex = 6;
             label4.Text = "Optimize:";
             // 
             // label3
@@ -296,7 +299,7 @@
             label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             label3.Name = "label3";
             label3.Size = new System.Drawing.Size(49, 15);
-            label3.TabIndex = 14;
+            label3.TabIndex = 4;
             label3.Text = "Palette:";
             // 
             // label2
@@ -306,7 +309,7 @@
             label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             label2.Name = "label2";
             label2.Size = new System.Drawing.Size(40, 15);
-            label2.TabIndex = 13;
+            label2.TabIndex = 2;
             label2.Text = "Lossy:";
             // 
             // label1
@@ -316,7 +319,7 @@
             label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             label1.Name = "label1";
             label1.Size = new System.Drawing.Size(282, 15);
-            label1.TabIndex = 12;
+            label1.TabIndex = 1;
             label1.Text = "Notice: gifsicle.exe must be in the \"System PATH\"";
             // 
             // chkGifsicle
@@ -326,9 +329,32 @@
             chkGifsicle.Margin = new System.Windows.Forms.Padding(2);
             chkGifsicle.Name = "chkGifsicle";
             chkGifsicle.Size = new System.Drawing.Size(182, 19);
-            chkGifsicle.TabIndex = 11;
+            chkGifsicle.TabIndex = 0;
             chkGifsicle.Text = SteamGifCropper.Properties.Resources.CheckBox_GifsicleOptimization;
             chkGifsicle.UseVisualStyleBackColor = true;
+            // 
+            // numUpDownPalette
+            // 
+            numUpDownPalette.Location = new System.Drawing.Point(562, 39);
+            numUpDownPalette.Margin = new System.Windows.Forms.Padding(2);
+            numUpDownPalette.Maximum = new decimal(new int[] { 256, 0, 0, 0 });
+            numUpDownPalette.Minimum = new decimal(new int[] { 32, 0, 0, 0 });
+            numUpDownPalette.Name = "numUpDownPalette";
+            numUpDownPalette.Size = new System.Drawing.Size(46, 23);
+            numUpDownPalette.TabIndex = 9;
+            numUpDownPalette.Value = new decimal(new int[] { 256, 0, 0, 0 });
+            numUpDownPalette.Visible = false;
+            // 
+            // lblPaletteDesc
+            // 
+            lblPaletteDesc.AutoSize = true;
+            lblPaletteDesc.Location = new System.Drawing.Point(443, 41);
+            lblPaletteDesc.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            lblPaletteDesc.Name = "lblPaletteDesc";
+            lblPaletteDesc.Size = new System.Drawing.Size(115, 15);
+            lblPaletteDesc.TabIndex = 8;
+            lblPaletteDesc.Text = "Number of palette:";
+            lblPaletteDesc.Visible = false;
             // 
             // numUpDownFramerate
             // 
@@ -338,7 +364,7 @@
             numUpDownFramerate.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numUpDownFramerate.Name = "numUpDownFramerate";
             numUpDownFramerate.Size = new System.Drawing.Size(46, 23);
-            numUpDownFramerate.TabIndex = 20;
+            numUpDownFramerate.TabIndex = 13;
             numUpDownFramerate.Value = new decimal(new int[] { 15, 0, 0, 0 });
             // 
             // lblFramerate
@@ -348,7 +374,7 @@
             lblFramerate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFramerate.Name = "lblFramerate";
             lblFramerate.Size = new System.Drawing.Size(105, 15);
-            lblFramerate.TabIndex = 21;
+            lblFramerate.TabIndex = 12;
             lblFramerate.Text = "Target framerate:";
             // 
             // lblFPS
@@ -358,38 +384,15 @@
             lblFPS.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFPS.Name = "lblFPS";
             lblFPS.Size = new System.Drawing.Size(24, 15);
-            lblFPS.TabIndex = 22;
+            lblFPS.TabIndex = 14;
             lblFPS.Text = "fps";
-            // 
-            // numUpDownPalette
-            // 
-            numUpDownPalette.Location = new System.Drawing.Point(560, 260);
-            numUpDownPalette.Margin = new System.Windows.Forms.Padding(2);
-            numUpDownPalette.Maximum = new decimal(new int[] { 256, 0, 0, 0 });
-            numUpDownPalette.Minimum = new decimal(new int[] { 32, 0, 0, 0 });
-            numUpDownPalette.Name = "numUpDownPalette";
-            numUpDownPalette.Size = new System.Drawing.Size(46, 23);
-            numUpDownPalette.TabIndex = 8;
-            numUpDownPalette.Value = new decimal(new int[] { 256, 0, 0, 0 });
-            numUpDownPalette.Visible = false;
-            // 
-            // lblPaletteDesc
-            // 
-            lblPaletteDesc.AutoSize = true;
-            lblPaletteDesc.Location = new System.Drawing.Point(441, 262);
-            lblPaletteDesc.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            lblPaletteDesc.Name = "lblPaletteDesc";
-            lblPaletteDesc.Size = new System.Drawing.Size(115, 15);
-            lblPaletteDesc.TabIndex = 6;
-            lblPaletteDesc.Text = "Number of palette:";
-            lblPaletteDesc.Visible = false;
             // 
             // btnMerge2to5GifToOne
             // 
             btnMerge2to5GifToOne.Location = new System.Drawing.Point(313, 7);
             btnMerge2to5GifToOne.Name = "btnMerge2to5GifToOne";
             btnMerge2to5GifToOne.Size = new System.Drawing.Size(300, 26);
-            btnMerge2to5GifToOne.TabIndex = 23;
+            btnMerge2to5GifToOne.TabIndex = 1;
             btnMerge2to5GifToOne.Text = SteamGifCropper.Properties.Resources.Button_MergeGifs;
             btnMerge2to5GifToOne.UseVisualStyleBackColor = true;
             btnMerge2to5GifToOne.Click += btnMerge2to5GifToOne_Click;
@@ -400,7 +403,7 @@
             chk5GIFMergeFasterPaletteProcess.Location = new System.Drawing.Point(313, 56);
             chk5GIFMergeFasterPaletteProcess.Name = "chk5GIFMergeFasterPaletteProcess";
             chk5GIFMergeFasterPaletteProcess.Size = new System.Drawing.Size(243, 19);
-            chk5GIFMergeFasterPaletteProcess.TabIndex = 24;
+            chk5GIFMergeFasterPaletteProcess.TabIndex = 3;
             chk5GIFMergeFasterPaletteProcess.Text = SteamGifCropper.Properties.Resources.CheckBox_FasterPalette;
             chk5GIFMergeFasterPaletteProcess.UseVisualStyleBackColor = true;
             // 
@@ -409,7 +412,7 @@
             btnReverseGIF.Location = new System.Drawing.Point(312, 126);
             btnReverseGIF.Name = "btnReverseGIF";
             btnReverseGIF.Size = new System.Drawing.Size(300, 26);
-            btnReverseGIF.TabIndex = 25;
+            btnReverseGIF.TabIndex = 7;
             btnReverseGIF.Text = SteamGifCropper.Properties.Resources.Button_ReverseGif;
             btnReverseGIF.UseVisualStyleBackColor = true;
             btnReverseGIF.Click += btnReverseGIF_Click;
@@ -419,7 +422,7 @@
             btnLanguageChange.Location = new System.Drawing.Point(548, 229);
             btnLanguageChange.Name = "btnLanguageChange";
             btnLanguageChange.Size = new System.Drawing.Size(64, 26);
-            btnLanguageChange.TabIndex = 26;
+            btnLanguageChange.TabIndex = 16;
             btnLanguageChange.Text = "A⇆文";
             btnLanguageChange.UseVisualStyleBackColor = true;
             btnLanguageChange.Click += btnLanguageChange_Click;
@@ -456,7 +459,7 @@
             btnScrollStaticImage.Location = new System.Drawing.Point(313, 95);
             btnScrollStaticImage.Name = "btnScrollStaticImage";
             btnScrollStaticImage.Size = new System.Drawing.Size(300, 26);
-            btnScrollStaticImage.TabIndex = 27;
+            btnScrollStaticImage.TabIndex = 5;
             btnScrollStaticImage.Text = SteamGifCropper.Properties.Resources.Button_ScrollStaticImage;
             btnScrollStaticImage.UseVisualStyleBackColor = true;
             btnScrollStaticImage.Click += btnScrollStaticImage_Click;
@@ -466,7 +469,7 @@
             btnOverlayGIF.Location = new System.Drawing.Point(7, 187);
             btnOverlayGIF.Name = "btnOverlayGIF";
             btnOverlayGIF.Size = new System.Drawing.Size(300, 26);
-            btnOverlayGIF.TabIndex = 28;
+            btnOverlayGIF.TabIndex = 10;
             btnOverlayGIF.Text = SteamGifCropper.Properties.Resources.Button_OverlayGif;
             btnOverlayGIF.UseVisualStyleBackColor = true;
             btnOverlayGIF.Click += btnOverlayGIF_Click;
@@ -476,9 +479,19 @@
             btnResizeNfpsGIF.Location = new System.Drawing.Point(313, 187);
             btnResizeNfpsGIF.Name = "btnResizeNfpsGIF";
             btnResizeNfpsGIF.Size = new System.Drawing.Size(300, 26);
-            btnResizeNfpsGIF.TabIndex = 29;
-            btnResizeNfpsGIF.Text = "Resize / re-FPS GIF";
+            btnResizeNfpsGIF.TabIndex = 11;
+            btnResizeNfpsGIF.Text = SteamGifCropper.Properties.Resources.Button_ResizeNfpsGif;
             btnResizeNfpsGIF.UseVisualStyleBackColor = true;
+            btnResizeNfpsGIF.Click += btnResizeNfpsGIF_Click;
+            // 
+            // lblResourceLimitDesc
+            // 
+            lblResourceLimitDesc.AutoSize = true;
+            lblResourceLimitDesc.Location = new System.Drawing.Point(239, 262);
+            lblResourceLimitDesc.Name = "lblResourceLimitDesc";
+            lblResourceLimitDesc.Size = new System.Drawing.Size(234, 15);
+            lblResourceLimitDesc.TabIndex = 15;
+            lblResourceLimitDesc.Text = "Resource limit: mem: ?? MB / disk: ?? MB";
             // 
             // GifToolMainForm
             // 
@@ -486,6 +499,7 @@
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             ClientSize = new System.Drawing.Size(619, 444);
+            Controls.Add(lblResourceLimitDesc);
             Controls.Add(btnResizeNfpsGIF);
             Controls.Add(btnOverlayGIF);
             Controls.Add(btnScrollStaticImage);
@@ -493,8 +507,6 @@
             Controls.Add(btnReverseGIF);
             Controls.Add(chk5GIFMergeFasterPaletteProcess);
             Controls.Add(panelGifsicle);
-            Controls.Add(numUpDownPalette);
-            Controls.Add(lblPaletteDesc);
             Controls.Add(btnMp4ToGif);
             Controls.Add(lblFPS);
             Controls.Add(lblFramerate);
@@ -518,8 +530,8 @@
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPaletteSicle).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownLossy).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numUpDownFramerate).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPalette).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numUpDownFramerate).EndInit();
             conMenuLangSwitch.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
@@ -566,5 +578,6 @@
         private System.Windows.Forms.Button btnScrollStaticImage;
         private System.Windows.Forms.Button btnOverlayGIF;
         private System.Windows.Forms.Button btnResizeNfpsGIF;
+        private System.Windows.Forms.Label lblResourceLimitDesc;
     }
 }

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using ImageMagick;
 
 namespace GifProcessorApp
 {
@@ -11,12 +13,14 @@ namespace GifProcessorApp
     {
         public int DitherMethod { get; private set; } = 0;
         private bool _isDarkMode;
+        private readonly bool _useFfmpegForResize;
 
         public GifToolMainForm()
         {
             try
             {
                 InitializeComponent();
+                _useFfmpegForResize = CheckFfmpegAvailable();
                 UpdateUIText();
 
                 // Initialize theme
@@ -34,6 +38,8 @@ namespace GifProcessorApp
 
                 // Register for theme changes
                 SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
+
+                UpdateResourceLimitLabel();
             }
             catch (Exception ex)
             {
@@ -65,6 +71,7 @@ namespace GifProcessorApp
             {
                 WindowsThemeManager.ApplyThemeToControl(this, _isDarkMode);
                 WindowsThemeManager.ApplyThemeToControl(conMenuLangSwitch, _isDarkMode);
+                WindowsThemeManager.ApplyThemeToControl(btnResizeNfpsGIF, _isDarkMode);
                 this.Refresh();
             }
             catch (Exception ex)
@@ -98,6 +105,32 @@ namespace GifProcessorApp
             {
                 MessageBox.Show(this, $"An error occurred during {operationName}: {ex.Message}",
                                 "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static bool CheckFfmpegAvailable()
+        {
+            try
+            {
+                using var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "ffmpeg",
+                        Arguments = "-version",
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        CreateNoWindow = true
+                    }
+                };
+                process.Start();
+                process.WaitForExit(1000);
+                return process.ExitCode == 0;
+            }
+            catch
+            {
+                return false;
             }
         }
 
@@ -186,6 +219,16 @@ namespace GifProcessorApp
             }, "GIF overlay");
         }
 
+        private async void btnResizeNfpsGIF_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(() =>
+            {
+                using var dialog = new ResizeNfpsGifDialog();
+                dialog.ShowDialog(this);
+                return Task.CompletedTask;
+            }, "GIF resize / re-FPS");
+        }
+
         private void label2_Click(object sender, EventArgs e)
         {
 
@@ -261,6 +304,11 @@ namespace GifProcessorApp
                 btnReverseGIF.Text = SteamGifCropper.Properties.Resources.Button_ReverseGif;
                 btnScrollStaticImage.Text = SteamGifCropper.Properties.Resources.Button_ScrollStaticImage;
                 btnOverlayGIF.Text = SteamGifCropper.Properties.Resources.Button_OverlayGif;
+                btnResizeNfpsGIF.Text = SteamGifCropper.Properties.Resources.Button_ResizeNfpsGif;
+                if (_useFfmpegForResize)
+                {
+                    btnResizeNfpsGIF.Text = "FFMPEG: " + btnResizeNfpsGIF.Text;
+                }
                 label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
 
 
@@ -271,12 +319,28 @@ namespace GifProcessorApp
                     lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready;
                 }
 
+                UpdateResourceLimitLabel();
+
                 this.Invalidate(true);
                 this.Update();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Failed to update UI text: {ex.Message}");
+            }
+        }
+
+        private void UpdateResourceLimitLabel()
+        {
+            try
+            {
+                ulong memMb = ResourceLimits.Memory / (1024UL * 1024UL);
+                ulong diskMb = ResourceLimits.Disk / (1024UL * 1024UL);
+                lblResourceLimitDesc.Text = string.Format(SteamGifCropper.Properties.Resources.Label_ResourceLimitDesc, memMb, diskMb);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to update resource limit label: {ex.Message}");
             }
         }
 

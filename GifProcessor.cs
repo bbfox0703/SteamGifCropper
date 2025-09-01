@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Configuration;
 using FFMpegCore;
 using FFMpegCore.Exceptions;
+using FFMpegCore.Pipes;
 using ImageMagick;
 using SteamGifCropper.Properties;
 
@@ -21,6 +24,9 @@ namespace GifProcessorApp
         private const uint SupportedWidth1 = 766;
         private const uint SupportedWidth2 = 774;
 
+        private static readonly int FfmpegTimeoutSeconds = GetAppSettingInt("FFmpeg.TimeoutSeconds", 300);
+        private static readonly int FfmpegThreads = GetAppSettingInt("FFmpeg.Threads", 0);
+
         private static bool IsValidCanvasWidth(uint width) => width == SupportedWidth1 || width == SupportedWidth2;
 
         private static void ShowUnsupportedWidthError(uint width)
@@ -32,6 +38,38 @@ namespace GifProcessorApp
         private static (int Start, int End)[] GetCropRanges(uint canvasWidth)
         {
             return canvasWidth == SupportedWidth1 ? Ranges766 : Ranges774;
+        }
+
+        private static int GetAppSettingInt(string key, int defaultValue)
+        {
+            try
+            {
+                var value = ConfigurationManager.AppSettings[key];
+                if (!string.IsNullOrEmpty(value) && int.TryParse(value, out var result))
+                {
+                    return result;
+                }
+            }
+            catch
+            {
+                // Ignore and use default
+            }
+            return defaultValue;
+        }
+
+        private static CancellationToken CreateFfmpegCancellationToken()
+        {
+            return FfmpegTimeoutSeconds > 0
+                ? new CancellationTokenSource(TimeSpan.FromSeconds(FfmpegTimeoutSeconds)).Token
+                : CancellationToken.None;
+        }
+
+        private static void ApplyThreadLimit(FFMpegArgumentOptions options)
+        {
+            if (FfmpegThreads > 0)
+            {
+                options.WithCustomArgument($"-threads {FfmpegThreads}");
+            }
         }
 
         private static void UpdateProgress(ProgressBar progressBar, int current, int total)
@@ -272,7 +310,8 @@ namespace GifProcessorApp
                 string outputDir = Path.GetDirectoryName(firstGifPath);
                 string mergedFilePath = Path.Combine(outputDir, mergedFileName);
 
-                MergeGifsHorizontally(syncedCollections, mergedFilePath, mainForm, useFastPalette);
+                MergeGifsHorizontally(syncedCollections, mergedFilePath, mainForm, useFastPalette,
+                    ResourceLimits.Memory, ResourceLimits.Disk);
                 UpdateProgress(mainForm.pBarTaskStatus, 80, 100);
 
                 // Step 6: Apply existing split functionality
@@ -569,15 +608,33 @@ namespace GifProcessorApp
             }
         }
 
-        private static void MergeGifsHorizontally(MagickImageCollection[] collections, string outputPath, GifToolMainForm mainForm, bool useFastPalette = false)
+        /// <summary>
+        /// Merge five GIF collections into a single 766px wide GIF.
+        /// </summary>
+        /// <param name="collections">Input GIF collections to merge.</param>
+        /// <param name="outputPath">Path where the merged GIF will be written.</param>
+        /// <param name="mainForm">Main form for updating progress.</param>
+        /// <param name="useFastPalette">Whether to use the faster palette generation mode.</param>
+        /// <param name="memoryLimitBytes">Maximum memory usage in <c>bytes</c>.</param>
+        /// <param name="diskLimitBytes">Maximum temporary disk usage in <c>bytes</c>.</param>
+        private static void MergeGifsHorizontally(
+            MagickImageCollection[] collections,
+            string outputPath,
+            GifToolMainForm mainForm,
+            bool useFastPalette,
+            ulong memoryLimitBytes,
+            ulong diskLimitBytes)
         {
             mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_MergingHorizontally;
             Application.DoEvents();
 
             // Enable disk caching to limit memory usage
             MagickNET.SetTempDirectory(Path.GetTempPath());
-            ResourceLimits.Memory = 1024; // 1G
-            ResourceLimits.Disk = 4096; // 4G
+
+            // Apply resource limits configured by Program.ConfigureResourceLimits
+            // Values are in bytes for consistency with that configuration.
+            ResourceLimits.Memory = memoryLimitBytes;
+            ResourceLimits.Disk = diskLimitBytes;
 
             // Calculate maximum height among all resized GIFs
             int maxHeight = collections.Max(c => (int)c[0].Height);
@@ -1420,6 +1477,7 @@ namespace GifProcessorApp
 
                             // GPU-accelerated MP4 decoding, CPU GIF encoding
                             // Note: GIF encoding doesn't support CUDA, only decoding can be accelerated
+                            var token = CreateFfmpegCancellationToken();
                             await FFMpegArguments
                                 .FromFileInput(inputPath, true, input =>
                                 {
@@ -1436,7 +1494,9 @@ namespace GifProcessorApp
                                            .WithCustomArgument("-vf hwdownload,format=nv12,format=rgb24")
                                            .WithFramerate(targetFramerate)
                                            .WithCustomArgument("-pix_fmt rgb8");
+                                    ApplyThreadLimit(options);
                                 })
+                                .CancellableThrough(token)
                                 .ProcessAsynchronously();
                         }
                             catch (Exception gpuEx)
@@ -1569,15 +1629,24 @@ namespace GifProcessorApp
 
         private static async Task ProcessWithOptimizedCpu(string inputPath, string outputPath, TimeSpan startTime, TimeSpan duration, int targetFramerate = 25)
         {
-            // Optimized CPU processing - single-pass with minimal overhead
+            // Optimized CPU processing using streaming to avoid loading entire files
+            await using var inputStream = File.OpenRead(inputPath);
+            await using var outputStream = File.Open(outputPath, FileMode.Create, FileAccess.Write);
+
+            var token = CreateFfmpegCancellationToken();
             await FFMpegArguments
-                .FromFileInput(inputPath)
-                .OutputToFile(outputPath, true, options => options
-                    .Seek(startTime)
-                    .WithDuration(duration)
-                    .WithFramerate(targetFramerate)
-                    .WithCustomArgument("-pix_fmt rgb8")
-                    .WithCustomArgument("-an")) // Remove audio for faster processing
+                .FromPipeInput(new StreamPipeSource(inputStream))
+                .OutputToPipe(new StreamPipeSink(outputStream), options =>
+                {
+                    options.ForceFormat("gif")
+                           .Seek(startTime)
+                           .WithDuration(duration)
+                           .WithFramerate(targetFramerate)
+                           .WithCustomArgument("-pix_fmt rgb8")
+                           .WithCustomArgument("-an");
+                    ApplyThreadLimit(options);
+                })
+                .CancellableThrough(token)
                 .ProcessAsynchronously();
         }
 
@@ -1687,19 +1756,23 @@ namespace GifProcessorApp
 
                     mainForm.pBarTaskStatus.Value = 50;
                     await Task.Delay(1);
-                    // Reverse GIF directly with palettegen + paletteuse
+                    // Reverse GIF directly with palettegen + paletteuse using streaming to limit memory usage
                     mainForm.pBarTaskStatus.Value = 75;
+                    await using var reverseInput = File.OpenRead(inputFilePath);
+                    await using var reverseOutput = File.Open(outputFilePath, FileMode.Create, FileAccess.Write);
+                    var token = CreateFfmpegCancellationToken();
                     await FFMpegArguments
-                        .FromFileInput(inputFilePath) // Only one input
-                        .OutputToFile(
-                            outputFilePath,
-                            overwrite: true,
-                            options => options
-                                .WithCustomArgument(
-                                    @"-filter_complex ""[0:v]reverse,split[s0][s1];[s0]palettegen=stats_mode=single[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3"""
-                                )
-                                .WithFramerate(targetFramerate)
-                        )
+                        .FromPipeInput(new StreamPipeSource(reverseInput))
+                        .OutputToPipe(new StreamPipeSink(reverseOutput), options =>
+                            {
+                                options.ForceFormat("gif")
+                                       .WithCustomArgument(
+                                           @"-filter_complex ""[0:v]reverse,split[s0][s1];[s0]palettegen=stats_mode=single[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3"""
+                                       )
+                                       .WithFramerate(targetFramerate);
+                                ApplyThreadLimit(options);
+                            })
+                        .CancellableThrough(token)
                         .ProcessAsynchronously();
 
                     mainForm.pBarTaskStatus.Value = 100;

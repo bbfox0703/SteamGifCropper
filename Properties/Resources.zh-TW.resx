@@ -314,6 +314,9 @@
   <data name="Error_ResizeFailed" xml:space="preserve">
     <value>調整大小失敗：{0}</value>
   </data>
+  <data name="Error_SelectGif" xml:space="preserve">
+    <value>請選擇 GIF 檔案。</value>
+  </data>
   <data name="Error_StartupFailed" xml:space="preserve">
     <value>啟動失敗：{0}\n\n堆疊追蹤：{1}</value>
   </data>
@@ -425,6 +428,9 @@
   <data name="Button_OverlayGif" xml:space="preserve">
     <value>將GIF疊加在GIF上</value>
   </data>
+  <data name="Button_ResizeNfpsGif" xml:space="preserve">
+    <value>調整或重設 GIF 大小／FPS</value>
+  </data>
   <data name="Status_ValidatingProcessing" xml:space="preserve">
     <value>驗證處理中...</value>
   </data>
@@ -517,6 +523,9 @@
   </data>
   <data name="Label_GifsicleNotice" xml:space="preserve">
     <value>注意：gifsicle.exe 必須位於「系統 PATH」中</value>
+  </data>
+  <data name="Label_ResourceLimitDesc" xml:space="preserve">
+    <value>資源限制：記憶體 {0} MB / 磁碟 {1} MB</value>
   </data>
   <data name="MergeDialog_Instructions" xml:space="preserve">
     <value>請選擇2-5個GIF檔案進行合併（順序為由左至右）：</value>

@@ -190,8 +190,13 @@ namespace GifProcessorApp
             await Task.CompletedTask;
         }
 
-        private static void MergeGifsHorizontally(MagickImageCollection[] collections, string outputPath, GifToolMainForm mainForm, bool useFastPalette = false)
+        private static void MergeGifsHorizontally(MagickImageCollection[] collections, string outputPath, GifToolMainForm mainForm,
+            bool useFastPalette, ulong memoryLimitBytes, ulong diskLimitBytes)
         {
+            // Apply resource limits in bytes to mirror production behavior
+            ResourceLimits.Memory = memoryLimitBytes;
+            ResourceLimits.Disk = diskLimitBytes;
+
             int maxHeight = collections.Max(c => (int)c[0].Height);
             using var palette = BuildSharedPalette(collections, useFastPalette);
             var mapSettings = new QuantizeSettings

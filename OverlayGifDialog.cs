@@ -145,7 +145,7 @@ namespace GifProcessorApp
             lblBase.Location = new System.Drawing.Point(12, 15);
             lblBase.Name = "lblBase";
             lblBase.Size = new System.Drawing.Size(57, 15);
-            lblBase.TabIndex = 14;
+            lblBase.TabIndex = 0;
             lblBase.Text = "Base GIF:";
             // 
             // txtBaseGif
@@ -153,14 +153,14 @@ namespace GifProcessorApp
             txtBaseGif.Location = new System.Drawing.Point(96, 12);
             txtBaseGif.Name = "txtBaseGif";
             txtBaseGif.Size = new System.Drawing.Size(260, 23);
-            txtBaseGif.TabIndex = 0;
+            txtBaseGif.TabIndex = 1;
             // 
             // btnBrowseBase
             // 
             btnBrowseBase.Location = new System.Drawing.Point(362, 12);
             btnBrowseBase.Name = "btnBrowseBase";
             btnBrowseBase.Size = new System.Drawing.Size(75, 26);
-            btnBrowseBase.TabIndex = 1;
+            btnBrowseBase.TabIndex = 2;
             btnBrowseBase.Text = "Browse...";
             btnBrowseBase.UseVisualStyleBackColor = true;
             btnBrowseBase.Click += BtnBrowseBase_Click;
@@ -171,7 +171,7 @@ namespace GifProcessorApp
             lblOverlay.Location = new System.Drawing.Point(12, 65);
             lblOverlay.Name = "lblOverlay";
             lblOverlay.Size = new System.Drawing.Size(74, 15);
-            lblOverlay.TabIndex = 12;
+            lblOverlay.TabIndex = 3;
             lblOverlay.Text = "Overlay GIF:";
             // 
             // txtOverlayGif
@@ -179,14 +179,14 @@ namespace GifProcessorApp
             txtOverlayGif.Location = new System.Drawing.Point(96, 62);
             txtOverlayGif.Name = "txtOverlayGif";
             txtOverlayGif.Size = new System.Drawing.Size(260, 23);
-            txtOverlayGif.TabIndex = 2;
+            txtOverlayGif.TabIndex = 5;
             // 
             // btnBrowseOverlay
             // 
             btnBrowseOverlay.Location = new System.Drawing.Point(362, 62);
             btnBrowseOverlay.Name = "btnBrowseOverlay";
             btnBrowseOverlay.Size = new System.Drawing.Size(75, 26);
-            btnBrowseOverlay.TabIndex = 3;
+            btnBrowseOverlay.TabIndex = 6;
             btnBrowseOverlay.Text = "Browse...";
             btnBrowseOverlay.UseVisualStyleBackColor = true;
             btnBrowseOverlay.Click += BtnBrowseOverlay_Click;
@@ -197,7 +197,7 @@ namespace GifProcessorApp
             lblBaseInfo.Location = new System.Drawing.Point(96, 37);
             lblBaseInfo.Name = "lblBaseInfo";
             lblBaseInfo.Size = new System.Drawing.Size(0, 15);
-            lblBaseInfo.TabIndex = 13;
+            lblBaseInfo.TabIndex = 4;
             // 
             // lblOverlayInfo
             // 
@@ -205,7 +205,7 @@ namespace GifProcessorApp
             lblOverlayInfo.Location = new System.Drawing.Point(96, 92);
             lblOverlayInfo.Name = "lblOverlayInfo";
             lblOverlayInfo.Size = new System.Drawing.Size(0, 15);
-            lblOverlayInfo.TabIndex = 11;
+            lblOverlayInfo.TabIndex = 7;
             // 
             // chkResampleBase
             // 
@@ -214,7 +214,7 @@ namespace GifProcessorApp
             chkResampleBase.Location = new System.Drawing.Point(94, 116);
             chkResampleBase.Name = "chkResampleBase";
             chkResampleBase.Size = new System.Drawing.Size(260, 19);
-            chkResampleBase.TabIndex = 4;
+            chkResampleBase.TabIndex = 8;
             chkResampleBase.Text = "Resample base GIF to overlay FPS";
             chkResampleBase.UseVisualStyleBackColor = true;
             // 
@@ -224,7 +224,7 @@ namespace GifProcessorApp
             lblX.Location = new System.Drawing.Point(51, 144);
             lblX.Name = "lblX";
             lblX.Size = new System.Drawing.Size(18, 15);
-            lblX.TabIndex = 10;
+            lblX.TabIndex = 9;
             lblX.Text = "X:";
             // 
             // numX
@@ -233,7 +233,7 @@ namespace GifProcessorApp
             numX.Maximum = new decimal(new int[] { int.MaxValue, 0, 0, 0 });
             numX.Name = "numX";
             numX.Size = new System.Drawing.Size(120, 23);
-            numX.TabIndex = 5;
+            numX.TabIndex = 10;
             // 
             // lblY
             // 
@@ -241,7 +241,7 @@ namespace GifProcessorApp
             lblY.Location = new System.Drawing.Point(228, 144);
             lblY.Name = "lblY";
             lblY.Size = new System.Drawing.Size(17, 15);
-            lblY.TabIndex = 9;
+            lblY.TabIndex = 11;
             lblY.Text = "Y:";
             // 
             // numY
@@ -250,7 +250,7 @@ namespace GifProcessorApp
             numY.Maximum = new decimal(new int[] { int.MaxValue, 0, 0, 0 });
             numY.Name = "numY";
             numY.Size = new System.Drawing.Size(120, 23);
-            numY.TabIndex = 6;
+            numY.TabIndex = 12;
             // 
             // btnOK
             // 
@@ -258,7 +258,7 @@ namespace GifProcessorApp
             btnOK.Location = new System.Drawing.Point(281, 172);
             btnOK.Name = "btnOK";
             btnOK.Size = new System.Drawing.Size(75, 26);
-            btnOK.TabIndex = 7;
+            btnOK.TabIndex = 13;
             btnOK.Text = "OK";
             btnOK.UseVisualStyleBackColor = true;
             // 
@@ -268,7 +268,7 @@ namespace GifProcessorApp
             btnCancel.Location = new System.Drawing.Point(362, 172);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new System.Drawing.Size(75, 26);
-            btnCancel.TabIndex = 8;
+            btnCancel.TabIndex = 14;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
             // 

@@ -203,6 +203,15 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Error_ResizeFailed", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Please select a GIF file.
+        /// </summary>
+        internal static string Error_SelectGif {
+            get {
+                return ResourceManager.GetString("Error_SelectGif", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Application startup failed: {0}\n\nStack trace:\n{1}.
@@ -1148,6 +1157,15 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Label_GifsicleNotice", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Resource limit: mem: {0} MB / disk: {1} MB.
+        /// </summary>
+        internal static string Label_ResourceLimitDesc {
+            get {
+                return ResourceManager.GetString("Label_ResourceLimitDesc", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Please select 2-5 GIF files to merge (in order from left to right):.
@@ -1716,6 +1734,15 @@ namespace SteamGifCropper.Properties {
         internal static string Button_OverlayGif {
             get {
                 return ResourceManager.GetString("Button_OverlayGif", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Resize / re-FPS GIF.
+        /// </summary>
+        internal static string Button_ResizeNfpsGif {
+            get {
+                return ResourceManager.GetString("Button_ResizeNfpsGif", resourceCulture);
             }
         }
 
