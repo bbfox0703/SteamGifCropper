@@ -151,7 +151,7 @@ public class MergeGifTests
             var form = new GifToolMainForm();
             var method = typeof(GifProcessor).GetMethod("MergeGifsHorizontally", BindingFlags.NonPublic | BindingFlags.Static)!;
             string mergedPath = Path.Combine(tempDir, "merged.gif");
-            method.Invoke(null, new object?[] { collections, mergedPath, form, false });
+            method.Invoke(null, new object?[] { collections, mergedPath, form, false, ResourceLimits.Memory, ResourceLimits.Disk });
             using var merged = new MagickImageCollection(mergedPath);
             Assert.Equal(766U, merged[0].Width);
 
@@ -198,7 +198,7 @@ public class MergeGifTests
             var form = new GifToolMainForm();
             var method = typeof(GifProcessor).GetMethod("MergeGifsHorizontally", BindingFlags.NonPublic | BindingFlags.Static)!;
             string outputPath = Path.Combine(tempDir, "merged.gif");
-            method.Invoke(null, new object?[] { collections, outputPath, form, false });
+            method.Invoke(null, new object?[] { collections, outputPath, form, false, ResourceLimits.Memory, ResourceLimits.Disk });
 
             using var merged = new MagickImageCollection(outputPath);
             Assert.Equal(766, (int)merged[0].Width);
