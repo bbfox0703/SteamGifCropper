@@ -290,7 +290,13 @@ namespace GifProcessorApp
                                 Dither = mainForm.DitherMethod
                             };
 
-                            GifsicleWrapper.OptimizeGif(outputPath, outputPath, options).GetAwaiter().GetResult();
+                            var progress = new Progress<int>(p =>
+                            {
+                                UpdateProgress(mainForm.pBarTaskStatus, p, 100);
+                                UpdateStatusLabel(mainForm, $"{SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing} ({p}%)");
+                            });
+
+                            GifsicleWrapper.OptimizeGif(outputPath, outputPath, options, progress).GetAwaiter().GetResult();
                         }
 
                         ModifyGifFile(outputPath, canvasHeight);
