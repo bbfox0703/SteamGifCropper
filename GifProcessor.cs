@@ -1054,7 +1054,7 @@ namespace GifProcessorApp
                 {
                     UpdateStatusLabel(mainForm, SteamGifCropper.Properties.Resources.Status_RestoringTailBytes);
                     mainForm.pBarTaskStatus.Value = 0;
-                    mainForm.pBarTaskStatus.Maximum = selectedFiles.Length;
+                    mainForm.pBarTaskStatus.Maximum = 100;
                     mainForm.pBarTaskStatus.Visible = true;
 
                     int progress = 0;
@@ -1163,7 +1163,7 @@ namespace GifProcessorApp
                 {
                     mainForm.pBarTaskStatus.Visible = true;
                     mainForm.pBarTaskStatus.Value = 0;
-                    mainForm.pBarTaskStatus.Maximum = filePaths.Length;
+                    mainForm.pBarTaskStatus.Maximum = 100;
 
                     foreach (string filePath in filePaths)
                     {
