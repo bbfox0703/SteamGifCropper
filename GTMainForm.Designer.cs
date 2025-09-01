@@ -139,7 +139,7 @@
             lblStatus.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new System.Drawing.Size(31, 15);
-            lblStatus.TabIndex = 4;
+            lblStatus.TabIndex = 18;
             lblStatus.Text = "Idle.";
             // 
             // btnMergeAndSplit
@@ -182,7 +182,7 @@
             panelGifsicle.Margin = new System.Windows.Forms.Padding(2);
             panelGifsicle.Name = "panelGifsicle";
             panelGifsicle.Size = new System.Drawing.Size(619, 119);
-            panelGifsicle.TabIndex = 11;
+            panelGifsicle.TabIndex = 17;
             // 
             // groupDither
             // 
@@ -196,7 +196,7 @@
             groupDither.Name = "groupDither";
             groupDither.Padding = new System.Windows.Forms.Padding(2);
             groupDither.Size = new System.Drawing.Size(619, 53);
-            groupDither.TabIndex = 19;
+            groupDither.TabIndex = 10;
             groupDither.TabStop = false;
             groupDither.Text = "Dither";
             // 
@@ -258,7 +258,7 @@
             numUpDownOptimize.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numUpDownOptimize.Name = "numUpDownOptimize";
             numUpDownOptimize.Size = new System.Drawing.Size(35, 23);
-            numUpDownOptimize.TabIndex = 17;
+            numUpDownOptimize.TabIndex = 7;
             numUpDownOptimize.Value = new decimal(new int[] { 3, 0, 0, 0 });
             // 
             // numUpDownPaletteSicle
@@ -269,7 +269,7 @@
             numUpDownPaletteSicle.Minimum = new decimal(new int[] { 32, 0, 0, 0 });
             numUpDownPaletteSicle.Name = "numUpDownPaletteSicle";
             numUpDownPaletteSicle.Size = new System.Drawing.Size(46, 23);
-            numUpDownPaletteSicle.TabIndex = 16;
+            numUpDownPaletteSicle.TabIndex = 5;
             numUpDownPaletteSicle.Value = new decimal(new int[] { 256, 0, 0, 0 });
             // 
             // numUpDownLossy
@@ -279,7 +279,7 @@
             numUpDownLossy.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
             numUpDownLossy.Name = "numUpDownLossy";
             numUpDownLossy.Size = new System.Drawing.Size(46, 23);
-            numUpDownLossy.TabIndex = 15;
+            numUpDownLossy.TabIndex = 3;
             numUpDownLossy.Value = new decimal(new int[] { 20, 0, 0, 0 });
             // 
             // label4
@@ -289,7 +289,7 @@
             label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             label4.Name = "label4";
             label4.Size = new System.Drawing.Size(62, 15);
-            label4.TabIndex = 15;
+            label4.TabIndex = 6;
             label4.Text = "Optimize:";
             // 
             // label3
@@ -299,7 +299,7 @@
             label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             label3.Name = "label3";
             label3.Size = new System.Drawing.Size(49, 15);
-            label3.TabIndex = 14;
+            label3.TabIndex = 4;
             label3.Text = "Palette:";
             // 
             // label2
@@ -309,7 +309,7 @@
             label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             label2.Name = "label2";
             label2.Size = new System.Drawing.Size(40, 15);
-            label2.TabIndex = 13;
+            label2.TabIndex = 2;
             label2.Text = "Lossy:";
             // 
             // label1
@@ -319,7 +319,7 @@
             label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             label1.Name = "label1";
             label1.Size = new System.Drawing.Size(282, 15);
-            label1.TabIndex = 12;
+            label1.TabIndex = 1;
             label1.Text = "Notice: gifsicle.exe must be in the \"System PATH\"";
             // 
             // chkGifsicle
@@ -329,7 +329,7 @@
             chkGifsicle.Margin = new System.Windows.Forms.Padding(2);
             chkGifsicle.Name = "chkGifsicle";
             chkGifsicle.Size = new System.Drawing.Size(182, 19);
-            chkGifsicle.TabIndex = 14;
+            chkGifsicle.TabIndex = 0;
             chkGifsicle.Text = SteamGifCropper.Properties.Resources.CheckBox_GifsicleOptimization;
             chkGifsicle.UseVisualStyleBackColor = true;
             // 
@@ -341,7 +341,7 @@
             numUpDownPalette.Minimum = new decimal(new int[] { 32, 0, 0, 0 });
             numUpDownPalette.Name = "numUpDownPalette";
             numUpDownPalette.Size = new System.Drawing.Size(46, 23);
-            numUpDownPalette.TabIndex = 18;
+            numUpDownPalette.TabIndex = 9;
             numUpDownPalette.Value = new decimal(new int[] { 256, 0, 0, 0 });
             numUpDownPalette.Visible = false;
             // 
@@ -352,7 +352,7 @@
             lblPaletteDesc.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblPaletteDesc.Name = "lblPaletteDesc";
             lblPaletteDesc.Size = new System.Drawing.Size(115, 15);
-            lblPaletteDesc.TabIndex = 6;
+            lblPaletteDesc.TabIndex = 8;
             lblPaletteDesc.Text = "Number of palette:";
             lblPaletteDesc.Visible = false;
             // 
@@ -374,7 +374,7 @@
             lblFramerate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFramerate.Name = "lblFramerate";
             lblFramerate.Size = new System.Drawing.Size(105, 15);
-            lblFramerate.TabIndex = 21;
+            lblFramerate.TabIndex = 12;
             lblFramerate.Text = "Target framerate:";
             // 
             // lblFPS
@@ -384,7 +384,7 @@
             lblFPS.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFPS.Name = "lblFPS";
             lblFPS.Size = new System.Drawing.Size(24, 15);
-            lblFPS.TabIndex = 22;
+            lblFPS.TabIndex = 14;
             lblFPS.Text = "fps";
             // 
             // btnMerge2to5GifToOne
@@ -422,7 +422,7 @@
             btnLanguageChange.Location = new System.Drawing.Point(548, 229);
             btnLanguageChange.Name = "btnLanguageChange";
             btnLanguageChange.Size = new System.Drawing.Size(64, 26);
-            btnLanguageChange.TabIndex = 12;
+            btnLanguageChange.TabIndex = 16;
             btnLanguageChange.Text = "A⇆文";
             btnLanguageChange.UseVisualStyleBackColor = true;
             btnLanguageChange.Click += btnLanguageChange_Click;
@@ -490,7 +490,7 @@
             lblResourceLimitDesc.Location = new System.Drawing.Point(239, 262);
             lblResourceLimitDesc.Name = "lblResourceLimitDesc";
             lblResourceLimitDesc.Size = new System.Drawing.Size(234, 15);
-            lblResourceLimitDesc.TabIndex = 30;
+            lblResourceLimitDesc.TabIndex = 15;
             lblResourceLimitDesc.Text = "Resource limit: mem: ?? MB / disk: ?? MB";
             // 
             // GifToolMainForm

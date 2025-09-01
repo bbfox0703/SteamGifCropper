@@ -159,7 +159,7 @@ namespace GifProcessorApp
             lblInstructions.Name = "lblInstructions";
             lblInstructions.Size = new System.Drawing.Size(371, 22);
             lblInstructions.TabIndex = 0;
-            lblInstructions.Text = SteamGifCropper.Properties.Resources.MergeDialog_Instructions;
+            lblInstructions.Text = "Please select 2-5 GIF files to merge (in order from left to right):";
             // 
             // lblGifFiles
             // 
@@ -168,7 +168,7 @@ namespace GifProcessorApp
             lblGifFiles.Name = "lblGifFiles";
             lblGifFiles.Size = new System.Drawing.Size(108, 20);
             lblGifFiles.TabIndex = 1;
-            lblGifFiles.Text = SteamGifCropper.Properties.Resources.MergeDialog_GifFiles;
+            lblGifFiles.Text = "GIF Files (2-5):";
             // 
             // lstGifFiles
             // 
@@ -229,8 +229,8 @@ namespace GifProcessorApp
             lblOutput.Margin = new Padding(41, 0, 41, 0);
             lblOutput.Name = "lblOutput";
             lblOutput.Size = new System.Drawing.Size(108, 20);
-            lblOutput.TabIndex = 7;
-            lblOutput.Text = SteamGifCropper.Properties.Resources.MergeDialog_OutputFile;
+            lblOutput.TabIndex = 8;
+            lblOutput.Text = "Output GIF file:";
             // 
             // txtOutputPath
             // 
@@ -239,7 +239,7 @@ namespace GifProcessorApp
             txtOutputPath.Name = "txtOutputPath";
             txtOutputPath.ReadOnly = true;
             txtOutputPath.Size = new System.Drawing.Size(420, 23);
-            txtOutputPath.TabIndex = 8;
+            txtOutputPath.TabIndex = 9;
             // 
             // btnBrowseOutput
             // 
@@ -247,7 +247,7 @@ namespace GifProcessorApp
             btnBrowseOutput.Margin = new Padding(41, 19, 41, 19);
             btnBrowseOutput.Name = "btnBrowseOutput";
             btnBrowseOutput.Size = new System.Drawing.Size(101, 26);
-            btnBrowseOutput.TabIndex = 9;
+            btnBrowseOutput.TabIndex = 10;
             btnBrowseOutput.Text = SteamGifCropper.Properties.Resources.Button_Browse;
             btnBrowseOutput.UseVisualStyleBackColor = true;
             btnBrowseOutput.Click += BtnBrowseOutput_Click;
@@ -259,7 +259,7 @@ namespace GifProcessorApp
             btnOK.Margin = new Padding(41, 19, 41, 19);
             btnOK.Name = "btnOK";
             btnOK.Size = new System.Drawing.Size(100, 25);
-            btnOK.TabIndex = 10;
+            btnOK.TabIndex = 11;
             btnOK.Text = SteamGifCropper.Properties.Resources.MergeDialog_Merge;
             btnOK.UseVisualStyleBackColor = true;
             btnOK.Click += BtnOK_Click;
@@ -271,7 +271,7 @@ namespace GifProcessorApp
             btnCancel.Margin = new Padding(41, 19, 41, 19);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new System.Drawing.Size(100, 25);
-            btnCancel.TabIndex = 11;
+            btnCancel.TabIndex = 12;
             btnCancel.Text = SteamGifCropper.Properties.Resources.MergeDialog_Cancel;
             btnCancel.UseVisualStyleBackColor = true;
             // 
@@ -281,7 +281,7 @@ namespace GifProcessorApp
             chkGIFMergeFasterPaletteProcess.Location = new System.Drawing.Point(14, 234);
             chkGIFMergeFasterPaletteProcess.Name = "chkGIFMergeFasterPaletteProcess";
             chkGIFMergeFasterPaletteProcess.Size = new System.Drawing.Size(243, 19);
-            chkGIFMergeFasterPaletteProcess.TabIndex = 12;
+            chkGIFMergeFasterPaletteProcess.TabIndex = 7;
             chkGIFMergeFasterPaletteProcess.Text = SteamGifCropper.Properties.Resources.CheckBox_FasterPalette;
             chkGIFMergeFasterPaletteProcess.UseVisualStyleBackColor = true;
             // 
@@ -312,7 +312,7 @@ namespace GifProcessorApp
             MinimizeBox = false;
             Name = "MergeGifsDialog";
             StartPosition = FormStartPosition.CenterParent;
-            Text = SteamGifCropper.Properties.Resources.MergeDialog_Title;
+            Text = "Merge GIF Files";
             ResumeLayout(false);
             PerformLayout();
         }

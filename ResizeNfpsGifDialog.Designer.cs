@@ -95,7 +95,7 @@ namespace GifProcessorApp
             numWidth.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numWidth.Name = "numWidth";
             numWidth.Size = new System.Drawing.Size(120, 23);
-            numWidth.TabIndex = 3;
+            numWidth.TabIndex = 6;
             numWidth.Value = new decimal(new int[] { 1, 0, 0, 0 });
             numWidth.ValueChanged += NumWidth_ValueChanged;
             // 
@@ -115,7 +115,7 @@ namespace GifProcessorApp
             numHeight.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numHeight.Name = "numHeight";
             numHeight.Size = new System.Drawing.Size(120, 23);
-            numHeight.TabIndex = 4;
+            numHeight.TabIndex = 8;
             numHeight.Value = new decimal(new int[] { 1, 0, 0, 0 });
             numHeight.ValueChanged += NumHeight_ValueChanged;
             // 
@@ -135,7 +135,7 @@ namespace GifProcessorApp
             numFps.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numFps.Name = "numFps";
             numFps.Size = new System.Drawing.Size(120, 23);
-            numFps.TabIndex = 5;
+            numFps.TabIndex = 10;
             numFps.Value = new decimal(new int[] { 15, 0, 0, 0 });
             // 
             // chkLockRatio
@@ -146,7 +146,7 @@ namespace GifProcessorApp
             chkLockRatio.Location = new System.Drawing.Point(210, 92);
             chkLockRatio.Name = "chkLockRatio";
             chkLockRatio.Size = new System.Drawing.Size(121, 19);
-            chkLockRatio.TabIndex = 6;
+            chkLockRatio.TabIndex = 11;
             chkLockRatio.Text = "Lock aspect ratio";
             chkLockRatio.UseVisualStyleBackColor = true;
             chkLockRatio.CheckedChanged += ChkLockRatio_CheckedChanged;
@@ -156,7 +156,7 @@ namespace GifProcessorApp
             btnOk.Location = new System.Drawing.Point(245, 175);
             btnOk.Name = "btnOk";
             btnOk.Size = new System.Drawing.Size(75, 25);
-            btnOk.TabIndex = 7;
+            btnOk.TabIndex = 12;
             btnOk.Text = "OK";
             btnOk.UseVisualStyleBackColor = true;
             btnOk.Click += BtnOk_Click;
@@ -167,7 +167,7 @@ namespace GifProcessorApp
             btnCancel.Location = new System.Drawing.Point(326, 175);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new System.Drawing.Size(75, 25);
-            btnCancel.TabIndex = 8;
+            btnCancel.TabIndex = 13;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
             // 
