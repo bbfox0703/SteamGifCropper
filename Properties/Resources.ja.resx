@@ -524,6 +524,9 @@
   <data name="Label_GifsicleNotice" xml:space="preserve">
     <value>注意：gifsicle.exe は「システム PATH」に存在する必要があります</value>
   </data>
+  <data name="Label_ResourceLimitDesc" xml:space="preserve">
+    <value>リソース制限: メモリ {0} MB / ディスク {1} MB</value>
+  </data>
   <data name="MergeDialog_Instructions" xml:space="preserve">
     <value>マージする2-5個のGIFファイルを選択してください（左から右の順序で）：</value>
   </data>
