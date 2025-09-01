@@ -52,6 +52,29 @@ public class GifProcessorMagickTests
         }
     }
 
+    [Fact]
+    public void SplitGif_PartsPreserveAnimationTiming()
+    {
+        string tempDir = Directory.CreateTempSubdirectory().FullName;
+        string input = GifTestHelper.CreateGradientGif(tempDir, 766, 100, 2, "red", "black");
+        try
+        {
+            using var original = new MagickImageCollection(input);
+            GifProcessor.SplitGif(input, tempDir);
+            string partPath = Path.Combine(tempDir, $"{Path.GetFileNameWithoutExtension(input)}_Part1.gif");
+            using var part = new MagickImageCollection(partPath);
+            for (int i = 0; i < original.Count; i++)
+            {
+                Assert.Equal(original[i].AnimationDelay, part[i].AnimationDelay);
+                Assert.Equal(original[i].AnimationTicksPerSecond, part[i].AnimationTicksPerSecond);
+            }
+        }
+        finally
+        {
+            Directory.Delete(tempDir, true);
+        }
+    }
+
     private static bool EnsureGif(string path, int width, int height)
     {
         if (File.Exists(path))
