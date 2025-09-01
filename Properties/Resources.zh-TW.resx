@@ -294,7 +294,7 @@
     <value>{1} 個 GIF 檔案中的 {0} 個已成功處理！</value>
   </data>
   <data name="Message_RestorationComplete" xml:space="preserve">
-    <value>還原已完成！\n已處理檔案: {0}\n已略過檔案 (非 0x21): {1}</value>
+    <value>還原已完成！&#xA;已處理檔案: {0}&#xA;已略過檔案 (非 0x21): {1}</value>
   </data>
   <data name="Error_UnsupportedWidth" xml:space="preserve">
     <value>不支援的GIF寬度：{0}像素。此工具只支援{1}像素或{2}像素寬度的GIF檔案。</value>

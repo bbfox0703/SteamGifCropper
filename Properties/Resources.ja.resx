@@ -294,7 +294,7 @@
     <value>{1} 個のGIFファイルのうち {0} 個が正常に処理されました！</value>
   </data>
   <data name="Message_RestorationComplete" xml:space="preserve">
-    <value>復元が完了しました！\n処理されたファイル: {0}\nスキップされたファイル (0x21 ではない): {1}</value>
+    <value>復元が完了しました！&#xA;処理されたファイル: {0}&#xA;スキップされたファイル (0x21 ではない): {1}</value>
   </data>
   <data name="Error_UnsupportedWidth" xml:space="preserve">
     <value>サポートされていないGIF幅：{0}ピクセル。このツールは{1}ピクセルまたは{2}ピクセル幅のGIFファイルのみサポートしています。</value>
