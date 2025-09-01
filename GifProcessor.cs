@@ -685,6 +685,11 @@ namespace GifProcessorApp
 
             int maxFrames = collections.Max(c => c.Count);
 
+            // Configure progress bar for frame-by-frame updates
+            mainForm.pBarTaskStatus.Minimum = 0;
+            mainForm.pBarTaskStatus.Maximum = maxFrames;
+            mainForm.pBarTaskStatus.Value = 0;
+
             // Create enumerators for each collection to fetch frames on demand
             var enumerators = collections.Select(c => c.GetEnumerator()).ToArray();
 
@@ -695,14 +700,6 @@ namespace GifProcessorApp
 
                 for (int frameIndex = 0; frameIndex < maxFrames; frameIndex++)
                 {
-                    // Update UI every 10 frames during merging
-                    if (frameIndex % ProgressUpdateInterval == 0)
-                    {
-                        UpdateStatusLabel(mainForm, string.Format(
-                            SteamGifCropper.Properties.Resources.Status_MergingFrame,
-                            frameIndex + 1, maxFrames));
-                    }
-
                     using var canvas = new MagickImage(MagickColors.Transparent, 766, (uint)maxHeight);
 
                     // X positions for each GIF: 0, 153, 306, 460, 613
@@ -737,6 +734,9 @@ namespace GifProcessorApp
 
                     canvas.Write(stream, defines);
                     defines.WriteMode = GifWriteMode.Frame;
+
+                    // Advance progress bar and status for each merged frame
+                    UpdateFrameProgressByFrame(mainForm, frameIndex + 1, maxFrames);
                 }
             }
             finally
@@ -746,6 +746,10 @@ namespace GifProcessorApp
                     e.Dispose();
                 }
                 palette.Dispose();
+
+                // Reset progress bar after merging completes
+                mainForm.pBarTaskStatus.Value = 0;
+                mainForm.pBarTaskStatus.Maximum = 100;
             }
         }
 
