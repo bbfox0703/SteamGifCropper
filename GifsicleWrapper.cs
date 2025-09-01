@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 #nullable enable
 
@@ -15,16 +16,33 @@ public class GifsicleWrapper
         public int Dither { get; set; } = 0;
     }
 
+    public static TimeSpan ProcessTimeout { get; set; } = TimeSpan.FromSeconds(30);
+
     public static Func<ProcessStartInfo, (string Output, string Error)> ProcessRunner = DefaultProcessRunner;
 
     private static (string Output, string Error) DefaultProcessRunner(ProcessStartInfo startInfo)
     {
         using Process gifsicleProcess = new Process { StartInfo = startInfo };
         gifsicleProcess.Start();
-        string output = gifsicleProcess.StandardOutput.ReadToEnd();
-        string error = gifsicleProcess.StandardError.ReadToEnd();
-        gifsicleProcess.WaitForExit();
-        return (output, error);
+
+        Task<string> outputTask = gifsicleProcess.StandardOutput.ReadToEndAsync();
+        Task<string> errorTask = gifsicleProcess.StandardError.ReadToEndAsync();
+
+        Task waitTask = gifsicleProcess.WaitForExitAsync();
+        Task completed = Task.WhenAny(waitTask, Task.Delay(ProcessTimeout)).GetAwaiter().GetResult();
+
+        if (completed != waitTask)
+        {
+            try
+            {
+                gifsicleProcess.Kill(entireProcessTree: true);
+            }
+            catch { }
+            throw new TimeoutException($"The process did not exit within {ProcessTimeout.TotalSeconds} seconds. Command: {startInfo.FileName} {startInfo.Arguments}");
+        }
+
+        Task.WaitAll(outputTask, errorTask);
+        return (outputTask.Result, errorTask.Result);
     }
 
     public static void OptimizeGif(string inputPath, string outputPath, GifsicleOptions? options = null)
