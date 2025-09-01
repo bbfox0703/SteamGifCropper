@@ -17,228 +17,192 @@ namespace GifProcessorApp
 
         private void InitializeComponent()
         {
-            this.lblGif = new System.Windows.Forms.Label();
-            this.txtGifPath = new System.Windows.Forms.TextBox();
-            this.btnBrowse = new System.Windows.Forms.Button();
-            this.lblOriginalLabel = new System.Windows.Forms.Label();
-            this.lblOriginal = new System.Windows.Forms.Label();
-            this.lblWidth = new System.Windows.Forms.Label();
-            this.numWidth = new System.Windows.Forms.NumericUpDown();
-            this.lblHeight = new System.Windows.Forms.Label();
-            this.numHeight = new System.Windows.Forms.NumericUpDown();
-            this.lblFps = new System.Windows.Forms.Label();
-            this.numFps = new System.Windows.Forms.NumericUpDown();
-            this.chkLockRatio = new System.Windows.Forms.CheckBox();
-            this.btnOk = new System.Windows.Forms.Button();
-            this.btnCancel = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.numWidth)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numHeight)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numFps)).BeginInit();
-            this.SuspendLayout();
+            lblGif = new System.Windows.Forms.Label();
+            txtGifPath = new System.Windows.Forms.TextBox();
+            btnBrowse = new System.Windows.Forms.Button();
+            lblOriginalLabel = new System.Windows.Forms.Label();
+            lblOriginal = new System.Windows.Forms.Label();
+            lblWidth = new System.Windows.Forms.Label();
+            numWidth = new System.Windows.Forms.NumericUpDown();
+            lblHeight = new System.Windows.Forms.Label();
+            numHeight = new System.Windows.Forms.NumericUpDown();
+            lblFps = new System.Windows.Forms.Label();
+            numFps = new System.Windows.Forms.NumericUpDown();
+            chkLockRatio = new System.Windows.Forms.CheckBox();
+            btnOk = new System.Windows.Forms.Button();
+            btnCancel = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)numWidth).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numHeight).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numFps).BeginInit();
+            SuspendLayout();
             // 
             // lblGif
             // 
-            this.lblGif.AutoSize = true;
-            this.lblGif.Location = new System.Drawing.Point(12, 15);
-            this.lblGif.Name = "lblGif";
-            this.lblGif.Size = new System.Drawing.Size(27, 15);
-            this.lblGif.TabIndex = 0;
-            this.lblGif.Text = "GIF:";
+            lblGif.AutoSize = true;
+            lblGif.Location = new System.Drawing.Point(12, 15);
+            lblGif.Name = "lblGif";
+            lblGif.Size = new System.Drawing.Size(28, 15);
+            lblGif.TabIndex = 0;
+            lblGif.Text = "GIF:";
             // 
             // txtGifPath
             // 
-            this.txtGifPath.Location = new System.Drawing.Point(60, 12);
-            this.txtGifPath.Name = "txtGifPath";
-            this.txtGifPath.Size = new System.Drawing.Size(260, 23);
-            this.txtGifPath.TabIndex = 1;
+            txtGifPath.Location = new System.Drawing.Point(60, 12);
+            txtGifPath.Name = "txtGifPath";
+            txtGifPath.Size = new System.Drawing.Size(260, 23);
+            txtGifPath.TabIndex = 1;
             // 
             // btnBrowse
             // 
-            this.btnBrowse.Location = new System.Drawing.Point(326, 11);
-            this.btnBrowse.Name = "btnBrowse";
-            this.btnBrowse.Size = new System.Drawing.Size(75, 25);
-            this.btnBrowse.TabIndex = 2;
-            this.btnBrowse.Text = "Browse";
-            this.btnBrowse.UseVisualStyleBackColor = true;
-            this.btnBrowse.Click += new System.EventHandler(this.BtnBrowse_Click);
+            btnBrowse.Location = new System.Drawing.Point(326, 11);
+            btnBrowse.Name = "btnBrowse";
+            btnBrowse.Size = new System.Drawing.Size(75, 25);
+            btnBrowse.TabIndex = 2;
+            btnBrowse.Text = "Browse";
+            btnBrowse.UseVisualStyleBackColor = true;
+            btnBrowse.Click += BtnBrowse_Click;
             // 
             // lblOriginalLabel
             // 
-            this.lblOriginalLabel.AutoSize = true;
-            this.lblOriginalLabel.Location = new System.Drawing.Point(12, 45);
-            this.lblOriginalLabel.Name = "lblOriginalLabel";
-            this.lblOriginalLabel.Size = new System.Drawing.Size(53, 15);
-            this.lblOriginalLabel.TabIndex = 3;
-            this.lblOriginalLabel.Text = "Original:";
+            lblOriginalLabel.AutoSize = true;
+            lblOriginalLabel.Location = new System.Drawing.Point(12, 45);
+            lblOriginalLabel.Name = "lblOriginalLabel";
+            lblOriginalLabel.Size = new System.Drawing.Size(55, 15);
+            lblOriginalLabel.TabIndex = 3;
+            lblOriginalLabel.Text = "Original:";
             // 
             // lblOriginal
             // 
-            this.lblOriginal.AutoSize = true;
-            this.lblOriginal.Location = new System.Drawing.Point(71, 45);
-            this.lblOriginal.Name = "lblOriginal";
-            this.lblOriginal.Size = new System.Drawing.Size(0, 15);
-            this.lblOriginal.TabIndex = 4;
+            lblOriginal.AutoSize = true;
+            lblOriginal.Location = new System.Drawing.Point(71, 45);
+            lblOriginal.Name = "lblOriginal";
+            lblOriginal.Size = new System.Drawing.Size(0, 15);
+            lblOriginal.TabIndex = 4;
             // 
             // lblWidth
             // 
-            this.lblWidth.AutoSize = true;
-            this.lblWidth.Location = new System.Drawing.Point(12, 80);
-            this.lblWidth.Name = "lblWidth";
-            this.lblWidth.Size = new System.Drawing.Size(42, 15);
-            this.lblWidth.TabIndex = 5;
-            this.lblWidth.Text = "Width:";
+            lblWidth.AutoSize = true;
+            lblWidth.Location = new System.Drawing.Point(12, 80);
+            lblWidth.Name = "lblWidth";
+            lblWidth.Size = new System.Drawing.Size(44, 15);
+            lblWidth.TabIndex = 5;
+            lblWidth.Text = "Width:";
             // 
             // numWidth
             // 
-            this.numWidth.Location = new System.Drawing.Point(71, 78);
-            this.numWidth.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.numWidth.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numWidth.Name = "numWidth";
-            this.numWidth.Size = new System.Drawing.Size(120, 23);
-            this.numWidth.TabIndex = 6;
-            this.numWidth.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numWidth.ValueChanged += new System.EventHandler(this.NumWidth_ValueChanged);
+            numWidth.Location = new System.Drawing.Point(71, 78);
+            numWidth.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            numWidth.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numWidth.Name = "numWidth";
+            numWidth.Size = new System.Drawing.Size(120, 23);
+            numWidth.TabIndex = 3;
+            numWidth.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            numWidth.ValueChanged += NumWidth_ValueChanged;
             // 
             // lblHeight
             // 
-            this.lblHeight.AutoSize = true;
-            this.lblHeight.Location = new System.Drawing.Point(12, 109);
-            this.lblHeight.Name = "lblHeight";
-            this.lblHeight.Size = new System.Drawing.Size(46, 15);
-            this.lblHeight.TabIndex = 7;
-            this.lblHeight.Text = "Height:";
+            lblHeight.AutoSize = true;
+            lblHeight.Location = new System.Drawing.Point(12, 109);
+            lblHeight.Name = "lblHeight";
+            lblHeight.Size = new System.Drawing.Size(48, 15);
+            lblHeight.TabIndex = 7;
+            lblHeight.Text = "Height:";
             // 
             // numHeight
             // 
-            this.numHeight.Location = new System.Drawing.Point(71, 107);
-            this.numHeight.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.numHeight.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numHeight.Name = "numHeight";
-            this.numHeight.Size = new System.Drawing.Size(120, 23);
-            this.numHeight.TabIndex = 8;
-            this.numHeight.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numHeight.ValueChanged += new System.EventHandler(this.NumHeight_ValueChanged);
+            numHeight.Location = new System.Drawing.Point(71, 107);
+            numHeight.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            numHeight.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numHeight.Name = "numHeight";
+            numHeight.Size = new System.Drawing.Size(120, 23);
+            numHeight.TabIndex = 4;
+            numHeight.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            numHeight.ValueChanged += NumHeight_ValueChanged;
             // 
             // lblFps
             // 
-            this.lblFps.AutoSize = true;
-            this.lblFps.Location = new System.Drawing.Point(12, 138);
-            this.lblFps.Name = "lblFps";
-            this.lblFps.Size = new System.Drawing.Size(28, 15);
-            this.lblFps.TabIndex = 9;
-            this.lblFps.Text = "FPS:";
+            lblFps.AutoSize = true;
+            lblFps.Location = new System.Drawing.Point(12, 138);
+            lblFps.Name = "lblFps";
+            lblFps.Size = new System.Drawing.Size(30, 15);
+            lblFps.TabIndex = 9;
+            lblFps.Text = "FPS:";
             // 
             // numFps
             // 
-            this.numFps.Location = new System.Drawing.Point(71, 136);
-            this.numFps.Maximum = new decimal(new int[] {
-            120,
-            0,
-            0,
-            0});
-            this.numFps.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numFps.Name = "numFps";
-            this.numFps.Size = new System.Drawing.Size(120, 23);
-            this.numFps.TabIndex = 10;
-            this.numFps.Value = new decimal(new int[] {
-            15,
-            0,
-            0,
-            0});
+            numFps.Location = new System.Drawing.Point(71, 136);
+            numFps.Maximum = new decimal(new int[] { 120, 0, 0, 0 });
+            numFps.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numFps.Name = "numFps";
+            numFps.Size = new System.Drawing.Size(120, 23);
+            numFps.TabIndex = 5;
+            numFps.Value = new decimal(new int[] { 15, 0, 0, 0 });
             // 
             // chkLockRatio
             // 
-            this.chkLockRatio.AutoSize = true;
-            this.chkLockRatio.Checked = true;
-            this.chkLockRatio.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkLockRatio.Location = new System.Drawing.Point(210, 92);
-            this.chkLockRatio.Name = "chkLockRatio";
-            this.chkLockRatio.Size = new System.Drawing.Size(128, 19);
-            this.chkLockRatio.TabIndex = 11;
-            this.chkLockRatio.Text = "Lock aspect ratio";
-            this.chkLockRatio.UseVisualStyleBackColor = true;
-            this.chkLockRatio.CheckedChanged += new System.EventHandler(this.ChkLockRatio_CheckedChanged);
+            chkLockRatio.AutoSize = true;
+            chkLockRatio.Checked = true;
+            chkLockRatio.CheckState = System.Windows.Forms.CheckState.Checked;
+            chkLockRatio.Location = new System.Drawing.Point(210, 92);
+            chkLockRatio.Name = "chkLockRatio";
+            chkLockRatio.Size = new System.Drawing.Size(121, 19);
+            chkLockRatio.TabIndex = 6;
+            chkLockRatio.Text = "Lock aspect ratio";
+            chkLockRatio.UseVisualStyleBackColor = true;
+            chkLockRatio.CheckedChanged += ChkLockRatio_CheckedChanged;
             // 
             // btnOk
             // 
-            this.btnOk.Location = new System.Drawing.Point(245, 175);
-            this.btnOk.Name = "btnOk";
-            this.btnOk.Size = new System.Drawing.Size(75, 25);
-            this.btnOk.TabIndex = 12;
-            this.btnOk.Text = "OK";
-            this.btnOk.UseVisualStyleBackColor = true;
-            this.btnOk.Click += new System.EventHandler(this.BtnOk_Click);
+            btnOk.Location = new System.Drawing.Point(245, 175);
+            btnOk.Name = "btnOk";
+            btnOk.Size = new System.Drawing.Size(75, 25);
+            btnOk.TabIndex = 7;
+            btnOk.Text = "OK";
+            btnOk.UseVisualStyleBackColor = true;
+            btnOk.Click += BtnOk_Click;
             // 
             // btnCancel
             // 
-            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(326, 175);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 25);
-            this.btnCancel.TabIndex = 13;
-            this.btnCancel.Text = "Cancel";
-            this.btnCancel.UseVisualStyleBackColor = true;
+            btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            btnCancel.Location = new System.Drawing.Point(326, 175);
+            btnCancel.Name = "btnCancel";
+            btnCancel.Size = new System.Drawing.Size(75, 25);
+            btnCancel.TabIndex = 8;
+            btnCancel.Text = "Cancel";
+            btnCancel.UseVisualStyleBackColor = true;
             // 
             // ResizeNfpsGifDialog
             // 
-            this.AcceptButton = this.btnOk;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(413, 212);
-            this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.btnOk);
-            this.Controls.Add(this.chkLockRatio);
-            this.Controls.Add(this.numFps);
-            this.Controls.Add(this.lblFps);
-            this.Controls.Add(this.numHeight);
-            this.Controls.Add(this.lblHeight);
-            this.Controls.Add(this.numWidth);
-            this.Controls.Add(this.lblWidth);
-            this.Controls.Add(this.lblOriginal);
-            this.Controls.Add(this.lblOriginalLabel);
-            this.Controls.Add(this.btnBrowse);
-            this.Controls.Add(this.txtGifPath);
-            this.Controls.Add(this.lblGif);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "ResizeNfpsGifDialog";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Resize GIF";
-            ((System.ComponentModel.ISupportInitialize)(this.numWidth)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numHeight)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numFps)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AcceptButton = btnOk;
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            CancelButton = btnCancel;
+            ClientSize = new System.Drawing.Size(413, 212);
+            Controls.Add(btnCancel);
+            Controls.Add(btnOk);
+            Controls.Add(chkLockRatio);
+            Controls.Add(numFps);
+            Controls.Add(lblFps);
+            Controls.Add(numHeight);
+            Controls.Add(lblHeight);
+            Controls.Add(numWidth);
+            Controls.Add(lblWidth);
+            Controls.Add(lblOriginal);
+            Controls.Add(lblOriginalLabel);
+            Controls.Add(btnBrowse);
+            Controls.Add(txtGifPath);
+            Controls.Add(lblGif);
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "ResizeNfpsGifDialog";
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            Text = "Resize GIF";
+            ((System.ComponentModel.ISupportInitialize)numWidth).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numHeight).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numFps).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
