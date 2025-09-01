@@ -196,10 +196,6 @@ namespace GifProcessorApp
             collection.Coalesce();
             int newHeight = canvasHeight + HeightExtension;
             
-            // Calculate target frame delay in centiseconds (1/100th of a second)
-            // For 15fps: 100/15 ≈ 6.67 centiseconds, rounded to 7
-            uint targetDelay = (uint)Math.Round(100.0 / targetFramerate);
-
             int totalFrames = collection.Count * ranges.Length;
             int currentFrame = 0;
 
@@ -230,8 +226,9 @@ namespace GifProcessorApp
                             newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
                         }
 
-                        // Set animation delay to target framerate
-                        newImage.AnimationDelay = targetDelay;
+                        // Preserve animation timing from source frame
+                        newImage.AnimationDelay = frame.AnimationDelay;
+                        newImage.AnimationTicksPerSecond = frame.AnimationTicksPerSecond;
                         newImage.GifDisposeMethod = GifDisposeMethod.Background;
 
                         partCollection.Add(newImage);
@@ -745,8 +742,6 @@ namespace GifProcessorApp
             var ranges = GetCropRanges(canvasWidth);
             int canvasHeight = (int)collection[0].Height;
             int newHeight = canvasHeight + HeightExtension;
-            uint targetDelay = (uint)Math.Round(100.0 / targetFramerate);
-
             Directory.CreateDirectory(outputDirectory);
 
             for (int i = 0; i < ranges.Length; i++)
@@ -762,7 +757,8 @@ namespace GifProcessorApp
                     croppedFrame.Crop(cropGeometry);
                     croppedFrame.ResetPage();
                     newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
-                    newImage.AnimationDelay = targetDelay;
+                    newImage.AnimationDelay = frame.AnimationDelay;
+                    newImage.AnimationTicksPerSecond = frame.AnimationTicksPerSecond;
                     newImage.GifDisposeMethod = GifDisposeMethod.Background;
                     partCollection.Add(newImage.Clone());
                 }
