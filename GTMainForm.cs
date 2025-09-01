@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using ImageMagick;
 
 namespace GifProcessorApp
 {
@@ -37,6 +38,8 @@ namespace GifProcessorApp
 
                 // Register for theme changes
                 SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
+
+                UpdateResourceLimitLabel();
             }
             catch (Exception ex)
             {
@@ -316,12 +319,28 @@ namespace GifProcessorApp
                     lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready;
                 }
 
+                UpdateResourceLimitLabel();
+
                 this.Invalidate(true);
                 this.Update();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Failed to update UI text: {ex.Message}");
+            }
+        }
+
+        private void UpdateResourceLimitLabel()
+        {
+            try
+            {
+                ulong memMb = ResourceLimits.Memory / (1024UL * 1024UL);
+                ulong diskMb = ResourceLimits.Disk / (1024UL * 1024UL);
+                lblResourceLimitDesc.Text = string.Format(SteamGifCropper.Properties.Resources.Label_ResourceLimitDesc, memMb, diskMb);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to update resource limit label: {ex.Message}");
             }
         }
 

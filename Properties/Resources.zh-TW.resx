@@ -524,6 +524,9 @@
   <data name="Label_GifsicleNotice" xml:space="preserve">
     <value>注意：gifsicle.exe 必須位於「系統 PATH」中</value>
   </data>
+  <data name="Label_ResourceLimitDesc" xml:space="preserve">
+    <value>資源限制：記憶體 {0} MB / 磁碟 {1} MB</value>
+  </data>
   <data name="MergeDialog_Instructions" xml:space="preserve">
     <value>請選擇2-5個GIF檔案進行合併（順序為由左至右）：</value>
   </data>

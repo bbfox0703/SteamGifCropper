@@ -1157,6 +1157,15 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Label_GifsicleNotice", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Resource limit: mem: {0} MB / disk: {1} MB.
+        /// </summary>
+        internal static string Label_ResourceLimitDesc {
+            get {
+                return ResourceManager.GetString("Label_ResourceLimitDesc", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Please select 2-5 GIF files to merge (in order from left to right):.

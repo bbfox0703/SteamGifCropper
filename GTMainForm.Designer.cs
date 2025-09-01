@@ -491,7 +491,7 @@
             lblResourceLimitDesc.Name = "lblResourceLimitDesc";
             lblResourceLimitDesc.Size = new System.Drawing.Size(234, 15);
             lblResourceLimitDesc.TabIndex = 15;
-            lblResourceLimitDesc.Text = "Resource limit: mem: ?? MB / disk: ?? MB";
+            lblResourceLimitDesc.Text = string.Format(SteamGifCropper.Properties.Resources.Label_ResourceLimitDesc, "??", "??");
             // 
             // GifToolMainForm
             // 
