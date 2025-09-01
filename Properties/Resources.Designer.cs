@@ -349,7 +349,7 @@ namespace SteamGifCropper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to fps.
+        ///   Looks up a localized string similar to fps for split GIF.
         /// </summary>
         internal static string Label_FPS {
             get {
