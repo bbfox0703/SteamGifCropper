@@ -260,6 +260,7 @@ namespace GifProcessorApp
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ScrollStaticImageDialog));
             lblInput = new Label();
             txtInputPath = new TextBox();
             btnBrowseInput = new Button();
@@ -453,6 +454,7 @@ namespace GifProcessorApp
             Controls.Add(txtInputPath);
             Controls.Add(lblInput);
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "ScrollStaticImageDialog";

@@ -203,6 +203,7 @@ namespace GifProcessorApp
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Mp4ToGifDialog));
             lblInput = new Label();
             txtInputPath = new TextBox();
             btnBrowseInput = new Button();
@@ -237,7 +238,7 @@ namespace GifProcessorApp
             lblInput.Name = "lblInput";
             lblInput.Size = new System.Drawing.Size(132, 20);
             lblInput.TabIndex = 0;
-            lblInput.Text = Resources.Mp4Dialog_InputLabel;
+            lblInput.Text = "Input MP4 file:";
             // 
             // txtInputPath
             // 
@@ -266,7 +267,7 @@ namespace GifProcessorApp
             lblOutput.Name = "lblOutput";
             lblOutput.Size = new System.Drawing.Size(110, 22);
             lblOutput.TabIndex = 3;
-            lblOutput.Text = Resources.Mp4Dialog_OutputLabel;
+            lblOutput.Text = "Output GIF file:";
             // 
             // txtOutputPath
             // 
@@ -295,7 +296,7 @@ namespace GifProcessorApp
             lblStartTime.Name = "lblStartTime";
             lblStartTime.Size = new System.Drawing.Size(68, 23);
             lblStartTime.TabIndex = 6;
-            lblStartTime.Text = Resources.Mp4Dialog_StartTimeLabel;
+            lblStartTime.Text = "Start time:";
             // 
             // lblMinutes
             // 
@@ -304,7 +305,7 @@ namespace GifProcessorApp
             lblMinutes.Name = "lblMinutes";
             lblMinutes.Size = new System.Drawing.Size(39, 23);
             lblMinutes.TabIndex = 7;
-            lblMinutes.Text = Resources.Mp4Dialog_Min;
+            lblMinutes.Text = "min:";
             // 
             // numStartMinutes
             // 
@@ -322,7 +323,7 @@ namespace GifProcessorApp
             lblSeconds.Name = "lblSeconds";
             lblSeconds.Size = new System.Drawing.Size(39, 23);
             lblSeconds.TabIndex = 9;
-            lblSeconds.Text = Resources.Mp4Dialog_Sec;
+            lblSeconds.Text = "sec:";
             // 
             // numStartSeconds
             // 
@@ -340,7 +341,7 @@ namespace GifProcessorApp
             lblMs.Name = "lblMs";
             lblMs.Size = new System.Drawing.Size(40, 23);
             lblMs.TabIndex = 11;
-            lblMs.Text = Resources.Mp4Dialog_Ms;
+            lblMs.Text = "ms:";
             // 
             // numStartMilliseconds
             // 
@@ -359,7 +360,7 @@ namespace GifProcessorApp
             lblDuration.Name = "lblDuration";
             lblDuration.Size = new System.Drawing.Size(132, 23);
             lblDuration.TabIndex = 13;
-            lblDuration.Text = Resources.Mp4Dialog_DurationLabel;
+            lblDuration.Text = "Duration (max 30s):";
             // 
             // numDurationSeconds
             // 
@@ -381,7 +382,7 @@ namespace GifProcessorApp
             lblDurationUnit.Name = "lblDurationUnit";
             lblDurationUnit.Size = new System.Drawing.Size(71, 24);
             lblDurationUnit.TabIndex = 15;
-            lblDurationUnit.Text = Resources.Mp4Dialog_Seconds;
+            lblDurationUnit.Text = "seconds";
             // 
             // btnOK
             // 
@@ -414,7 +415,7 @@ namespace GifProcessorApp
             linkFFmpegHelp.Size = new System.Drawing.Size(266, 42);
             linkFFmpegHelp.TabIndex = 18;
             linkFFmpegHelp.TabStop = true;
-            linkFFmpegHelp.Text = Resources.Mp4Dialog_FFmpegHelp;
+            linkFFmpegHelp.Text = "How to install FFmpeg? (Required for MP4 conversion)";
             linkFFmpegHelp.LinkClicked += LinkFFmpegHelp_LinkClicked;
             // 
             // chkUseGPU
@@ -437,7 +438,7 @@ namespace GifProcessorApp
             lblGPUStatus.Name = "lblGPUStatus";
             lblGPUStatus.Size = new System.Drawing.Size(110, 23);
             lblGPUStatus.TabIndex = 19;
-            lblGPUStatus.Text = Resources.Mp4Dialog_CheckingGPU;
+            lblGPUStatus.Text = "Checking GPU...";
             lblGPUStatus.Visible = false;
             // 
             // Mp4ToGifDialog
@@ -469,13 +470,14 @@ namespace GifProcessorApp
             Controls.Add(chkUseGPU);
             Controls.Add(linkFFmpegHelp);
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             ImeMode = ImeMode.Off;
             Margin = new Padding(41, 19, 41, 19);
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "Mp4ToGifDialog";
             StartPosition = FormStartPosition.CenterParent;
-            Text = Resources.Mp4Dialog_Title;
+            Text = "MP4 to GIF Converter";
             ((System.ComponentModel.ISupportInitialize)numStartMinutes).EndInit();
             ((System.ComponentModel.ISupportInitialize)numStartSeconds).EndInit();
             ((System.ComponentModel.ISupportInitialize)numStartMilliseconds).EndInit();

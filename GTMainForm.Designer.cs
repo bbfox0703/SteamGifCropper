@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GifToolMainForm));
             btnSplitGif = new System.Windows.Forms.Button();
             btnResizeGif766 = new System.Windows.Forms.Button();
             btnWriteTailByte = new System.Windows.Forms.Button();
@@ -519,6 +520,7 @@
             Controls.Add(btnResizeGif766);
             Controls.Add(btnSplitGif);
             Controls.Add(btnMerge2to5GifToOne);
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new System.Windows.Forms.Padding(2);
             Name = "GifToolMainForm";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
