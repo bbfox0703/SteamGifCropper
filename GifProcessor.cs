@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using FFMpegCore;
 using FFMpegCore.Exceptions;
+using FFMpegCore.Pipes;
 using ImageMagick;
 using SteamGifCropper.Properties;
 
@@ -1569,10 +1570,14 @@ namespace GifProcessorApp
 
         private static async Task ProcessWithOptimizedCpu(string inputPath, string outputPath, TimeSpan startTime, TimeSpan duration, int targetFramerate = 25)
         {
-            // Optimized CPU processing - single-pass with minimal overhead
+            // Optimized CPU processing using streaming to avoid loading entire files
+            await using var inputStream = File.OpenRead(inputPath);
+            await using var outputStream = File.Open(outputPath, FileMode.Create, FileAccess.Write);
+
             await FFMpegArguments
-                .FromFileInput(inputPath)
-                .OutputToFile(outputPath, true, options => options
+                .FromPipeInput(new StreamPipeSource(inputStream))
+                .OutputToPipe(new StreamPipeSink(outputStream), options => options
+                    .ForceFormat("gif")
                     .Seek(startTime)
                     .WithDuration(duration)
                     .WithFramerate(targetFramerate)
@@ -1687,19 +1692,18 @@ namespace GifProcessorApp
 
                     mainForm.pBarTaskStatus.Value = 50;
                     await Task.Delay(1);
-                    // Reverse GIF directly with palettegen + paletteuse
+                    // Reverse GIF directly with palettegen + paletteuse using streaming to limit memory usage
                     mainForm.pBarTaskStatus.Value = 75;
+                    await using var reverseInput = File.OpenRead(inputFilePath);
+                    await using var reverseOutput = File.Open(outputFilePath, FileMode.Create, FileAccess.Write);
                     await FFMpegArguments
-                        .FromFileInput(inputFilePath) // Only one input
-                        .OutputToFile(
-                            outputFilePath,
-                            overwrite: true,
-                            options => options
-                                .WithCustomArgument(
-                                    @"-filter_complex ""[0:v]reverse,split[s0][s1];[s0]palettegen=stats_mode=single[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3"""
-                                )
-                                .WithFramerate(targetFramerate)
-                        )
+                        .FromPipeInput(new StreamPipeSource(reverseInput))
+                        .OutputToPipe(new StreamPipeSink(reverseOutput), options => options
+                            .ForceFormat("gif")
+                            .WithCustomArgument(
+                                @"-filter_complex ""[0:v]reverse,split[s0][s1];[s0]palettegen=stats_mode=single[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3"""
+                            )
+                            .WithFramerate(targetFramerate))
                         .ProcessAsynchronously();
 
                     mainForm.pBarTaskStatus.Value = 100;
