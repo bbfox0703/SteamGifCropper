@@ -310,18 +310,17 @@ namespace GifProcessorApp
                 UpdateProgress(mainForm.pBarTaskStatus, 0, 100);
                 UpdateStatusLabel(mainForm, SteamGifCropper.Properties.Resources.Status_ValidatingProcessing);
 
-                // Step 2: Load and validate all GIF files
-                var collections = LoadAndValidateGifs(gifFiles, mainForm);
-                if (collections == null) return;
-
-                UpdateProgress(mainForm.pBarTaskStatus, 20, 100);
-
-                // Step 3: Resize GIFs to specific widths (153, 153, 154, 153, 153)
-                var resizedCollections = ResizeGifsToSpecificWidths(collections, mainForm);
+                // Step 2 & 3: Load/validate and resize GIFs to specific widths
+                var resizedCollections = ResizeGifsToSpecificWidths(LoadAndValidateGifs(gifFiles, mainForm), mainForm);
+                if (resizedCollections.Any(c => c == null))
+                {
+                    return;
+                }
                 UpdateProgress(mainForm.pBarTaskStatus, 40, 100);
 
                 // Step 4: Synchronize to shortest duration
                 var syncedCollections = SynchronizeToShortestDuration(resizedCollections, mainForm);
+                resizedCollections = null;
                 UpdateProgress(mainForm.pBarTaskStatus, 60, 100);
 
                 // Step 5: Merge horizontally to create 766px wide GIF
@@ -355,6 +354,7 @@ namespace GifProcessorApp
                 {
                     collection.Dispose();
                 }
+                syncedCollections = null;
             }
             catch (Exception ex)
             {
@@ -395,87 +395,85 @@ namespace GifProcessorApp
             return selectedFiles.ToArray();
         }
 
-        private static MagickImageCollection[] LoadAndValidateGifs(string[] gifFiles, GifToolMainForm mainForm)
+        private static IEnumerable<MagickImageCollection> LoadAndValidateGifs(string[] gifFiles, GifToolMainForm mainForm)
         {
-            var collections = new MagickImageCollection[5];
-
-            try
+            for (int i = 0; i < gifFiles.Length; i++)
             {
-                for (int i = 0; i < 5; i++)
+                MagickImageCollection collection = null;
+                try
                 {
-                    collections[i] = new MagickImageCollection(gifFiles[i]);
-                    
+                    collection = new MagickImageCollection(gifFiles[i]);
+
                     // Validate that GIF has palette colors (8-bit)
-                    if (collections[i][0].ColorType != ColorType.Palette && collections[i][0].ColorType != ColorType.PaletteAlpha)
+                    if (collection[0].ColorType != ColorType.Palette && collection[0].ColorType != ColorType.PaletteAlpha)
                     {
                         WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
                             string.Format(SteamGifCropper.Properties.Resources.Error_InvalidColorType,
-                                          i + 1, Path.GetFileName(gifFiles[i]), collections[i][0].ColorType),
+                                          i + 1, Path.GetFileName(gifFiles[i]), collection[0].ColorType),
                             SteamGifCropper.Properties.Resources.Title_InvalidColorType,
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        
-                        // Cleanup loaded collections
-                        for (int j = 0; j <= i; j++)
-                        {
-                            collections[j]?.Dispose();
-                        }
-                        return null;
+
+                        collection.Dispose();
+                        yield break;
                     }
+
+                    yield return collection;
                 }
-                return collections;
-            }
-            catch (Exception ex)
-            {
-                // Cleanup on error
-                foreach (var collection in collections)
+                catch
                 {
                     collection?.Dispose();
+                    throw;
                 }
-                throw new InvalidOperationException($"Failed to load and validate GIF files: {ex.Message}", ex);
             }
         }
 
-        private static MagickImageCollection[] ResizeGifsToSpecificWidths(MagickImageCollection[] collections, GifToolMainForm mainForm)
+        private static MagickImageCollection[] ResizeGifsToSpecificWidths(IEnumerable<MagickImageCollection> collections, GifToolMainForm mainForm)
         {
             int[] targetWidths = { 153, 153, 154, 153, 153 };
             var resizedCollections = new MagickImageCollection[5];
 
             try
             {
-                for (int i = 0; i < 5; i++)
+                int i = 0;
+                foreach (var collection in collections)
                 {
                     mainForm.lblStatus.Text = string.Format(
                         SteamGifCropper.Properties.Resources.Status_ResizingGif,
                         i + 1, targetWidths[i]);
                     resizedCollections[i] = new MagickImageCollection();
-                    
+
                     // Coalesce for proper animation handling
-                    collections[i].Coalesce();
-                    
+                    collection.Coalesce();
+
                     int frameCount = 0;
-                    foreach (var frame in collections[i])
+                    foreach (var frame in collection)
                     {
                         // Resize maintaining aspect ratio
                         frame.Resize((uint)targetWidths[i], 0);
                         resizedCollections[i].Add(frame.Clone());
-                        
+
                         // Update UI every 10 frames to keep responsive
                         if (++frameCount % 10 == 0)
                         {
                             mainForm.lblStatus.Text = string.Format(
                                 SteamGifCropper.Properties.Resources.Status_ResizingGifFrame,
-                                i + 1, frameCount, collections[i].Count);                        }
+                                i + 1, frameCount, collection.Count);
+                        }
                     }
 
                     // Copy animation settings
                     for (int j = 0; j < resizedCollections[i].Count; j++)
                     {
-                        resizedCollections[i][j].AnimationDelay = collections[i][j].AnimationDelay;
-                        
+                        resizedCollections[i][j].AnimationDelay = collection[j].AnimationDelay;
+
                         // Update UI every 50 frames for animation settings
                         if (j % 50 == 0 && j > 0)
-                        {                        }
+                        {
+                        }
                     }
+
+                    collection.Dispose();
+                    i++;
                 }
 
                 return resizedCollections;
@@ -520,9 +518,9 @@ namespace GifProcessorApp
                     UpdateStatusLabel(mainForm, string.Format(
                         SteamGifCropper.Properties.Resources.Status_SynchronizingGif,
                         i + 1));
-                    
+
                     syncedCollections[i] = new MagickImageCollection();
-                    
+
                     if (Math.Abs(durations[i] - shortestDuration) < 0.0001)
                     {
                         // Already the shortest, copy as-is
@@ -530,7 +528,7 @@ namespace GifProcessorApp
                         foreach (var frame in collections[i])
                         {
                             syncedCollections[i].Add(frame.Clone());
-                            
+
                             // Update every 20 frames
                             if (++frameCount % 20 == 0)
                             {
@@ -567,12 +565,15 @@ namespace GifProcessorApp
                             }
                         }
                     }
-                    
+
                     // Set loop animation for each frame
                     foreach (var frame in syncedCollections[i])
                     {
                         frame.GifDisposeMethod = GifDisposeMethod.Background;
                     }
+
+                    collections[i].Dispose();
+                    collections[i] = null;
                 }
 
                 return syncedCollections;

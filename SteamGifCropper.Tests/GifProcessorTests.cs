@@ -149,7 +149,7 @@ public class GifProcessorTests
         }
         foreach (var col in collections)
         {
-            col.Dispose();
+            col?.Dispose();
         }
     }
 
