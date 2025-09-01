@@ -135,6 +135,27 @@ namespace GifProcessorApp
             }
         }
 
+        private static void UpdateFrameProgressByFrame(GifToolMainForm mainForm, int currentFrame, int totalFrames)
+        {
+            if (mainForm == null || totalFrames <= 0) return;
+
+            void UpdateUI()
+            {
+                mainForm.pBarTaskStatus.Value = Math.Min(currentFrame, totalFrames);
+                int percent = Math.Min((int)((double)currentFrame / totalFrames * 100), 100);
+                mainForm.lblStatus.Text = $"{currentFrame}/{totalFrames} ({percent}%)";
+            }
+
+            if (mainForm.InvokeRequired)
+            {
+                mainForm.BeginInvoke((Action)UpdateUI);
+            }
+            else
+            {
+                UpdateUI();
+            }
+        }
+
         public static void StartProcessing(GifToolMainForm mainForm)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -965,21 +986,50 @@ namespace GifProcessorApp
                 throw new InvalidOperationException($"Failed to modify GIF file {filePath}: {ex.Message}", ex);
             }
         }
-        public static void ResizeGifTo766(string inputFilePath, string outputFilePath)
+        public static void ResizeGifTo766(string inputFilePath, string outputFilePath, GifToolMainForm mainForm = null)
         {
-            using (var collection = new MagickImageCollection(inputFilePath))
+            try
             {
-                collection.Coalesce();
-
-                foreach (var frame in collection)
+                using (var collection = new MagickImageCollection(inputFilePath))
                 {
-                    frame.ResetPage();
-                    frame.Resize(SupportedWidth1, 0);
-                    frame.Settings.SetDefine("compress", "LZW");
-                }
+                    collection.Coalesce();
 
-                collection.Optimize();
-                collection.Write(outputFilePath);
+                    int totalFrames = collection.Count;
+                    int currentFrame = 0;
+
+                    if (mainForm != null)
+                    {
+                        mainForm.pBarTaskStatus.Minimum = 0;
+                        mainForm.pBarTaskStatus.Maximum = totalFrames;
+                        mainForm.pBarTaskStatus.Value = 0;
+                        UpdateFrameProgressByFrame(mainForm, 0, totalFrames);
+                    }
+
+                    foreach (var frame in collection)
+                    {
+                        frame.ResetPage();
+                        frame.Resize(SupportedWidth1, 0);
+                        frame.Settings.SetDefine("compress", "LZW");
+
+                        currentFrame++;
+                        if (mainForm != null)
+                        {
+                            UpdateFrameProgressByFrame(mainForm, currentFrame, totalFrames);
+                        }
+                    }
+
+                    collection.Optimize();
+                    collection.Write(outputFilePath);
+                }
+            }
+            finally
+            {
+                if (mainForm != null)
+                {
+                    mainForm.pBarTaskStatus.Value = 0;
+                    mainForm.pBarTaskStatus.Maximum = 100;
+                    mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Idle;
+                }
             }
         }
 
@@ -1003,7 +1053,7 @@ namespace GifProcessorApp
                     mainForm.pBarTaskStatus.Visible = true;
                     UpdateStatusLabel(mainForm, SteamGifCropper.Properties.Resources.Status_Loading);
 
-                    ResizeGifTo766(inputFilePath, outputFilePath);
+                    ResizeGifTo766(inputFilePath, outputFilePath, mainForm);
 
                     WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
                                     string.Format(SteamGifCropper.Properties.Resources.Message_ResizeComplete,
