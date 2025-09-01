@@ -1257,7 +1257,8 @@ namespace GifProcessorApp
             try
             {
                 mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Message_AnalyzingGifs;
-                await Task.Delay(1); // Allow UI update                var widths = new List<int>();
+                await Task.Delay(1); // Allow UI update
+                var widths = new List<int>();
                 int minFrameCount = int.MaxValue;
                 double shortestDuration = double.MaxValue;
 
