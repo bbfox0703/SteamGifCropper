@@ -680,7 +680,7 @@ namespace GifProcessorApp
             try
             {
                 using var stream = File.Open(outputPath, FileMode.Create);
-                var defines = new GifWriteDefines { RepeatCount = 0, WriteMode = GifWriteMode.Gif };
+                var defines = new GifWriteDefines { RepeatCount = 0 };
 
                 for (int frameIndex = 0; frameIndex < maxFrames; frameIndex++)
                 {
@@ -724,8 +724,14 @@ namespace GifProcessorApp
                     // Remap frame to shared palette before writing
                     canvas.Remap(palette, mapSettings);
 
+                    defines.WriteMode = frameIndex switch
+                    {
+                        0 => GifWriteMode.Gif,
+                        _ when frameIndex == maxFrames - 1 => GifWriteMode.LastFrame,
+                        _ => GifWriteMode.Frame
+                    };
+
                     canvas.Write(stream, defines);
-                    defines.WriteMode = GifWriteMode.Frame;
                 }
             }
             finally
