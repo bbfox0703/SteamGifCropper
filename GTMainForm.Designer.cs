@@ -67,6 +67,7 @@
             btnScrollStaticImage = new System.Windows.Forms.Button();
             btnOverlayGIF = new System.Windows.Forms.Button();
             btnResizeNfpsGIF = new System.Windows.Forms.Button();
+            lblResourceLimitDesc = new System.Windows.Forms.Label();
             panelGifsicle.SuspendLayout();
             groupDither.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).BeginInit();
@@ -174,6 +175,8 @@
             panelGifsicle.Controls.Add(label2);
             panelGifsicle.Controls.Add(label1);
             panelGifsicle.Controls.Add(chkGifsicle);
+            panelGifsicle.Controls.Add(numUpDownPalette);
+            panelGifsicle.Controls.Add(lblPaletteDesc);
             panelGifsicle.Dock = System.Windows.Forms.DockStyle.Bottom;
             panelGifsicle.Location = new System.Drawing.Point(0, 290);
             panelGifsicle.Margin = new System.Windows.Forms.Padding(2);
@@ -363,7 +366,7 @@
             // 
             // numUpDownPalette
             // 
-            numUpDownPalette.Location = new System.Drawing.Point(560, 260);
+            numUpDownPalette.Location = new System.Drawing.Point(562, 39);
             numUpDownPalette.Margin = new System.Windows.Forms.Padding(2);
             numUpDownPalette.Maximum = new decimal(new int[] { 256, 0, 0, 0 });
             numUpDownPalette.Minimum = new decimal(new int[] { 32, 0, 0, 0 });
@@ -376,7 +379,7 @@
             // lblPaletteDesc
             // 
             lblPaletteDesc.AutoSize = true;
-            lblPaletteDesc.Location = new System.Drawing.Point(441, 262);
+            lblPaletteDesc.Location = new System.Drawing.Point(443, 41);
             lblPaletteDesc.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblPaletteDesc.Name = "lblPaletteDesc";
             lblPaletteDesc.Size = new System.Drawing.Size(115, 15);
@@ -481,12 +484,22 @@
             btnResizeNfpsGIF.UseVisualStyleBackColor = true;
             btnResizeNfpsGIF.Click += btnResizeNfpsGIF_Click;
             // 
+            // lblResourceLimitDesc
+            // 
+            lblResourceLimitDesc.AutoSize = true;
+            lblResourceLimitDesc.Location = new System.Drawing.Point(239, 262);
+            lblResourceLimitDesc.Name = "lblResourceLimitDesc";
+            lblResourceLimitDesc.Size = new System.Drawing.Size(234, 15);
+            lblResourceLimitDesc.TabIndex = 30;
+            lblResourceLimitDesc.Text = "Resource limit: mem: ?? MB / disk: ?? MB";
+            // 
             // GifToolMainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             ClientSize = new System.Drawing.Size(619, 444);
+            Controls.Add(lblResourceLimitDesc);
             Controls.Add(btnResizeNfpsGIF);
             Controls.Add(btnOverlayGIF);
             Controls.Add(btnScrollStaticImage);
@@ -494,8 +507,6 @@
             Controls.Add(btnReverseGIF);
             Controls.Add(chk5GIFMergeFasterPaletteProcess);
             Controls.Add(panelGifsicle);
-            Controls.Add(numUpDownPalette);
-            Controls.Add(lblPaletteDesc);
             Controls.Add(btnMp4ToGif);
             Controls.Add(lblFPS);
             Controls.Add(lblFramerate);
@@ -567,5 +578,6 @@
         private System.Windows.Forms.Button btnScrollStaticImage;
         private System.Windows.Forms.Button btnOverlayGIF;
         private System.Windows.Forms.Button btnResizeNfpsGIF;
+        private System.Windows.Forms.Label lblResourceLimitDesc;
     }
 }
