@@ -238,6 +238,7 @@ namespace GifProcessorApp
             int newHeight = canvasHeight + HeightExtension;
 
             var recalculatedDelays = RecalculateDelays(collection, targetFramerate);
+            int ticksPerSecond = (int)collection[0].AnimationTicksPerSecond;
 
             int totalFrames = collection.Count * ranges.Length;
             int currentFrame = 0;
@@ -267,7 +268,7 @@ namespace GifProcessorApp
                         }
 
                         newImage.AnimationDelay = (uint)recalculatedDelays[frameIndex];
-                        newImage.AnimationTicksPerSecond = frame.AnimationTicksPerSecond;
+                        newImage.AnimationTicksPerSecond = ticksPerSecond;
                         newImage.GifDisposeMethod = GifDisposeMethod.Background;
 
                         partCollection.Add(newImage);
@@ -802,6 +803,7 @@ namespace GifProcessorApp
             Directory.CreateDirectory(outputDirectory);
 
             var recalculatedDelays = RecalculateDelays(collection, targetFramerate);
+            int ticksPerSecond = (int)collection[0].AnimationTicksPerSecond;
 
             for (int i = 0; i < ranges.Length; i++)
             {
@@ -818,7 +820,7 @@ namespace GifProcessorApp
                     croppedFrame.ResetPage();
                     newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
                     newImage.AnimationDelay = (uint)recalculatedDelays[frameIndex];
-                    newImage.AnimationTicksPerSecond = frame.AnimationTicksPerSecond;
+                    newImage.AnimationTicksPerSecond = ticksPerSecond;
                     newImage.GifDisposeMethod = GifDisposeMethod.Background;
                     partCollection.Add(newImage.Clone());
                 }
