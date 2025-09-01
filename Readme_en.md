@@ -102,6 +102,7 @@ Scales each GIF to ~153px width before merging. Intended for preview purposes.
 3. Ensure your files meet Steam showcase requirements and stay below 5MB per file.
 4. Processing large GIFs can consume a lot of memory.
 5. Tested mainly with GIFs sized 766×432 and 766×353.
+6. FFmpeg timeout and thread usage can be adjusted in `App.config` via `FFmpeg.TimeoutSeconds` and `FFmpeg.Threads`.
 
 ## Known Issues
 
