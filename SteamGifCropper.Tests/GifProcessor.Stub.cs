@@ -260,6 +260,24 @@ namespace GifProcessorApp
             collection.Write(outputFilePath);
         }
 
+        private static int[] RecalculateDelays(MagickImageCollection collection, int targetFramerate)
+        {
+            var delays = new int[collection.Count];
+            double ticksPerSecond = collection[0].AnimationTicksPerSecond;
+            double exactDelay = ticksPerSecond / targetFramerate;
+            double cumulative = 0;
+            int assigned = 0;
+            for (int i = 0; i < collection.Count; i++)
+            {
+                cumulative += exactDelay;
+                int delay = (int)Math.Round(cumulative) - assigned;
+                if (delay < 1) delay = 1;
+                delays[i] = delay;
+                assigned += delay;
+            }
+            return delays;
+        }
+
         public static void SplitGif(string inputFilePath, string outputDirectory, int targetFramerate = 15, GifToolMainForm? mainForm = null)
         {
             using var collection = new MagickImageCollection(inputFilePath);
@@ -274,9 +292,10 @@ namespace GifProcessorApp
             var ranges = GetCropRanges(canvasWidth);
             int canvasHeight = (int)collection[0].Height;
             int newHeight = canvasHeight + HeightExtension;
-            uint targetDelay = (uint)Math.Round(100.0 / targetFramerate);
 
             Directory.CreateDirectory(outputDirectory);
+
+            var recalculatedDelays = RecalculateDelays(collection, targetFramerate);
 
             int totalFrames = collection.Count * ranges.Length;
             int currentFrame = 0;
@@ -284,8 +303,9 @@ namespace GifProcessorApp
             for (int i = 0; i < ranges.Length; i++)
             {
                 using var partCollection = new MagickImageCollection();
-                foreach (var frame in collection)
+                for (int frameIndex = 0; frameIndex < collection.Count; frameIndex++)
                 {
+                    var frame = collection[frameIndex];
                     int copyWidth = ranges[i].End - ranges[i].Start + 1;
                     using var newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight);
                     var cropGeometry = new MagickGeometry(ranges[i].Start, 0, (uint)copyWidth, (uint)canvasHeight);
@@ -293,7 +313,8 @@ namespace GifProcessorApp
                     croppedFrame.Crop(cropGeometry);
                     croppedFrame.ResetPage();
                     newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
-                    newImage.AnimationDelay = targetDelay;
+                    newImage.AnimationDelay = (uint)recalculatedDelays[frameIndex];
+                    newImage.AnimationTicksPerSecond = frame.AnimationTicksPerSecond;
                     newImage.GifDisposeMethod = GifDisposeMethod.Background;
                     partCollection.Add(newImage.Clone());
 

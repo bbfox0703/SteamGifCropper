@@ -53,7 +53,7 @@ public class GifProcessorMagickTests
     }
 
     [Fact]
-    public void SplitGif_PartsPreserveAnimationTiming()
+    public void SplitGif_RecalculatesAnimationTiming()
     {
         string tempDir = Directory.CreateTempSubdirectory().FullName;
         string input = GifTestHelper.CreateGradientGif(tempDir, 766, 100, 2, "red", "black");
@@ -63,10 +63,13 @@ public class GifProcessorMagickTests
             GifProcessor.SplitGif(input, tempDir);
             string partPath = Path.Combine(tempDir, $"{Path.GetFileNameWithoutExtension(input)}_Part1.gif");
             using var part = new MagickImageCollection(partPath);
-            for (int i = 0; i < original.Count; i++)
+            double partSum = 0;
+            for (int i = 0; i < part.Count; i++)
             {
-                Assert.Equal(original[i].AnimationDelay, part[i].AnimationDelay);
-                Assert.Equal(original[i].AnimationTicksPerSecond, part[i].AnimationTicksPerSecond);
+                partSum += (double)part[i].AnimationDelay / part[i].AnimationTicksPerSecond;
+                Assert.Equal(100, (int)part[i].AnimationTicksPerSecond);
+                double expected = (i + 1) / 15.0;
+                Assert.True(Math.Abs(partSum - expected) < 1.0 / 100);
             }
         }
         finally
