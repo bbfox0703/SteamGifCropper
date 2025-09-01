@@ -159,7 +159,7 @@ namespace GifProcessorApp
             lblInstructions.Name = "lblInstructions";
             lblInstructions.Size = new System.Drawing.Size(371, 22);
             lblInstructions.TabIndex = 0;
-            lblInstructions.Text = "Please select 2-5 GIF files to merge (in order from left to right):";
+            lblInstructions.Text = SteamGifCropper.Properties.Resources.MergeDialog_Instructions;
             // 
             // lblGifFiles
             // 
