@@ -1149,7 +1149,8 @@ namespace GifProcessorApp
 
                     string resultMessage = string.Format(
                         SteamGifCropper.Properties.Resources.Message_RestorationComplete,
-                        processedCount, skippedCount);
+                        processedCount, skippedCount)
+                        .Replace("\n", Environment.NewLine);
 
                     WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
                                     resultMessage,

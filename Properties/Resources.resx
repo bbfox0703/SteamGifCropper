@@ -292,7 +292,7 @@
     <value>{0} of {1} GIF files processed successfully!</value>
   </data>
   <data name="Message_RestorationComplete" xml:space="preserve">
-    <value>Restoration completed!\nFiles processed: {0}\nFiles skipped (not 0x21): {1}</value>
+    <value>Restoration completed!&#xA;Files processed: {0}&#xA;Files skipped (not 0x21): {1}</value>
   </data>
   <data name="Error_UnsupportedWidth" xml:space="preserve">
     <value>Unsupported GIF canvas width: {0}px. Only {1}px and {2}px are supported.</value>
