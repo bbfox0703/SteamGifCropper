@@ -17,6 +17,7 @@ namespace GifProcessorApp
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ResizeNfpsGifDialog));
             lblGif = new System.Windows.Forms.Label();
             txtGifPath = new System.Windows.Forms.TextBox();
             btnBrowse = new System.Windows.Forms.Button();
@@ -193,6 +194,7 @@ namespace GifProcessorApp
             Controls.Add(txtGifPath);
             Controls.Add(lblGif);
             FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "ResizeNfpsGifDialog";

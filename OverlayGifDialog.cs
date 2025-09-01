@@ -120,6 +120,7 @@ namespace GifProcessorApp
 
         private void InitializeComponent()
         {
+            ComponentResourceManager resources = new ComponentResourceManager(typeof(OverlayGifDialog));
             lblBase = new Label();
             txtBaseGif = new TextBox();
             btnBrowseBase = new Button();
@@ -295,6 +296,7 @@ namespace GifProcessorApp
             Controls.Add(txtBaseGif);
             Controls.Add(lblBase);
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "OverlayGifDialog";
