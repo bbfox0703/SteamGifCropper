@@ -188,31 +188,30 @@ namespace GifProcessorApp
 
                         mainForm.lblStatus.Text = string.Format(SteamGifCropper.Properties.Resources.Status_ProcessingPart, i + 1, (currentFrame % collection.Count) + 1);
                         Application.DoEvents();
-                            
-                            // Create new image with correct dimensions
-                            using (var newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight))
-                            {
-                                // Crop the frame to the specific range
-                                var cropGeometry = new MagickGeometry(ranges[i].Start, 0, (uint)copyWidth, (uint)canvasHeight);
-                                using (var croppedFrame = frame.Clone())
-                                {
-                                    croppedFrame.Crop(cropGeometry);
-                                    croppedFrame.ResetPage();
-                                    
-                                    // Composite the cropped frame onto the new image
-                                    newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
-                                }
-                                
-                                // Set animation delay to target framerate
-                                newImage.AnimationDelay = targetDelay;
-                                newImage.GifDisposeMethod = GifDisposeMethod.Background;
-                                
-                                partCollection.Add(newImage.Clone());
-                            }
 
-                            currentFrame++;
-                            UpdateFrameProgress(mainForm, currentFrame, totalFrames);
+                        // Create new image with correct dimensions
+                        var newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight);
+
+                        // Crop the frame to the specific range
+                        var cropGeometry = new MagickGeometry(ranges[i].Start, 0, (uint)copyWidth, (uint)canvasHeight);
+                        using (var croppedFrame = frame.Clone())
+                        {
+                            croppedFrame.Crop(cropGeometry);
+                            croppedFrame.ResetPage();
+
+                            // Composite the cropped frame onto the new image
+                            newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
                         }
+
+                        // Set animation delay to target framerate
+                        newImage.AnimationDelay = targetDelay;
+                        newImage.GifDisposeMethod = GifDisposeMethod.Background;
+
+                        partCollection.Add(newImage);
+
+                        currentFrame++;
+                        UpdateFrameProgress(mainForm, currentFrame, totalFrames);
+                    }
 
                         string outputFile = $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}.gif";
                         string outputDir = Path.GetDirectoryName(inputFilePath);
