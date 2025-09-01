@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 #nullable enable
@@ -18,9 +19,9 @@ public class GifsicleWrapper
 
     public static TimeSpan ProcessTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
-    public static Func<ProcessStartInfo, (string Output, string Error)> ProcessRunner = DefaultProcessRunner;
+    public static Func<ProcessStartInfo, Task<(string Output, string Error)>> ProcessRunner = DefaultProcessRunner;
 
-    private static (string Output, string Error) DefaultProcessRunner(ProcessStartInfo startInfo)
+    private static async Task<(string Output, string Error)> DefaultProcessRunner(ProcessStartInfo startInfo)
     {
         using Process gifsicleProcess = new Process { StartInfo = startInfo };
         gifsicleProcess.Start();
@@ -28,10 +29,12 @@ public class GifsicleWrapper
         Task<string> outputTask = gifsicleProcess.StandardOutput.ReadToEndAsync();
         Task<string> errorTask = gifsicleProcess.StandardError.ReadToEndAsync();
 
-        Task waitTask = gifsicleProcess.WaitForExitAsync();
-        Task completed = Task.WhenAny(waitTask, Task.Delay(ProcessTimeout)).GetAwaiter().GetResult();
-
-        if (completed != waitTask)
+        using var cts = new CancellationTokenSource(ProcessTimeout);
+        try
+        {
+            await gifsicleProcess.WaitForExitAsync(cts.Token);
+        }
+        catch (OperationCanceledException)
         {
             try
             {
@@ -41,11 +44,11 @@ public class GifsicleWrapper
             throw new TimeoutException($"The process did not exit within {ProcessTimeout.TotalSeconds} seconds. Command: {startInfo.FileName} {startInfo.Arguments}");
         }
 
-        Task.WaitAll(outputTask, errorTask);
-        return (outputTask.Result, errorTask.Result);
+        await Task.WhenAll(outputTask, errorTask);
+        return (await outputTask, await errorTask);
     }
 
-    public static void OptimizeGif(string inputPath, string outputPath, GifsicleOptions? options = null)
+    public static async Task OptimizeGif(string inputPath, string outputPath, GifsicleOptions? options = null)
     {
         if (options == null) options = new GifsicleOptions();
 
@@ -88,7 +91,7 @@ public class GifsicleWrapper
             CreateNoWindow = true
         };
 
-        var (output, error) = ProcessRunner(startInfo);
+        var (output, error) = await ProcessRunner(startInfo);
 
         if (!string.IsNullOrEmpty(error))
         {

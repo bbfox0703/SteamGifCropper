@@ -249,7 +249,7 @@ namespace GifProcessorApp
                                 Dither = mainForm.DitherMethod
                             };
 
-                            GifsicleWrapper.OptimizeGif(outputPath, outputPath, options);
+                            GifsicleWrapper.OptimizeGif(outputPath, outputPath, options).GetAwaiter().GetResult();
                         }
 
                         ModifyGifFile(outputPath, canvasHeight);
@@ -2127,7 +2127,7 @@ namespace GifProcessorApp
                     };
                     mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing;
                     Application.DoEvents();
-                    GifsicleWrapper.OptimizeGif(outputPath, outputPath, options);
+                    await GifsicleWrapper.OptimizeGif(outputPath, outputPath, options);
                 }
 
                 mainForm.pBarTaskStatus.Value = mainForm.pBarTaskStatus.Maximum;
@@ -2346,7 +2346,7 @@ namespace GifProcessorApp
                     Dither = mainForm.DitherMethod,
                 };
 
-                GifsicleWrapper.OptimizeGif(outputPath, outputPath, options);
+                GifsicleWrapper.OptimizeGif(outputPath, outputPath, options).GetAwaiter().GetResult();
             }
 
             mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Done;
