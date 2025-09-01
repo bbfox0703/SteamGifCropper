@@ -400,6 +400,7 @@ namespace GifProcessorApp
             for (int i = 0; i < gifFiles.Length; i++)
             {
                 MagickImageCollection collection = null;
+                bool invalid = false;
                 try
                 {
                     collection = new MagickImageCollection(gifFiles[i]);
@@ -413,17 +414,22 @@ namespace GifProcessorApp
                             SteamGifCropper.Properties.Resources.Title_InvalidColorType,
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                        collection.Dispose();
-                        yield break;
+                        invalid = true;
                     }
-
-                    yield return collection;
                 }
                 catch
                 {
                     collection?.Dispose();
                     throw;
                 }
+
+                if (invalid)
+                {
+                    collection?.Dispose();
+                    yield break;
+                }
+
+                yield return collection;
             }
         }
 
