@@ -134,12 +134,11 @@
             // 
             // lblStatus
             // 
-            lblStatus.AutoSize = true;
             lblStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
             lblStatus.Location = new System.Drawing.Point(0, 409);
             lblStatus.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblStatus.Name = "lblStatus";
-            lblStatus.Size = new System.Drawing.Size(31, 15);
+            lblStatus.Size = new System.Drawing.Size(619, 15);
             lblStatus.TabIndex = 18;
             lblStatus.Text = "Idle.";
             // 

@@ -278,7 +278,7 @@ namespace GifProcessorApp
                         UpdateStatusLabel(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
 
                         mainForm.pBarTaskStatus.Visible = true;
-                        mainForm.pBarTaskStatus.Value = 0;
+                        //mainForm.pBarTaskStatus.Value = 0;
 
                         partCollection.Write(outputPath);
 
@@ -1174,7 +1174,7 @@ namespace GifProcessorApp
                 finally
                 {
                     mainForm.pBarTaskStatus.Value = 0;
-                    mainForm.pBarTaskStatus.Visible = false;
+                    //mainForm.pBarTaskStatus.Visible = false;
                     mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready;
                 }
             }
@@ -1265,7 +1265,7 @@ namespace GifProcessorApp
                 finally
                 {
                     mainForm.pBarTaskStatus.Value = 0;
-                    mainForm.pBarTaskStatus.Visible = false;
+                    //mainForm.pBarTaskStatus.Visible = false;
                     mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Idle;
                 }
             }
@@ -1681,7 +1681,7 @@ namespace GifProcessorApp
                 finally
                 {
                     mainForm.pBarTaskStatus.Value = 0;
-                    mainForm.pBarTaskStatus.Visible = false;
+                    //mainForm.pBarTaskStatus.Visible = false;
                     mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready;
                 }
             }
@@ -1909,7 +1909,8 @@ namespace GifProcessorApp
                 }
                 finally
                 {
-                    mainForm.pBarTaskStatus.Visible = false;
+                    mainForm.pBarTaskStatus.Value = 0;
+                    //mainForm.pBarTaskStatus.Visible = false;
                     mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready ?? "Ready";
                 }
             }
@@ -2217,7 +2218,8 @@ namespace GifProcessorApp
             finally
             {
                 mainForm.Enabled = true;
-                mainForm.pBarTaskStatus.Visible = false;
+                mainForm.pBarTaskStatus.Value = 0;
+                //mainForm.pBarTaskStatus.Visible = false;
                 mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready;
             }
         }

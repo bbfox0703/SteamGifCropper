@@ -29,7 +29,7 @@ namespace GifProcessorApp
 
                 // Set initial state
                 lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready;
-                pBarTaskStatus.Visible = false;
+                //pBarTaskStatus.Visible = false;
                 label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
 
                 // Ensure proper form state
