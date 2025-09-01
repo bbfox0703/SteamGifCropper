@@ -273,7 +273,8 @@ namespace GifProcessorApp
                 string outputDir = Path.GetDirectoryName(firstGifPath);
                 string mergedFilePath = Path.Combine(outputDir, mergedFileName);
 
-                MergeGifsHorizontally(syncedCollections, mergedFilePath, mainForm, useFastPalette);
+                MergeGifsHorizontally(syncedCollections, mergedFilePath, mainForm, useFastPalette,
+                    ResourceLimits.Memory, ResourceLimits.Disk);
                 UpdateProgress(mainForm.pBarTaskStatus, 80, 100);
 
                 // Step 6: Apply existing split functionality
@@ -570,15 +571,33 @@ namespace GifProcessorApp
             }
         }
 
-        private static void MergeGifsHorizontally(MagickImageCollection[] collections, string outputPath, GifToolMainForm mainForm, bool useFastPalette = false)
+        /// <summary>
+        /// Merge five GIF collections into a single 766px wide GIF.
+        /// </summary>
+        /// <param name="collections">Input GIF collections to merge.</param>
+        /// <param name="outputPath">Path where the merged GIF will be written.</param>
+        /// <param name="mainForm">Main form for updating progress.</param>
+        /// <param name="useFastPalette">Whether to use the faster palette generation mode.</param>
+        /// <param name="memoryLimitBytes">Maximum memory usage in <c>bytes</c>.</param>
+        /// <param name="diskLimitBytes">Maximum temporary disk usage in <c>bytes</c>.</param>
+        private static void MergeGifsHorizontally(
+            MagickImageCollection[] collections,
+            string outputPath,
+            GifToolMainForm mainForm,
+            bool useFastPalette,
+            ulong memoryLimitBytes,
+            ulong diskLimitBytes)
         {
             mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_MergingHorizontally;
             Application.DoEvents();
 
             // Enable disk caching to limit memory usage
             MagickNET.SetTempDirectory(Path.GetTempPath());
-            ResourceLimits.Memory = 1024; // 1G
-            ResourceLimits.Disk = 4096; // 4G
+
+            // Apply resource limits configured by Program.ConfigureResourceLimits
+            // Values are in bytes for consistency with that configuration.
+            ResourceLimits.Memory = memoryLimitBytes;
+            ResourceLimits.Disk = diskLimitBytes;
 
             // Calculate maximum height among all resized GIFs
             int maxHeight = collections.Max(c => (int)c[0].Height);
