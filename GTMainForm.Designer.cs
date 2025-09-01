@@ -51,11 +51,11 @@
             label2 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             chkGifsicle = new System.Windows.Forms.CheckBox();
+            numUpDownPalette = new System.Windows.Forms.NumericUpDown();
+            lblPaletteDesc = new System.Windows.Forms.Label();
             numUpDownFramerate = new System.Windows.Forms.NumericUpDown();
             lblFramerate = new System.Windows.Forms.Label();
             lblFPS = new System.Windows.Forms.Label();
-            numUpDownPalette = new System.Windows.Forms.NumericUpDown();
-            lblPaletteDesc = new System.Windows.Forms.Label();
             btnMerge2to5GifToOne = new System.Windows.Forms.Button();
             chk5GIFMergeFasterPaletteProcess = new System.Windows.Forms.CheckBox();
             btnReverseGIF = new System.Windows.Forms.Button();
@@ -73,8 +73,8 @@
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPaletteSicle).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownLossy).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numUpDownFramerate).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPalette).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numUpDownFramerate).BeginInit();
             conMenuLangSwitch.SuspendLayout();
             SuspendLayout();
             // 
@@ -333,6 +333,29 @@
             chkGifsicle.Text = SteamGifCropper.Properties.Resources.CheckBox_GifsicleOptimization;
             chkGifsicle.UseVisualStyleBackColor = true;
             // 
+            // numUpDownPalette
+            // 
+            numUpDownPalette.Location = new System.Drawing.Point(562, 39);
+            numUpDownPalette.Margin = new System.Windows.Forms.Padding(2);
+            numUpDownPalette.Maximum = new decimal(new int[] { 256, 0, 0, 0 });
+            numUpDownPalette.Minimum = new decimal(new int[] { 32, 0, 0, 0 });
+            numUpDownPalette.Name = "numUpDownPalette";
+            numUpDownPalette.Size = new System.Drawing.Size(46, 23);
+            numUpDownPalette.TabIndex = 8;
+            numUpDownPalette.Value = new decimal(new int[] { 256, 0, 0, 0 });
+            numUpDownPalette.Visible = false;
+            // 
+            // lblPaletteDesc
+            // 
+            lblPaletteDesc.AutoSize = true;
+            lblPaletteDesc.Location = new System.Drawing.Point(443, 41);
+            lblPaletteDesc.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            lblPaletteDesc.Name = "lblPaletteDesc";
+            lblPaletteDesc.Size = new System.Drawing.Size(115, 15);
+            lblPaletteDesc.TabIndex = 6;
+            lblPaletteDesc.Text = "Number of palette:";
+            lblPaletteDesc.Visible = false;
+            // 
             // numUpDownFramerate
             // 
             numUpDownFramerate.Location = new System.Drawing.Point(130, 260);
@@ -363,29 +386,6 @@
             lblFPS.Size = new System.Drawing.Size(24, 15);
             lblFPS.TabIndex = 22;
             lblFPS.Text = "fps";
-            // 
-            // numUpDownPalette
-            // 
-            numUpDownPalette.Location = new System.Drawing.Point(562, 39);
-            numUpDownPalette.Margin = new System.Windows.Forms.Padding(2);
-            numUpDownPalette.Maximum = new decimal(new int[] { 256, 0, 0, 0 });
-            numUpDownPalette.Minimum = new decimal(new int[] { 32, 0, 0, 0 });
-            numUpDownPalette.Name = "numUpDownPalette";
-            numUpDownPalette.Size = new System.Drawing.Size(46, 23);
-            numUpDownPalette.TabIndex = 8;
-            numUpDownPalette.Value = new decimal(new int[] { 256, 0, 0, 0 });
-            numUpDownPalette.Visible = false;
-            // 
-            // lblPaletteDesc
-            // 
-            lblPaletteDesc.AutoSize = true;
-            lblPaletteDesc.Location = new System.Drawing.Point(443, 41);
-            lblPaletteDesc.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            lblPaletteDesc.Name = "lblPaletteDesc";
-            lblPaletteDesc.Size = new System.Drawing.Size(115, 15);
-            lblPaletteDesc.TabIndex = 6;
-            lblPaletteDesc.Text = "Number of palette:";
-            lblPaletteDesc.Visible = false;
             // 
             // btnMerge2to5GifToOne
             // 
@@ -530,8 +530,8 @@
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPaletteSicle).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownLossy).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numUpDownFramerate).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPalette).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numUpDownFramerate).EndInit();
             conMenuLangSwitch.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
