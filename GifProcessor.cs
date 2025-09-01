@@ -1310,7 +1310,8 @@ namespace GifProcessorApp
                         if (frameIndex % 5 == 0)
                         {
                             mainForm.lblStatus.Text = $"{SteamGifCropper.Properties.Resources.Message_MergingGifs} ({frameIndex + 1}/{targetFrameCount})";
-                            await Task.Delay(1); // Allow UI update                        }
+                            await Task.Delay(1); // Allow UI update
+                        }
 
                         // Create canvas with total width
                         var canvas = new MagickImage(MagickColors.Transparent, (uint)totalWidth, (uint)maxHeight);
