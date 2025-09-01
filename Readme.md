@@ -70,6 +70,11 @@ SteamGifCropper 是一個設計為 **Steam 工作坊個人展示櫃**的小工�
 SteamGifCropper.exe --memory-limit=2048 --disk-limit=8192
 ```
 
+同時可以透過 `App.config` 調整 FFmpeg 行為：
+
+- `FFmpeg.TimeoutSeconds`：設定每次 FFmpeg 執行的逾時秒數（預設 300 秒）。
+- `FFmpeg.Threads`：限制 FFmpeg 使用的執行緒數，`0` 表示使用預設值。
+
 ---
 
 ## 安裝與使用

@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Configuration;
 using FFMpegCore;
 using FFMpegCore.Exceptions;
 using FFMpegCore.Pipes;
@@ -22,6 +24,9 @@ namespace GifProcessorApp
         private const uint SupportedWidth1 = 766;
         private const uint SupportedWidth2 = 774;
 
+        private static readonly int FfmpegTimeoutSeconds = GetAppSettingInt("FFmpeg.TimeoutSeconds", 300);
+        private static readonly int FfmpegThreads = GetAppSettingInt("FFmpeg.Threads", 0);
+
         private static bool IsValidCanvasWidth(uint width) => width == SupportedWidth1 || width == SupportedWidth2;
 
         private static void ShowUnsupportedWidthError(uint width)
@@ -33,6 +38,38 @@ namespace GifProcessorApp
         private static (int Start, int End)[] GetCropRanges(uint canvasWidth)
         {
             return canvasWidth == SupportedWidth1 ? Ranges766 : Ranges774;
+        }
+
+        private static int GetAppSettingInt(string key, int defaultValue)
+        {
+            try
+            {
+                var value = ConfigurationManager.AppSettings[key];
+                if (!string.IsNullOrEmpty(value) && int.TryParse(value, out var result))
+                {
+                    return result;
+                }
+            }
+            catch
+            {
+                // Ignore and use default
+            }
+            return defaultValue;
+        }
+
+        private static CancellationToken CreateFfmpegCancellationToken()
+        {
+            return FfmpegTimeoutSeconds > 0
+                ? new CancellationTokenSource(TimeSpan.FromSeconds(FfmpegTimeoutSeconds)).Token
+                : CancellationToken.None;
+        }
+
+        private static void ApplyThreadLimit(FFMpegArgumentOptions options)
+        {
+            if (FfmpegThreads > 0)
+            {
+                options.WithCustomArgument($"-threads {FfmpegThreads}");
+            }
         }
 
         private static void UpdateProgress(ProgressBar progressBar, int current, int total)
@@ -1440,6 +1477,7 @@ namespace GifProcessorApp
 
                             // GPU-accelerated MP4 decoding, CPU GIF encoding
                             // Note: GIF encoding doesn't support CUDA, only decoding can be accelerated
+                            var token = CreateFfmpegCancellationToken();
                             await FFMpegArguments
                                 .FromFileInput(inputPath, true, input =>
                                 {
@@ -1456,7 +1494,9 @@ namespace GifProcessorApp
                                            .WithCustomArgument("-vf hwdownload,format=nv12,format=rgb24")
                                            .WithFramerate(targetFramerate)
                                            .WithCustomArgument("-pix_fmt rgb8");
+                                    ApplyThreadLimit(options);
                                 })
+                                .CancellableThrough(token)
                                 .ProcessAsynchronously();
                         }
                             catch (Exception gpuEx)
@@ -1593,15 +1633,20 @@ namespace GifProcessorApp
             await using var inputStream = File.OpenRead(inputPath);
             await using var outputStream = File.Open(outputPath, FileMode.Create, FileAccess.Write);
 
+            var token = CreateFfmpegCancellationToken();
             await FFMpegArguments
                 .FromPipeInput(new StreamPipeSource(inputStream))
-                .OutputToPipe(new StreamPipeSink(outputStream), options => options
-                    .ForceFormat("gif")
-                    .Seek(startTime)
-                    .WithDuration(duration)
-                    .WithFramerate(targetFramerate)
-                    .WithCustomArgument("-pix_fmt rgb8")
-                    .WithCustomArgument("-an")) // Remove audio for faster processing
+                .OutputToPipe(new StreamPipeSink(outputStream), options =>
+                {
+                    options.ForceFormat("gif")
+                           .Seek(startTime)
+                           .WithDuration(duration)
+                           .WithFramerate(targetFramerate)
+                           .WithCustomArgument("-pix_fmt rgb8")
+                           .WithCustomArgument("-an");
+                    ApplyThreadLimit(options);
+                })
+                .CancellableThrough(token)
                 .ProcessAsynchronously();
         }
 
@@ -1715,14 +1760,19 @@ namespace GifProcessorApp
                     mainForm.pBarTaskStatus.Value = 75;
                     await using var reverseInput = File.OpenRead(inputFilePath);
                     await using var reverseOutput = File.Open(outputFilePath, FileMode.Create, FileAccess.Write);
+                    var token = CreateFfmpegCancellationToken();
                     await FFMpegArguments
                         .FromPipeInput(new StreamPipeSource(reverseInput))
-                        .OutputToPipe(new StreamPipeSink(reverseOutput), options => options
-                            .ForceFormat("gif")
-                            .WithCustomArgument(
-                                @"-filter_complex ""[0:v]reverse,split[s0][s1];[s0]palettegen=stats_mode=single[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3"""
-                            )
-                            .WithFramerate(targetFramerate))
+                        .OutputToPipe(new StreamPipeSink(reverseOutput), options =>
+                            {
+                                options.ForceFormat("gif")
+                                       .WithCustomArgument(
+                                           @"-filter_complex ""[0:v]reverse,split[s0][s1];[s0]palettegen=stats_mode=single[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3"""
+                                       )
+                                       .WithFramerate(targetFramerate);
+                                ApplyThreadLimit(options);
+                            })
+                        .CancellableThrough(token)
                         .ProcessAsynchronously();
 
                     mainForm.pBarTaskStatus.Value = 100;
