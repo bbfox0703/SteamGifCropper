@@ -233,8 +233,15 @@ namespace GifProcessorApp
                 canvas.AnimationTicksPerSecond = reference.AnimationTicksPerSecond;
                 canvas.GifDisposeMethod = GifDisposeMethod.Background;
                 canvas.Remap(palette, mapSettings);
+
+                defines.WriteMode = frameIndex switch
+                {
+                    0 => GifWriteMode.Gif,
+                    _ when frameIndex == maxFrames - 1 => GifWriteMode.LastFrame,
+                    _ => GifWriteMode.Frame
+                };
+
                 canvas.Write(stream, defines);
-                defines.WriteMode = GifWriteMode.Frame;
                 canvas.Dispose();
             }
 

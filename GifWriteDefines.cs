@@ -6,7 +6,8 @@ namespace GifProcessorApp
     internal enum GifWriteMode
     {
         Gif,
-        Frame
+        Frame,
+        LastFrame
     }
 
     internal sealed class GifWriteDefines : IWriteDefines
@@ -18,7 +19,15 @@ namespace GifProcessorApp
         {
             get
             {
-                yield return new MagickDefine(Format, "write-mode", WriteMode == GifWriteMode.Gif ? "gif" : "frame");
+                var mode = WriteMode switch
+                {
+                    GifWriteMode.Gif => "gif",
+                    GifWriteMode.Frame => "frame",
+                    GifWriteMode.LastFrame => "last",
+                    _ => "gif"
+                };
+
+                yield return new MagickDefine(Format, "write-mode", mode);
                 yield return new MagickDefine(Format, "repeat", RepeatCount);
             }
         }
