@@ -277,6 +277,9 @@ namespace GifProcessorApp
 
                         UpdateStatusLabel(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
 
+                        mainForm.pBarTaskStatus.Visible = true;
+                        mainForm.pBarTaskStatus.Value = 0;
+
                         partCollection.Write(outputPath);
 
                         if (mainForm.chkGifsicle.Checked)
@@ -297,6 +300,11 @@ namespace GifProcessorApp
                             });
 
                             GifsicleWrapper.OptimizeGif(outputPath, outputPath, options, progress).GetAwaiter().GetResult();
+                        }
+                        else
+                        {
+                            UpdateProgress(mainForm.pBarTaskStatus, 100, 100);
+                            UpdateStatusLabel(mainForm, $"Saving part {i + 1} complete");
                         }
 
                         ModifyGifFile(outputPath, canvasHeight);
