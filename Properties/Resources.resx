@@ -403,7 +403,7 @@
     <value>Target framerate:</value>
   </data>
   <data name="Label_FPS" xml:space="preserve">
-    <value>fps</value>
+    <value>fps for split GIF.</value>
   </data>
   <data name="Tooltip_Framerate" xml:space="preserve">
     <value>Target framerate for all GIF outputs (frames per second)</value>

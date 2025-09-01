@@ -386,8 +386,8 @@
             lblFPS.Name = "lblFPS";
             lblFPS.Size = new System.Drawing.Size(24, 15);
             lblFPS.TabIndex = 14;
-            lblFPS.Text = "fps";
-            // 
+            lblFPS.Text = SteamGifCropper.Properties.Resources.Label_FPS;
+            //
             // btnMerge2to5GifToOne
             // 
             btnMerge2to5GifToOne.Location = new System.Drawing.Point(313, 7);

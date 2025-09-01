@@ -411,7 +411,7 @@
     <value>ターゲットフレームレート：</value>
   </data>
   <data name="Label_FPS" xml:space="preserve">
-    <value>fps</value>
+    <value>fps for split GIF.</value>
   </data>
   <data name="Tooltip_Framerate" xml:space="preserve">
     <value>すべての出力GIFのターゲットフレームレート(1-60 fps)</value>
