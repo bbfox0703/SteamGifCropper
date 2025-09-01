@@ -48,7 +48,7 @@ public class GifsicleWrapper
         return (await outputTask, await errorTask);
     }
 
-    public static async Task OptimizeGif(string inputPath, string outputPath, GifsicleOptions? options = null)
+    public static async Task OptimizeGif(string inputPath, string outputPath, GifsicleOptions? options = null, IProgress<int>? progress = null)
     {
         if (options == null) options = new GifsicleOptions();
 
@@ -91,7 +91,15 @@ public class GifsicleWrapper
             CreateNoWindow = true
         };
 
-        var (output, error) = await ProcessRunner(startInfo);
+        progress?.Report(0);
+
+        var processTask = ProcessRunner(startInfo);
+
+        progress?.Report(50);
+
+        var (output, error) = await processTask;
+
+        progress?.Report(100);
 
         if (!string.IsNullOrEmpty(error))
         {
