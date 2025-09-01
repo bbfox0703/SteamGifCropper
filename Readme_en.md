@@ -20,7 +20,12 @@ SteamGifCropper is a small tool made for the **Steam Workshop showcase**. It cro
 - **Merge 2–5 GIFs into one** – merges without scaling; width equals the sum of inputs. Slow for large files.
 - **Reverse playback** – creates a reversed version of a GIF.
 - **Simple MP4 → GIF** – specify source file, start time and duration.
+- **Overlay GIFs** – stack one GIF on top of another at a chosen position.
+- **Scrolling GIF from a static image** – turn a still image (e.g., PNG) into a scrolling GIF.
+- **Resize & change frame rate** – set a new width, height and FPS for a GIF.
 - **gifsicle support** – calls `gifsicle.exe` for post processing/optimization.
+- **Multi-language support** – Traditional Chinese, English, Japanese.
+- **Windows light/dark theme** – most dialogs follow the system theme.
 
 ---
 
