@@ -1,9 +1,9 @@
 # SteamGifCropper
+[繁體中文](./Readme.md) | [English](./Readme_en.md)
+
 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
   <img src="./res/screenshots/MainWindowJa.png" style="width: 75%; height: auto;">
 </div>
-
-[繁體中文](./Readme.md) | [English](./Readme_en.md)
 
 SteamGifCropper は **Steam ワークショップ個人ショーケース** 用に設計された小さなツールです。GIF ファイルを切り分けて処理し、幅の広い GIF（766px または 774px 幅）を 5 つの部分に分割したり、GIF を 766px 幅にリサイズしたり、Steam 互換性のために GIF バイトデータを変更したりできます。gifsicle の後処理をサポートしています。
 

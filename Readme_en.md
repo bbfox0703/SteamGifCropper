@@ -1,9 +1,9 @@
 # SteamGifCropper
+[繁體中文](./Readme.md) | [日本語](./Readme_ja.md)
+
 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
   <img src="./res/screenshots/MainWindowEn.png" style="width: 75%; height: auto;">
 </div>
-
-[繁體中文](./Readme.md) | [日本語](./Readme_ja.md)
 
 SteamGifCropper is a small tool designed for the **Steam Workshop Personal Showcase**. It crops and processes GIF files to split wide GIFs (766px or 774px width) into 5 parts, resize GIFs to 766px width, and modify GIF byte data for Steam compatibility. Supports gifsicle post-processing.
 
