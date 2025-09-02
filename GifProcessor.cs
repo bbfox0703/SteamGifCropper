@@ -210,13 +210,41 @@ namespace GifProcessorApp
                 }
             }
         }
+
+        private static (int[] delays, int ticksPerSecond) RecalculateGifDelays(MagickImageCollection collection, int targetFramerate)
+        {
+            int sourceTicks = (int)collection[0].AnimationTicksPerSecond;
+            if (sourceTicks <= 0)
+            {
+                sourceTicks = 100;
+            }
+
+            int sourceDelay = (int)collection[0].AnimationDelay;
+            int sourceFps = sourceDelay > 0 ? sourceTicks / sourceDelay : targetFramerate;
+
+            if (sourceFps == targetFramerate)
+            {
+                var originalDelays = collection.Select(f => (int)f.AnimationDelay).ToArray();
+                return (originalDelays, sourceTicks);
+            }
+
+            const int GifTicksPerSecond = 100;
+            double targetDelay = (double)GifTicksPerSecond / targetFramerate;
+            int frameDelay = Math.Max(1, (int)Math.Round(targetDelay));
+            var delays = Enumerable.Repeat(frameDelay, collection.Count).ToArray();
+            return (delays, GifTicksPerSecond);
+        }
+
         private static void SplitGif(string inputFilePath, GifToolMainForm mainForm, (int Start, int End)[] ranges, int canvasHeight, int targetFramerate = 15)
         {
             UpdateStatusLabel(mainForm, SteamGifCropper.Properties.Resources.Status_CoalescingFrames);
             using var collection = new MagickImageCollection(inputFilePath);
             collection.Coalesce();
             int newHeight = canvasHeight + HeightExtension;
-            
+
+            var (recalculatedDelays, ticksPerSecond) = RecalculateGifDelays(collection, targetFramerate);
+            collection[0].AnimationTicksPerSecond = ticksPerSecond;
+
             int totalFrames = collection.Count * ranges.Length;
             int currentFrame = 0;
 
@@ -224,8 +252,9 @@ namespace GifProcessorApp
             {
                 using (var partCollection = new MagickImageCollection())
                 {
-                    foreach (var frame in collection)
+                    for (int frameIndex = 0; frameIndex < collection.Count; frameIndex++)
                     {
+                        var frame = collection[frameIndex];
                         int copyWidth = ranges[i].End - ranges[i].Start + 1;
 
                         if (currentFrame % ProgressUpdateInterval == 0)
@@ -233,23 +262,18 @@ namespace GifProcessorApp
                             UpdateStatusLabel(mainForm, string.Format(SteamGifCropper.Properties.Resources.Status_ProcessingPart, i + 1, (currentFrame % collection.Count) + 1));
                         }
 
-                        // Create new image with correct dimensions
                         var newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight);
 
-                        // Crop the frame to the specific range
                         var cropGeometry = new MagickGeometry(ranges[i].Start, 0, (uint)copyWidth, (uint)canvasHeight);
                         using (var croppedFrame = frame.Clone())
                         {
                             croppedFrame.Crop(cropGeometry);
                             croppedFrame.ResetPage();
-
-                            // Composite the cropped frame onto the new image
                             newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
                         }
 
-                        // Preserve animation timing from source frame
-                        newImage.AnimationDelay = frame.AnimationDelay;
-                        newImage.AnimationTicksPerSecond = frame.AnimationTicksPerSecond;
+                        newImage.AnimationDelay = (uint)recalculatedDelays[frameIndex];
+                        newImage.AnimationTicksPerSecond = ticksPerSecond;
                         newImage.GifDisposeMethod = GifDisposeMethod.Background;
 
                         partCollection.Add(newImage);
@@ -258,11 +282,12 @@ namespace GifProcessorApp
                         UpdateFrameProgress(mainForm, currentFrame, totalFrames);
                     }
 
-                        string outputFile = $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}.gif";
-                        string outputDir = Path.GetDirectoryName(inputFilePath);
-                        string outputPath = Path.Combine(outputDir, outputFile);
+                    string outputFile = $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}.gif";
+                    string outputDir = Path.GetDirectoryName(inputFilePath);
+                    string outputPath = Path.Combine(outputDir, outputFile);
 
                         partCollection.Optimize();
+                        partCollection[0].AnimationTicksPerSecond = ticksPerSecond;
                         UpdateStatusLabel(mainForm, SteamGifCropper.Properties.Resources.Status_Compressing);
                         int compressFrameCount = 0;
                         foreach (var frame in partCollection)
@@ -783,11 +808,15 @@ namespace GifProcessorApp
             int newHeight = canvasHeight + HeightExtension;
             Directory.CreateDirectory(outputDirectory);
 
+            var (recalculatedDelays, ticksPerSecond) = RecalculateGifDelays(collection, targetFramerate);
+            collection[0].AnimationTicksPerSecond = ticksPerSecond;
+
             for (int i = 0; i < ranges.Length; i++)
             {
                 using var partCollection = new MagickImageCollection();
-                foreach (var frame in collection)
+                for (int frameIndex = 0; frameIndex < collection.Count; frameIndex++)
                 {
+                    var frame = collection[frameIndex];
                     int copyWidth = ranges[i].End - ranges[i].Start + 1;
 
                     using var newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight);
@@ -796,13 +825,14 @@ namespace GifProcessorApp
                     croppedFrame.Crop(cropGeometry);
                     croppedFrame.ResetPage();
                     newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
-                    newImage.AnimationDelay = frame.AnimationDelay;
-                    newImage.AnimationTicksPerSecond = frame.AnimationTicksPerSecond;
+                    newImage.AnimationDelay = (uint)recalculatedDelays[frameIndex];
+                    newImage.AnimationTicksPerSecond = ticksPerSecond;
                     newImage.GifDisposeMethod = GifDisposeMethod.Background;
                     partCollection.Add(newImage.Clone());
                 }
 
                 partCollection.Optimize();
+                partCollection[0].AnimationTicksPerSecond = ticksPerSecond;
                 foreach (var frame in partCollection)
                 {
                     frame.Settings.SetDefine("compress", "LZW");
@@ -899,6 +929,22 @@ namespace GifProcessorApp
             }
         }
 
+        public static void DiagnoseGif(string gifPath)
+        {
+            using var collection = new MagickImageCollection(gifPath);
+            Console.WriteLine($"Total frames: {collection.Count}");
+            Console.WriteLine($"AnimationTicksPerSecond: {collection[0].AnimationTicksPerSecond}");
+            Console.WriteLine($"AnimationIterations: {collection[0].AnimationIterations}");
+            Console.WriteLine("Frame delays:");
+            for (int i = 0; i < Math.Min(collection.Count, 10); i++)
+            {
+                Console.WriteLine($"Frame {i}: {collection[i].AnimationDelay} cs");
+            }
+            double totalDelay = collection.Sum(frame => (double)frame.AnimationDelay);
+            double averageFps = collection.Count * 100.0 / totalDelay;
+            Console.WriteLine($"Average FPS: {averageFps:F2}");
+        }
+
         private static async Task ReducePaletteAndSplitGif(string inputFilePath, (int Start, int End)[] ranges, int canvasHeight, int paletteSize, int targetFramerate, IProgress<(int current, int total, string status)> progress)
         {
             await Task.Run(() =>
@@ -957,6 +1003,7 @@ namespace GifProcessorApp
                             string outputPath = Path.Combine(outputDir, outputFile);
 
                             partCollection.Optimize();
+                            partCollection[0].AnimationTicksPerSecond = 100;
                             currentStep++;
                             progress?.Report((currentStep, totalSteps, SteamGifCropper.Properties.Resources.Status_Compressing));
 
