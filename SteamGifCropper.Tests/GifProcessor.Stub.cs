@@ -260,18 +260,28 @@ namespace GifProcessorApp
             collection.Write(outputFilePath);
         }
 
-        private static int[] RecalculateDelays(MagickImageCollection collection, int targetFramerate)
+        private static int[] RecalculateGifDelays(MagickImageCollection collection, int targetFramerate)
         {
+            const int GifTicksPerSecond = 100;
+            const int MinGifDelayCs = 2;
+            int maxFps = GifTicksPerSecond / MinGifDelayCs;
+            int effectiveFps = Math.Min(targetFramerate, maxFps);
+
+            collection[0].AnimationTicksPerSecond = GifTicksPerSecond;
+
+            double exactDelay = (double)GifTicksPerSecond / effectiveFps;
             var delays = new int[collection.Count];
-            double ticksPerSecond = collection[0].AnimationTicksPerSecond;
-            double exactDelay = ticksPerSecond / targetFramerate;
-            double cumulative = 0;
+
+            double acc = 0;
             int assigned = 0;
             for (int i = 0; i < collection.Count; i++)
             {
-                cumulative += exactDelay;
-                int delay = (int)Math.Round(cumulative) - assigned;
-                if (delay < 1) delay = 1;
+                acc += exactDelay;
+                int delay = (int)Math.Round(acc) - assigned;
+                if (delay < MinGifDelayCs)
+                {
+                    delay = MinGifDelayCs;
+                }
                 delays[i] = delay;
                 assigned += delay;
             }
@@ -295,7 +305,7 @@ namespace GifProcessorApp
 
             Directory.CreateDirectory(outputDirectory);
 
-            var recalculatedDelays = RecalculateDelays(collection, targetFramerate);
+            var recalculatedDelays = RecalculateGifDelays(collection, targetFramerate);
             int ticksPerSecond = (int)collection[0].AnimationTicksPerSecond;
 
             int totalFrames = collection.Count * ranges.Length;
