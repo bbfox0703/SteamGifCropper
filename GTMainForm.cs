@@ -309,7 +309,8 @@ namespace GifProcessorApp
                     btnResizeNfpsGIF.Text = "FFMPEG: " + btnResizeNfpsGIF.Text;
                 }
                 label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
-
+                lblFramerate.Text = SteamGifCropper.Properties.Resources.Label_Framerate;
+                lblFPS.Text = SteamGifCropper.Properties.Resources.Label_FPS;
 
                 this.Text = "Steam GIF Cropper"; // Keep main title in English
 

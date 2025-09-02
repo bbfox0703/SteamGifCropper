@@ -362,19 +362,17 @@
             lblFramerate.Location = new System.Drawing.Point(11, 262);
             lblFramerate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFramerate.Name = "lblFramerate";
-            lblFramerate.Size = new System.Drawing.Size(105, 15);
+            lblFramerate.Size = new System.Drawing.Size(0, 15);
             lblFramerate.TabIndex = 12;
-            lblFramerate.Text = "Target framerate:";
             // 
             // lblFPS
             // 
             lblFPS.AutoSize = true;
-            lblFPS.Location = new System.Drawing.Point(180, 262);
+            lblFPS.Location = new System.Drawing.Point(310, 262);
             lblFPS.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFPS.Name = "lblFPS";
-            lblFPS.Size = new System.Drawing.Size(24, 15);
+            lblFPS.Size = new System.Drawing.Size(0, 15);
             lblFPS.TabIndex = 14;
-            lblFPS.Text = "fps";
             // 
             // btnMerge2to5GifToOne
             // 
@@ -476,7 +474,7 @@
             // lblResourceLimitDesc
             // 
             lblResourceLimitDesc.AutoSize = true;
-            lblResourceLimitDesc.Location = new System.Drawing.Point(363, 262);
+            lblResourceLimitDesc.Location = new System.Drawing.Point(7, 229);
             lblResourceLimitDesc.Name = "lblResourceLimitDesc";
             lblResourceLimitDesc.Size = new System.Drawing.Size(234, 15);
             lblResourceLimitDesc.TabIndex = 15;
@@ -484,7 +482,7 @@
             // 
             // numUpDownFramerate
             // 
-            numUpDownFramerate.Location = new System.Drawing.Point(130, 260);
+            numUpDownFramerate.Location = new System.Drawing.Point(255, 260);
             numUpDownFramerate.Margin = new System.Windows.Forms.Padding(2);
             numUpDownFramerate.Maximum = new decimal(new int[] { 30, 0, 0, 0 });
             numUpDownFramerate.Minimum = new decimal(new int[] { 5, 0, 0, 0 });
