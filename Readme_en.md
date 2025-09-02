@@ -1,73 +1,104 @@
 # SteamGifCropper
-
 [繁體中文](./Readme.md) | [日本語](./Readme_ja.md)
 
-SteamGifCropper is a small tool made for the **Steam Workshop showcase**. It crops and adjusts GIF images so that they can be displayed as a seamless row on your Steam profile. It also provides a few helper utilities for working with GIF files.
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/screenshots/MainWindowEn.png" style="width: 75%; height: auto;">
+</div>
+
+SteamGifCropper is a small tool designed for the **Steam Workshop Personal Showcase**. It crops and processes GIF files to split wide GIFs (766px or 774px width) into 5 parts, resize GIFs to 766px width, and modify GIF byte data for Steam compatibility. Supports gifsicle post-processing.
+
+---
+The images below are five GIF files split using SteamGifCropper v0.2.1  
+Due to loading time differences, the five GIF animations might appear slightly out of sync when viewed here. You can refresh the page to re-sync (press F5 on PC browsers)  
+
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/new_shiny1_766px_Part1.gif" style="flex: 1 1 18%; height: auto;">
+  <img src="./res/new_shiny1_766px_Part2.gif" style="flex: 1 1 18%; height: auto;">
+  <img src="./res/new_shiny1_766px_Part3.gif" style="flex: 1 1 18%; height: auto;">
+  <img src="./res/new_shiny1_766px_Part4.gif" style="flex: 1 1 18%; height: auto;">
+  <img src="./res/new_shiny1_766px_Part5.gif" style="flex: 1 1 18%; height: auto;">
+</div>
+
 
 ---
 
 ## Features
 
-- **Check GIF width** – accepts source GIFs with a width of **766px** (preferred) or **774px**.
-- **Automatic slicing** – splits a GIF into five parts based on preset X ranges.
-- **Height extension** – adds **100px** transparent space to the bottom of each slice.
-- **Transparent color** – uses the bottom pixel as the transparent color for the added area.
-- **Preserve frame delay** – keeps the original animation speed.
-- **Modify GIF bytes** – adjusts the last byte and restores original height values.
-- **Scale to 766px width** – optional resizing utility.
-- **Toggle last byte 0x3B / 0x21** – quick byte modification helpers.
-- **Merge five GIFs into one** – scales to ~153px width and stitches them together.
-- **Merge 2–5 GIFs into one** – merges without scaling; width equals the sum of inputs. Slow for large files.
-- **Reverse playback** – creates a reversed version of a GIF.
-- **Simple MP4 → GIF** – specify source file, start time and duration.
-- **Overlay GIFs** – stack one GIF on top of another at a chosen position.
-- **Scrolling GIF from a static image** – turn a still image (e.g., PNG) into a scrolling GIF.
-- **Resize & change frame rate** – set a new width, height and FPS for a GIF.
-- **gifsicle support** – calls `gifsicle.exe` for post processing/optimization.
-- **Multi-language support** – Traditional Chinese, English, Japanese.
-- **Windows light/dark theme** – most dialogs follow the system theme.
+- **Check GIF width**: Best to use GIF files with **766px** width as source (also accepts **774px**).
+- **Automatic cropping**: Splits GIF animations into five parts based on preset X coordinate ranges.
+- **Height extension**: Each cropped part has its height increased by **100px**, with the added area set to transparent background.
+- **Transparent color setting**: Sets the bottom pixels of the added area as transparent color to ensure consistent transparency effects.
+- **Preserve animation playback speed**: Maintains GIF frame delay values to ensure output animation speed matches the original file.
+- **Automatic GIF data modification**: Changes the last byte to 0x21, and bytes 08 & 09 to the height value before adding 100px.
+- **Scale GIF files to 766px width**: Provides GIF width scaling functionality.
+- **Change GIF file last byte from 0x3B to 0x21**: Only processes if original is 0x3B.
+- **Change GIF file last byte from 0x21 to 0x3B**: Only processes if original is 0x21.
+- **Merge five GIFs into 766px width GIF**: Scales to approximately 153px equal width, then merges.
+- **Merge 2~5 GIFs into single GIF**: No width scaling, merged width equals sum of video widths. Note: Slow conversion speed.
+- **Reverse GIF playback**: Converts selected GIF animation to reverse time playback.
+- **Simple MP4 to GIF conversion**: Specify source file, start time and length, then convert. No options available.
+- **GIF overlay function**: Overlay one GIF onto another, merge and output to new GIF.
+- **Static image to scrolling GIF**: Convert static images like PNG files into scrolling GIFs.
+- **Adjust GIF size and FPS**: Specify new width, height and frames per second, re-output GIF.
+- **gifsicle post-processing support**: Program directly calls gifsicle.exe to optimize the split GIF files.
+- **Multi-language support**: Traditional Chinese, English, Japanese.
+- **Windows light/dark theme support**: Applied to most windows.
 
 ---
 
 ## System Requirements
 
-- **OS**: Windows 10 1904 or later
+- **Operating System**: Windows 10 1904 or higher
 - **Runtime**: .NET 8 runtime
-- **Library**: Magick.NET (included with the zip)
-- **FFMPEG**: must be installed and on the `PATH` when using MP4 features.
-- **gifsicle.exe**: download separately and ensure it is on the `PATH`.
+- **Dependencies**: Magick.NET (based on ImageMagick) -- already included in zip file
+- **FFMPEG**: For features using FFMPEG functionality, the system must have FFMPEG installed and set in the OS system environment variable **PATH**, otherwise it cannot be called. You can directly install using PowerShell 7 command: `winget install ffmpeg`.
+- **gifsicle.exe external program**: Search for and download using keywords like "gifsicle for Windows" and configure; gifsicle.exe location must be included in the OS system environment variable **PATH**, otherwise it cannot be called.
+---
+
+## Resource Limit Settings
+
+By default, the program limits ImageMagick resource usage to avoid excessive system resource consumption:
+
+- Memory limit: **4096 MB**
+- Disk temporary limit: **8192 MB**
+
+These values can be overridden through the following methods:
+
+1. **Modify `SteamGifCropper.dll.config`, `App.config` (during development)**: Set `ResourceLimits.MemoryMB` and `ResourceLimits.DiskMB` in `<appSettings>`.
+2. **Command line arguments**: Add `--memory-limit=<MB>` or `--disk-limit=<MB>` when starting the program.
+
+For example:
+
+```
+SteamGifCropper.exe --memory-limit=2048 --disk-limit=8192
+```
+
+You can also adjust FFmpeg behavior through `SteamGifCropper.dll.config`, `App.config`:
+
+- `FFmpeg.TimeoutSeconds`: Set timeout seconds for each FFmpeg execution (default 300 seconds).
+- `FFmpeg.Threads`: Limit the number of threads FFmpeg uses, `0` means use default value.
 
 ---
 
 ## Installation & Usage
 
-### Output files
-After slicing, five GIFs are saved with the following names:
-```
-[OriginalName]_Part1.gif
-[OriginalName]_Part2.gif
-[OriginalName]_Part3.gif
-[OriginalName]_Part4.gif
-[OriginalName]_Part5.gif
-```
-Each file must be below **5MB** to upload to Steam. Adjust or optimize if necessary.
+### Viewing GIF Split Results
+- After split processing is complete, five cropped files will be saved to the specified folder with the following filename format:
+  ```
+  [OriginalFileName]_Part1.gif
+  [OriginalFileName]_Part2.gif
+  [OriginalFileName]_Part3.gif
+  [OriginalFileName]_Part4.gif
+  [OriginalFileName]_Part5.gif
+  ```
+Single files must not exceed 5MB, otherwise they cannot be uploaded to Steam. If a single file exceeds 5MB, you can adjust the source GIF or use other tools like EZGif to individually adjust that split file, but remember to modify the file tail byte at the end.
 
-### Scaling
-The scaling feature is provided for convenience. Large GIFs may require significant memory and time.
+### GIF Overlay Function
+1. Click the **Overlay GIF** button and select the base GIF to process.
+2. Select the GIF file to overlay and set the X/Y position.
+3. Confirm to merge both into a new GIF.
 
-### Overlay GIF
-1. Click **Overlay GIF** and select the base GIF.
-2. Choose the GIF to overlay and set the X/Y offset.
-3. Confirm to create a new GIF with the overlay applied.
-
-The dialog is localized (English, Traditional Chinese, Japanese) and works with both light and dark themes.
-**Note:** Overlaying large or high-resolution GIFs can consume a lot of memory.
-
-### Merging 2–5 GIFs
-A basic merging function that keeps the original width. It is not memory efficient and may be slow.
-
-### Merging five GIFs into one 766px GIF
-Scales each GIF to ~153px width before merging. Intended for preview purposes.
+> Note: Overlaying high-resolution or large GIFs may consume significant memory depending on settings.
 
 ---
 
@@ -97,18 +128,43 @@ Scales each GIF to ~153px width before merging. Intended for preview purposes.
 
 ## Notes
 
-1. Source GIF width must be **766px** or **774px**.
-2. Output format is GIF only; slice ranges and height are fixed.
-3. Ensure your files meet Steam showcase requirements and stay below 5MB per file.
-4. Processing large GIFs can consume a lot of memory.
-5. Tested mainly with GIFs sized 766×432 and 766×353.
-6. FFmpeg timeout and thread usage can be adjusted in `App.config` via `FFmpeg.TimeoutSeconds` and `FFmpeg.Threads`.
+1. **Source GIF width limitation for split files**: GIF files with width of **766px** / **774px**.
+1. **Output file format**: The program only supports outputting GIF files, and split ranges and image height both have default values that cannot be customized.
+1. **Steam Personal Showcase**: Please ensure your GIF files comply with Steam showcase requirements; cropped files can be used for display on Steam personal pages.
+1. **May consume significant memory during execution**: Depends on GIF file size.
+1. **Only tested with GIFs of dimensions 766px × 432px (16:9) and 766px × 353px (iPhone 14 Pro video)**
 
 ## Known Issues
+1. **Not all GIFs can be processed successfully**: After all, it's impossible to test with all related tools.
+1. **Cannot confirm GIF creation program compatibility**: Tested normally with Filmora and EZGif.
+1. **Split images may have black lines at edges**: Too lazy to fix, and don't know if it's an issue with video creation tools or the program?
 
-- Not every GIF can be processed successfully.
-- Compatibility with all GIF creation tools is not guaranteed.
-- Sliced images may show a thin black border depending on the source.
+## Reference: Creative Workshop Conversion Method
+1. Find the desired video source or create your own.
+1. Find a way to convert to GIF animation format, you can use [EZGif](https://ezgif.com/) for some processing.
+1. Adjust the original GIF to **766px** width.
+1. Use this program to split the **766px** GIF into five equal parts (150×5 files, plus 4px gap for each file, total 4×4=16).
+1. You can use the included arrange.html to test if the split files have any problems.
+1. Individual files must not exceed 5MB.
+1. Use Chrome / Brave browser to upload files, showcase upload address: https://steamcommunity.com/sharedfiles/edititem/767/3/
+1. First input in Browser console (after pressing F12, in console page): $J('#ConsumerAppID').val(480),$J('[name=file_type]').val(0),$J('[name=visibility]').val(0);
+1. Some browsers have security measures, for example, you need to type "allow paste" first before executing the above action.
+1. After input, upload files, remember to number the filenames for easier subsequent processing.
+1. Repeat upload action, if no problems the files will be uploaded to the workshop.
+1. In Steam personal page, add workshop showcase section, arrange the uploaded GIFs in order and you're done.
+
+## Reference: Artwork Upload / Artwork Showcase
+1. After uploading images:
+
+var num= document.getElementsByName("image_width")[0].value;
+document.getElementsByName("image_height")[0].value = num-(num-1);document.getElementsByName("image_width")[0].value= num*100;
+
+## Reference: Screenshot Showcase
+document.getElementsByName("file_type")[0].value= 5;
+var num= document.getElementsByName("image_width")[0].value;
+document.getElementsByName("image_height")[0].value = num-(num-1);
+document.getElementsByName("image_width")[0].value= num*100;
+
 
 ---
 
