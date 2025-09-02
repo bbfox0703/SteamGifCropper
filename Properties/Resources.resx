@@ -133,7 +133,7 @@
     <value>Merge 5 GIF files into 1 part (766px), each ~153px</value>
   </data>
   <data name="Button_Mp4ToGif" xml:space="preserve">
-    <value>Convert MP4 to GIF (with time control)</value>
+    <value>FFMPEG: Convert MP4 to GIF (with time control)</value>
   </data>
   <data name="Button_MergeGifs" xml:space="preserve">
     <value>Merge 2-5 GIF files into one</value>
@@ -174,6 +174,9 @@
   <data name="Status_Loading" xml:space="preserve">
     <value>Loading...</value>
   </data>
+  <data name="Status_Overlaying" xml:space="preserve">
+    <value>Overlaying...</value>
+  </data>
   <data name="Status_ResizingFrames" xml:space="preserve">
     <value>Resizing frames...</value>
   </data>
@@ -189,6 +192,9 @@
   <data name="Status_ProcessingCount" xml:space="preserve">
     <value>Processing... {0}/{1}</value>
   </data>
+  <data name="Status_ProcessingFrame" xml:space="preserve">
+    <value>Processing frame {0}/{1}</value>
+  </data>
   <data name="Status_ResizingGif" xml:space="preserve">
     <value>Resizing GIF #{0} to {1}px width...</value>
   </data>
@@ -197,6 +203,12 @@
   </data>
   <data name="Status_SynchronizingGif" xml:space="preserve">
     <value>Synchronizing GIF #{0} duration...</value>
+  </data>
+  <data name="Status_MappingFastPalette" xml:space="preserve">
+    <value>Mapping with fast palette...</value>
+  </data>
+  <data name="Status_MappingSharedPalette" xml:space="preserve">
+    <value>Mapping to shared palette...</value>
   </data>
   <data name="Status_MergingFrame" xml:space="preserve">
     <value>Merging frame {0}/{1}...</value>
@@ -273,11 +285,14 @@
   <data name="Message_Mp4ConversionComplete" xml:space="preserve">
     <value>MP4 to GIF conversion completed successfully!\nSaved as: {0}</value>
   </data>
+  <data name="Message_OverlayComplete" xml:space="preserve">
+    <value>Overlay complete.</value>
+  </data>
   <data name="Message_ProcessedFiles" xml:space="preserve">
     <value>{0} of {1} GIF files processed successfully!</value>
   </data>
   <data name="Message_RestorationComplete" xml:space="preserve">
-    <value>Restoration completed!\nFiles processed: {0}\nFiles skipped (not 0x21): {1}</value>
+    <value>Restoration completed!&#xA;Files processed: {0}&#xA;Files skipped (not 0x21): {1}</value>
   </data>
   <data name="Error_UnsupportedWidth" xml:space="preserve">
     <value>Unsupported GIF canvas width: {0}px. Only {1}px and {2}px are supported.</value>
@@ -297,6 +312,9 @@
   <data name="Error_ResizeFailed" xml:space="preserve">
     <value>Resize operation failed: {0}</value>
   </data>
+  <data name="Error_SelectGif" xml:space="preserve">
+    <value>Please select a GIF file.</value>
+  </data>
   <data name="Error_StartupFailed" xml:space="preserve">
     <value>Application startup failed: {0}\n\nStack trace:\n{1}</value>
   </data>
@@ -308,6 +326,9 @@
   </data>
   <data name="Error_InvalidColorType" xml:space="preserve">
     <value>GIF #{0} ({1}) must have palette-based colors (8-bit).\nCurrent color type: {2}</value>
+  </data>
+  <data name="Error_CacheResourcesExhausted" xml:space="preserve">
+    <value>Insufficient cache resources. Reduce image size or increase memory/disk limits.</value>
   </data>
   <data name="FileDialog_SelectGif" xml:space="preserve">
     <value>Select a GIF file to process</value>
@@ -323,6 +344,9 @@
   </data>
   <data name="FileDialog_GifFilter" xml:space="preserve">
     <value>GIF Files (*.gif)|*.gif</value>
+  </data>
+  <data name="FileDialog_ImageFilter" xml:space="preserve">
+    <value>Image Files (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp</value>
   </data>
   <data name="FileDialog_SelectGifOrder" xml:space="preserve">
     <value>Select GIF file #{0} (position {1} from left to right)</value>
@@ -347,9 +371,6 @@
   </data>
   <data name="Mp4Dialog_Duration" xml:space="preserve">
     <value>Duration:</value>
-  </data>
-  <data name="Mp4Dialog_UseGPU" xml:space="preserve">
-    <value>Use GPU acceleration (if available)</value>
   </data>
   <data name="Group_Dither" xml:space="preserve">
     <value>Dither</value>
@@ -376,19 +397,28 @@
     <value>None</value>
   </data>
   <data name="Label_Framerate" xml:space="preserve">
-    <value>Target framerate:</value>
+    <value>FPS (MP4/Scroll/Resize only):</value>
   </data>
   <data name="Label_FPS" xml:space="preserve">
-    <value>fps</value>
+    <value>frames per second</value>
   </data>
   <data name="Tooltip_Framerate" xml:space="preserve">
-    <value>Target framerate for all GIF outputs (frames per second)</value>
+    <value>Framerate setting only applies to: MP4 to GIF conversion, scroll animations, and resize/FPS tool. Split GIF and merge operations preserve original timing.</value>
   </data>
   <data name="CheckBox_FasterPalette" xml:space="preserve">
     <value>Faster palette reduction (quality down)</value>
   </data>
   <data name="Button_ReverseGif" xml:space="preserve">
     <value>FFMPEG: Reverse animated GIF</value>
+  </data>
+  <data name="Button_ScrollStaticImage" xml:space="preserve">
+    <value>Scroll static image</value>
+  </data>
+  <data name="Button_OverlayGif" xml:space="preserve">
+    <value>Overlay GIF over GIF</value>
+  </data>
+  <data name="Button_ResizeNfpsGif" xml:space="preserve">
+    <value>Resize / re-FPS GIF</value>
   </data>
   <data name="Status_ValidatingProcessing" xml:space="preserve">
     <value>Validating and processing 5 GIF files...</value>
@@ -408,6 +438,12 @@
   <data name="Status_ErrorOccurred" xml:space="preserve">
     <value>Error occurred during processing.</value>
   </data>
+  <data name="MergeFiveGif_Success" xml:space="preserve">
+    <value>Five GIF merge and split completed successfully!</value>
+  </data>
+  <data name="MergeFiveGif_Error" xml:space="preserve">
+    <value>Error occurred during processing.</value>
+  </data>
   <data name="Status_ProcessingPalette" xml:space="preserve">
     <value>Processing with reduced palette...</value>
   </data>
@@ -416,12 +452,6 @@
   </data>
   <data name="Status_Mp4ShortClip" xml:space="preserve">
     <value>Short clip - CPU more efficient...</value>
-  </data>
-  <data name="Status_Mp4GPU" xml:space="preserve">
-    <value>GPU decode + CPU GIF encoding...</value>
-  </data>
-  <data name="Status_Mp4GPUFailed" xml:space="preserve">
-    <value>GPU decode failed, using CPU...</value>
   </data>
   <data name="Status_Mp4CPU" xml:space="preserve">
     <value>Converting MP4 to GIF with optimized CPU...</value>
@@ -440,6 +470,9 @@
   </data>
   <data name="Status_GifReversed" xml:space="preserve">
     <value>GIF reversed successfully!</value>
+  </data>
+  <data name="Status_FFmpegFallback" xml:space="preserve">
+    <value>FFmpeg failed, trying ImageMagick fallback...</value>
   </data>
   <data name="Message_GifReversedSuccess" xml:space="preserve">
     <value>GIF reversed successfully!</value>
@@ -474,6 +507,9 @@
   <data name="Label_GifsicleNotice" xml:space="preserve">
     <value>Notice: gifsicle.exe must be in the "System PATH"</value>
   </data>
+  <data name="Label_ResourceLimitDesc" xml:space="preserve">
+    <value>Resource limit: mem: {0} MB / disk: {1} MB</value>
+  </data>
   <data name="MergeDialog_Instructions" xml:space="preserve">
     <value>Please select 2-5 GIF files to merge (in order from left to right):</value>
   </data>
@@ -503,6 +539,15 @@
   </data>
   <data name="MergeDialog_Title" xml:space="preserve">
     <value>Merge GIF Files</value>
+  </data>
+  <data name="MergeDialog_FileNotFound" xml:space="preserve">
+    <value>File not found: {0}</value>
+  </data>
+  <data name="MergeDialog_RequireOutput" xml:space="preserve">
+    <value>Please specify an output GIF file.</value>
+  </data>
+  <data name="MergeDialog_CannotCreateDir" xml:space="preserve">
+    <value>Cannot create output directory:</value>
   </data>
   <data name="Mp4Dialog_InputLabel" xml:space="preserve">
     <value>Input MP4 file:</value>
@@ -546,21 +591,6 @@
   <data name="Mp4Dialog_Title" xml:space="preserve">
     <value>MP4 to GIF Converter</value>
   </data>
-  <data name="Mp4Dialog_NvidiaDetected" xml:space="preserve">
-    <value>NVIDIA GPU detected ✓</value>
-  </data>
-  <data name="Mp4Dialog_NoNvidiaGPU" xml:space="preserve">
-    <value>No NVIDIA GPU detected</value>
-  </data>
-  <data name="Mp4Dialog_GPUDetectionFailed" xml:space="preserve">
-    <value>GPU detection failed</value>
-  </data>
-  <data name="Mp4Dialog_GPUEnabled" xml:space="preserve">
-    <value>GPU decode enabled ⚡</value>
-  </data>
-  <data name="Mp4Dialog_NvidiaGPUCPU" xml:space="preserve">
-    <value>NVIDIA GPU detected (CPU decode) ✓</value>
-  </data>
   <data name="Mp4Dialog_FFmpegMessage" xml:space="preserve">
     <value>To use MP4 to GIF conversion, you need to install FFmpeg first.
 
@@ -601,6 +631,145 @@ After installation, FFmpeg should be available in your system PATH.</value>
   </data>
   <data name="Mp4Dialog_DirectoryError" xml:space="preserve">
     <value>Directory Error</value>
+  </data>
+  <data name="Mp4ToGif_FFmpegRequiredMessage" xml:space="preserve">
+    <value>FFmpeg is not installed or not available in the system PATH.
+
+FFmpeg Path: {0}
+Version: {1}
+{2}
+
+To install FFmpeg:
+1. Open Command Prompt or PowerShell as Administrator
+2. Run: winget install ffmpeg
+3. Restart this application
+
+For more help, click the link in the MP4 to GIF dialog.</value>
+  </data>
+  <data name="Mp4ToGif_FFmpegLog" xml:space="preserve">
+    <value> (FFmpeg log: {0})</value>
+  </data>
+  <data name="Mp4ToGif_FFmpegOutput" xml:space="preserve">
+    <value> FFmpeg output: {0}</value>
+  </data>
+  <data name="Mp4ToGif_Converting" xml:space="preserve">
+    <value>Converting MP4 to GIF with optimized CPU...</value>
+  </data>
+  <data name="Mp4ToGif_Success" xml:space="preserve">
+    <value>MP4 to GIF conversion completed successfully!</value>
+  </data>
+  <data name="Mp4ToGif_SuccessMessage" xml:space="preserve">
+    <value>MP4 to GIF conversion completed successfully!
+Saved as: {0}</value>
+  </data>
+  <data name="Mp4ToGif_Error_FFmpegNotFound" xml:space="preserve">
+    <value>FFmpeg executable not found. Please ensure FFmpeg is installed and available in your system PATH.
+
+Installation: winget install ffmpeg</value>
+  </data>
+  <data name="Mp4ToGif_Error_CorruptedInput" xml:space="preserve">
+    <value>The input video file appears to be corrupted or incomplete.
+
+Try using a different video file or re-download the original.</value>
+  </data>
+  <data name="Mp4ToGif_Error_PermissionDenied" xml:space="preserve">
+    <value>Cannot access the output directory. Please check file permissions and ensure the directory is writable.</value>
+  </data>
+  <data name="Mp4ToGif_Error_Unexpected" xml:space="preserve">
+    <value>An unexpected error occurred during MP4 to GIF conversion.</value>
+  </data>
+  <data name="Mp4ToGif_Error_DetailsSaved" xml:space="preserve">
+    <value>
+
+Detailed FFmpeg output saved to: {0}</value>
+  </data>
+  <data name="Mp4ToGif_Error_FFmpegOutputTruncated" xml:space="preserve">
+    <value>
+
+FFmpeg output (truncated):
+{0}</value>
+  </data>
+  <data name="Warning_FPS_Mismatch" xml:space="preserve">
+    <value>Warning: The selected GIF files have different frame rates (FPS). The processing will continue, but the animation timing may be affected.</value>
+  </data>
+  <data name="Mp4ToGif_ErrorMessageDetails" xml:space="preserve">
+    <value>{0}
+
+Input file: "{1}"
+Output file: "{2}"
+Start time: {3}
+Duration: {4}
+
+Technical details: {5}</value>
+  </data>
+  <data name="ScrollDialog_Title" xml:space="preserve">
+    <value>Scroll Static Image</value>
+  </data>
+  <data name="ScrollDialog_InputLabel" xml:space="preserve">
+    <value>Input image</value>
+  </data>
+  <data name="ScrollDialog_OutputLabel" xml:space="preserve">
+    <value>Output GIF</value>
+  </data>
+  <data name="ScrollDialog_Direction" xml:space="preserve">
+    <value>Direction</value>
+  </data>
+  <data name="ScrollDialog_Step" xml:space="preserve">
+    <value>Pixels per step</value>
+  </data>
+  <data name="ScrollDialog_Duration" xml:space="preserve">
+    <value>Seconds per full scroll</value>
+  </data>
+  <data name="ScrollDialog_MoveCount" xml:space="preserve">
+    <value>Number of moves</value>
+  </data>
+  <data name="ScrollDialog_FullCycle" xml:space="preserve">
+    <value>Scroll full cycle</value>
+  </data>
+  <data name="ScrollDialog_Browse" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+  <data name="ScrollDialog_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="ScrollDialog_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ScrollDialog_SelectInput" xml:space="preserve">
+    <value>Select an image file</value>
+  </data>
+  <data name="ScrollDialog_SelectOutput" xml:space="preserve">
+    <value>Save scrolled GIF as</value>
+  </data>
+  <data name="ScrollDialog_InputRequired" xml:space="preserve">
+    <value>Please choose an input image.</value>
+  </data>
+  <data name="ScrollDialog_OutputRequired" xml:space="preserve">
+    <value>Please specify an output file.</value>
+  </data>
+  <data name="ScrollDialog_DirRight" xml:space="preserve">
+    <value>Right</value>
+  </data>
+  <data name="ScrollDialog_DirLeft" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="ScrollDialog_DirDown" xml:space="preserve">
+    <value>Down</value>
+  </data>
+  <data name="ScrollDialog_DirUp" xml:space="preserve">
+    <value>Up</value>
+  </data>
+  <data name="ScrollDialog_DirLeftUp" xml:space="preserve">
+    <value>Left-Up</value>
+  </data>
+  <data name="ScrollDialog_DirLeftDown" xml:space="preserve">
+    <value>Left-Down</value>
+  </data>
+  <data name="ScrollDialog_DirRightUp" xml:space="preserve">
+    <value>Right-Up</value>
+  </data>
+  <data name="ScrollDialog_DirRightDown" xml:space="preserve">
+    <value>Right-Down</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">

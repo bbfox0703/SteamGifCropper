@@ -20,7 +20,12 @@ SteamGifCropper is a small tool made for the **Steam Workshop showcase**. It cro
 - **Merge 2–5 GIFs into one** – merges without scaling; width equals the sum of inputs. Slow for large files.
 - **Reverse playback** – creates a reversed version of a GIF.
 - **Simple MP4 → GIF** – specify source file, start time and duration.
+- **Overlay GIFs** – stack one GIF on top of another at a chosen position.
+- **Scrolling GIF from a static image** – turn a still image (e.g., PNG) into a scrolling GIF.
+- **Resize & change frame rate** – set a new width, height and FPS for a GIF.
 - **gifsicle support** – calls `gifsicle.exe` for post processing/optimization.
+- **Multi-language support** – Traditional Chinese, English, Japanese.
+- **Windows light/dark theme** – most dialogs follow the system theme.
 
 ---
 
@@ -49,6 +54,14 @@ Each file must be below **5MB** to upload to Steam. Adjust or optimize if necess
 
 ### Scaling
 The scaling feature is provided for convenience. Large GIFs may require significant memory and time.
+
+### Overlay GIF
+1. Click **Overlay GIF** and select the base GIF.
+2. Choose the GIF to overlay and set the X/Y offset.
+3. Confirm to create a new GIF with the overlay applied.
+
+The dialog is localized (English, Traditional Chinese, Japanese) and works with both light and dark themes.
+**Note:** Overlaying large or high-resolution GIFs can consume a lot of memory.
 
 ### Merging 2–5 GIFs
 A basic merging function that keeps the original width. It is not memory efficient and may be slow.
@@ -89,6 +102,7 @@ Scales each GIF to ~153px width before merging. Intended for preview purposes.
 3. Ensure your files meet Steam showcase requirements and stay below 5MB per file.
 4. Processing large GIFs can consume a lot of memory.
 5. Tested mainly with GIFs sized 766×432 and 766×353.
+6. FFmpeg timeout and thread usage can be adjusted in `App.config` via `FFmpeg.TimeoutSeconds` and `FFmpeg.Threads`.
 
 ## Known Issues
 

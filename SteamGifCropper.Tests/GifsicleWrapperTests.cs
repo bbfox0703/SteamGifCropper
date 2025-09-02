@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 
 public class GifsicleWrapperTests
 {
@@ -14,7 +15,7 @@ public class GifsicleWrapperTests
 
     [Theory]
     [MemberData(nameof(DitherData))]
-    public void OptimizeGif_BuildsExpectedArguments(int dither, string expectedFlag)
+    public async Task OptimizeGif_BuildsExpectedArguments(int dither, string expectedFlag)
     {
         string input = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".gif");
         string output = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".gif");
@@ -27,7 +28,7 @@ public class GifsicleWrapperTests
             GifsicleWrapper.ProcessRunner = psi =>
             {
                 captured = psi;
-                return ("", "");
+                return Task.FromResult((Output: "", Error: ""));
             };
 
             var options = new GifsicleWrapper.GifsicleOptions
@@ -38,7 +39,7 @@ public class GifsicleWrapperTests
                 Dither = dither
             };
 
-            GifsicleWrapper.OptimizeGif(input, output, options);
+            await GifsicleWrapper.OptimizeGif(input, output, options);
 
             Assert.NotNull(captured);
             string args = captured!.Arguments;
@@ -56,9 +57,9 @@ public class GifsicleWrapperTests
     }
 
     [Fact]
-    public void OptimizeGif_NonexistentInput_Throws()
+    public async Task OptimizeGif_NonexistentInput_Throws()
     {
         string input = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName(), "missing.gif");
-        Assert.Throws<FileNotFoundException>(() => GifsicleWrapper.OptimizeGif(input, "out.gif"));
+        await Assert.ThrowsAsync<FileNotFoundException>(() => GifsicleWrapper.OptimizeGif(input, "out.gif"));
     }
 }

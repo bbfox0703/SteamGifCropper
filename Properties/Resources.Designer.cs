@@ -149,7 +149,16 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Error_InvalidColorType", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Insufficient cache resources. Reduce image size or increase memory/disk limits.
+        /// </summary>
+        internal static string Error_CacheResourcesExhausted {
+            get {
+                return ResourceManager.GetString("Error_CacheResourcesExhausted", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to An error occurred: {0}.
         /// </summary>
@@ -192,6 +201,15 @@ namespace SteamGifCropper.Properties {
         internal static string Error_ResizeFailed {
             get {
                 return ResourceManager.GetString("Error_ResizeFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Please select a GIF file.
+        /// </summary>
+        internal static string Error_SelectGif {
+            get {
+                return ResourceManager.GetString("Error_SelectGif", resourceCulture);
             }
         }
         
@@ -331,7 +349,7 @@ namespace SteamGifCropper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to fps.
+        ///   Looks up a localized string similar to fps for split GIF.
         /// </summary>
         internal static string Label_FPS {
             get {
@@ -383,7 +401,25 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Message_GifMergeComplete", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Five GIF merge and split completed successfully!.
+        /// </summary>
+        internal static string MergeFiveGif_Success {
+            get {
+                return ResourceManager.GetString("MergeFiveGif_Success", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Error occurred during processing..
+        /// </summary>
+        internal static string MergeFiveGif_Error {
+            get {
+                return ResourceManager.GetString("MergeFiveGif_Error", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Please select 2-5 GIF files to merge (in order from left to right):.
         /// </summary>
@@ -426,6 +462,15 @@ namespace SteamGifCropper.Properties {
         internal static string Message_Mp4ConversionComplete {
             get {
                 return ResourceManager.GetString("Message_Mp4ConversionComplete", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Overlay complete..
+        /// </summary>
+        internal static string Message_OverlayComplete {
+            get {
+                return ResourceManager.GetString("Message_OverlayComplete", resourceCulture);
             }
         }
         
@@ -653,6 +698,33 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Status_Loading", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Overlaying....
+        /// </summary>
+        internal static string Status_Overlaying {
+            get {
+                return ResourceManager.GetString("Status_Overlaying", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Mapping with fast palette....
+        /// </summary>
+        internal static string Status_MappingFastPalette {
+            get {
+                return ResourceManager.GetString("Status_MappingFastPalette", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Mapping to shared palette....
+        /// </summary>
+        internal static string Status_MappingSharedPalette {
+            get {
+                return ResourceManager.GetString("Status_MappingSharedPalette", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Merging frame {0}/{1}....
@@ -741,6 +813,15 @@ namespace SteamGifCropper.Properties {
         internal static string Status_ProcessingCount {
             get {
                 return ResourceManager.GetString("Status_ProcessingCount", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Processing frame {0}/{1}.
+        /// </summary>
+        internal static string Status_ProcessingFrame {
+            get {
+                return ResourceManager.GetString("Status_ProcessingFrame", resourceCulture);
             }
         }
         
@@ -1031,6 +1112,15 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Status_GifReversed", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to FFmpeg failed, trying ImageMagick fallback....
+        /// </summary>
+        internal static string Status_FFmpegFallback {
+            get {
+                return ResourceManager.GetString("Status_FFmpegFallback", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to GIF reversed successfully!.
@@ -1065,6 +1155,15 @@ namespace SteamGifCropper.Properties {
         internal static string Label_GifsicleNotice {
             get {
                 return ResourceManager.GetString("Label_GifsicleNotice", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Resource limit: mem: {0} MB / disk: {1} MB.
+        /// </summary>
+        internal static string Label_ResourceLimitDesc {
+            get {
+                return ResourceManager.GetString("Label_ResourceLimitDesc", resourceCulture);
             }
         }
         
@@ -1157,7 +1256,34 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("MergeDialog_Title", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to File not found: {0}.
+        /// </summary>
+        internal static string MergeDialog_FileNotFound {
+            get {
+                return ResourceManager.GetString("MergeDialog_FileNotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Please specify an output GIF file..
+        /// </summary>
+        internal static string MergeDialog_RequireOutput {
+            get {
+                return ResourceManager.GetString("MergeDialog_RequireOutput", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot create output directory:.
+        /// </summary>
+        internal static string MergeDialog_CannotCreateDir {
+            get {
+                return ResourceManager.GetString("MergeDialog_CannotCreateDir", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Input MP4 file:.
         /// </summary>
@@ -1418,6 +1544,159 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Mp4Dialog_DirectoryError", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to FFmpeg is not installed or not available in the system PATH.\n\nFFmpeg Path: {0}\nVersion: {1}\n{2}\n\nTo install FFmpeg:\n1. Open Command Prompt or PowerShell as Administrator\n2. Run: winget install ffmpeg\n3. Restart this application\n\nFor more help, click the link in the MP4 to GIF dialog..
+        /// </summary>
+        internal static string Mp4ToGif_FFmpegRequiredMessage {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_FFmpegRequiredMessage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Short clip - CPU more efficient....
+        /// </summary>
+        internal static string Mp4ToGif_ShortClipCpu {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_ShortClipCpu", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to GPU decode + CPU GIF encoding....
+        /// </summary>
+        internal static string Mp4ToGif_GpuCpuEncoding {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_GpuCpuEncoding", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to GPU decode failed, using CPU....
+        /// </summary>
+        internal static string Mp4ToGif_GpuDecodeFailed {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_GpuDecodeFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to  (FFmpeg log: {0}).
+        /// </summary>
+        internal static string Mp4ToGif_FFmpegLog {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_FFmpegLog", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to  FFmpeg output: {0}.
+        /// </summary>
+        internal static string Mp4ToGif_FFmpegOutput {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_FFmpegOutput", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Converting MP4 to GIF with optimized CPU....
+        /// </summary>
+        internal static string Mp4ToGif_Converting {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_Converting", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to MP4 to GIF conversion completed successfully!.
+        /// </summary>
+        internal static string Mp4ToGif_Success {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_Success", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to MP4 to GIF conversion completed successfully!\nSaved as: {0}.
+        /// </summary>
+        internal static string Mp4ToGif_SuccessMessage {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_SuccessMessage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to FFmpeg executable not found. Please ensure FFmpeg is installed and available in your system PATH.\n\nInstallation: winget install ffmpeg.
+        /// </summary>
+        internal static string Mp4ToGif_Error_FFmpegNotFound {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_Error_FFmpegNotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The input video file appears to be corrupted or incomplete.\n\nTry using a different video file or re-download the original..
+        /// </summary>
+        internal static string Mp4ToGif_Error_CorruptedInput {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_Error_CorruptedInput", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to GPU acceleration failed. The conversion will automatically retry with CPU processing.\n\nThis is normal if your GPU drivers are outdated or CUDA is not properly installed..
+        /// </summary>
+        internal static string Mp4ToGif_Error_GPUFailed {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_Error_GPUFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot access the output directory. Please check file permissions and ensure the directory is writable..
+        /// </summary>
+        internal static string Mp4ToGif_Error_PermissionDenied {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_Error_PermissionDenied", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to An unexpected error occurred during MP4 to GIF conversion..
+        /// </summary>
+        internal static string Mp4ToGif_Error_Unexpected {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_Error_Unexpected", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to \n\nDetailed FFmpeg output saved to: {0}.
+        /// </summary>
+        internal static string Mp4ToGif_Error_DetailsSaved {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_Error_DetailsSaved", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to \n\nFFmpeg output (truncated):\n{0}.
+        /// </summary>
+        internal static string Mp4ToGif_Error_FFmpegOutputTruncated {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_Error_FFmpegOutputTruncated", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0}\n\nInput file: "{1}"\nOutput file: "{2}"\nStart time: {3}\nDuration: {4}\n\nTechnical details: {5}.
+        /// </summary>
+        internal static string Mp4ToGif_ErrorMessageDetails {
+            get {
+                return ResourceManager.GetString("Mp4ToGif_ErrorMessageDetails", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to MP4 Files (*.mp4)|*.mp4|All Video Files|*.mp4;*.avi;*.mkv;*.mov.
@@ -1437,6 +1716,186 @@ namespace SteamGifCropper.Properties {
         internal static string FileDialog_SaveGif {
             get {
                 return ResourceManager.GetString("FileDialog_SaveGif", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Scroll static image.
+        /// </summary>
+        internal static string Button_ScrollStaticImage {
+            get {
+                return ResourceManager.GetString("Button_ScrollStaticImage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Overlay GIF over GIF.
+        /// </summary>
+        internal static string Button_OverlayGif {
+            get {
+                return ResourceManager.GetString("Button_OverlayGif", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Resize / re-FPS GIF.
+        /// </summary>
+        internal static string Button_ResizeNfpsGif {
+            get {
+                return ResourceManager.GetString("Button_ResizeNfpsGif", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Image Files (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp.
+        /// </summary>
+        internal static string FileDialog_ImageFilter {
+            get {
+                return ResourceManager.GetString("FileDialog_ImageFilter", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_Title {
+            get {
+                return ResourceManager.GetString("ScrollDialog_Title", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_InputLabel {
+            get {
+                return ResourceManager.GetString("ScrollDialog_InputLabel", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_OutputLabel {
+            get {
+                return ResourceManager.GetString("ScrollDialog_OutputLabel", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_Direction {
+            get {
+                return ResourceManager.GetString("ScrollDialog_Direction", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_Step {
+            get {
+                return ResourceManager.GetString("ScrollDialog_Step", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_Duration {
+            get {
+                return ResourceManager.GetString("ScrollDialog_Duration", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_MoveCount {
+            get {
+                return ResourceManager.GetString("ScrollDialog_MoveCount", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_FullCycle {
+            get {
+                return ResourceManager.GetString("ScrollDialog_FullCycle", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_Browse {
+            get {
+                return ResourceManager.GetString("ScrollDialog_Browse", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_OK {
+            get {
+                return ResourceManager.GetString("ScrollDialog_OK", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_Cancel {
+            get {
+                return ResourceManager.GetString("ScrollDialog_Cancel", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_SelectInput {
+            get {
+                return ResourceManager.GetString("ScrollDialog_SelectInput", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_SelectOutput {
+            get {
+                return ResourceManager.GetString("ScrollDialog_SelectOutput", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_InputRequired {
+            get {
+                return ResourceManager.GetString("ScrollDialog_InputRequired", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_OutputRequired {
+            get {
+                return ResourceManager.GetString("ScrollDialog_OutputRequired", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_DirRight {
+            get {
+                return ResourceManager.GetString("ScrollDialog_DirRight", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_DirLeft {
+            get {
+                return ResourceManager.GetString("ScrollDialog_DirLeft", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_DirDown {
+            get {
+                return ResourceManager.GetString("ScrollDialog_DirDown", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_DirUp {
+            get {
+                return ResourceManager.GetString("ScrollDialog_DirUp", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_DirLeftUp {
+            get {
+                return ResourceManager.GetString("ScrollDialog_DirLeftUp", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_DirLeftDown {
+            get {
+                return ResourceManager.GetString("ScrollDialog_DirLeftDown", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_DirRightUp {
+            get {
+                return ResourceManager.GetString("ScrollDialog_DirRightUp", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_DirRightDown {
+            get {
+                return ResourceManager.GetString("ScrollDialog_DirRightDown", resourceCulture);
+            }
+        }
+
+        internal static string Warning_FPS_Mismatch {
+            get {
+                return ResourceManager.GetString("Warning_FPS_Mismatch", resourceCulture);
             }
         }
     }

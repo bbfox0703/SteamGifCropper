@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="lblGif.Text" xml:space="preserve">
+    <value>GIF：</value>
+  </data>
+  <data name="btnBrowse.Text" xml:space="preserve">
+    <value>瀏覽</value>
+  </data>
+  <data name="lblOriginalLabel.Text" xml:space="preserve">
+    <value>原始：</value>
+  </data>
+  <data name="lblWidth.Text" xml:space="preserve">
+    <value>寬度：</value>
+  </data>
+  <data name="lblHeight.Text" xml:space="preserve">
+    <value>高度：</value>
+  </data>
+  <data name="lblFps.Text" xml:space="preserve">
+    <value>FPS：</value>
+  </data>
+  <data name="chkLockRatio.Text" xml:space="preserve">
+    <value>鎖定長寬比</value>
+  </data>
+  <data name="btnOk.Text" xml:space="preserve">
+    <value>確定</value>
+  </data>
+  <data name="btnCancel.Text" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>調整 GIF 大小與 FPS</value>
+  </data>
+</root>

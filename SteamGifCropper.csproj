@@ -51,7 +51,8 @@
 
   <ItemGroup>
     <PackageReference Include="FFMpegCore" Version="5.2.0" />
-    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.8.1" />
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.8.2" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.8" />
   </ItemGroup>
 
   <ItemGroup>
@@ -80,6 +81,17 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\ResizeNfpsGifDialog.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\ResizeNfpsGifDialog.zh-TW.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\ResizeNfpsGifDialog.ja.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

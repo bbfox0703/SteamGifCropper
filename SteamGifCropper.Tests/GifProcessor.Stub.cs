@@ -19,6 +19,20 @@ namespace GifProcessorApp
 
         private static bool IsValidCanvasWidth(uint width) => width == SupportedWidth1 || width == SupportedWidth2;
 
+        public static void SetProgressBar(GifToolMainForm.ProgressBar progressBar, int current, int total)
+        {
+            if (progressBar == null || total <= 0) return;
+            progressBar.Minimum = 0;
+            progressBar.Maximum = total;
+            progressBar.Value = Math.Max(progressBar.Minimum, Math.Min(current, total));
+        }
+
+        public static void SetStatusText(GifToolMainForm mainForm, string text)
+        {
+            if (mainForm == null) return;
+            mainForm.lblStatus.Text = text;
+        }
+
         private static (int Start, int End)[] GetCropRanges(uint canvasWidth) => canvasWidth == SupportedWidth1 ? Ranges766 : Ranges774;
 
         private static void ModifyGifFile(string filePath, int adjustedHeight)
@@ -119,7 +133,7 @@ namespace GifProcessorApp
             return synced;
         }
 
-        public static async Task MergeMultipleGifs(List<string> gifPaths, string outputPath, GifToolMainForm mainForm, int targetFramerate = 15, bool useFastPalette = false)
+        public static async Task MergeMultipleGifs(List<string> gifPaths, string outputPath, GifToolMainForm mainForm, bool useFastPalette = false)
         {
             if (gifPaths == null || gifPaths.Count < 2 || gifPaths.Count > 5)
                 throw new ArgumentException("Invalid gif count");
@@ -135,29 +149,27 @@ namespace GifProcessorApp
                 }
 
                 var widths = collections.Select(c => (int)c[0].Width).ToList();
-                double shortestDuration = collections.Min(c => c.Sum(f => (double)f.AnimationDelay / f.AnimationTicksPerSecond));
-                int targetFrameCount = Math.Max(1, (int)(shortestDuration * targetFramerate));
+                int minFrameCount = collections.Min(c => c.Count);
                 int totalWidth = widths.Sum();
                 int maxHeight = collections.Max(c => (int)c[0].Height);
                 int ticksPerSecond = collections[0][0].AnimationTicksPerSecond;
-                uint targetDelay = (uint)Math.Round((double)ticksPerSecond / targetFramerate);
 
                 using var palette = BuildSharedPalette(collections, useFastPalette);
                 using var merged = new MagickImageCollection();
 
-                for (int frameIndex = 0; frameIndex < targetFrameCount; frameIndex++)
+                for (int frameIndex = 0; frameIndex < minFrameCount; frameIndex++)
                 {
                     var canvas = new MagickImage(MagickColors.Transparent, (uint)totalWidth, (uint)maxHeight);
                     int currentX = 0;
                     for (int gifIndex = 0; gifIndex < collections.Count; gifIndex++)
                     {
                         var col = collections[gifIndex];
-                        double progress = (double)frameIndex / targetFrameCount;
+                        double progress = (double)frameIndex / minFrameCount;
                         int sourceIndex = Math.Min((int)(progress * col.Count), col.Count - 1);
                         canvas.Composite(col[sourceIndex], currentX, 0, CompositeOperator.Over);
                         currentX += widths[gifIndex];
                     }
-                    canvas.AnimationDelay = targetDelay;
+                    canvas.AnimationDelay = collections[0][frameIndex % collections[0].Count].AnimationDelay;
                     canvas.AnimationTicksPerSecond = ticksPerSecond;
                     canvas.GifDisposeMethod = GifDisposeMethod.Background;
                     merged.Add(canvas);
@@ -190,47 +202,58 @@ namespace GifProcessorApp
             await Task.CompletedTask;
         }
 
-        private static MagickImageCollection MergeGifsHorizontally(MagickImageCollection[] collections, GifToolMainForm mainForm, bool useFastPalette = false)
+        private static void MergeGifsHorizontally(MagickImageCollection[] collections, string outputPath, GifToolMainForm mainForm,
+            bool useFastPalette, ulong memoryLimitBytes, ulong diskLimitBytes)
         {
+            // Apply resource limits in bytes to mirror production behavior
+            ResourceLimits.Memory = memoryLimitBytes;
+            ResourceLimits.Disk = diskLimitBytes;
+
             int maxHeight = collections.Max(c => (int)c[0].Height);
             using var palette = BuildSharedPalette(collections, useFastPalette);
-            var merged = new MagickImageCollection();
-            int maxFrames = collections.Max(c => c.Count);
-            int[] xPositions = { 0, 153, 306, 460, 613 };
-
-            for (int frameIndex = 0; frameIndex < maxFrames; frameIndex++)
-            {
-                var canvas = new MagickImage(MagickColors.Transparent, 766, (uint)maxHeight);
-                for (int gifIndex = 0; gifIndex < 5; gifIndex++)
-                {
-                    var col = collections[gifIndex];
-                    var frame = col[frameIndex % col.Count];
-                    canvas.Composite(frame, xPositions[gifIndex], 0, CompositeOperator.Over);
-                }
-                var reference = collections[0][frameIndex % collections[0].Count];
-                canvas.AnimationDelay = reference.AnimationDelay;
-                canvas.AnimationTicksPerSecond = reference.AnimationTicksPerSecond;
-                merged.Add(canvas);
-            }
-
-            foreach (var frame in merged)
-            {
-                frame.GifDisposeMethod = GifDisposeMethod.Background;
-            }
-
             var mapSettings = new QuantizeSettings
             {
                 Colors = 256,
                 ColorSpace = ColorSpace.RGB,
                 DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
             };
+            int maxFrames = collections.Max(c => c.Count);
+            int[] xPositions = { 0, 153, 306, 460, 613 };
+            var enumerators = collections.Select(c => c.GetEnumerator()).ToArray();
 
-            foreach (MagickImage frame in merged)
+            using var stream = File.Open(outputPath, FileMode.Create);
+            var defines = new GifWriteDefines { RepeatCount = 0, WriteMode = GifWriteMode.Gif };
+
+            for (int frameIndex = 0; frameIndex < maxFrames; frameIndex++)
             {
-                frame.Remap(palette, mapSettings);
+                var canvas = new MagickImage(MagickColors.Transparent, 766, (uint)maxHeight);
+                for (int gifIndex = 0; gifIndex < 5; gifIndex++)
+                {
+                    var enumerator = enumerators[gifIndex];
+                    if (!enumerator.MoveNext())
+                    {
+                        enumerator.Dispose();
+                        enumerator = collections[gifIndex].GetEnumerator();
+                        enumerator.MoveNext();
+                        enumerators[gifIndex] = enumerator;
+                    }
+                    using var frame = (MagickImage)enumerator.Current.Clone();
+                    canvas.Composite(frame, xPositions[gifIndex], 0, CompositeOperator.Over);
+                }
+                var reference = (MagickImage)enumerators[0].Current;
+                canvas.AnimationDelay = reference.AnimationDelay;
+                canvas.AnimationTicksPerSecond = reference.AnimationTicksPerSecond;
+                canvas.GifDisposeMethod = GifDisposeMethod.Background;
+                canvas.Remap(palette, mapSettings);
+                canvas.Write(stream, defines);
+                defines.WriteMode = GifWriteMode.Frame;
+                canvas.Dispose();
             }
 
-            return merged;
+            foreach (var e in enumerators)
+            {
+                e.Dispose();
+            }
         }
 
         public static void ResizeGifTo766(string inputFilePath, string outputFilePath)
@@ -249,7 +272,20 @@ namespace GifProcessorApp
             collection.Write(outputFilePath);
         }
 
-        public static void SplitGif(string inputFilePath, string outputDirectory, int targetFramerate = 15)
+        private static (int[] delays, int ticksPerSecond) RecalculateGifDelays(MagickImageCollection collection)
+        {
+            int sourceTicks = (int)collection[0].AnimationTicksPerSecond;
+            if (sourceTicks <= 0)
+            {
+                sourceTicks = 100;
+            }
+
+            // Always preserve original frame delays and timing
+            var originalDelays = collection.Select(f => (int)f.AnimationDelay).ToArray();
+            return (originalDelays, sourceTicks);
+        }
+
+        public static void SplitGif(string inputFilePath, string outputDirectory, GifToolMainForm? mainForm = null)
         {
             using var collection = new MagickImageCollection(inputFilePath);
             collection.Coalesce();
@@ -263,15 +299,21 @@ namespace GifProcessorApp
             var ranges = GetCropRanges(canvasWidth);
             int canvasHeight = (int)collection[0].Height;
             int newHeight = canvasHeight + HeightExtension;
-            uint targetDelay = (uint)Math.Round(100.0 / targetFramerate);
 
             Directory.CreateDirectory(outputDirectory);
+
+            var (recalculatedDelays, ticksPerSecond) = RecalculateGifDelays(collection);
+            collection[0].AnimationTicksPerSecond = ticksPerSecond;
+
+            int totalFrames = collection.Count * ranges.Length;
+            int currentFrame = 0;
 
             for (int i = 0; i < ranges.Length; i++)
             {
                 using var partCollection = new MagickImageCollection();
-                foreach (var frame in collection)
+                for (int frameIndex = 0; frameIndex < collection.Count; frameIndex++)
                 {
+                    var frame = collection[frameIndex];
                     int copyWidth = ranges[i].End - ranges[i].Start + 1;
                     using var newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight);
                     var cropGeometry = new MagickGeometry(ranges[i].Start, 0, (uint)copyWidth, (uint)canvasHeight);
@@ -279,9 +321,18 @@ namespace GifProcessorApp
                     croppedFrame.Crop(cropGeometry);
                     croppedFrame.ResetPage();
                     newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
-                    newImage.AnimationDelay = targetDelay;
+                    newImage.AnimationDelay = (uint)recalculatedDelays[frameIndex];
+                    newImage.AnimationTicksPerSecond = ticksPerSecond;
                     newImage.GifDisposeMethod = GifDisposeMethod.Background;
                     partCollection.Add(newImage.Clone());
+
+                    currentFrame++;
+                    if (mainForm != null)
+                    {
+                    int percent = (int)Math.Min((double)currentFrame / totalFrames * 100, 100);
+                    GifProcessor.SetProgressBar(mainForm.pBarTaskStatus, percent, 100);
+                    GifProcessor.SetStatusText(mainForm, $"{currentFrame}/{totalFrames} ({percent}%)");
+                    }
                 }
 
                 foreach (var frame in partCollection)
@@ -292,6 +343,224 @@ namespace GifProcessorApp
                 string outputFile = Path.Combine(outputDirectory, $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}.gif");
                 partCollection.Write(outputFile);
             }
+        }
+
+        public static void ScrollStaticImage(string inputFilePath, string outputFilePath,
+            ScrollDirection direction, int stepPixels, int durationSeconds, bool fullCycle, int moveCount, int targetFramerate = 15)
+        {
+            using var baseImage = new MagickImage(inputFilePath);
+            int width = (int)baseImage.Width;
+            int height = (int)baseImage.Height;
+
+            int distance = direction switch
+            {
+                ScrollDirection.Up or ScrollDirection.Down => height,
+                _ => width
+            };
+
+            int signX = 0, signY = 0;
+            switch (direction)
+            {
+                case ScrollDirection.Right: signX = 1; break;
+                case ScrollDirection.Left: signX = -1; break;
+                case ScrollDirection.Down: signY = 1; break;
+                case ScrollDirection.Up: signY = -1; break;
+                case ScrollDirection.LeftUp: signX = -1; signY = -1; break;
+                case ScrollDirection.LeftDown: signX = -1; signY = 1; break;
+                case ScrollDirection.RightUp: signX = 1; signY = -1; break;
+                case ScrollDirection.RightDown: signX = 1; signY = 1; break;
+            }
+
+            int frames;
+            int dx = 0, dy = 0;
+            double step = 0;
+            if (durationSeconds > 0)
+            {
+                frames = Math.Max(1, durationSeconds * targetFramerate);
+                frames = Math.Min(frames, distance);
+                step = (double)distance / frames;
+            }
+            else
+            {
+                dx = signX * stepPixels;
+                dy = signY * stepPixels;
+                if (fullCycle)
+                {
+                    int stepsX = dx != 0 ? (int)Math.Ceiling((double)width / Math.Abs(dx)) : 0;
+                    int stepsY = dy != 0 ? (int)Math.Ceiling((double)height / Math.Abs(dy)) : 0;
+                    frames = Math.Max(stepsX, stepsY);
+                    if (frames <= 0) frames = 1;
+                }
+                else
+                {
+                    int maxMoves = moveCount;
+                    if (dx != 0)
+                        maxMoves = Math.Min(maxMoves, width / Math.Abs(dx));
+                    if (dy != 0)
+                        maxMoves = Math.Min(maxMoves, height / Math.Abs(dy));
+                    frames = Math.Max(1, maxMoves);
+                }
+            }
+
+            uint delay = (uint)Math.Round(100.0 / targetFramerate);
+            using var collection = new MagickImageCollection();
+            for (int i = 0; i < frames; i++)
+            {
+                var frame = baseImage.Clone();
+                int offsetX, offsetY;
+                if (durationSeconds > 0)
+                {
+                    int offset = (int)Math.Round(step * i);
+                    offsetX = signX * offset;
+                    offsetY = signY * offset;
+                }
+                else
+                {
+                    offsetX = dx * i;
+                    offsetY = dy * i;
+                }
+                if (width > 0)
+                {
+                    offsetX %= width;
+                    if (offsetX < 0) offsetX += width;
+                }
+                if (height > 0)
+                {
+                    offsetY %= height;
+                    if (offsetY < 0) offsetY += height;
+                }
+                frame.Roll(offsetX, offsetY);
+                frame.AnimationDelay = delay;
+                frame.GifDisposeMethod = GifDisposeMethod.Background;
+                collection.Add(frame);
+            }
+
+            var defines = new GifWriteDefines
+            {
+                RepeatCount = 0
+            };
+
+            collection.Write(outputFilePath, defines);
+        }
+
+        private static List<MagickImage> ResampleBaseFrames(MagickImageCollection baseCollection, MagickImageCollection overlayCollection)
+        {
+            var baseDelays = baseCollection.Select(f => (int)f.AnimationDelay).ToArray();
+            int baseTotalDelay = baseDelays.Sum();
+            var resampled = new List<MagickImage>(overlayCollection.Count);
+
+            int overlayElapsed = 0;
+            foreach (var overlayFrame in overlayCollection)
+            {
+                int startTime = baseTotalDelay == 0 ? 0 : overlayElapsed % baseTotalDelay;
+                int cumulative = 0;
+                int baseIndex = 0;
+                for (int i = 0; i < baseDelays.Length; i++)
+                {
+                    cumulative += baseDelays[i];
+                    if (startTime < cumulative)
+                    {
+                        baseIndex = i;
+                        break;
+                    }
+                }
+
+                resampled.Add((MagickImage)baseCollection[baseIndex].Clone());
+                overlayElapsed += (int)overlayFrame.AnimationDelay;
+            }
+
+            return resampled;
+        }
+
+        public static void OverlayGif(string basePath, string overlayPath, string outputPath, int offsetX = 0, int offsetY = 0, bool resampleBase = true)
+        {
+            using var baseCollection = new MagickImageCollection(basePath);
+            using var overlayCollection = new MagickImageCollection(overlayPath);
+            using var resultCollection = new MagickImageCollection();
+
+            uint baseWidth = baseCollection[0].Width;
+            uint baseHeight = baseCollection[0].Height;
+
+            baseCollection.Coalesce();
+            overlayCollection.Coalesce();
+
+            if (resampleBase)
+            {
+                var resampledBaseFrames = ResampleBaseFrames(baseCollection, overlayCollection);
+                int overlayCount = overlayCollection.Count;
+
+                for (int i = 0; i < overlayCount; i++)
+                {
+                    using var baseFrame = resampledBaseFrames[i];
+                    using var overlayFrame = overlayCollection[i].Clone();
+
+                    int width = (int)Math.Min(overlayFrame.Width, baseWidth - (uint)offsetX);
+                    int height = (int)Math.Min(overlayFrame.Height, baseHeight - (uint)offsetY);
+                    if (width <= 0 || height <= 0)
+                        continue;
+
+                    overlayFrame.Crop(new MagickGeometry(0, 0, (uint)width, (uint)height));
+                    overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
+
+                    baseFrame.Composite(overlayFrame, offsetX, offsetY, CompositeOperator.Over);
+                    baseFrame.AnimationDelay = overlayFrame.AnimationDelay;
+                    baseFrame.AnimationTicksPerSecond = overlayFrame.AnimationTicksPerSecond;
+                    baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
+
+                    resultCollection.Add(baseFrame.Clone());
+                }
+
+                resampledBaseFrames.Clear();
+            }
+            else
+            {
+                int baseCount = baseCollection.Count;
+                var overlayDelays = overlayCollection.Select(f => (int)f.AnimationDelay).ToArray();
+                int overlayTotalDelay = overlayDelays.Sum();
+                int baseElapsed = 0;
+
+                for (int i = 0; i < baseCount; i++)
+                {
+                    using var baseFrame = (MagickImage)baseCollection[i].Clone();
+
+                    int startTime = overlayTotalDelay == 0 ? 0 : baseElapsed % overlayTotalDelay;
+                    int cumulative = 0;
+                    int overlayIndex = 0;
+                    for (int j = 0; j < overlayDelays.Length; j++)
+                    {
+                        cumulative += overlayDelays[j];
+                        if (startTime < cumulative)
+                        {
+                            overlayIndex = j;
+                            break;
+                        }
+                    }
+
+                    using var overlayFrame = overlayCollection[overlayIndex].Clone();
+
+                    int width = (int)Math.Min(overlayFrame.Width, baseWidth - (uint)offsetX);
+                    int height = (int)Math.Min(overlayFrame.Height, baseHeight - (uint)offsetY);
+                    if (width <= 0 || height <= 0)
+                    {
+                        baseElapsed += (int)baseCollection[i].AnimationDelay;
+                        continue;
+                    }
+
+                    overlayFrame.Crop(new MagickGeometry(0, 0, (uint)width, (uint)height));
+                    overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
+
+                    baseFrame.Composite(overlayFrame, offsetX, offsetY, CompositeOperator.Over);
+                    baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
+
+                    resultCollection.Add(baseFrame.Clone());
+
+                    baseElapsed += (int)baseCollection[i].AnimationDelay;
+                }
+            }
+
+            resultCollection.Quantize();
+            resultCollection.Optimize();
+            resultCollection.Write(outputPath);
         }
     }
 }
