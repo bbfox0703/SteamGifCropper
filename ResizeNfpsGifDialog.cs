@@ -152,7 +152,7 @@ namespace GifProcessorApp
                     ConvertWithFfmpeg(InputGifPath, saveDialog.FileName, NewWidth, NewHeight, NewFps);
                     WindowsThemeManager.ShowThemeAwareMessageBox(
                         this,
-                        SteamGifCropper.Properties.Resources.Message_ResizeComplete,
+                        string.Format(SteamGifCropper.Properties.Resources.Message_ResizeComplete, saveDialog.FileName),
                         SteamGifCropper.Properties.Resources.Title_Success,
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);

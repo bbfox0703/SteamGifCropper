@@ -99,7 +99,7 @@ namespace GifProcessorApp
             {
                 Caption = caption,
                 Heading = caption,
-                Text = text,
+                Text = text.Replace("\\n", Environment.NewLine),
                 Icon = icon switch
                 {
                     MessageBoxIcon.Error => TaskDialogIcon.Error,
