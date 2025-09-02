@@ -1,18 +1,19 @@
-﻿using System;
+﻿using FFMpegCore;
+using FFMpegCore.Exceptions;
+using FFMpegCore.Pipes;
+using ImageMagick;
+using ImageMagick.Drawing;
+using SteamGifCropper.Properties;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Drawing;
-using System.Configuration;
-using FFMpegCore;
-using FFMpegCore.Exceptions;
-using FFMpegCore.Pipes;
-using ImageMagick;
-using SteamGifCropper.Properties;
 
 namespace GifProcessorApp
 {
@@ -171,7 +172,7 @@ namespace GifProcessorApp
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 string inputFilePath = openFileDialog.FileName;
-
+                SetStatusText(mainForm, "Split GIF...");
                 try
                 {
                     using (var collection = new MagickImageCollection(inputFilePath))
@@ -192,6 +193,7 @@ namespace GifProcessorApp
                         SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Processing);
 
                         var ranges = GetCropRanges(canvasWidth);
+                        
                         SplitGif(inputFilePath, mainForm, ranges, (int)canvasHeight);
                         SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
                         WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
@@ -1357,6 +1359,7 @@ namespace GifProcessorApp
             }
 
             // Validate source files and destination path
+            SetStatusText(mainForm, "Validate file paths...");
             foreach (string gifPath in gifPaths)
             {
                 if (!File.Exists(gifPath))
@@ -1379,7 +1382,6 @@ namespace GifProcessorApp
             }
 
             var collections = new List<MagickImageCollection>();
-            
             try
             {
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Message_AnalyzingGifs);
@@ -1391,6 +1393,8 @@ namespace GifProcessorApp
                 // Load all GIFs and analyze properties
                 foreach (string gifPath in gifPaths)
                 {
+                    SetStatusText(mainForm, gifPath);
+                    await Task.Delay(1); // Allow UI update
                     var collection = new MagickImageCollection(gifPath);
                     collection.Coalesce();
                     collections.Add(collection);
@@ -1499,12 +1503,15 @@ namespace GifProcessorApp
                         DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
                     };
 
+                    //mergedCollection.Count;
                     foreach (MagickImage frame in mergedCollection)
                     {
                         frame.Remap(palette, mapSettings);
                     }
 
                     // Apply LZW compression
+                    SetStatusText(mainForm, "Processing LZW compression...");
+                    await Task.Delay(1); // Allow UI update
                     foreach (var frame in mergedCollection)
                     {
                         frame.Format = MagickFormat.Gif;
