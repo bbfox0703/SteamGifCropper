@@ -237,6 +237,7 @@ namespace GifProcessorApp
             SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_CoalescingFrames);
             using var collection = new MagickImageCollection(inputFilePath);
             collection.Coalesce();
+            Application.DoEvents(); // Allow UI to respond after coalesce operation
             int newHeight = canvasHeight + HeightExtension;
 
             var (recalculatedDelays, ticksPerSecond) = RecalculateGifDelays(collection);
@@ -284,6 +285,7 @@ namespace GifProcessorApp
                     string outputPath = Path.Combine(outputDir, outputFile);
 
                         partCollection.Optimize();
+                        Application.DoEvents(); // Allow UI to respond after optimize operation
                         partCollection[0].AnimationTicksPerSecond = ticksPerSecond;
                         SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Compressing);
                         int compressFrameCount = 0;
@@ -304,6 +306,7 @@ namespace GifProcessorApp
                         //mainForm.pBarTaskStatus.Value = 0;
 
                         partCollection.Write(outputPath);
+                        Application.DoEvents(); // Allow UI to respond after write operation
 
                         if (mainForm.chkGifsicle.Checked)
                         {
@@ -765,17 +768,17 @@ namespace GifProcessorApp
 
                     canvas.GifDisposeMethod = GifDisposeMethod.Background;
 
+                    // Update status with detailed merging progress  
+                    if (frameIndex % 10 == 0 || frameIndex == maxFrames - 1)
+                    {
+                        SetStatusText(mainForm, string.Format("Merging 5 GIFs - Mapping palette for frame {0}/{1}", frameIndex + 1, maxFrames));
+                    }
+                    
                     // Remap frame to shared palette before writing
                     canvas.Remap(palette, mapSettings);
 
                     canvas.Write(stream, defines);
                     defines.WriteMode = GifWriteMode.Frame;
-
-                    // Update status with detailed merging progress  
-                    if (frameIndex % 10 == 0 || frameIndex == maxFrames - 1)
-                    {
-                        SetStatusText(mainForm, string.Format("Merging 5 GIFs - Frame {0}/{1}", frameIndex + 1, maxFrames));
-                    }
                     UpdateFrameProgressByFrame(mainForm, frameIndex + 1, maxFrames);
                 }
             }
@@ -797,6 +800,7 @@ namespace GifProcessorApp
         {
             using var collection = new MagickImageCollection(inputFilePath);
             collection.Coalesce();
+            Application.DoEvents(); // Allow UI to respond after coalesce operation
 
             uint canvasWidth = collection[0].Width;
             if (!IsValidCanvasWidth(canvasWidth))
@@ -833,6 +837,7 @@ namespace GifProcessorApp
                 }
 
                 partCollection.Optimize();
+                Application.DoEvents(); // Allow UI to respond after optimize operation
                 partCollection[0].AnimationTicksPerSecond = ticksPerSecond;
                 foreach (var frame in partCollection)
                 {
@@ -1061,6 +1066,7 @@ namespace GifProcessorApp
                 using (var collection = new MagickImageCollection(inputFilePath))
                 {
                     collection.Coalesce();
+                Application.DoEvents(); // Allow UI to respond after coalesce operation
 
                     int totalFrames = collection.Count;
                     int currentFrame = 0;
@@ -1087,7 +1093,9 @@ namespace GifProcessorApp
                     }
 
                     collection.Optimize();
+                    Application.DoEvents(); // Allow UI to respond after optimize operation
                     collection.Write(outputFilePath);
+                    Application.DoEvents(); // Allow UI to respond after write operation
                 }
             }
             finally
@@ -1397,6 +1405,7 @@ namespace GifProcessorApp
                     await Task.Delay(1); // Allow UI update
                     var collection = new MagickImageCollection(gifPath);
                     collection.Coalesce();
+                    Application.DoEvents(); // Allow UI to respond after coalesce operation
                     collections.Add(collection);
 
                     int width = (int)collection[0].Width;
@@ -1447,6 +1456,7 @@ namespace GifProcessorApp
                 await Task.Delay(1); // Allow UI update
                 // Build shared palette from first frames
                 var palette = BuildSharedPalette(collections, useFastPalette);
+                Application.DoEvents(); // Allow UI to respond after palette building
 
                 var mergedCollection = new MagickImageCollection();
 
@@ -1504,9 +1514,24 @@ namespace GifProcessorApp
                     };
 
                     //mergedCollection.Count;
+                    int totalFrames = mergedCollection.Count;
+                    int currentFrame = 0;
                     foreach (MagickImage frame in mergedCollection)
                     {
+                        currentFrame++;
                         frame.Remap(palette, mapSettings);
+                        
+                        // Update progress every frame or every 5 frames for better responsiveness
+                        if (currentFrame % Math.Max(1, totalFrames / 20) == 0 || currentFrame == totalFrames)
+                        {
+                            int progress = (int)((double)currentFrame / totalFrames * 100);
+                            SetProgressBar(mainForm.pBarTaskStatus, progress, 100);
+                            SetStatusText(mainForm, string.Format(
+                                useFastPalette ? "Fast palette mapping: {0}/{1} ({2}%)" : "Quality palette mapping: {0}/{1} ({2}%)",
+                                currentFrame, totalFrames, progress));
+                            await Task.Delay(1); // Allow UI update
+                            Application.DoEvents(); // Allow UI to respond during palette mapping
+                        }
                     }
 
                     // Apply LZW compression
@@ -1522,6 +1547,7 @@ namespace GifProcessorApp
                     SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
                     await Task.Delay(1); // Allow UI update                    
                     mergedCollection.Write(outputPath);
+                    Application.DoEvents(); // Allow UI to respond after write operation
 
                     string successMessage = string.Format(SteamGifCropper.Properties.Resources.Message_GifMergeComplete, outputPath);
                     WindowsThemeManager.ShowThemeAwareMessageBox(mainForm, successMessage, SteamGifCropper.Properties.Resources.Title_Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1918,6 +1944,7 @@ namespace GifProcessorApp
                             await Task.Delay(1);
                             
                             collection.Write(outputFilePath);
+                            Application.DoEvents(); // Allow UI to respond after write operation
                             
                             SetProgressBar(mainForm.pBarTaskStatus, 100, mainForm.pBarTaskStatus.Maximum);
                             SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifReversed ?? "GIF reversed successfully!");
@@ -2183,6 +2210,7 @@ namespace GifProcessorApp
             }
 
             collection.Write(outputFilePath, defines);
+            Application.DoEvents(); // Allow UI to respond after write operation
 
             if (mainForm != null)
             {
