@@ -230,7 +230,7 @@ namespace GifProcessorApp
             lblOutput.Name = "lblOutput";
             lblOutput.Size = new System.Drawing.Size(108, 20);
             lblOutput.TabIndex = 8;
-            lblOutput.Text = "Output GIF file:";
+            lblOutput.Text = SteamGifCropper.Properties.Resources.MergeDialog_OutputFile;
             // 
             // txtOutputPath
             // 
