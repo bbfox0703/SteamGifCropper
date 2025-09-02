@@ -1,4 +1,8 @@
 # SteamGifCropper
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/screenshots/MainWindow.png" style="flex: 1 1 30%; height: auto;">
+  <img src="./res/screenshots/MainWindowEn.png" style="flex: 1 1 30%; height: auto;">
+</div>
 
 [English](./Readme_en.md) | [日本語](./Readme_ja.md)
 
@@ -48,7 +52,7 @@ SteamGifCropper 是一個設計為 **Steam 工作坊個人展示櫃**的小工�
 - **操作系統**：Windows 10 1904 或更高版本
 - **Runtime**：.NET 8 runtime
 - **依賴函式庫**：Magick.NET（基於 ImageMagick）-- 已經內含於zip檔中
-- **FFMPEG**：使用FFMPEG功能的部份，系統要先裝好FFMPEG，並設定在OS系統環境變數**PATH **中，否則會無法呼叫。可以直接使用Powershell 7下指令：winget install ffmpeg安裝。
+- **FFMPEG**：使用FFMPEG功能的部份，系統要先裝好FFMPEG，並設定在OS系統環境變數 **PATH** 中，否則會無法呼叫。可以直接使用 Powershell 7 下指令：`winget install ffmpeg` 安裝。
 - **gifsicle.exe外部程式**：自行使用關鍵字例如「gifsicle for Windows」尋找、下載並設定；gifsicle.exe的位置必須包含在OS系統環境變數**PATH **中，否則會無法呼叫。
 ---
 
@@ -61,7 +65,7 @@ SteamGifCropper 是一個設計為 **Steam 工作坊個人展示櫃**的小工�
 
 這些值可以透過以下方式覆寫：
 
-1. **修改 `App.config`**：在 `<appSettings>` 中設定 `ResourceLimits.MemoryMB` 與 `ResourceLimits.DiskMB`。
+1. **修改 `SteamGifCropper.dll.config`、`App.config`(開發時)**：在 `<appSettings>` 中設定 `ResourceLimits.MemoryMB` 與 `ResourceLimits.DiskMB`。
 2. **命令列參數**：啟動程式時加入 `--memory-limit=<MB>` 或 `--disk-limit=<MB>`。
 
 例如：
@@ -70,7 +74,7 @@ SteamGifCropper 是一個設計為 **Steam 工作坊個人展示櫃**的小工�
 SteamGifCropper.exe --memory-limit=2048 --disk-limit=8192
 ```
 
-同時可以透過 `App.config` 調整 FFmpeg 行為：
+同時可以透過 `SteamGifCropper.dll.config`、`App.config` 調整 FFmpeg 行為：
 
 - `FFmpeg.TimeoutSeconds`：設定每次 FFmpeg 執行的逾時秒數（預設 300 秒）。
 - `FFmpeg.Threads`：限制 FFmpeg 使用的執行緒數，`0` 表示使用預設值。
