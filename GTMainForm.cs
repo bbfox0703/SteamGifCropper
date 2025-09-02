@@ -28,7 +28,7 @@ namespace GifProcessorApp
                 ApplyCurrentTheme();
 
                 // Set initial state
-                lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready;
+                GifProcessor.SetStatusText(this, SteamGifCropper.Properties.Resources.Status_Ready);
                 //pBarTaskStatus.Visible = false;
                 label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
 
@@ -316,7 +316,7 @@ namespace GifProcessorApp
 
                 if (lblStatus.Text == "Ready" || lblStatus.Text == "就緒" || lblStatus.Text == "準備完了")
                 {
-                    lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready;
+                    GifProcessor.SetStatusText(this, SteamGifCropper.Properties.Resources.Status_Ready);
                 }
 
                 UpdateResourceLimitLabel();
