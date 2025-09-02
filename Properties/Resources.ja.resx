@@ -818,4 +818,7 @@ FFmpeg 出力（切り捨て）:
   <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\lang_switch.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Warning_FPS_Mismatch" xml:space="preserve">
+    <value>警告：選択されたGIFファイルのフレームレート（FPS）が異なります。処理は続行されますが、アニメーションのタイミングに影響する可能性があります。</value>
+  </data>
 </root>

@@ -211,6 +211,7 @@ namespace GifProcessorApp
             }
         }
 
+
         private static (int[] delays, int ticksPerSecond) RecalculateGifDelays(MagickImageCollection collection, int targetFramerate)
         {
             int sourceTicks = (int)collection[0].AnimationTicksPerSecond;
@@ -219,20 +220,9 @@ namespace GifProcessorApp
                 sourceTicks = 100;
             }
 
-            int sourceDelay = (int)collection[0].AnimationDelay;
-            int sourceFps = sourceDelay > 0 ? sourceTicks / sourceDelay : targetFramerate;
-
-            if (sourceFps == targetFramerate)
-            {
-                var originalDelays = collection.Select(f => (int)f.AnimationDelay).ToArray();
-                return (originalDelays, sourceTicks);
-            }
-
-            const int GifTicksPerSecond = 100;
-            double targetDelay = (double)GifTicksPerSecond / targetFramerate;
-            int frameDelay = Math.Max(1, (int)Math.Round(targetDelay));
-            var delays = Enumerable.Repeat(frameDelay, collection.Count).ToArray();
-            return (delays, GifTicksPerSecond);
+            // Always preserve original frame delays and timing
+            var originalDelays = collection.Select(f => (int)f.AnimationDelay).ToArray();
+            return (originalDelays, sourceTicks);
         }
 
         private static void SplitGif(string inputFilePath, GifToolMainForm mainForm, (int Start, int End)[] ranges, int canvasHeight, int targetFramerate = 15)
@@ -956,8 +946,8 @@ namespace GifProcessorApp
 
                     int newHeight = canvasHeight + HeightExtension;
 
-                    // Calculate target frame delay in centiseconds (1/100th of a second)
-                    uint targetDelay = (uint)Math.Round(100.0 / targetFramerate);
+                    // Preserve original frame delays
+                    var originalDelays = collection.Select(f => (int)f.AnimationDelay).ToArray();
 
                     int totalSteps = (collection.Count * ranges.Length) + (ranges.Length * 3); // Processing + Palette reduction + LZW compression
                     int currentStep = 0;
@@ -966,8 +956,9 @@ namespace GifProcessorApp
                     {
                         using (var partCollection = new MagickImageCollection())
                         {
-                            foreach (var frame in collection)
+                            for (int frameIndex = 0; frameIndex < collection.Count; frameIndex++)
                             {
+                                var frame = collection[frameIndex];
                                 int copyWidth = ranges[i].End - ranges[i].Start + 1;
 
                                 // Create new image with correct dimensions
@@ -984,8 +975,8 @@ namespace GifProcessorApp
                                         newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
                                     }
 
-                                    // Set animation properties to target framerate
-                                    newImage.AnimationDelay = targetDelay;
+                                    // Set animation properties to preserve original timing
+                                    newImage.AnimationDelay = (uint)originalDelays[frameIndex];
                                     newImage.GifDisposeMethod = GifDisposeMethod.Background;
 
                                     // Apply palette reduction
@@ -1394,14 +1385,31 @@ namespace GifProcessorApp
                     minFrameCount = Math.Min(minFrameCount, collection.Count);
                 }
 
-                // Determine timing based on first GIF
-                int ticksPerSecond = collections[0][0].AnimationTicksPerSecond;
+                // Check for FPS mismatches and warn user
+                var fpsValues = new List<double>();
+                foreach (var collection in collections)
+                {
+                    var firstFrame = collection[0];
+                    double fps = firstFrame.AnimationDelay > 0 ? 
+                        (double)firstFrame.AnimationTicksPerSecond / firstFrame.AnimationDelay : 15.0;
+                    fpsValues.Add(fps);
+                }
 
-                // Calculate target frame count based on shortest duration and target framerate
-                int targetFrameCount = Math.Max(1, (int)(shortestDuration * targetFramerate));
+                // Check if all FPS values are significantly different (tolerance of 0.5 FPS)
+                var distinctFps = fpsValues.Where(fps => fpsValues.Any(other => Math.Abs(fps - other) > 0.5)).Distinct().ToList();
+                if (distinctFps.Count > 1)
+                {
+                    WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                        SteamGifCropper.Properties.Resources.Warning_FPS_Mismatch,
+                        "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
 
-                // Calculate target delay in ticks
-                uint targetDelay = (uint)Math.Round((double)ticksPerSecond / targetFramerate);
+                // Use first GIF's timing settings for the merged result
+                var referenceFrame = collections[0][0];
+                int ticksPerSecond = referenceFrame.AnimationTicksPerSecond;
+
+                // Use the minimum frame count to avoid extending shorter animations
+                int targetFrameCount = minFrameCount;
 
                 // Calculate total width
                 int totalWidth = widths.Sum();
@@ -1446,8 +1454,9 @@ namespace GifProcessorApp
                             currentX += widths[gifIndex];
                         }
 
-                        // Set animation delay and timing to maintain source speed
-                        canvas.AnimationDelay = targetDelay;
+                        // Set animation delay and timing from the reference frame
+                        var sourceFrame = collections[0][Math.Min(frameIndex, collections[0].Count - 1)];
+                        canvas.AnimationDelay = sourceFrame.AnimationDelay;
                         canvas.AnimationTicksPerSecond = ticksPerSecond;
                         canvas.GifDisposeMethod = GifDisposeMethod.Background;
                         
@@ -2020,6 +2029,7 @@ namespace GifProcessorApp
                 }
             }
 
+            // Use simple delay calculation for scroll animation
             uint delay = (uint)Math.Round(100.0 / targetFramerate);
 
             if (File.Exists(outputFilePath))
@@ -2125,6 +2135,7 @@ namespace GifProcessorApp
                 }
             }
 
+            // Use simple delay calculation for scroll animation
             uint delay = (uint)Math.Round(100.0 / targetFramerate);
 
             if (File.Exists(outputFilePath))

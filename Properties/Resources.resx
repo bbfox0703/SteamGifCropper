@@ -727,6 +727,9 @@ Detailed FFmpeg output saved to: {0}</value>
 FFmpeg output (truncated):
 {0}</value>
   </data>
+  <data name="Warning_FPS_Mismatch" xml:space="preserve">
+    <value>Warning: The selected GIF files have different frame rates (FPS). The processing will continue, but the animation timing may be affected.</value>
+  </data>
   <data name="Mp4ToGif_ErrorMessageDetails" xml:space="preserve">
     <value>{0}
 

@@ -54,7 +54,6 @@
             chkGifsicle = new System.Windows.Forms.CheckBox();
             numUpDownPalette = new System.Windows.Forms.NumericUpDown();
             lblPaletteDesc = new System.Windows.Forms.Label();
-            numUpDownFramerate = new System.Windows.Forms.NumericUpDown();
             lblFramerate = new System.Windows.Forms.Label();
             lblFPS = new System.Windows.Forms.Label();
             btnMerge2to5GifToOne = new System.Windows.Forms.Button();
@@ -69,14 +68,15 @@
             btnOverlayGIF = new System.Windows.Forms.Button();
             btnResizeNfpsGIF = new System.Windows.Forms.Button();
             lblResourceLimitDesc = new System.Windows.Forms.Label();
+            numUpDownFramerate = new System.Windows.Forms.NumericUpDown();
             panelGifsicle.SuspendLayout();
             groupDither.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPaletteSicle).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownLossy).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPalette).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numUpDownFramerate).BeginInit();
             conMenuLangSwitch.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numUpDownFramerate).BeginInit();
             SuspendLayout();
             // 
             // btnSplitGif
@@ -356,17 +356,6 @@
             lblPaletteDesc.Text = "Number of palette:";
             lblPaletteDesc.Visible = false;
             // 
-            // numUpDownFramerate
-            // 
-            numUpDownFramerate.Location = new System.Drawing.Point(130, 260);
-            numUpDownFramerate.Margin = new System.Windows.Forms.Padding(2);
-            numUpDownFramerate.Maximum = new decimal(new int[] { 60, 0, 0, 0 });
-            numUpDownFramerate.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
-            numUpDownFramerate.Name = "numUpDownFramerate";
-            numUpDownFramerate.Size = new System.Drawing.Size(46, 23);
-            numUpDownFramerate.TabIndex = 13;
-            numUpDownFramerate.Value = new decimal(new int[] { 15, 0, 0, 0 });
-            // 
             // lblFramerate
             // 
             lblFramerate.AutoSize = true;
@@ -383,10 +372,10 @@
             lblFPS.Location = new System.Drawing.Point(180, 262);
             lblFPS.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFPS.Name = "lblFPS";
-            lblFPS.Size = new System.Drawing.Size(24, 15);
+            lblFPS.Size = new System.Drawing.Size(93, 15);
             lblFPS.TabIndex = 14;
-            lblFPS.Text = SteamGifCropper.Properties.Resources.Label_FPS;
-            //
+            lblFPS.Text = "fps for split GIF.";
+            // 
             // btnMerge2to5GifToOne
             // 
             btnMerge2to5GifToOne.Location = new System.Drawing.Point(313, 7);
@@ -487,11 +476,22 @@
             // lblResourceLimitDesc
             // 
             lblResourceLimitDesc.AutoSize = true;
-            lblResourceLimitDesc.Location = new System.Drawing.Point(239, 262);
+            lblResourceLimitDesc.Location = new System.Drawing.Point(363, 262);
             lblResourceLimitDesc.Name = "lblResourceLimitDesc";
             lblResourceLimitDesc.Size = new System.Drawing.Size(234, 15);
             lblResourceLimitDesc.TabIndex = 15;
             lblResourceLimitDesc.Text = "Resource limit: mem: ?? MB / disk: ?? MB";
+            // 
+            // numUpDownFramerate
+            // 
+            numUpDownFramerate.Location = new System.Drawing.Point(130, 260);
+            numUpDownFramerate.Margin = new System.Windows.Forms.Padding(2);
+            numUpDownFramerate.Maximum = new decimal(new int[] { 30, 0, 0, 0 });
+            numUpDownFramerate.Minimum = new decimal(new int[] { 5, 0, 0, 0 });
+            numUpDownFramerate.Name = "numUpDownFramerate";
+            numUpDownFramerate.Size = new System.Drawing.Size(46, 23);
+            numUpDownFramerate.TabIndex = 13;
+            numUpDownFramerate.Value = new decimal(new int[] { 15, 0, 0, 0 });
             // 
             // GifToolMainForm
             // 
@@ -532,8 +532,8 @@
             ((System.ComponentModel.ISupportInitialize)numUpDownPaletteSicle).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownLossy).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPalette).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numUpDownFramerate).EndInit();
             conMenuLangSwitch.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)numUpDownFramerate).EndInit();
             ResumeLayout(false);
             PerformLayout();
 
@@ -565,7 +565,6 @@
         private System.Windows.Forms.RadioButton radioBtnDNone;
         public System.Windows.Forms.NumericUpDown numUpDownPalette;
         private System.Windows.Forms.Label lblPaletteDesc;
-        public System.Windows.Forms.NumericUpDown numUpDownFramerate;
         private System.Windows.Forms.Label lblFramerate;
         private System.Windows.Forms.Label lblFPS;
         private System.Windows.Forms.Button btnMerge2to5GifToOne;
@@ -580,5 +579,6 @@
         private System.Windows.Forms.Button btnOverlayGIF;
         private System.Windows.Forms.Button btnResizeNfpsGIF;
         private System.Windows.Forms.Label lblResourceLimitDesc;
+        public System.Windows.Forms.NumericUpDown numUpDownFramerate;
     }
 }

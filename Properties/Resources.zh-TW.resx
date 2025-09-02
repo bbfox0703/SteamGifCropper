@@ -818,4 +818,7 @@ FFmpeg 輸出 (部分)：
   <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\lang_switch.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Warning_FPS_Mismatch" xml:space="preserve">
+    <value>警告：選取的 GIF 檔案具有不同的幀率 (FPS)。將繼續處理，但動畫時間可能會受到影響。</value>
+  </data>
 </root>

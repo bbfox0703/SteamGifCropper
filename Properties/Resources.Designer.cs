@@ -1892,5 +1892,11 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("ScrollDialog_DirRightDown", resourceCulture);
             }
         }
+
+        internal static string Warning_FPS_Mismatch {
+            get {
+                return ResourceManager.GetString("Warning_FPS_Mismatch", resourceCulture);
+            }
+        }
     }
 }
