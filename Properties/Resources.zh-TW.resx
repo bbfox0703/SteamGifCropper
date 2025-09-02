@@ -380,9 +380,6 @@
   <data name="Mp4Dialog_Duration" xml:space="preserve">
     <value>持續時間：</value>
   </data>
-  <data name="Mp4Dialog_UseGPU" xml:space="preserve">
-    <value>使用GPU加速(如可用)</value>
-  </data>
   <data name="Group_Dither" xml:space="preserve">
     <value>邊緣平滑</value>
   </data>
@@ -408,13 +405,13 @@
     <value>無</value>
   </data>
   <data name="Label_Framerate" xml:space="preserve">
-    <value>目標幀率：</value>
+    <value>FPS（僅MP4/滾動/調整）：</value>
   </data>
   <data name="Label_FPS" xml:space="preserve">
-    <value>fps for split GIF.</value>
+    <value>每秒幀數</value>
   </data>
   <data name="Tooltip_Framerate" xml:space="preserve">
-    <value>所有輸出GIF的目標幀率(1-60 fps)</value>
+    <value>幀率設定僅適用於：MP4 轉 GIF、滾動動畫、調整大小/FPS 工具。分割和合併 GIF 會保留原始時間。</value>
   </data>
   <data name="CheckBox_FasterPalette" xml:space="preserve">
     <value>使用較快的調色盤處理(品質較低)</value>
@@ -463,12 +460,6 @@
   </data>
   <data name="Status_Mp4ShortClip" xml:space="preserve">
     <value>短片段：使用最佳化設定轉換MP4...</value>
-  </data>
-  <data name="Status_Mp4GPU" xml:space="preserve">
-    <value>使用GPU加速轉換MP4為GIF...</value>
-  </data>
-  <data name="Status_Mp4GPUFailed" xml:space="preserve">
-    <value>GPU解碼失敗，使用CPU...</value>
   </data>
   <data name="Status_Mp4CPU" xml:space="preserve">
     <value>使用最佳化CPU轉換MP4為GIF...</value>
@@ -599,29 +590,8 @@
   <data name="Mp4Dialog_FFmpegHelp" xml:space="preserve">
     <value>如何安裝 FFmpeg？（MP4 轉換需要）</value>
   </data>
-  <data name="Mp4Dialog_GPUDecode" xml:space="preserve">
-    <value>GPU 解碼（僅解碼，GIF 編碼使用 CPU）</value>
-  </data>
-  <data name="Mp4Dialog_CheckingGPU" xml:space="preserve">
-    <value>正在檢查 GPU...</value>
-  </data>
   <data name="Mp4Dialog_Title" xml:space="preserve">
     <value>MP4 轉 GIF 轉換器</value>
-  </data>
-  <data name="Mp4Dialog_NvidiaDetected" xml:space="preserve">
-    <value>已偵測到 NVIDIA GPU ✓</value>
-  </data>
-  <data name="Mp4Dialog_NoNvidiaGPU" xml:space="preserve">
-    <value>未偵測到 NVIDIA GPU</value>
-  </data>
-  <data name="Mp4Dialog_GPUDetectionFailed" xml:space="preserve">
-    <value>GPU 偵測失敗</value>
-  </data>
-  <data name="Mp4Dialog_GPUEnabled" xml:space="preserve">
-    <value>GPU 解碼已啟用⚡</value>
-  </data>
-  <data name="Mp4Dialog_NvidiaGPUCPU" xml:space="preserve">
-    <value>已偵測到 NVIDIA GPU（CPU 解碼）✓</value>
   </data>
   <data name="Mp4Dialog_FFmpegMessage" xml:space="preserve">
     <value>要使用MP4轉GIF功能，您需要先安裝FFmpeg。
@@ -677,15 +647,6 @@ FFmpeg 路徑: {0}
 3. 重新啟動本應用程式
 
 更多說明請點擊 MP4 轉 GIF 對話框中的連結。</value>
-  </data>
-  <data name="Mp4ToGif_ShortClipCpu" xml:space="preserve">
-    <value>短片段－CPU 更有效率...</value>
-  </data>
-  <data name="Mp4ToGif_GpuCpuEncoding" xml:space="preserve">
-    <value>GPU 解碼 + CPU GIF 編碼...</value>
-  </data>
-  <data name="Mp4ToGif_GpuDecodeFailed" xml:space="preserve">
-    <value>GPU 解碼失敗，改用 CPU...</value>
   </data>
   <data name="Mp4ToGif_FFmpegLog" xml:space="preserve">
     <value> (FFmpeg 日誌: {0})</value>

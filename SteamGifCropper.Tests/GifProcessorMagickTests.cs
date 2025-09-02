@@ -85,7 +85,7 @@ public class GifProcessorMagickTests
         string input = GifTestHelper.CreateGradientGif(tempDir, 766, 100, 4, "red", "black");
         try
         {
-            GifProcessor.SplitGif(input, tempDir, 100);
+            GifProcessor.SplitGif(input, tempDir);
             string partPath = Path.Combine(tempDir, $"{Path.GetFileNameWithoutExtension(input)}_Part1.gif");
             using var part = new MagickImageCollection(partPath);
             double partSum = 0;

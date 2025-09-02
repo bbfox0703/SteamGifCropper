@@ -14,7 +14,7 @@ public class ProgressReportingTests
         {
             string input = GifTestHelper.CreateGradientGif(tempDir, 766, 100, 2, "red", "black");
             var form = new GifToolMainForm();
-            GifProcessor.SplitGif(input, tempDir, 15, form);
+            GifProcessor.SplitGif(input, tempDir, form);
             var values = form.pBarTaskStatus.Values;
             Assert.Contains(50, values);
             Assert.Equal(100, values[^1]);

@@ -46,10 +46,9 @@ public class MergeGifTests
             }
 
             var form = new GifToolMainForm();
-            int targetFramerate = 10;
 
             string fastOutput = Path.Combine(tempDir, "merged_fast.gif");
-            await GifProcessor.MergeMultipleGifs(gifPaths, fastOutput, form, targetFramerate, true);
+            await GifProcessor.MergeMultipleGifs(gifPaths, fastOutput, form, true);
             using var fast = new MagickImageCollection(fastOutput);
             Assert.Equal(widths.Take(gifCount).Sum(), (int)fast[0].Width);
             Assert.Equal(frames.Take(gifCount).Min(), fast.Count);
@@ -57,7 +56,7 @@ public class MergeGifTests
             Assert.True(fastColors <= 256);
 
             string qualityOutput = Path.Combine(tempDir, "merged_quality.gif");
-            await GifProcessor.MergeMultipleGifs(gifPaths, qualityOutput, form, targetFramerate, false);
+            await GifProcessor.MergeMultipleGifs(gifPaths, qualityOutput, form, false);
             using var quality = new MagickImageCollection(qualityOutput);
             Assert.Equal(widths.Take(gifCount).Sum(), (int)quality[0].Width);
             Assert.Equal(frames.Take(gifCount).Min(), quality.Count);
@@ -88,23 +87,21 @@ public class MergeGifTests
 
             int expectedWidth = 0;
             int expectedHeight = 0;
-            double shortestDuration = double.MaxValue;
+            int minFrames = int.MaxValue;
             foreach (var path in gifPaths)
             {
                 using var col = new MagickImageCollection(path);
                 col.Coalesce();
                 expectedWidth += (int)col[0].Width;
                 expectedHeight = Math.Max(expectedHeight, (int)col[0].Height);
-                double duration = col.Sum(f => (double)f.AnimationDelay / f.AnimationTicksPerSecond);
-                shortestDuration = Math.Min(shortestDuration, duration);
+                minFrames = Math.Min(minFrames, col.Count);
             }
 
             var form = new GifToolMainForm();
-            int targetFramerate = 10;
-            int expectedFrames = Math.Max(1, (int)(shortestDuration * targetFramerate));
+            int expectedFrames = minFrames;
 
             string fastOutput = Path.Combine(tempDir, "merged_fast.gif");
-            await GifProcessor.MergeMultipleGifs(gifPaths, fastOutput, form, targetFramerate, true);
+            await GifProcessor.MergeMultipleGifs(gifPaths, fastOutput, form, true);
             using var fast = new MagickImageCollection(fastOutput);
             Assert.Equal(expectedWidth, (int)fast[0].Width);
             Assert.Equal(expectedHeight, (int)fast[0].Height);
@@ -113,7 +110,7 @@ public class MergeGifTests
             Assert.True(fastColors <= 256);
 
             string qualityOutput = Path.Combine(tempDir, "merged_quality.gif");
-            await GifProcessor.MergeMultipleGifs(gifPaths, qualityOutput, form, targetFramerate, false);
+            await GifProcessor.MergeMultipleGifs(gifPaths, qualityOutput, form, false);
             using var quality = new MagickImageCollection(qualityOutput);
             Assert.Equal(expectedWidth, (int)quality[0].Width);
             Assert.Equal(expectedHeight, (int)quality[0].Height);

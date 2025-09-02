@@ -119,7 +119,7 @@ namespace GifProcessorApp
             return synced;
         }
 
-        public static async Task MergeMultipleGifs(List<string> gifPaths, string outputPath, GifToolMainForm mainForm, int targetFramerate = 15, bool useFastPalette = false)
+        public static async Task MergeMultipleGifs(List<string> gifPaths, string outputPath, GifToolMainForm mainForm, bool useFastPalette = false)
         {
             if (gifPaths == null || gifPaths.Count < 2 || gifPaths.Count > 5)
                 throw new ArgumentException("Invalid gif count");
@@ -135,29 +135,27 @@ namespace GifProcessorApp
                 }
 
                 var widths = collections.Select(c => (int)c[0].Width).ToList();
-                double shortestDuration = collections.Min(c => c.Sum(f => (double)f.AnimationDelay / f.AnimationTicksPerSecond));
-                int targetFrameCount = Math.Max(1, (int)(shortestDuration * targetFramerate));
+                int minFrameCount = collections.Min(c => c.Count);
                 int totalWidth = widths.Sum();
                 int maxHeight = collections.Max(c => (int)c[0].Height);
                 int ticksPerSecond = collections[0][0].AnimationTicksPerSecond;
-                uint targetDelay = (uint)Math.Round((double)ticksPerSecond / targetFramerate);
 
                 using var palette = BuildSharedPalette(collections, useFastPalette);
                 using var merged = new MagickImageCollection();
 
-                for (int frameIndex = 0; frameIndex < targetFrameCount; frameIndex++)
+                for (int frameIndex = 0; frameIndex < minFrameCount; frameIndex++)
                 {
                     var canvas = new MagickImage(MagickColors.Transparent, (uint)totalWidth, (uint)maxHeight);
                     int currentX = 0;
                     for (int gifIndex = 0; gifIndex < collections.Count; gifIndex++)
                     {
                         var col = collections[gifIndex];
-                        double progress = (double)frameIndex / targetFrameCount;
+                        double progress = (double)frameIndex / minFrameCount;
                         int sourceIndex = Math.Min((int)(progress * col.Count), col.Count - 1);
                         canvas.Composite(col[sourceIndex], currentX, 0, CompositeOperator.Over);
                         currentX += widths[gifIndex];
                     }
-                    canvas.AnimationDelay = targetDelay;
+                    canvas.AnimationDelay = collections[0][frameIndex % collections[0].Count].AnimationDelay;
                     canvas.AnimationTicksPerSecond = ticksPerSecond;
                     canvas.GifDisposeMethod = GifDisposeMethod.Background;
                     merged.Add(canvas);
@@ -260,7 +258,7 @@ namespace GifProcessorApp
             collection.Write(outputFilePath);
         }
 
-        private static (int[] delays, int ticksPerSecond) RecalculateGifDelays(MagickImageCollection collection, int targetFramerate)
+        private static (int[] delays, int ticksPerSecond) RecalculateGifDelays(MagickImageCollection collection)
         {
             int sourceTicks = (int)collection[0].AnimationTicksPerSecond;
             if (sourceTicks <= 0)
@@ -268,23 +266,12 @@ namespace GifProcessorApp
                 sourceTicks = 100;
             }
 
-            int sourceDelay = (int)collection[0].AnimationDelay;
-            int sourceFps = sourceDelay > 0 ? sourceTicks / sourceDelay : targetFramerate;
-
-            if (sourceFps == targetFramerate)
-            {
-                var originalDelays = collection.Select(f => (int)f.AnimationDelay).ToArray();
-                return (originalDelays, sourceTicks);
-            }
-
-            const int GifTicksPerSecond = 100;
-            double targetDelay = (double)GifTicksPerSecond / targetFramerate;
-            int frameDelay = Math.Max(1, (int)Math.Round(targetDelay));
-            var delays = Enumerable.Repeat(frameDelay, collection.Count).ToArray();
-            return (delays, GifTicksPerSecond);
+            // Always preserve original frame delays and timing
+            var originalDelays = collection.Select(f => (int)f.AnimationDelay).ToArray();
+            return (originalDelays, sourceTicks);
         }
 
-        public static void SplitGif(string inputFilePath, string outputDirectory, int targetFramerate = 15, GifToolMainForm? mainForm = null)
+        public static void SplitGif(string inputFilePath, string outputDirectory, GifToolMainForm? mainForm = null)
         {
             using var collection = new MagickImageCollection(inputFilePath);
             collection.Coalesce();
@@ -301,7 +288,7 @@ namespace GifProcessorApp
 
             Directory.CreateDirectory(outputDirectory);
 
-            var (recalculatedDelays, ticksPerSecond) = RecalculateGifDelays(collection, targetFramerate);
+            var (recalculatedDelays, ticksPerSecond) = RecalculateGifDelays(collection);
             collection[0].AnimationTicksPerSecond = ticksPerSecond;
 
             int totalFrames = collection.Count * ranges.Length;

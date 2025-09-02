@@ -372,9 +372,9 @@
             lblFPS.Location = new System.Drawing.Point(180, 262);
             lblFPS.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFPS.Name = "lblFPS";
-            lblFPS.Size = new System.Drawing.Size(93, 15);
+            lblFPS.Size = new System.Drawing.Size(24, 15);
             lblFPS.TabIndex = 14;
-            lblFPS.Text = "fps for split GIF.";
+            lblFPS.Text = "fps";
             // 
             // btnMerge2to5GifToOne
             // 

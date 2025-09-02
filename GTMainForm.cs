@@ -192,9 +192,8 @@ namespace GifProcessorApp
                 {
                     if (dialog.ShowDialog() == DialogResult.OK)
                     {
-                        int targetFramerate = (int)numUpDownFramerate.Value;
                         bool useFastPalette = dialog.chkGIFMergeFasterPaletteProcess.Checked;
-                        await GifProcessor.MergeMultipleGifs(dialog.SelectedFilePaths, dialog.OutputFilePath, this, targetFramerate, useFastPalette);
+                        await GifProcessor.MergeMultipleGifs(dialog.SelectedFilePaths, dialog.OutputFilePath, this, useFastPalette);
                     }
                 }
             }, "GIF merge");

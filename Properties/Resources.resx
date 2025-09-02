@@ -372,9 +372,6 @@
   <data name="Mp4Dialog_Duration" xml:space="preserve">
     <value>Duration:</value>
   </data>
-  <data name="Mp4Dialog_UseGPU" xml:space="preserve">
-    <value>Use GPU acceleration (if available)</value>
-  </data>
   <data name="Group_Dither" xml:space="preserve">
     <value>Dither</value>
   </data>
@@ -400,13 +397,13 @@
     <value>None</value>
   </data>
   <data name="Label_Framerate" xml:space="preserve">
-    <value>Target framerate:</value>
+    <value>FPS (MP4/Scroll/Resize only):</value>
   </data>
   <data name="Label_FPS" xml:space="preserve">
-    <value>fps for split GIF.</value>
+    <value>frames per second</value>
   </data>
   <data name="Tooltip_Framerate" xml:space="preserve">
-    <value>Target framerate for all GIF outputs (frames per second)</value>
+    <value>Framerate setting only applies to: MP4 to GIF conversion, scroll animations, and resize/FPS tool. Split GIF and merge operations preserve original timing.</value>
   </data>
   <data name="CheckBox_FasterPalette" xml:space="preserve">
     <value>Faster palette reduction (quality down)</value>
@@ -455,12 +452,6 @@
   </data>
   <data name="Status_Mp4ShortClip" xml:space="preserve">
     <value>Short clip - CPU more efficient...</value>
-  </data>
-  <data name="Status_Mp4GPU" xml:space="preserve">
-    <value>GPU decode + CPU GIF encoding...</value>
-  </data>
-  <data name="Status_Mp4GPUFailed" xml:space="preserve">
-    <value>GPU decode failed, using CPU...</value>
   </data>
   <data name="Status_Mp4CPU" xml:space="preserve">
     <value>Converting MP4 to GIF with optimized CPU...</value>
@@ -600,21 +591,6 @@
   <data name="Mp4Dialog_Title" xml:space="preserve">
     <value>MP4 to GIF Converter</value>
   </data>
-  <data name="Mp4Dialog_NvidiaDetected" xml:space="preserve">
-    <value>NVIDIA GPU detected ✓</value>
-  </data>
-  <data name="Mp4Dialog_NoNvidiaGPU" xml:space="preserve">
-    <value>No NVIDIA GPU detected</value>
-  </data>
-  <data name="Mp4Dialog_GPUDetectionFailed" xml:space="preserve">
-    <value>GPU detection failed</value>
-  </data>
-  <data name="Mp4Dialog_GPUEnabled" xml:space="preserve">
-    <value>GPU decode enabled ⚡</value>
-  </data>
-  <data name="Mp4Dialog_NvidiaGPUCPU" xml:space="preserve">
-    <value>NVIDIA GPU detected (CPU decode) ✓</value>
-  </data>
   <data name="Mp4Dialog_FFmpegMessage" xml:space="preserve">
     <value>To use MP4 to GIF conversion, you need to install FFmpeg first.
 
@@ -670,15 +646,6 @@ To install FFmpeg:
 
 For more help, click the link in the MP4 to GIF dialog.</value>
   </data>
-  <data name="Mp4ToGif_ShortClipCpu" xml:space="preserve">
-    <value>Short clip - CPU more efficient...</value>
-  </data>
-  <data name="Mp4ToGif_GpuCpuEncoding" xml:space="preserve">
-    <value>GPU decode + CPU GIF encoding...</value>
-  </data>
-  <data name="Mp4ToGif_GpuDecodeFailed" xml:space="preserve">
-    <value>GPU decode failed, using CPU...</value>
-  </data>
   <data name="Mp4ToGif_FFmpegLog" xml:space="preserve">
     <value> (FFmpeg log: {0})</value>
   </data>
@@ -704,11 +671,6 @@ Installation: winget install ffmpeg</value>
     <value>The input video file appears to be corrupted or incomplete.
 
 Try using a different video file or re-download the original.</value>
-  </data>
-  <data name="Mp4ToGif_Error_GPUFailed" xml:space="preserve">
-    <value>GPU acceleration failed. The conversion will automatically retry with CPU processing.
-
-This is normal if your GPU drivers are outdated or CUDA is not properly installed.</value>
   </data>
   <data name="Mp4ToGif_Error_PermissionDenied" xml:space="preserve">
     <value>Cannot access the output directory. Please check file permissions and ensure the directory is writable.</value>
