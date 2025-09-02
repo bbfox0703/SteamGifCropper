@@ -19,6 +19,20 @@ namespace GifProcessorApp
 
         private static bool IsValidCanvasWidth(uint width) => width == SupportedWidth1 || width == SupportedWidth2;
 
+        public static void SetProgressBar(GifToolMainForm.ProgressBar progressBar, int current, int total)
+        {
+            if (progressBar == null || total <= 0) return;
+            progressBar.Minimum = 0;
+            progressBar.Maximum = total;
+            progressBar.Value = Math.Max(progressBar.Minimum, Math.Min(current, total));
+        }
+
+        public static void SetStatusText(GifToolMainForm mainForm, string text)
+        {
+            if (mainForm == null) return;
+            mainForm.lblStatus.Text = text;
+        }
+
         private static (int Start, int End)[] GetCropRanges(uint canvasWidth) => canvasWidth == SupportedWidth1 ? Ranges766 : Ranges774;
 
         private static void ModifyGifFile(string filePath, int adjustedHeight)
@@ -315,9 +329,9 @@ namespace GifProcessorApp
                     currentFrame++;
                     if (mainForm != null)
                     {
-                        int percent = (int)Math.Min((double)currentFrame / totalFrames * 100, 100);
-                        mainForm.pBarTaskStatus.Value = percent;
-                        mainForm.lblStatus.Text = $"{currentFrame}/{totalFrames} ({percent}%)";
+                    int percent = (int)Math.Min((double)currentFrame / totalFrames * 100, 100);
+                    GifProcessor.SetProgressBar(mainForm.pBarTaskStatus, percent, 100);
+                    GifProcessor.SetStatusText(mainForm, $"{currentFrame}/{totalFrames} ({percent}%)");
                     }
                 }
 
