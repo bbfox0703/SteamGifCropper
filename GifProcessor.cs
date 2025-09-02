@@ -282,6 +282,7 @@ namespace GifProcessorApp
                         foreach (var frame in partCollection)
                         {
                             frame.Settings.SetDefine("compress", "LZW");
+                            frame.Settings.SetDefine(MagickFormat.Gif, "optimize-transparency", "true");
 
                             if (++compressFrameCount % 25 == 0)
                             {
@@ -824,6 +825,7 @@ namespace GifProcessorApp
                 foreach (var frame in partCollection)
                 {
                     frame.Settings.SetDefine("compress", "LZW");
+                    frame.Settings.SetDefine(MagickFormat.Gif, "optimize-transparency", "true");
                 }
 
                 string outputFile = Path.Combine(outputDirectory, $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}.gif");
@@ -998,6 +1000,7 @@ namespace GifProcessorApp
                             foreach (var frame in partCollection)
                             {
                                 frame.Settings.SetDefine("compress", "LZW");
+                                frame.Settings.SetDefine(MagickFormat.Gif, "optimize-transparency", "true");
                             }
 
                             currentStep++;
