@@ -29,7 +29,7 @@ namespace GifProcessorApp
 
                 // Set initial state
                 lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Ready;
-                pBarTaskStatus.Visible = false;
+                //pBarTaskStatus.Visible = false;
                 label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
 
                 // Ensure proper form state
@@ -192,9 +192,8 @@ namespace GifProcessorApp
                 {
                     if (dialog.ShowDialog() == DialogResult.OK)
                     {
-                        int targetFramerate = (int)numUpDownFramerate.Value;
                         bool useFastPalette = dialog.chkGIFMergeFasterPaletteProcess.Checked;
-                        await GifProcessor.MergeMultipleGifs(dialog.SelectedFilePaths, dialog.OutputFilePath, this, targetFramerate, useFastPalette);
+                        await GifProcessor.MergeMultipleGifs(dialog.SelectedFilePaths, dialog.OutputFilePath, this, useFastPalette);
                     }
                 }
             }, "GIF merge");
@@ -310,7 +309,8 @@ namespace GifProcessorApp
                     btnResizeNfpsGIF.Text = "FFMPEG: " + btnResizeNfpsGIF.Text;
                 }
                 label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
-
+                lblFramerate.Text = SteamGifCropper.Properties.Resources.Label_Framerate;
+                lblFPS.Text = SteamGifCropper.Properties.Resources.Label_FPS;
 
                 this.Text = "Steam GIF Cropper"; // Keep main title in English
 

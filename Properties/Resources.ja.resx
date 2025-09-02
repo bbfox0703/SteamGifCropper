@@ -294,7 +294,7 @@
     <value>{1} 個のGIFファイルのうち {0} 個が正常に処理されました！</value>
   </data>
   <data name="Message_RestorationComplete" xml:space="preserve">
-    <value>復元が完了しました！\n処理されたファイル: {0}\nスキップされたファイル (0x21 ではない): {1}</value>
+    <value>復元が完了しました！&#xA;処理されたファイル: {0}&#xA;スキップされたファイル (0x21 ではない): {1}</value>
   </data>
   <data name="Error_UnsupportedWidth" xml:space="preserve">
     <value>サポートされていないGIF幅：{0}ピクセル。このツールは{1}ピクセルまたは{2}ピクセル幅のGIFファイルのみサポートしています。</value>
@@ -380,9 +380,6 @@
   <data name="Mp4Dialog_Duration" xml:space="preserve">
     <value>持続時間：</value>
   </data>
-  <data name="Mp4Dialog_UseGPU" xml:space="preserve">
-    <value>GPU加速を使用（利用可能な場合）</value>
-  </data>
   <data name="Group_Dither" xml:space="preserve">
     <value>ディザリング</value>
   </data>
@@ -408,13 +405,13 @@
     <value>なし</value>
   </data>
   <data name="Label_Framerate" xml:space="preserve">
-    <value>ターゲットフレームレート：</value>
+    <value>FPS（MP4/スクロール/リサイズのみ）：</value>
   </data>
   <data name="Label_FPS" xml:space="preserve">
-    <value>fps</value>
+    <value>フレーム/秒</value>
   </data>
   <data name="Tooltip_Framerate" xml:space="preserve">
-    <value>すべての出力GIFのターゲットフレームレート(1-60 fps)</value>
+    <value>フレームレート設定はMP4変換、スクロールアニメーション、リサイズ/FPSツールのみに適用。分割・結合は元のタイミングを保持。</value>
   </data>
   <data name="CheckBox_FasterPalette" xml:space="preserve">
     <value>高速パレット処理を使用（品質低下）</value>
@@ -463,12 +460,6 @@
   </data>
   <data name="Status_Mp4ShortClip" xml:space="preserve">
     <value>短いクリップ：最適化設定でMP4を変換中...</value>
-  </data>
-  <data name="Status_Mp4GPU" xml:space="preserve">
-    <value>GPU加速でMP4をGIFに変換中...</value>
-  </data>
-  <data name="Status_Mp4GPUFailed" xml:space="preserve">
-    <value>GPUデコードに失敗、CPUを使用しています...</value>
   </data>
   <data name="Status_Mp4CPU" xml:space="preserve">
     <value>最適化されたCPUでMP4をGIFに変換しています...</value>
@@ -599,29 +590,8 @@
   <data name="Mp4Dialog_FFmpegHelp" xml:space="preserve">
     <value>FFmpeg をインストールする方法は？（MP4 変換に必須）</value>
   </data>
-  <data name="Mp4Dialog_GPUDecode" xml:space="preserve">
-    <value>GPU デコード（デコードのみ、GIF のエンコードは CPU を使用）</value>
-  </data>
-  <data name="Mp4Dialog_CheckingGPU" xml:space="preserve">
-    <value>GPU を確認中...</value>
-  </data>
   <data name="Mp4Dialog_Title" xml:space="preserve">
     <value>MP4 → GIF コンバーター</value>
-  </data>
-  <data name="Mp4Dialog_NvidiaDetected" xml:space="preserve">
-    <value>NVIDIA GPU が検出されました ✓</value>
-  </data>
-  <data name="Mp4Dialog_NoNvidiaGPU" xml:space="preserve">
-    <value>NVIDIA GPU が検出されませんでした</value>
-  </data>
-  <data name="Mp4Dialog_GPUDetectionFailed" xml:space="preserve">
-    <value>GPU の検出に失敗しました</value>
-  </data>
-  <data name="Mp4Dialog_GPUEnabled" xml:space="preserve">
-    <value>GPU デコードが有効になりました⚡</value>
-  </data>
-  <data name="Mp4Dialog_NvidiaGPUCPU" xml:space="preserve">
-    <value>NVIDIA GPU が検出されました（CPU デコード）✓</value>
   </data>
   <data name="Mp4Dialog_FFmpegMessage" xml:space="preserve">
     <value>MP4 から GIF への変換を使用するには、まず FFmpeg をインストールする必要があります。
@@ -678,15 +648,6 @@ FFmpeg をインストールするには:
 
 詳細は MP4→GIF ダイアログのリンクを参照してください。</value>
   </data>
-  <data name="Mp4ToGif_ShortClipCpu" xml:space="preserve">
-    <value>短いクリップ - CPU の方が効率的...</value>
-  </data>
-  <data name="Mp4ToGif_GpuCpuEncoding" xml:space="preserve">
-    <value>GPU デコード + CPU GIF エンコード...</value>
-  </data>
-  <data name="Mp4ToGif_GpuDecodeFailed" xml:space="preserve">
-    <value>GPU デコードに失敗、CPU を使用します...</value>
-  </data>
   <data name="Mp4ToGif_FFmpegLog" xml:space="preserve">
     <value> (FFmpeg ログ: {0})</value>
   </data>
@@ -712,11 +673,6 @@ FFmpeg をインストールするには:
     <value>入力動画ファイルが破損しているか不完全です。
 
 別の動画ファイルを使用するか、元のファイルを再ダウンロードしてください。</value>
-  </data>
-  <data name="Mp4ToGif_Error_GPUFailed" xml:space="preserve">
-    <value>GPU アクセラレーションに失敗しました。変換は自動的に CPU 処理で再試行します。
-
-GPU ドライバーが古いか CUDA が適切にインストールされていない場合は正常です。</value>
   </data>
   <data name="Mp4ToGif_Error_PermissionDenied" xml:space="preserve">
     <value>出力ディレクトリにアクセスできません。ファイル権限を確認し、ディレクトリが書き込み可能であることを確認してください。</value>
@@ -817,5 +773,8 @@ FFmpeg 出力（切り捨て）:
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\lang_switch.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Warning_FPS_Mismatch" xml:space="preserve">
+    <value>警告：選択されたGIFファイルのフレームレート（FPS）が異なります。処理は続行されますが、アニメーションのタイミングに影響する可能性があります。</value>
   </data>
 </root>

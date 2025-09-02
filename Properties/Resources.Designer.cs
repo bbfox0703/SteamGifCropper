@@ -349,7 +349,7 @@ namespace SteamGifCropper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to fps.
+        ///   Looks up a localized string similar to fps for split GIF.
         /// </summary>
         internal static string Label_FPS {
             get {
@@ -1890,6 +1890,12 @@ namespace SteamGifCropper.Properties {
         internal static string ScrollDialog_DirRightDown {
             get {
                 return ResourceManager.GetString("ScrollDialog_DirRightDown", resourceCulture);
+            }
+        }
+
+        internal static string Warning_FPS_Mismatch {
+            get {
+                return ResourceManager.GetString("Warning_FPS_Mismatch", resourceCulture);
             }
         }
     }
