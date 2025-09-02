@@ -292,7 +292,7 @@ namespace GifProcessorApp
                     string outputPath = Path.Combine(outputDir, outputFile);
 
                         partCollection.Optimize();
-                        partCollection[0].AnimationTicksPerSecond = (uint)ticksPerSecond;
+                        partCollection[0].AnimationTicksPerSecond = ticksPerSecond;
                         UpdateStatusLabel(mainForm, SteamGifCropper.Properties.Resources.Status_Compressing);
                         int compressFrameCount = 0;
                         foreach (var frame in partCollection)
@@ -837,7 +837,7 @@ namespace GifProcessorApp
                 }
 
                 partCollection.Optimize();
-                partCollection[0].AnimationTicksPerSecond = (uint)ticksPerSecond;
+                partCollection[0].AnimationTicksPerSecond = ticksPerSecond;
                 foreach (var frame in partCollection)
                 {
                     frame.Settings.SetDefine("compress", "LZW");
