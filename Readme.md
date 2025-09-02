@@ -1,7 +1,7 @@
 # SteamGifCropper
 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-  <img src="./res/screenshots/MainWindow.png" style="flex: 1 1 30%; height: auto;">
-  <img src="./res/screenshots/MainWindowEn.png" style="flex: 1 1 30%; height: auto;">
+  <img src="./res/screenshots/MainWindow.png" style="flex: 1 1 18%; height: auto;">
+  <img src="./res/screenshots/MainWindowEn.png" style="flex: 1 1 18%; height: auto;">
 </div>
 
 [English](./Readme_en.md) | [日本語](./Readme_ja.md)
