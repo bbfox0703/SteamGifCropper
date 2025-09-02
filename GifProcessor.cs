@@ -232,7 +232,7 @@ namespace GifProcessorApp
 
         private static void SplitGif(string inputFilePath, GifToolMainForm mainForm, (int Start, int End)[] ranges, int canvasHeight)
         {
-            UpdateStatusLabel(mainForm, SteamGifCropper.Properties.Resources.Status_CoalescingFrames);
+            SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_CoalescingFrames);
             using var collection = new MagickImageCollection(inputFilePath);
             collection.Coalesce();
             int newHeight = canvasHeight + HeightExtension;
@@ -254,7 +254,7 @@ namespace GifProcessorApp
 
                         if (currentFrame % ProgressUpdateInterval == 0)
                         {
-                            UpdateStatusLabel(mainForm, string.Format("Splitting part {0}/5 - Frame {1}/{2}", i + 1, (currentFrame % collection.Count) + 1, collection.Count));
+                            SetStatusText(mainForm, string.Format("Splitting part {0}/5 - Frame {1}/{2}", i + 1, (currentFrame % collection.Count) + 1, collection.Count));
                         }
 
                         var newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight);
@@ -283,7 +283,7 @@ namespace GifProcessorApp
 
                         partCollection.Optimize();
                         partCollection[0].AnimationTicksPerSecond = ticksPerSecond;
-                        UpdateStatusLabel(mainForm, SteamGifCropper.Properties.Resources.Status_Compressing);
+                        SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Compressing);
                         int compressFrameCount = 0;
                         foreach (var frame in partCollection)
                         {
@@ -292,11 +292,11 @@ namespace GifProcessorApp
 
                             if (++compressFrameCount % 25 == 0)
                             {
-                                UpdateStatusLabel(mainForm, SteamGifCropper.Properties.Resources.Status_Compressing);
+                                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Compressing);
                             }
                         }
 
-                        UpdateStatusLabel(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
+                        SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
 
                         mainForm.pBarTaskStatus.Visible = true;
                         //mainForm.pBarTaskStatus.Value = 0;
@@ -305,7 +305,7 @@ namespace GifProcessorApp
 
                         if (mainForm.chkGifsicle.Checked)
                         {
-                            UpdateStatusLabel(mainForm, SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing);
+                            SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing);
                             var options = new GifsicleWrapper.GifsicleOptions
                             {
                                 Colors = (int)mainForm.numUpDownPaletteSicle.Value,
@@ -317,7 +317,7 @@ namespace GifProcessorApp
                             var progress = new Progress<int>(p =>
                             {
                                 SetProgressBar(mainForm.pBarTaskStatus, p, 100);
-                                UpdateStatusLabel(mainForm, $"{SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing} ({p}%)");
+                                SetStatusText(mainForm, $"{SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing} ({p}%)");
                             });
 
                             GifsicleWrapper.OptimizeGif(outputPath, outputPath, options, progress).GetAwaiter().GetResult();
@@ -325,7 +325,7 @@ namespace GifProcessorApp
                         else
                         {
                             SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
-                            UpdateStatusLabel(mainForm, $"Saving part {i + 1} complete");
+                            SetStatusText(mainForm, $"Saving part {i + 1} complete");
                         }
 
                         ModifyGifFile(outputPath, canvasHeight);
@@ -361,7 +361,7 @@ namespace GifProcessorApp
                 mainForm.pBarTaskStatus.Minimum = 0;
                 mainForm.pBarTaskStatus.Maximum = 100;
                 SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
-                UpdateStatusLabel(mainForm, SteamGifCropper.Properties.Resources.Status_ValidatingProcessing);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_ValidatingProcessing);
 
                 // Step 2: Load and validate all GIF files
                 var collections = LoadAndValidateGifs(gifFiles, mainForm);
@@ -545,7 +545,7 @@ namespace GifProcessorApp
 
         private static MagickImageCollection[] SynchronizeToShortestDuration(MagickImageCollection[] collections, GifToolMainForm mainForm)
         {
-            UpdateStatusLabel(mainForm, SteamGifCropper.Properties.Resources.Status_SynchronizingDurations);
+            SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_SynchronizingDurations);
 
             // Calculate total duration for each GIF in seconds
             var durations = new double[5];
@@ -558,7 +558,7 @@ namespace GifProcessorApp
             double shortestDuration = durations.Min();
             int shortestIndex = Array.IndexOf(durations, shortestDuration);
 
-            UpdateStatusLabel(mainForm, string.Format(
+            SetStatusText(mainForm, string.Format(
                 SteamGifCropper.Properties.Resources.Status_ShortestDuration,
                 shortestDuration, shortestIndex + 1));
 
@@ -569,7 +569,7 @@ namespace GifProcessorApp
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    UpdateStatusLabel(mainForm, string.Format(
+                    SetStatusText(mainForm, string.Format(
                         SteamGifCropper.Properties.Resources.Status_SynchronizingGif,
                         i + 1));
                     
@@ -586,7 +586,7 @@ namespace GifProcessorApp
                             // Update every 20 frames
                             if (++frameCount % 20 == 0)
                             {
-                                UpdateStatusLabel(mainForm, string.Format(
+                                SetStatusText(mainForm, string.Format(
                                     SteamGifCropper.Properties.Resources.Status_SynchronizingGif,
                                     i + 1));
                             }
@@ -608,7 +608,7 @@ namespace GifProcessorApp
                                 // Update every 20 frames
                                 if (++frameCount % 20 == 0)
                                 {
-                                    UpdateStatusLabel(mainForm, string.Format(
+                                    SetStatusText(mainForm, string.Format(
                                         SteamGifCropper.Properties.Resources.Status_SynchronizingGif,
                                         i + 1));
                                 }
@@ -693,7 +693,7 @@ namespace GifProcessorApp
             ulong memoryLimitBytes,
             ulong diskLimitBytes)
         {
-            UpdateStatusLabel(mainForm, SteamGifCropper.Properties.Resources.Status_MergingHorizontally);
+            SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_MergingHorizontally);
 
             // Enable disk caching to limit memory usage
             MagickNET.SetTempDirectory(Path.GetTempPath());
@@ -772,7 +772,7 @@ namespace GifProcessorApp
                     // Update status with detailed merging progress  
                     if (frameIndex % 10 == 0 || frameIndex == maxFrames - 1)
                     {
-                        UpdateStatusLabel(mainForm, string.Format("Merging 5 GIFs - Frame {0}/{1}", frameIndex + 1, maxFrames));
+                        SetStatusText(mainForm, string.Format("Merging 5 GIFs - Frame {0}/{1}", frameIndex + 1, maxFrames));
                     }
                     UpdateFrameProgressByFrame(mainForm, frameIndex + 1, maxFrames);
                 }
@@ -1118,7 +1118,7 @@ namespace GifProcessorApp
                     SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
                     mainForm.pBarTaskStatus.Maximum = 100;
                     mainForm.pBarTaskStatus.Visible = true;
-                    UpdateStatusLabel(mainForm, SteamGifCropper.Properties.Resources.Status_Loading);
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Loading);
 
                     ResizeGifTo766(inputFilePath, outputFilePath, mainForm);
 
@@ -1167,7 +1167,7 @@ namespace GifProcessorApp
                 mainForm.Enabled = false;
                 try
                 {
-                    UpdateStatusLabel(mainForm, SteamGifCropper.Properties.Resources.Status_RestoringTailBytes);
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_RestoringTailBytes);
                     SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
                     mainForm.pBarTaskStatus.Maximum = 100;
                     mainForm.pBarTaskStatus.Visible = true;
@@ -1200,7 +1200,7 @@ namespace GifProcessorApp
                         SetProgressBar(mainForm.pBarTaskStatus, progress, selectedFiles.Length);
                         if (progress % ProgressUpdateInterval == 0 || progress == selectedFiles.Length)
                         {
-                            UpdateStatusLabel(mainForm, string.Format(
+                            SetStatusText(mainForm, string.Format(
                                 "Restoring tail bytes {0}/{1}: {2}",
                                 progress, selectedFiles.Length, Path.GetFileName(filePath)));
                         }
@@ -1288,7 +1288,7 @@ namespace GifProcessorApp
                         try
                         {
                             // Update status with current file being processed
-                            UpdateStatusLabel(mainForm, string.Format(
+                            SetStatusText(mainForm, string.Format(
                                 "Modifying tail bytes {0}/{1}: {2}",
                                 processedFiles + 1,
                                 filePaths.Count(),
