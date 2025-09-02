@@ -79,7 +79,7 @@ public class GifProcessorMagickTests
     }
 
     [Fact]
-    public void SplitGif_ClampsHighFramerate()
+    public void SplitGif_HighFramerateUsesRoundedDelay()
     {
         string tempDir = Directory.CreateTempSubdirectory().FullName;
         string input = GifTestHelper.CreateGradientGif(tempDir, 766, 100, 4, "red", "black");
@@ -93,8 +93,8 @@ public class GifProcessorMagickTests
             {
                 partSum += (double)part[i].AnimationDelay / part[i].AnimationTicksPerSecond;
                 Assert.Equal(100, (int)part[i].AnimationTicksPerSecond);
-                Assert.Equal(2U, part[i].AnimationDelay);
-                double expected = (i + 1) / 50.0;
+                Assert.Equal(1U, part[i].AnimationDelay);
+                double expected = (i + 1) / 100.0;
                 Assert.True(Math.Abs(partSum - expected) < 1.0 / 100);
             }
         }

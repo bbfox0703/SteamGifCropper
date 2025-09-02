@@ -211,33 +211,28 @@ namespace GifProcessorApp
             }
         }
 
-        private static int[] RecalculateGifDelays(MagickImageCollection collection, int targetFramerate)
+        private static (int[] delays, int ticksPerSecond) RecalculateGifDelays(MagickImageCollection collection, int targetFramerate)
         {
-            const int GifTicksPerSecond = 100;
-            const int MinGifDelayCs = 2;
-            int maxFps = GifTicksPerSecond / MinGifDelayCs;
-            int effectiveFps = Math.Min(targetFramerate, maxFps);
-
-            collection[0].AnimationTicksPerSecond = GifTicksPerSecond;
-
-            double exactDelay = (double)GifTicksPerSecond / effectiveFps;
-            var delays = new int[collection.Count];
-
-            double acc = 0;
-            int assigned = 0;
-            for (int i = 0; i < collection.Count; i++)
+            int sourceTicks = (int)collection[0].AnimationTicksPerSecond;
+            if (sourceTicks <= 0)
             {
-                acc += exactDelay;
-                int delay = (int)Math.Round(acc) - assigned;
-                if (delay < MinGifDelayCs)
-                {
-                    delay = MinGifDelayCs;
-                }
-                delays[i] = delay;
-                assigned += delay;
+                sourceTicks = 100;
             }
 
-            return delays;
+            int sourceDelay = (int)collection[0].AnimationDelay;
+            int sourceFps = sourceDelay > 0 ? sourceTicks / sourceDelay : targetFramerate;
+
+            if (sourceFps == targetFramerate)
+            {
+                var originalDelays = collection.Select(f => (int)f.AnimationDelay).ToArray();
+                return (originalDelays, sourceTicks);
+            }
+
+            const int GifTicksPerSecond = 100;
+            double targetDelay = (double)GifTicksPerSecond / targetFramerate;
+            int frameDelay = Math.Max(1, (int)Math.Round(targetDelay));
+            var delays = Enumerable.Repeat(frameDelay, collection.Count).ToArray();
+            return (delays, GifTicksPerSecond);
         }
 
         private static void SplitGif(string inputFilePath, GifToolMainForm mainForm, (int Start, int End)[] ranges, int canvasHeight, int targetFramerate = 15)
@@ -247,8 +242,8 @@ namespace GifProcessorApp
             collection.Coalesce();
             int newHeight = canvasHeight + HeightExtension;
 
-            var recalculatedDelays = RecalculateGifDelays(collection, targetFramerate);
-            int ticksPerSecond = (int)collection[0].AnimationTicksPerSecond;
+            var (recalculatedDelays, ticksPerSecond) = RecalculateGifDelays(collection, targetFramerate);
+            collection[0].AnimationTicksPerSecond = ticksPerSecond;
 
             int totalFrames = collection.Count * ranges.Length;
             int currentFrame = 0;
@@ -813,8 +808,8 @@ namespace GifProcessorApp
             int newHeight = canvasHeight + HeightExtension;
             Directory.CreateDirectory(outputDirectory);
 
-            var recalculatedDelays = RecalculateGifDelays(collection, targetFramerate);
-            int ticksPerSecond = (int)collection[0].AnimationTicksPerSecond;
+            var (recalculatedDelays, ticksPerSecond) = RecalculateGifDelays(collection, targetFramerate);
+            collection[0].AnimationTicksPerSecond = ticksPerSecond;
 
             for (int i = 0; i < ranges.Length; i++)
             {
@@ -932,6 +927,22 @@ namespace GifProcessorApp
                     mainForm.lblStatus.Text = SteamGifCropper.Properties.Resources.Status_Idle;
                 }
             }
+        }
+
+        public static void DiagnoseGif(string gifPath)
+        {
+            using var collection = new MagickImageCollection(gifPath);
+            Console.WriteLine($"Total frames: {collection.Count}");
+            Console.WriteLine($"AnimationTicksPerSecond: {collection[0].AnimationTicksPerSecond}");
+            Console.WriteLine($"AnimationIterations: {collection[0].AnimationIterations}");
+            Console.WriteLine("Frame delays:");
+            for (int i = 0; i < Math.Min(collection.Count, 10); i++)
+            {
+                Console.WriteLine($"Frame {i}: {collection[i].AnimationDelay} cs");
+            }
+            double totalDelay = collection.Sum(frame => (double)frame.AnimationDelay);
+            double averageFps = collection.Count * 100.0 / totalDelay;
+            Console.WriteLine($"Average FPS: {averageFps:F2}");
         }
 
         private static async Task ReducePaletteAndSplitGif(string inputFilePath, (int Start, int End)[] ranges, int canvasHeight, int paletteSize, int targetFramerate, IProgress<(int current, int total, string status)> progress)
