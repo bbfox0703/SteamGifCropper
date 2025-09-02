@@ -1,6 +1,6 @@
 # SteamGifCropper
 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-  <img src="./res/screenshots/MainWindow.png" width="200px" >
+  <img src="./res/screenshots/MainWindow.png" width="50%" >
 </div>
 
 [English](./Readme_en.md) | [日本語](./Readme_ja.md)
