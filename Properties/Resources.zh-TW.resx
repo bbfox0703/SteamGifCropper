@@ -559,6 +559,21 @@
   <data name="MergeDialog_CannotCreateDir" xml:space="preserve">
     <value>無法建立輸出目錄：</value>
   </data>
+  <data name="MergeDialog_PaletteSource" xml:space="preserve">
+    <value>調色盤來源：</value>
+  </data>
+  <data name="MergeDialog_SelectGifFiles" xml:space="preserve">
+    <value>選擇要合併的 GIF 檔案</value>
+  </data>
+  <data name="MergeDialog_SaveMergedGif" xml:space="preserve">
+    <value>將合併後的 GIF 另存為…</value>
+  </data>
+  <data name="MergeDialog_GifFilter" xml:space="preserve">
+    <value>GIF Files (*.gif)|*.gif</value>
+  </data>
+  <data name="MergeDialog_GifNumberFormat" xml:space="preserve">
+    <value>GIF {0}: {1}</value>
+  </data>
   <data name="Mp4Dialog_InputLabel" xml:space="preserve">
     <value>輸入檔案：</value>
   </data>
