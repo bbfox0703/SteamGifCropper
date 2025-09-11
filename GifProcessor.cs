@@ -2596,7 +2596,15 @@ namespace GifProcessorApp
 
                 // Step 7: Generate transitions and concatenate GIFs
                 SetStatusText(mainForm, "Generating transitions and concatenating GIF files...");
-                var result = ConcatenateGifCollectionsWithTransitions(gifCollections, settings, analysis.MaxFps);
+                var transitionProgress = new Progress<(int current, int total, string status)>(report =>
+                {
+                    // Map transition progress to overall progress (80-90%)
+                    int overallProgress = 80 + (report.current * 10 / report.total);
+                    SetProgressBar(mainForm.pBarTaskStatus, overallProgress, 100);
+                    SetStatusText(mainForm, report.status);
+                });
+                
+                var result = await ConcatenateGifCollectionsWithTransitions(gifCollections, settings, analysis.MaxFps, transitionProgress);
                 SetProgressBar(mainForm.pBarTaskStatus, 90, 100);
 
                 // Step 8: Save result
@@ -2805,15 +2813,21 @@ namespace GifProcessorApp
             return result;
         }
 
-        private static MagickImageCollection ConcatenateGifCollectionsWithTransitions(
+        private static async Task<MagickImageCollection> ConcatenateGifCollectionsWithTransitions(
             List<MagickImageCollection> gifCollections, 
             GifConcatenationSettings settings,
-            int fps)
+            int fps,
+            IProgress<(int current, int total, string status)> progress = null)
         {
             var result = new MagickImageCollection();
 
             if (gifCollections == null || gifCollections.Count == 0)
                 return result;
+                
+            // Determine the target dimensions for all frames
+            int maxWidth = gifCollections.Max(c => c.Count > 0 ? (int)c[0].Width : 0);
+            int maxHeight = gifCollections.Max(c => c.Count > 0 ? (int)c[0].Height : 0);
+            var targetGeometry = new MagickGeometry((uint)maxWidth, (uint)maxHeight) { IgnoreAspectRatio = false };
 
             try
             {
@@ -2821,10 +2835,33 @@ namespace GifProcessorApp
                 {
                     var collection = gifCollections[i];
                     
-                    // Add all frames from current GIF
+                    // Add all frames from current GIF, ensuring consistent dimensions
                     foreach (var frame in collection)
                     {
-                        result.Add(frame.Clone());
+                        var clonedFrame = frame.Clone();
+                        
+                        // Ensure consistent dimensions
+                        if (clonedFrame.Width != maxWidth || clonedFrame.Height != maxHeight)
+                        {
+                            // Create canvas with target size and center the frame
+                            var canvas = new MagickImage(MagickColors.Transparent, (uint)maxWidth, (uint)maxHeight);
+                            
+                            // Calculate center position
+                            int x = (maxWidth - (int)clonedFrame.Width) / 2;
+                            int y = (maxHeight - (int)clonedFrame.Height) / 2;
+                            
+                            // Composite the frame onto the canvas
+                            canvas.Composite(clonedFrame, x, y, CompositeOperator.Over);
+                            canvas.AnimationDelay = clonedFrame.AnimationDelay;
+                            canvas.GifDisposeMethod = clonedFrame.GifDisposeMethod;
+                            
+                            clonedFrame.Dispose();
+                            result.Add(canvas);
+                        }
+                        else
+                        {
+                            result.Add(clonedFrame);
+                        }
                     }
 
                     // Generate transition to next GIF (if not the last one)
@@ -2833,17 +2870,36 @@ namespace GifProcessorApp
                         var currentCollection = gifCollections[i];
                         var nextCollection = gifCollections[i + 1];
 
-                        var transitionFrames = TransitionGenerator.GenerateTransition(
+                        var transitionFrames = await Task.Run(() => TransitionGenerator.GenerateTransition(
                             currentCollection,
                             nextCollection,
                             settings.Transition,
                             settings.TransitionDuration,
-                            fps);
+                            fps,
+                            progress));
 
-                        // Add transition frames
+                        // Add transition frames (they should already have correct dimensions)
                         foreach (var transitionFrame in transitionFrames)
                         {
-                            result.Add(transitionFrame.Clone());
+                            var clonedTransition = transitionFrame.Clone();
+                            
+                            // Double-check dimensions for transition frames
+                            if (clonedTransition.Width != maxWidth || clonedTransition.Height != maxHeight)
+                            {
+                                var canvas = new MagickImage(MagickColors.Transparent, (uint)maxWidth, (uint)maxHeight);
+                                int x = (maxWidth - (int)clonedTransition.Width) / 2;
+                                int y = (maxHeight - (int)clonedTransition.Height) / 2;
+                                canvas.Composite(clonedTransition, x, y, CompositeOperator.Over);
+                                canvas.AnimationDelay = clonedTransition.AnimationDelay;
+                                canvas.GifDisposeMethod = clonedTransition.GifDisposeMethod;
+                                
+                                clonedTransition.Dispose();
+                                result.Add(canvas);
+                            }
+                            else
+                            {
+                                result.Add(clonedTransition);
+                            }
                         }
 
                         // Cleanup transition frames
@@ -2851,8 +2907,17 @@ namespace GifProcessorApp
                     }
                 }
 
-                // Optimize the result
-                result.Optimize();
+                // Optimize the result - now all frames should have consistent dimensions
+                try
+                {
+                    result.Optimize();
+                }
+                catch (Exception ex)
+                {
+                    // If optimization fails, continue without it
+                    progress?.Report((1, 1, $"Warning: Frame optimization failed: {ex.Message}"));
+                }
+                
                 return result;
             }
             catch

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using ImageMagick;
 
 namespace GifProcessorApp
@@ -15,22 +16,30 @@ namespace GifProcessorApp
         /// <param name="transitionType">Type of transition effect</param>
         /// <param name="durationSeconds">Duration of transition in seconds</param>
         /// <param name="fps">Frames per second for the transition</param>
+        /// <param name="progress">Progress reporter for operation status</param>
         /// <returns>Collection of transition frames</returns>
         public static MagickImageCollection GenerateTransition(
             MagickImageCollection fromCollection,
             MagickImageCollection toCollection,
             TransitionType transitionType,
             float durationSeconds,
-            int fps)
+            int fps,
+            IProgress<(int current, int total, string status)> progress = null,
+            CancellationToken cancellationToken = default)
         {
             if (fromCollection == null || toCollection == null || fromCollection.Count == 0 || toCollection.Count == 0)
                 return new MagickImageCollection();
 
             if (transitionType == TransitionType.None || durationSeconds <= 0)
                 return new MagickImageCollection();
+                
+            // Check for cancellation
+            cancellationToken.ThrowIfCancellationRequested();
 
             // Calculate number of transition frames
             int transitionFrames = Math.Max(1, (int)(durationSeconds * fps));
+            
+            progress?.Report((0, transitionFrames, $"Initializing {transitionType} transition..."));
             
             // Get the last frame from source and first frame from target
             var fromFrame = fromCollection[fromCollection.Count - 1] as MagickImage;
@@ -51,41 +60,50 @@ namespace GifProcessorApp
 
             try
             {
+                // Check available memory before proceeding
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                
                 // Generate transition frames based on type
                 switch (transitionType)
                 {
                     case TransitionType.Fade:
-                        GenerateFadeTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps);
+                        GenerateFadeTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, progress, cancellationToken);
                         break;
                     case TransitionType.SlideLeft:
-                        GenerateSlideTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, SlideDirection.Left);
+                        GenerateSlideTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, SlideDirection.Left, progress, cancellationToken);
                         break;
                     case TransitionType.SlideRight:
-                        GenerateSlideTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, SlideDirection.Right);
+                        GenerateSlideTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, SlideDirection.Right, progress, cancellationToken);
                         break;
                     case TransitionType.SlideUp:
-                        GenerateSlideTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, SlideDirection.Up);
+                        GenerateSlideTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, SlideDirection.Up, progress, cancellationToken);
                         break;
                     case TransitionType.SlideDown:
-                        GenerateSlideTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, SlideDirection.Down);
+                        GenerateSlideTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, SlideDirection.Down, progress, cancellationToken);
                         break;
                     case TransitionType.ZoomIn:
-                        GenerateZoomTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, true);
+                        GenerateZoomTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, true, progress, cancellationToken);
                         break;
                     case TransitionType.ZoomOut:
-                        GenerateZoomTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, false);
+                        GenerateZoomTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, false, progress, cancellationToken);
                         break;
                     case TransitionType.Dissolve:
-                        GenerateDissolveTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps);
+                        GenerateDissolveTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, progress, cancellationToken);
                         break;
                     case TransitionType.CrossFade:
-                        GenerateCrossFadeTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps);
+                        GenerateCrossFadeTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, progress, cancellationToken);
                         break;
                     default:
                         // No transition - return empty collection
                         break;
                 }
 
+                progress?.Report((transitionFrames, transitionFrames, $"Completed {transitionType} transition"));
+                
+                // Optimize the collection to reduce memory usage
+                transitionCollection.Optimize();
+                
                 return transitionCollection;
             }
             finally
@@ -128,15 +146,26 @@ namespace GifProcessorApp
             MagickImage toFrame, 
             int frames, 
             MagickImageCollection collection,
-            int fps)
+            int fps,
+            IProgress<(int current, int total, string status)> progress = null,
+            CancellationToken cancellationToken = default)
         {
             uint frameDelay = (uint)(100 / fps); // Delay in 1/100ths of a second
 
             for (int i = 0; i < frames; i++)
             {
-                double progress = (double)i / (frames - 1);
-                double fromOpacity = 1.0 - progress;
-                double toOpacity = progress;
+                double fadeProgress = (double)i / (frames - 1);
+                double fromOpacity = 1.0 - fadeProgress;
+                double toOpacity = fadeProgress;
+                
+                progress?.Report((i + 1, frames, $"Generating fade frame {i + 1}/{frames}"));
+                
+                // Allow UI to update periodically and check for cancellation
+                if (i % 5 == 0)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    System.Threading.Thread.Yield();
+                }
 
                 using var transitionFrame = new MagickImage(MagickColors.Transparent, fromFrame.Width, fromFrame.Height);
 
@@ -168,7 +197,9 @@ namespace GifProcessorApp
             int frames,
             MagickImageCollection collection,
             int fps,
-            SlideDirection direction)
+            SlideDirection direction,
+            IProgress<(int current, int total, string status)> progress = null,
+            CancellationToken cancellationToken = default)
         {
             uint frameDelay = (uint)(100 / fps);
             int width = (int)fromFrame.Width;
@@ -176,7 +207,16 @@ namespace GifProcessorApp
 
             for (int i = 0; i < frames; i++)
             {
-                double progress = (double)i / (frames - 1);
+                double slideProgress = (double)i / (frames - 1);
+                
+                progress?.Report((i + 1, frames, $"Generating slide {direction.ToString().ToLower()} frame {i + 1}/{frames}"));
+                
+                // Allow UI to update periodically and check for cancellation
+                if (i % 5 == 0)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    System.Threading.Thread.Yield();
+                }
                 
                 using var transitionFrame = new MagickImage(MagickColors.Transparent, fromFrame.Width, fromFrame.Height);
 
@@ -185,20 +225,20 @@ namespace GifProcessorApp
                 switch (direction)
                 {
                     case SlideDirection.Left:
-                        fromX = (int)(-progress * width);
-                        toX = (int)((1.0 - progress) * width);
+                        fromX = (int)(-slideProgress * width);
+                        toX = (int)((1.0 - slideProgress) * width);
                         break;
                     case SlideDirection.Right:
-                        fromX = (int)(progress * width);
-                        toX = (int)(-(1.0 - progress) * width);
+                        fromX = (int)(slideProgress * width);
+                        toX = (int)(-(1.0 - slideProgress) * width);
                         break;
                     case SlideDirection.Up:
-                        fromY = (int)(-progress * height);
-                        toY = (int)((1.0 - progress) * height);
+                        fromY = (int)(-slideProgress * height);
+                        toY = (int)((1.0 - slideProgress) * height);
                         break;
                     case SlideDirection.Down:
-                        fromY = (int)(progress * height);
-                        toY = (int)(-(1.0 - progress) * height);
+                        fromY = (int)(slideProgress * height);
+                        toY = (int)(-(1.0 - slideProgress) * height);
                         break;
                 }
 
@@ -224,19 +264,30 @@ namespace GifProcessorApp
             int frames,
             MagickImageCollection collection,
             int fps,
-            bool zoomIn)
+            bool zoomIn,
+            IProgress<(int current, int total, string status)> progress = null,
+            CancellationToken cancellationToken = default)
         {
             uint frameDelay = (uint)(100 / fps);
 
             for (int i = 0; i < frames; i++)
             {
-                double progress = (double)i / (frames - 1);
+                double zoomProgress = (double)i / (frames - 1);
+                
+                progress?.Report((i + 1, frames, $"Generating zoom {(zoomIn ? "in" : "out")} frame {i + 1}/{frames}"));
+                
+                // Allow UI to update periodically and check for cancellation
+                if (i % 5 == 0)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    System.Threading.Thread.Yield();
+                }
                 
                 using var transitionFrame = new MagickImage(MagickColors.Transparent, fromFrame.Width, fromFrame.Height);
 
                 // Calculate zoom parameters
-                double scale = zoomIn ? (1.0 + progress) : (2.0 - progress);
-                double opacity = 1.0 - progress;
+                double scale = zoomIn ? (1.0 + zoomProgress) : (2.0 - zoomProgress);
+                double opacity = 1.0 - zoomProgress;
 
                 // Apply zoom effect to from frame
                 using var scaledFromFrame = fromFrame.Clone();
@@ -251,7 +302,7 @@ namespace GifProcessorApp
 
                 // Fade in the target frame
                 using var toFrameCopy = toFrame.Clone();
-                toFrameCopy.Evaluate(Channels.Alpha, EvaluateOperator.Multiply, progress);
+                toFrameCopy.Evaluate(Channels.Alpha, EvaluateOperator.Multiply, zoomProgress);
                 transitionFrame.Composite(toFrameCopy, CompositeOperator.Over);
 
                 transitionFrame.AnimationDelay = frameDelay;
@@ -269,19 +320,39 @@ namespace GifProcessorApp
             MagickImage toFrame,
             int frames,
             MagickImageCollection collection,
-            int fps)
+            int fps,
+            IProgress<(int current, int total, string status)> progress = null,
+            CancellationToken cancellationToken = default)
         {
             uint frameDelay = (uint)(100 / fps);
             var random = new Random();
 
-            // Create a dissolve pattern
-            var dissolvePattern = new bool[(int)fromFrame.Width, (int)fromFrame.Height];
-            var totalPixels = (int)(fromFrame.Width * fromFrame.Height);
+            // Create a dissolve pattern - use more memory-efficient approach for large images
+            var width = (int)fromFrame.Width;
+            var height = (int)fromFrame.Height;
+            var totalPixels = width * height;
+            
+            // For large images, limit dissolve complexity to preserve memory
+            if (totalPixels > 500000) // If image is larger than ~700x700
+            {
+                frames = Math.Min(frames, 10); // Limit frames to reduce memory usage
+            }
+            
+            var dissolvePattern = new bool[width, height];
 
             for (int i = 0; i < frames; i++)
             {
-                double progress = (double)i / (frames - 1);
-                int pixelsToReveal = (int)(progress * totalPixels);
+                double dissolveProgress = (double)i / (frames - 1);
+                int pixelsToReveal = (int)(dissolveProgress * totalPixels);
+                
+                progress?.Report((i + 1, frames, $"Generating dissolve frame {i + 1}/{frames}"));
+                
+                // Allow UI to update periodically and check for cancellation
+                if (i % 3 == 0)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    System.Threading.Thread.Yield();
+                }
 
                 using var transitionFrame = fromFrame.Clone();
 
@@ -323,19 +394,30 @@ namespace GifProcessorApp
             MagickImage toFrame,
             int frames,
             MagickImageCollection collection,
-            int fps)
+            int fps,
+            IProgress<(int current, int total, string status)> progress = null,
+            CancellationToken cancellationToken = default)
         {
             // Cross fade is similar to fade but with more sophisticated blending
             uint frameDelay = (uint)(100 / fps);
 
             for (int i = 0; i < frames; i++)
             {
-                double progress = (double)i / (frames - 1);
+                double crossFadeProgress = (double)i / (frames - 1);
+                
+                progress?.Report((i + 1, frames, $"Generating crossfade frame {i + 1}/{frames}"));
+                
+                // Allow UI to update periodically and check for cancellation
+                if (i % 5 == 0)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    System.Threading.Thread.Yield();
+                }
                 
                 using var transitionFrame = new MagickImage(MagickColors.Transparent, fromFrame.Width, fromFrame.Height);
 
                 // Use more sophisticated blending curve for cross fade
-                double easedProgress = EaseInOutCubic(progress);
+                double easedProgress = EaseInOutCubic(crossFadeProgress);
                 double fromOpacity = 1.0 - easedProgress;
                 double toOpacity = easedProgress;
 
