@@ -185,7 +185,7 @@ namespace GifProcessorApp
                     if (dialog.ShowDialog() == DialogResult.OK)
                     {
                         bool useFastPalette = dialog.chkGIFMergeFasterPaletteProcess.Checked;
-                        await GifProcessor.MergeMultipleGifs(dialog.SelectedFilePaths, dialog.OutputFilePath, this, useFastPalette);
+                        await GifProcessor.MergeMultipleGifs(dialog.SelectedFilePaths, dialog.OutputFilePath, this, useFastPalette, dialog.PaletteSourceIndex);
                     }
                 }
             }, "GIF merge");

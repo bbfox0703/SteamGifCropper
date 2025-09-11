@@ -10,6 +10,7 @@ namespace GifProcessorApp
     {
         public List<string> SelectedFilePaths { get; private set; }
         public string OutputFilePath { get; private set; }
+        public int PaletteSourceIndex { get; private set; }
 
         private ListBox lstGifFiles;
         private Button btnAddFiles;
@@ -24,12 +25,16 @@ namespace GifProcessorApp
         private Label lblOutput;
         public CheckBox chkGIFMergeFasterPaletteProcess;
         private Label lblInstructions;
+        private Label lblPaletteSource;
+        public ComboBox comboBoxPaletteSource;
 
         public MergeGifsDialog()
         {
             SelectedFilePaths = new List<string>();
             InitializeComponent();
             ApplyTheme();
+            // Initialize palette source combo box with empty state
+            UpdatePaletteSourceOptions();
         }
 
         private void ApplyTheme()
@@ -92,6 +97,11 @@ namespace GifProcessorApp
                     listBox.BackColor = System.Drawing.Color.FromArgb(64, 64, 64);
                     listBox.ForeColor = System.Drawing.Color.White;
                 }
+                else if (control is ComboBox comboBox)
+                {
+                    comboBox.BackColor = System.Drawing.Color.FromArgb(64, 64, 64);
+                    comboBox.ForeColor = System.Drawing.Color.White;
+                }
                 
                 if (control.HasChildren)
                 {
@@ -126,6 +136,11 @@ namespace GifProcessorApp
                     listBox.BackColor = System.Drawing.SystemColors.Window;
                     listBox.ForeColor = System.Drawing.SystemColors.WindowText;
                 }
+                else if (control is ComboBox comboBox)
+                {
+                    comboBox.BackColor = System.Drawing.SystemColors.Window;
+                    comboBox.ForeColor = System.Drawing.SystemColors.WindowText;
+                }
                 
                 if (control.HasChildren)
                 {
@@ -150,6 +165,8 @@ namespace GifProcessorApp
             btnOK = new Button();
             btnCancel = new Button();
             chkGIFMergeFasterPaletteProcess = new CheckBox();
+            lblPaletteSource = new Label();
+            comboBoxPaletteSource = new ComboBox();
             SuspendLayout();
             // 
             // lblInstructions
@@ -159,7 +176,7 @@ namespace GifProcessorApp
             lblInstructions.Name = "lblInstructions";
             lblInstructions.Size = new System.Drawing.Size(371, 22);
             lblInstructions.TabIndex = 0;
-            lblInstructions.Text = SteamGifCropper.Properties.Resources.MergeDialog_Instructions;
+            lblInstructions.Text = "Please select 2-5 GIF files to merge (in order from left to right):";
             // 
             // lblGifFiles
             // 
@@ -230,7 +247,7 @@ namespace GifProcessorApp
             lblOutput.Name = "lblOutput";
             lblOutput.Size = new System.Drawing.Size(108, 20);
             lblOutput.TabIndex = 8;
-            lblOutput.Text = SteamGifCropper.Properties.Resources.MergeDialog_OutputFile;
+            lblOutput.Text = "Output GIF file:";
             // 
             // txtOutputPath
             // 
@@ -285,13 +302,33 @@ namespace GifProcessorApp
             chkGIFMergeFasterPaletteProcess.Text = SteamGifCropper.Properties.Resources.CheckBox_FasterPalette;
             chkGIFMergeFasterPaletteProcess.UseVisualStyleBackColor = true;
             // 
+            // lblPaletteSource
+            // 
+            lblPaletteSource.AutoSize = true;
+            lblPaletteSource.Location = new System.Drawing.Point(14, 265);
+            lblPaletteSource.Name = "lblPaletteSource";
+            lblPaletteSource.Size = new System.Drawing.Size(89, 15);
+            lblPaletteSource.TabIndex = 13;
+            lblPaletteSource.Text = "Palette source:";
+            // 
+            // comboBoxPaletteSource
+            // 
+            comboBoxPaletteSource.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBoxPaletteSource.FormattingEnabled = true;
+            comboBoxPaletteSource.Location = new System.Drawing.Point(120, 262);
+            comboBoxPaletteSource.Name = "comboBoxPaletteSource";
+            comboBoxPaletteSource.Size = new System.Drawing.Size(189, 23);
+            comboBoxPaletteSource.TabIndex = 14;
+            // 
             // MergeGifsDialog
             // 
             AcceptButton = btnOK;
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
             CancelButton = btnCancel;
-            ClientSize = new System.Drawing.Size(556, 359);
+            ClientSize = new System.Drawing.Size(556, 390);
+            Controls.Add(comboBoxPaletteSource);
+            Controls.Add(lblPaletteSource);
             Controls.Add(chkGIFMergeFasterPaletteProcess);
             Controls.Add(lstGifFiles);
             Controls.Add(lblInstructions);
@@ -347,6 +384,7 @@ namespace GifProcessorApp
                     }
                     
                     UpdateOutputPath();
+                    UpdatePaletteSourceOptions();
                 }
             }
         }
@@ -357,6 +395,7 @@ namespace GifProcessorApp
             {
                 lstGifFiles.Items.RemoveAt(lstGifFiles.SelectedIndex);
                 UpdateOutputPath();
+                UpdatePaletteSourceOptions();
             }
         }
 
@@ -369,6 +408,7 @@ namespace GifProcessorApp
                 lstGifFiles.Items.RemoveAt(selectedIndex);
                 lstGifFiles.Items.Insert(selectedIndex - 1, item);
                 lstGifFiles.SelectedIndex = selectedIndex - 1;
+                UpdatePaletteSourceOptions();
             }
         }
 
@@ -381,6 +421,7 @@ namespace GifProcessorApp
                 lstGifFiles.Items.RemoveAt(selectedIndex);
                 lstGifFiles.Items.Insert(selectedIndex + 1, item);
                 lstGifFiles.SelectedIndex = selectedIndex + 1;
+                UpdatePaletteSourceOptions();
             }
         }
 
@@ -408,6 +449,31 @@ namespace GifProcessorApp
                 string directory = Path.GetDirectoryName(firstFile);
                 string baseName = Path.GetFileNameWithoutExtension(firstFile);
                 txtOutputPath.Text = Path.Combine(directory, $"{baseName}_merged.gif");
+            }
+        }
+
+        private void UpdatePaletteSourceOptions()
+        {
+            int currentSelection = comboBoxPaletteSource.SelectedIndex;
+            comboBoxPaletteSource.Items.Clear();
+            
+            for (int i = 0; i < lstGifFiles.Items.Count; i++)
+            {
+                string fileName = Path.GetFileNameWithoutExtension(lstGifFiles.Items[i].ToString());
+                comboBoxPaletteSource.Items.Add($"GIF {i + 1}: {fileName}");
+            }
+            
+            // Restore selection or default to first item
+            if (comboBoxPaletteSource.Items.Count > 0)
+            {
+                if (currentSelection >= 0 && currentSelection < comboBoxPaletteSource.Items.Count)
+                {
+                    comboBoxPaletteSource.SelectedIndex = currentSelection;
+                }
+                else
+                {
+                    comboBoxPaletteSource.SelectedIndex = 0; // Default to first GIF
+                }
             }
         }
 
@@ -462,6 +528,7 @@ namespace GifProcessorApp
 
             SelectedFilePaths = lstGifFiles.Items.Cast<string>().ToList();
             OutputFilePath = Path.GetFullPath(txtOutputPath.Text);
+            PaletteSourceIndex = Math.Max(0, comboBoxPaletteSource.SelectedIndex); // Default to 0 if no selection
 
             DialogResult = DialogResult.OK;
             Close();
