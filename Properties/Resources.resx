@@ -549,6 +549,21 @@
   <data name="MergeDialog_CannotCreateDir" xml:space="preserve">
     <value>Cannot create output directory:</value>
   </data>
+  <data name="MergeDialog_PaletteSource" xml:space="preserve">
+    <value>Palette source:</value>
+  </data>
+  <data name="MergeDialog_SelectGifFiles" xml:space="preserve">
+    <value>Select GIF files to merge</value>
+  </data>
+  <data name="MergeDialog_SaveMergedGif" xml:space="preserve">
+    <value>Save merged GIF as...</value>
+  </data>
+  <data name="MergeDialog_GifFilter" xml:space="preserve">
+    <value>GIF Files (*.gif)|*.gif</value>
+  </data>
+  <data name="MergeDialog_GifNumberFormat" xml:space="preserve">
+    <value>GIF {0}: {1}</value>
+  </data>
   <data name="Mp4Dialog_InputLabel" xml:space="preserve">
     <value>Input MP4 file:</value>
   </data>

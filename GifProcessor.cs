@@ -645,39 +645,96 @@ namespace GifProcessorApp
             }
         }
 
-        private static MagickImage BuildSharedPalette(IEnumerable<MagickImageCollection> collections, bool useFastPalette)
+        private static MagickImage BuildSharedPalette(IEnumerable<MagickImageCollection> collections, bool useFastPalette, int primaryGifIndex = 0)
         {
-            var paletteSamples = new MagickImageCollection();
-            try
+            var collectionArray = collections.ToArray();
+            
+            // Use primary GIF's palette as the dominant base
+            if (primaryGifIndex >= 0 && primaryGifIndex < collectionArray.Length && 
+                collectionArray[primaryGifIndex] != null && collectionArray[primaryGifIndex].Count > 0)
             {
-                foreach (var c in collections)
+                // Create a palette heavily dominated by the primary GIF
+                var paletteSamples = new MagickImageCollection();
+                try
                 {
-                    if (c != null && c.Count > 0)
+                    var primaryGif = collectionArray[primaryGifIndex];
+                    
+                    // Add primary GIF's first frame 8 times for very strong dominance
+                    for (int i = 0; i < 8; i++)
                     {
-                        paletteSamples.Add((MagickImage)c[0].Clone());
+                        paletteSamples.Add((MagickImage)primaryGif[0].Clone());
                     }
+                    
+                    // Add other GIFs once each for minimal color blending
+                    for (int i = 0; i < collectionArray.Length; i++)
+                    {
+                        if (i != primaryGifIndex)
+                        {
+                            var c = collectionArray[i];
+                            if (c != null && c.Count > 0)
+                            {
+                                paletteSamples.Add((MagickImage)c[0].Clone());
+                            }
+                        }
+                    }
+
+                    var settings = new QuantizeSettings
+                    {
+                        Colors = 256,
+                        ColorSpace = ColorSpace.RGB,
+                        DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+                    };
+
+                    if (useFastPalette)
+                    {
+                        settings.TreeDepth = 5; // Lower tree depth for performance
+                    }
+
+                    paletteSamples.Quantize(settings);
+
+                    // Create a copy of the quantized sample to use as palette
+                    return new MagickImage(paletteSamples[0]);
                 }
-
-                var settings = new QuantizeSettings
+                finally
                 {
-                    Colors = 256,
-                    ColorSpace = ColorSpace.RGB,
-                    DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
-                };
-
-                if (useFastPalette)
-                {
-                    settings.TreeDepth = 5; // Lower tree depth for performance
+                    paletteSamples.Dispose();
                 }
-
-                paletteSamples.Quantize(settings);
-
-                // Create a copy of the quantized sample to use as palette
-                return new MagickImage(paletteSamples[0]);
             }
-            finally
+            else
             {
-                paletteSamples.Dispose();
+                // Fallback to original equal-weight method if primaryGifIndex is invalid
+                var paletteSamples = new MagickImageCollection();
+                try
+                {
+                    foreach (var c in collections)
+                    {
+                        if (c != null && c.Count > 0)
+                        {
+                            paletteSamples.Add((MagickImage)c[0].Clone());
+                        }
+                    }
+
+                    var settings = new QuantizeSettings
+                    {
+                        Colors = 256,
+                        ColorSpace = ColorSpace.RGB,
+                        DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+                    };
+
+                    if (useFastPalette)
+                    {
+                        settings.TreeDepth = 5; // Lower tree depth for performance
+                    }
+
+                    paletteSamples.Quantize(settings);
+
+                    // Create a copy of the quantized sample to use as palette
+                    return new MagickImage(paletteSamples[0]);
+                }
+                finally
+                {
+                    paletteSamples.Dispose();
+                }
             }
         }
 
@@ -1359,7 +1416,7 @@ namespace GifProcessorApp
             return false;
         }
 
-        public static async Task MergeMultipleGifs(List<string> gifPaths, string outputPath, GifToolMainForm mainForm, bool useFastPalette = false)
+        public static async Task MergeMultipleGifs(List<string> gifPaths, string outputPath, GifToolMainForm mainForm, bool useFastPalette = false, int primaryGifIndex = 0)
         {
             if (gifPaths == null || gifPaths.Count < 2 || gifPaths.Count > 5)
             {
@@ -1455,7 +1512,7 @@ namespace GifProcessorApp
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Message_MergingGifs);
                 await Task.Delay(1); // Allow UI update
                 // Build shared palette from first frames
-                var palette = BuildSharedPalette(collections, useFastPalette);
+                var palette = BuildSharedPalette(collections, useFastPalette, primaryGifIndex);
                 Application.DoEvents(); // Allow UI to respond after palette building
 
                 var mergedCollection = new MagickImageCollection();
