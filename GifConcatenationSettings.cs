@@ -67,6 +67,10 @@ namespace GifProcessorApp
         SlideLeft,      // 向左滑動
         SlideRight,     // 向右滑動
         SlideUp,        // 向上滑動
-        SlideDown       // 向下滑動
+        SlideDown,      // 向下滑動
+        ZoomIn,         // 放大轉換
+        ZoomOut,        // 縮小轉換
+        Dissolve,       // 溶解效果
+        CrossFade       // 交叉淡化
     }
 }

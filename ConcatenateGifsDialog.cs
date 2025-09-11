@@ -4,7 +4,9 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using ImageMagick;
 
 namespace GifProcessorApp
 {
@@ -43,6 +45,20 @@ namespace GifProcessorApp
         private Label lblOutputFile;
         private TextBox txtOutputFile;
         private Button btnBrowseOutput;
+
+        // Transition Settings
+        private GroupBox grpTransitionSettings;
+        private RadioButton rbTransitionNone;
+        private RadioButton rbTransitionFade;
+        private RadioButton rbTransitionSlide;
+        private RadioButton rbTransitionZoom;
+        private RadioButton rbTransitionDissolve;
+        private ComboBox cmbSlideDirection;
+        private ComboBox cmbZoomType;
+        private NumericUpDown nudTransitionDuration;
+        private Label lblTransitionDuration;
+        private Label lblSeconds;
+        private Button btnPreviewTransition;
 
         // General Settings
         private CheckBox chkUnifyDimensions;
@@ -214,6 +230,19 @@ namespace GifProcessorApp
             lblOutputFile = new Label();
             txtOutputFile = new TextBox();
             btnBrowseOutput = new Button();
+
+            grpTransitionSettings = new GroupBox();
+            rbTransitionNone = new RadioButton();
+            rbTransitionFade = new RadioButton();
+            rbTransitionSlide = new RadioButton();
+            rbTransitionZoom = new RadioButton();
+            rbTransitionDissolve = new RadioButton();
+            cmbSlideDirection = new ComboBox();
+            cmbZoomType = new ComboBox();
+            nudTransitionDuration = new NumericUpDown();
+            lblTransitionDuration = new Label();
+            lblSeconds = new Label();
+            btnPreviewTransition = new Button();
 
             chkUnifyDimensions = new CheckBox();
             chkUseFasterPalette = new CheckBox();
@@ -390,22 +419,139 @@ namespace GifProcessorApp
             grpPaletteSettings.Controls.Add(cmbPaletteReference);
             grpPaletteSettings.Controls.Add(chkStrongPaletteWeighting);
 
+            // grpTransitionSettings
+            grpTransitionSettings.Location = new Point(12, 315);
+            grpTransitionSettings.Size = new Size(488, 120);
+            grpTransitionSettings.TabIndex = 17;
+            grpTransitionSettings.TabStop = false;
+            grpTransitionSettings.Text = "Transition Settings";
+
+            // rbTransitionNone
+            rbTransitionNone.AutoSize = true;
+            rbTransitionNone.Checked = true;
+            rbTransitionNone.Location = new Point(6, 22);
+            rbTransitionNone.Size = new Size(80, 19);
+            rbTransitionNone.TabIndex = 0;
+            rbTransitionNone.TabStop = true;
+            rbTransitionNone.Text = "No Transition";
+            rbTransitionNone.UseVisualStyleBackColor = true;
+            rbTransitionNone.CheckedChanged += RbTransition_CheckedChanged;
+
+            // rbTransitionFade
+            rbTransitionFade.AutoSize = true;
+            rbTransitionFade.Location = new Point(100, 22);
+            rbTransitionFade.Size = new Size(50, 19);
+            rbTransitionFade.TabIndex = 1;
+            rbTransitionFade.Text = "Fade";
+            rbTransitionFade.UseVisualStyleBackColor = true;
+            rbTransitionFade.CheckedChanged += RbTransition_CheckedChanged;
+
+            // rbTransitionSlide
+            rbTransitionSlide.AutoSize = true;
+            rbTransitionSlide.Location = new Point(160, 22);
+            rbTransitionSlide.Size = new Size(50, 19);
+            rbTransitionSlide.TabIndex = 2;
+            rbTransitionSlide.Text = "Slide";
+            rbTransitionSlide.UseVisualStyleBackColor = true;
+            rbTransitionSlide.CheckedChanged += RbTransition_CheckedChanged;
+
+            // rbTransitionZoom
+            rbTransitionZoom.AutoSize = true;
+            rbTransitionZoom.Location = new Point(220, 22);
+            rbTransitionZoom.Size = new Size(55, 19);
+            rbTransitionZoom.TabIndex = 3;
+            rbTransitionZoom.Text = "Zoom";
+            rbTransitionZoom.UseVisualStyleBackColor = true;
+            rbTransitionZoom.CheckedChanged += RbTransition_CheckedChanged;
+
+            // rbTransitionDissolve
+            rbTransitionDissolve.AutoSize = true;
+            rbTransitionDissolve.Location = new Point(285, 22);
+            rbTransitionDissolve.Size = new Size(70, 19);
+            rbTransitionDissolve.TabIndex = 4;
+            rbTransitionDissolve.Text = "Dissolve";
+            rbTransitionDissolve.UseVisualStyleBackColor = true;
+            rbTransitionDissolve.CheckedChanged += RbTransition_CheckedChanged;
+
+            // cmbSlideDirection
+            cmbSlideDirection.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbSlideDirection.Enabled = false;
+            cmbSlideDirection.Location = new Point(160, 47);
+            cmbSlideDirection.Size = new Size(80, 23);
+            cmbSlideDirection.TabIndex = 5;
+            cmbSlideDirection.Items.AddRange(new string[] { "Left", "Right", "Up", "Down" });
+            cmbSlideDirection.SelectedIndex = 0;
+
+            // cmbZoomType
+            cmbZoomType.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbZoomType.Enabled = false;
+            cmbZoomType.Location = new Point(220, 47);
+            cmbZoomType.Size = new Size(80, 23);
+            cmbZoomType.TabIndex = 6;
+            cmbZoomType.Items.AddRange(new string[] { "Zoom In", "Zoom Out" });
+            cmbZoomType.SelectedIndex = 0;
+
+            // lblTransitionDuration
+            lblTransitionDuration.AutoSize = true;
+            lblTransitionDuration.Location = new Point(6, 77);
+            lblTransitionDuration.Size = new Size(120, 15);
+            lblTransitionDuration.TabIndex = 7;
+            lblTransitionDuration.Text = "Transition Duration:";
+
+            // nudTransitionDuration
+            nudTransitionDuration.Location = new Point(130, 75);
+            nudTransitionDuration.Minimum = new decimal(new int[] { 1, 0, 0, 65536 }); // 0.1
+            nudTransitionDuration.Maximum = new decimal(new int[] { 30, 0, 0, 65536 }); // 3.0
+            nudTransitionDuration.DecimalPlaces = 1;
+            nudTransitionDuration.Increment = new decimal(new int[] { 1, 0, 0, 65536 }); // 0.1
+            nudTransitionDuration.Size = new Size(60, 23);
+            nudTransitionDuration.TabIndex = 8;
+            nudTransitionDuration.Value = new decimal(new int[] { 5, 0, 0, 65536 }); // 0.5
+
+            // lblSeconds
+            lblSeconds.AutoSize = true;
+            lblSeconds.Location = new Point(195, 77);
+            lblSeconds.Size = new Size(50, 15);
+            lblSeconds.TabIndex = 9;
+            lblSeconds.Text = "seconds";
+
+            // btnPreviewTransition
+            btnPreviewTransition.Location = new Point(380, 75);
+            btnPreviewTransition.Size = new Size(100, 25);
+            btnPreviewTransition.TabIndex = 10;
+            btnPreviewTransition.Text = "Preview Transition";
+            btnPreviewTransition.UseVisualStyleBackColor = true;
+            btnPreviewTransition.Enabled = false;
+            btnPreviewTransition.Click += BtnPreviewTransition_Click;
+
+            grpTransitionSettings.Controls.Add(rbTransitionNone);
+            grpTransitionSettings.Controls.Add(rbTransitionFade);
+            grpTransitionSettings.Controls.Add(rbTransitionSlide);
+            grpTransitionSettings.Controls.Add(rbTransitionZoom);
+            grpTransitionSettings.Controls.Add(rbTransitionDissolve);
+            grpTransitionSettings.Controls.Add(cmbSlideDirection);
+            grpTransitionSettings.Controls.Add(cmbZoomType);
+            grpTransitionSettings.Controls.Add(lblTransitionDuration);
+            grpTransitionSettings.Controls.Add(nudTransitionDuration);
+            grpTransitionSettings.Controls.Add(lblSeconds);
+            grpTransitionSettings.Controls.Add(btnPreviewTransition);
+
             // lblOutputFile
             lblOutputFile.AutoSize = true;
-            lblOutputFile.Location = new Point(12, 320);
+            lblOutputFile.Location = new Point(12, 445);
             lblOutputFile.Size = new Size(100, 15);
-            lblOutputFile.TabIndex = 9;
+            lblOutputFile.TabIndex = 18;
             lblOutputFile.Text = "Output GIF file:";
 
             // txtOutputFile
-            txtOutputFile.Location = new Point(12, 340);
+            txtOutputFile.Location = new Point(12, 465);
             txtOutputFile.Size = new Size(400, 23);
-            txtOutputFile.TabIndex = 10;
+            txtOutputFile.TabIndex = 19;
 
             // btnBrowseOutput
-            btnBrowseOutput.Location = new Point(420, 340);
+            btnBrowseOutput.Location = new Point(420, 465);
             btnBrowseOutput.Size = new Size(80, 23);
-            btnBrowseOutput.TabIndex = 11;
+            btnBrowseOutput.TabIndex = 20;
             btnBrowseOutput.Text = "Browse...";
             btnBrowseOutput.UseVisualStyleBackColor = true;
             btnBrowseOutput.Click += BtnBrowseOutput_Click;
@@ -413,41 +559,41 @@ namespace GifProcessorApp
             // chkUnifyDimensions
             chkUnifyDimensions.AutoSize = true;
             chkUnifyDimensions.Checked = true;
-            chkUnifyDimensions.Location = new Point(12, 375);
+            chkUnifyDimensions.Location = new Point(12, 500);
             chkUnifyDimensions.Size = new Size(200, 19);
-            chkUnifyDimensions.TabIndex = 12;
+            chkUnifyDimensions.TabIndex = 21;
             chkUnifyDimensions.Text = "Unify dimensions (resize to largest)";
             chkUnifyDimensions.UseVisualStyleBackColor = true;
 
             // chkUseFasterPalette
             chkUseFasterPalette.AutoSize = true;
-            chkUseFasterPalette.Location = new Point(220, 375);
+            chkUseFasterPalette.Location = new Point(220, 500);
             chkUseFasterPalette.Size = new Size(180, 19);
-            chkUseFasterPalette.TabIndex = 13;
+            chkUseFasterPalette.TabIndex = 22;
             chkUseFasterPalette.Text = "Faster palette (lower quality)";
             chkUseFasterPalette.UseVisualStyleBackColor = true;
 
             // chkUseGifsicleOptimization
             chkUseGifsicleOptimization.AutoSize = true;
-            chkUseGifsicleOptimization.Location = new Point(12, 400);
+            chkUseGifsicleOptimization.Location = new Point(12, 525);
             chkUseGifsicleOptimization.Size = new Size(160, 19);
-            chkUseGifsicleOptimization.TabIndex = 14;
+            chkUseGifsicleOptimization.TabIndex = 23;
             chkUseGifsicleOptimization.Text = "Use gifsicle optimization";
             chkUseGifsicleOptimization.UseVisualStyleBackColor = true;
 
             // btnOK
-            btnOK.Location = new Point(350, 430);
+            btnOK.Location = new Point(350, 555);
             btnOK.Size = new Size(75, 25);
-            btnOK.TabIndex = 15;
+            btnOK.TabIndex = 24;
             btnOK.Text = "Concatenate";
             btnOK.UseVisualStyleBackColor = true;
             btnOK.Click += BtnOK_Click;
 
             // btnCancel
             btnCancel.DialogResult = DialogResult.Cancel;
-            btnCancel.Location = new Point(430, 430);
+            btnCancel.Location = new Point(430, 555);
             btnCancel.Size = new Size(75, 25);
-            btnCancel.TabIndex = 16;
+            btnCancel.TabIndex = 25;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
 
@@ -456,7 +602,7 @@ namespace GifProcessorApp
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
             CancelButton = btnCancel;
-            ClientSize = new Size(520, 470);
+            ClientSize = new Size(520, 595);
             Controls.Add(lblInstructions);
             Controls.Add(lblGifFiles);
             Controls.Add(lstGifFiles);
@@ -466,6 +612,7 @@ namespace GifProcessorApp
             Controls.Add(btnMoveDown);
             Controls.Add(grpFpsSettings);
             Controls.Add(grpPaletteSettings);
+            Controls.Add(grpTransitionSettings);
             Controls.Add(lblOutputFile);
             Controls.Add(txtOutputFile);
             Controls.Add(btnBrowseOutput);
@@ -579,6 +726,21 @@ namespace GifProcessorApp
             cmbPaletteReference.Enabled = rbPaletteUseReference.Checked;
         }
 
+        private void RbTransition_CheckedChanged(object sender, EventArgs e)
+        {
+            cmbSlideDirection.Enabled = rbTransitionSlide.Checked;
+            cmbZoomType.Enabled = rbTransitionZoom.Checked;
+            
+            // Enable/disable transition duration for all transition types except None
+            bool hasTransition = !rbTransitionNone.Checked;
+            nudTransitionDuration.Enabled = hasTransition;
+            lblTransitionDuration.Enabled = hasTransition;
+            lblSeconds.Enabled = hasTransition;
+            
+            // Enable preview button only if there are GIFs and transition is selected
+            btnPreviewTransition.Enabled = hasTransition && lstGifFiles.Items.Count >= 2;
+        }
+
         private void UpdateReferenceComboBoxes()
         {
             int fpsSelection = cmbFpsReference.SelectedIndex;
@@ -607,6 +769,9 @@ namespace GifProcessorApp
                 cmbPaletteReference.SelectedIndex = (paletteSelection >= 0 && paletteSelection < cmbPaletteReference.Items.Count) ? 
                                                    paletteSelection : 0;
             }
+            
+            // Update preview button availability
+            btnPreviewTransition.Enabled = !rbTransitionNone.Checked && lstGifFiles.Items.Count >= 2;
         }
 
         private void UpdateOutputFileName()
@@ -669,12 +834,153 @@ namespace GifProcessorApp
             Settings.UseFasterPalette = chkUseFasterPalette.Checked;
             Settings.UseGifsicleOptimization = chkUseGifsicleOptimization.Checked;
 
+            // Transition settings
+            if (rbTransitionNone.Checked)
+                Settings.Transition = TransitionType.None;
+            else if (rbTransitionFade.Checked)
+                Settings.Transition = TransitionType.Fade;
+            else if (rbTransitionSlide.Checked)
+            {
+                switch (cmbSlideDirection.SelectedIndex)
+                {
+                    case 0: Settings.Transition = TransitionType.SlideLeft; break;
+                    case 1: Settings.Transition = TransitionType.SlideRight; break;
+                    case 2: Settings.Transition = TransitionType.SlideUp; break;
+                    case 3: Settings.Transition = TransitionType.SlideDown; break;
+                    default: Settings.Transition = TransitionType.SlideLeft; break;
+                }
+            }
+            else if (rbTransitionZoom.Checked)
+            {
+                Settings.Transition = cmbZoomType.SelectedIndex == 0 ? TransitionType.ZoomIn : TransitionType.ZoomOut;
+            }
+            else if (rbTransitionDissolve.Checked)
+                Settings.Transition = TransitionType.Dissolve;
+
+            Settings.TransitionDuration = (float)nudTransitionDuration.Value;
+
             // Prepare output properties
             SelectedFilePaths = Settings.GifFilePaths;
             OutputFilePath = Settings.OutputFilePath;
 
             DialogResult = DialogResult.OK;
             Close();
+        }
+
+        private async void BtnPreviewTransition_Click(object sender, EventArgs e)
+        {
+            if (lstGifFiles.Items.Count < 2)
+            {
+                MessageBox.Show("Please select at least 2 GIF files to preview transitions.",
+                               "Preview Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (rbTransitionNone.Checked)
+            {
+                MessageBox.Show("Please select a transition type to preview.",
+                               "Preview Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            btnPreviewTransition.Enabled = false;
+            btnPreviewTransition.Text = "Generating...";
+
+            try
+            {
+                // Get first two GIFs for preview
+                string firstGif = lstGifFiles.Items[0].ToString();
+                string secondGif = lstGifFiles.Items[1].ToString();
+
+                await Task.Run(() => GenerateTransitionPreview(firstGif, secondGif));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error generating transition preview: {ex.Message}",
+                               "Preview Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                btnPreviewTransition.Enabled = true;
+                btnPreviewTransition.Text = "Preview Transition";
+            }
+        }
+
+        private void GenerateTransitionPreview(string firstGifPath, string secondGifPath)
+        {
+            try
+            {
+                using var firstCollection = new ImageMagick.MagickImageCollection(firstGifPath);
+                using var secondCollection = new ImageMagick.MagickImageCollection(secondGifPath);
+
+                // Get transition type
+                var transitionType = GetSelectedTransitionType();
+                float duration = (float)nudTransitionDuration.Value;
+
+                // Generate a short preview (0.3 seconds max)
+                float previewDuration = Math.Min(duration, 0.3f);
+                int fps = 10; // Lower FPS for faster preview generation
+
+                var previewFrames = TransitionGenerator.GenerateTransition(
+                    firstCollection,
+                    secondCollection,
+                    transitionType,
+                    previewDuration,
+                    fps);
+
+                if (previewFrames != null && previewFrames.Count > 0)
+                {
+                    // Save preview to temp file
+                    string tempPath = Path.Combine(Path.GetTempPath(), $"transition_preview_{DateTime.Now.Ticks}.gif");
+                    previewFrames.Write(tempPath);
+
+                    // Show preview in default application
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = tempPath,
+                        UseShellExecute = true
+                    });
+
+                    // Clean up temp file after a delay
+                    Task.Delay(10000).ContinueWith(_ =>
+                    {
+                        try
+                        {
+                            if (File.Exists(tempPath))
+                                File.Delete(tempPath);
+                        }
+                        catch { }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                this.Invoke((Action)(() =>
+                {
+                    MessageBox.Show($"Error generating preview: {ex.Message}",
+                                   "Preview Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }));
+            }
+        }
+
+        private TransitionType GetSelectedTransitionType()
+        {
+            if (rbTransitionFade.Checked) return TransitionType.Fade;
+            if (rbTransitionSlide.Checked)
+            {
+                switch (cmbSlideDirection.SelectedIndex)
+                {
+                    case 0: return TransitionType.SlideLeft;
+                    case 1: return TransitionType.SlideRight;
+                    case 2: return TransitionType.SlideUp;
+                    case 3: return TransitionType.SlideDown;
+                    default: return TransitionType.SlideLeft;
+                }
+            }
+            if (rbTransitionZoom.Checked)
+                return cmbZoomType.SelectedIndex == 0 ? TransitionType.ZoomIn : TransitionType.ZoomOut;
+            if (rbTransitionDissolve.Checked) return TransitionType.Dissolve;
+            return TransitionType.None;
         }
     }
 }

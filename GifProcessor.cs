@@ -2594,9 +2594,9 @@ namespace GifProcessorApp
                 await ApplyUnifiedPalette(gifCollections, unifiedPalette, settings.UseFasterPalette);
                 SetProgressBar(mainForm.pBarTaskStatus, 80, 100);
 
-                // Step 7: Concatenate GIFs
-                SetStatusText(mainForm, "Concatenating GIF files...");
-                var result = ConcatenateGifCollections(gifCollections);
+                // Step 7: Generate transitions and concatenate GIFs
+                SetStatusText(mainForm, "Generating transitions and concatenating GIF files...");
+                var result = ConcatenateGifCollectionsWithTransitions(gifCollections, settings, analysis.MaxFps);
                 SetProgressBar(mainForm.pBarTaskStatus, 90, 100);
 
                 // Step 8: Save result
@@ -2803,6 +2803,63 @@ namespace GifProcessorApp
             result.Optimize();
             
             return result;
+        }
+
+        private static MagickImageCollection ConcatenateGifCollectionsWithTransitions(
+            List<MagickImageCollection> gifCollections, 
+            GifConcatenationSettings settings,
+            int fps)
+        {
+            var result = new MagickImageCollection();
+
+            if (gifCollections == null || gifCollections.Count == 0)
+                return result;
+
+            try
+            {
+                for (int i = 0; i < gifCollections.Count; i++)
+                {
+                    var collection = gifCollections[i];
+                    
+                    // Add all frames from current GIF
+                    foreach (var frame in collection)
+                    {
+                        result.Add(frame.Clone());
+                    }
+
+                    // Generate transition to next GIF (if not the last one)
+                    if (i < gifCollections.Count - 1 && settings.Transition != TransitionType.None)
+                    {
+                        var currentCollection = gifCollections[i];
+                        var nextCollection = gifCollections[i + 1];
+
+                        var transitionFrames = TransitionGenerator.GenerateTransition(
+                            currentCollection,
+                            nextCollection,
+                            settings.Transition,
+                            settings.TransitionDuration,
+                            fps);
+
+                        // Add transition frames
+                        foreach (var transitionFrame in transitionFrames)
+                        {
+                            result.Add(transitionFrame.Clone());
+                        }
+
+                        // Cleanup transition frames
+                        transitionFrames.Dispose();
+                    }
+                }
+
+                // Optimize the result
+                result.Optimize();
+                return result;
+            }
+            catch
+            {
+                result.Dispose();
+                throw;
+            }
         }
 
         #endregion
