@@ -136,11 +136,7 @@ namespace GifProcessorApp
 
         private async void btnSplitGif_Click(object sender, EventArgs e)
         {
-            await ExecuteWithErrorHandling(() =>
-            {
-                GifProcessor.StartProcessing(this);
-                return Task.CompletedTask;
-            }, "GIF splitting");
+            await ExecuteWithErrorHandling(() => GifProcessor.StartProcessing(this), "GIF splitting");
         }
 
         private async void btnResizeGif766_Click(object sender, EventArgs e)
@@ -172,11 +168,7 @@ namespace GifProcessorApp
 
         private async void btnSplitGIFWithReducedPalette_Click(object sender, EventArgs e)
         {
-            await ExecuteWithErrorHandling(() =>
-            {
-                GifProcessor.SplitGifWithReducedPalette(this);
-                return Task.CompletedTask;
-            }, "palette reduction and splitting");
+            await ExecuteWithErrorHandling(() => GifProcessor.SplitGifWithReducedPalette(this), "palette reduction and splitting");
         }
 
         private async void btnMp4ToGif_Click(object sender, EventArgs e)
@@ -211,11 +203,7 @@ namespace GifProcessorApp
 
         private async void btnOverlayGIF_Click(object sender, EventArgs e)
         {
-            await ExecuteWithErrorHandling(() =>
-            {
-                GifProcessor.OverlayGif(this);
-                return Task.CompletedTask;
-            }, "GIF overlay");
+            await ExecuteWithErrorHandling(() => GifProcessor.OverlayGif(this), "GIF overlay");
         }
 
         private async void btnResizeNfpsGIF_Click(object sender, EventArgs e)
