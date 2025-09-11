@@ -268,7 +268,7 @@
             numUpDownPaletteSicle.Maximum = new decimal(new int[] { 256, 0, 0, 0 });
             numUpDownPaletteSicle.Minimum = new decimal(new int[] { 32, 0, 0, 0 });
             numUpDownPaletteSicle.Name = "numUpDownPaletteSicle";
-            numUpDownPaletteSicle.Size = new System.Drawing.Size(46, 23);
+            numUpDownPaletteSicle.Size = new System.Drawing.Size(59, 23);
             numUpDownPaletteSicle.TabIndex = 5;
             numUpDownPaletteSicle.Value = new decimal(new int[] { 256, 0, 0, 0 });
             // 

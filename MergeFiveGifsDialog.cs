@@ -157,7 +157,7 @@ namespace GifProcessorApp
             lblInstructions.Name = "lblInstructions";
             lblInstructions.Size = new System.Drawing.Size(492, 22);
             lblInstructions.TabIndex = 0;
-            lblInstructions.Text = "Please select exactly 5 GIF files to merge and split (in order from left to right):";
+            lblInstructions.Text = SteamGifCropper.Properties.Resources.MergeFiveGifDialog_Instructions;
             // 
             // lblGifFiles
             // 
@@ -166,7 +166,7 @@ namespace GifProcessorApp
             lblGifFiles.Name = "lblGifFiles";
             lblGifFiles.Size = new System.Drawing.Size(108, 20);
             lblGifFiles.TabIndex = 1;
-            lblGifFiles.Text = "GIF Files (exactly 5):";
+            lblGifFiles.Text = SteamGifCropper.Properties.Resources.MergeFiveGifDialog_GifFiles;
             // 
             // lstGifFiles
             // 
@@ -260,7 +260,7 @@ namespace GifProcessorApp
             lblPaletteSource.Name = "lblPaletteSource";
             lblPaletteSource.Size = new System.Drawing.Size(89, 15);
             lblPaletteSource.TabIndex = 13;
-            lblPaletteSource.Text = "Palette source:";
+            lblPaletteSource.Text = SteamGifCropper.Properties.Resources.MergeDialog_PaletteSource;
             // 
             // comboBoxPaletteSource
             // 
@@ -296,7 +296,7 @@ namespace GifProcessorApp
             MinimizeBox = false;
             Name = "MergeFiveGifsDialog";
             StartPosition = FormStartPosition.CenterParent;
-            Text = "Merge 5 GIF Files";
+            Text = SteamGifCropper.Properties.Resources.MergeFiveGifDialog_Title;
             ResumeLayout(false);
             PerformLayout();
         }
