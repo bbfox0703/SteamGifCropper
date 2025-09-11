@@ -340,11 +340,26 @@ namespace GifProcessorApp
 
         public static async Task MergeAndSplitFiveGifs(GifToolMainForm mainForm)
         {
-            // Step 1: Select five GIF files in order
-            var gifFiles = SelectFiveOrderedGifs();
-            if (gifFiles == null || gifFiles.Length != 5)
+            using (var dialog = new MergeFiveGifsDialog())
             {
-                return; // User cancelled or didn't select exactly 5 files
+                if (dialog.ShowDialog() != DialogResult.OK)
+                {
+                    return; // User cancelled
+                }
+
+                await MergeAndSplitFiveGifs(
+                    mainForm,
+                    dialog.SelectedFilePaths,
+                    dialog.chkGIFMergeFasterPaletteProcess.Checked,
+                    dialog.PaletteSourceIndex);
+            }
+        }
+
+        public static async Task MergeAndSplitFiveGifs(GifToolMainForm mainForm, List<string> gifFiles, bool useFasterPalette, int paletteSourceIndex)
+        {
+            if (gifFiles == null || gifFiles.Count != 5)
+            {
+                return; // Invalid input
             }
 
             // Validate all source files exist
@@ -369,7 +384,7 @@ namespace GifProcessorApp
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_ValidatingProcessing);
 
                 // Step 2: Load and validate all GIF files
-                var collections = LoadAndValidateGifs(gifFiles, mainForm);
+                var collections = LoadAndValidateGifs(gifFiles.ToArray(), mainForm);
                 if (collections == null) return;
 
                 SetProgressBar(mainForm.pBarTaskStatus, 20, 100);
@@ -383,14 +398,13 @@ namespace GifProcessorApp
                 SetProgressBar(mainForm.pBarTaskStatus, 60, 100);
 
                 // Step 5: Merge horizontally to create 766px wide GIF
-                bool useFastPalette = mainForm.chk5GIFMergeFasterPaletteProcess.Checked;
                 string firstGifPath = gifFiles[0];
                 string mergedFileName = $"{Path.GetFileNameWithoutExtension(firstGifPath)}_merged.gif";
                 string outputDir = Path.GetDirectoryName(firstGifPath);
                 string mergedFilePath = Path.Combine(outputDir, mergedFileName);
 
-                MergeGifsHorizontally(syncedCollections, mergedFilePath, mainForm, useFastPalette,
-                    ResourceLimits.Memory, ResourceLimits.Disk);
+                MergeGifsHorizontally(syncedCollections, mergedFilePath, mainForm, useFasterPalette,
+                    ResourceLimits.Memory, ResourceLimits.Disk, paletteSourceIndex);
                 SetProgressBar(mainForm.pBarTaskStatus, 80, 100);
 
                 // Step 6: Apply existing split functionality
@@ -422,35 +436,6 @@ namespace GifProcessorApp
             }
         }
 
-        private static string[] SelectFiveOrderedGifs()
-        {
-            var selectedFiles = new List<string>();
-            
-            WindowsThemeManager.ShowThemeAwareMessageBox(null,
-                SteamGifCropper.Properties.Resources.Instruction_SelectFiveGifs,
-                SteamGifCropper.Properties.Resources.Title_SelectionOrder,
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
-            
-            for (int i = 1; i <= 5; i++)
-            {
-                using (var openFileDialog = new OpenFileDialog
-                {
-                    Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
-                    Title = string.Format(SteamGifCropper.Properties.Resources.FileDialog_SelectGifOrder, i, i),
-                    Multiselect = false
-                })
-                {
-                    if (openFileDialog.ShowDialog() != DialogResult.OK)
-                    {
-                        // User cancelled
-                        return null;
-                    }
-                    selectedFiles.Add(openFileDialog.FileName);
-                }
-            }
-            
-            return selectedFiles.ToArray();
-        }
 
         private static MagickImageCollection[] LoadAndValidateGifs(string[] gifFiles, GifToolMainForm mainForm)
         {
@@ -753,7 +738,8 @@ namespace GifProcessorApp
             GifToolMainForm mainForm,
             bool useFastPalette,
             ulong memoryLimitBytes,
-            ulong diskLimitBytes)
+            ulong diskLimitBytes,
+            int paletteSourceIndex = 0)
         {
             SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_MergingHorizontally);
 
@@ -769,7 +755,7 @@ namespace GifProcessorApp
             int maxHeight = collections.Max(c => (int)c[0].Height);
 
             // Build shared palette from first frames
-            var palette = BuildSharedPalette(collections, useFastPalette);
+            var palette = BuildSharedPalette(collections, useFastPalette, paletteSourceIndex);
 
             // Prepare remap settings once
             var mapSettings = new QuantizeSettings

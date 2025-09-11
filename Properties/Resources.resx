@@ -564,6 +564,21 @@
   <data name="MergeDialog_GifNumberFormat" xml:space="preserve">
     <value>GIF {0}: {1}</value>
   </data>
+  <data name="MergeFiveGifDialog_Instructions" xml:space="preserve">
+    <value>Please select exactly 5 GIF files to merge and split (in order from left to right):</value>
+  </data>
+  <data name="MergeFiveGifDialog_GifFiles" xml:space="preserve">
+    <value>GIF Files (exactly 5):</value>
+  </data>
+  <data name="MergeFiveGifDialog_Title" xml:space="preserve">
+    <value>Merge 5 GIF Files</value>
+  </data>
+  <data name="MergeFiveGifDialog_MaxFiles" xml:space="preserve">
+    <value>Maximum of 5 GIF files allowed.</value>
+  </data>
+  <data name="MergeFiveGifDialog_RequireExactly5" xml:space="preserve">
+    <value>Please select exactly 5 GIF files.</value>
+  </data>
   <data name="Mp4Dialog_InputLabel" xml:space="preserve">
     <value>Input MP4 file:</value>
   </data>
