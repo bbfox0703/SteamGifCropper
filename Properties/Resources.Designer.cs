@@ -1328,6 +1328,51 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("MergeDialog_GifNumberFormat", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select exactly 5 GIF files to merge and split (in order from left to right):.
+        /// </summary>
+        internal static string MergeFiveGifDialog_Instructions {
+            get {
+                return ResourceManager.GetString("MergeFiveGifDialog_Instructions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GIF Files (exactly 5):.
+        /// </summary>
+        internal static string MergeFiveGifDialog_GifFiles {
+            get {
+                return ResourceManager.GetString("MergeFiveGifDialog_GifFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Merge 5 GIF Files.
+        /// </summary>
+        internal static string MergeFiveGifDialog_Title {
+            get {
+                return ResourceManager.GetString("MergeFiveGifDialog_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum of 5 GIF files allowed..
+        /// </summary>
+        internal static string MergeFiveGifDialog_MaxFiles {
+            get {
+                return ResourceManager.GetString("MergeFiveGifDialog_MaxFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select exactly 5 GIF files..
+        /// </summary>
+        internal static string MergeFiveGifDialog_RequireExactly5 {
+            get {
+                return ResourceManager.GetString("MergeFiveGifDialog_RequireExactly5", resourceCulture);
+            }
+        }
 
         /// <summary>
         ///   Looks up a localized string similar to Input MP4 file:.

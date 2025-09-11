@@ -168,7 +168,20 @@ namespace GifProcessorApp
 
         private async void btnSplitGIFWithReducedPalette_Click(object sender, EventArgs e)
         {
-            await ExecuteWithErrorHandling(() => GifProcessor.SplitGifWithReducedPalette(this), "palette reduction and splitting");
+            await ExecuteWithErrorHandling(async () =>
+            {
+                using (var dialog = new MergeFiveGifsDialog())
+                {
+                    if (dialog.ShowDialog() == DialogResult.OK)
+                    {
+                        await GifProcessor.MergeAndSplitFiveGifs(
+                            this,
+                            dialog.SelectedFilePaths,
+                            dialog.chkGIFMergeFasterPaletteProcess.Checked,
+                            dialog.PaletteSourceIndex);
+                    }
+                }
+            }, "five GIF merge and split");
         }
 
         private async void btnMp4ToGif_Click(object sender, EventArgs e)
