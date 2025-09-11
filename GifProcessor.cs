@@ -161,7 +161,7 @@ namespace GifProcessorApp
             }
         }
 
-        public static void StartProcessing(GifToolMainForm mainForm)
+        public static async Task StartProcessing(GifToolMainForm mainForm)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
@@ -194,7 +194,7 @@ namespace GifProcessorApp
 
                         var ranges = GetCropRanges(canvasWidth);
                         
-                        SplitGif(inputFilePath, mainForm, ranges, (int)canvasHeight);
+                        await SplitGif(inputFilePath, mainForm, ranges, (int)canvasHeight);
                         SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
                         WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
                                         SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
@@ -232,7 +232,7 @@ namespace GifProcessorApp
             return (originalDelays, sourceTicks);
         }
 
-        private static void SplitGif(string inputFilePath, GifToolMainForm mainForm, (int Start, int End)[] ranges, int canvasHeight)
+        private static async Task SplitGif(string inputFilePath, GifToolMainForm mainForm, (int Start, int End)[] ranges, int canvasHeight)
         {
             SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_CoalescingFrames);
             using var collection = new MagickImageCollection(inputFilePath);
@@ -325,7 +325,7 @@ namespace GifProcessorApp
                                 SetStatusText(mainForm, $"{SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing} ({p}%)");
                             });
 
-                            GifsicleWrapper.OptimizeGif(outputPath, outputPath, options, progress).GetAwaiter().GetResult();
+                            await GifsicleWrapper.OptimizeGif(outputPath, outputPath, options, progress);
                         }
                         else
                         {
@@ -338,7 +338,7 @@ namespace GifProcessorApp
             }
         }
 
-        public static void MergeAndSplitFiveGifs(GifToolMainForm mainForm)
+        public static async Task MergeAndSplitFiveGifs(GifToolMainForm mainForm)
         {
             // Step 1: Select five GIF files in order
             var gifFiles = SelectFiveOrderedGifs();
@@ -396,7 +396,7 @@ namespace GifProcessorApp
                 // Step 6: Apply existing split functionality
                 var ranges = GetCropRanges(SupportedWidth1); // Use 766px ranges
                 int adjustedHeight = (int)syncedCollections[0][0].Height + HeightExtension;
-                SplitGif(mergedFilePath, mainForm, ranges, adjustedHeight);
+                await SplitGif(mergedFilePath, mainForm, ranges, adjustedHeight);
 
                 // Note: mergedFilePath is kept as the intermediate merged file
 
@@ -645,39 +645,96 @@ namespace GifProcessorApp
             }
         }
 
-        private static MagickImage BuildSharedPalette(IEnumerable<MagickImageCollection> collections, bool useFastPalette)
+        private static MagickImage BuildSharedPalette(IEnumerable<MagickImageCollection> collections, bool useFastPalette, int primaryGifIndex = 0)
         {
-            var paletteSamples = new MagickImageCollection();
-            try
+            var collectionArray = collections.ToArray();
+            
+            // Use primary GIF's palette as the dominant base
+            if (primaryGifIndex >= 0 && primaryGifIndex < collectionArray.Length && 
+                collectionArray[primaryGifIndex] != null && collectionArray[primaryGifIndex].Count > 0)
             {
-                foreach (var c in collections)
+                // Create a palette heavily dominated by the primary GIF
+                var paletteSamples = new MagickImageCollection();
+                try
                 {
-                    if (c != null && c.Count > 0)
+                    var primaryGif = collectionArray[primaryGifIndex];
+                    
+                    // Add primary GIF's first frame 8 times for very strong dominance
+                    for (int i = 0; i < 8; i++)
                     {
-                        paletteSamples.Add((MagickImage)c[0].Clone());
+                        paletteSamples.Add((MagickImage)primaryGif[0].Clone());
                     }
+                    
+                    // Add other GIFs once each for minimal color blending
+                    for (int i = 0; i < collectionArray.Length; i++)
+                    {
+                        if (i != primaryGifIndex)
+                        {
+                            var c = collectionArray[i];
+                            if (c != null && c.Count > 0)
+                            {
+                                paletteSamples.Add((MagickImage)c[0].Clone());
+                            }
+                        }
+                    }
+
+                    var settings = new QuantizeSettings
+                    {
+                        Colors = 256,
+                        ColorSpace = ColorSpace.RGB,
+                        DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+                    };
+
+                    if (useFastPalette)
+                    {
+                        settings.TreeDepth = 5; // Lower tree depth for performance
+                    }
+
+                    paletteSamples.Quantize(settings);
+
+                    // Create a copy of the quantized sample to use as palette
+                    return new MagickImage(paletteSamples[0]);
                 }
-
-                var settings = new QuantizeSettings
+                finally
                 {
-                    Colors = 256,
-                    ColorSpace = ColorSpace.RGB,
-                    DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
-                };
-
-                if (useFastPalette)
-                {
-                    settings.TreeDepth = 5; // Lower tree depth for performance
+                    paletteSamples.Dispose();
                 }
-
-                paletteSamples.Quantize(settings);
-
-                // Create a copy of the quantized sample to use as palette
-                return new MagickImage(paletteSamples[0]);
             }
-            finally
+            else
             {
-                paletteSamples.Dispose();
+                // Fallback to original equal-weight method if primaryGifIndex is invalid
+                var paletteSamples = new MagickImageCollection();
+                try
+                {
+                    foreach (var c in collections)
+                    {
+                        if (c != null && c.Count > 0)
+                        {
+                            paletteSamples.Add((MagickImage)c[0].Clone());
+                        }
+                    }
+
+                    var settings = new QuantizeSettings
+                    {
+                        Colors = 256,
+                        ColorSpace = ColorSpace.RGB,
+                        DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+                    };
+
+                    if (useFastPalette)
+                    {
+                        settings.TreeDepth = 5; // Lower tree depth for performance
+                    }
+
+                    paletteSamples.Quantize(settings);
+
+                    // Create a copy of the quantized sample to use as palette
+                    return new MagickImage(paletteSamples[0]);
+                }
+                finally
+                {
+                    paletteSamples.Dispose();
+                }
             }
         }
 
@@ -851,11 +908,11 @@ namespace GifProcessorApp
             }
         }
 
-        public static void SplitGifWithReducedPalette(GifToolMainForm mainForm)
+        public static async Task SplitGifWithReducedPalette(GifToolMainForm mainForm)
         {
             // Keep the original method name for backward compatibility
             // but redirect to the new merge and split functionality
-            MergeAndSplitFiveGifs(mainForm);
+            await MergeAndSplitFiveGifs(mainForm);
         }
 
         [Obsolete("This method has been replaced with MergeAndSplitFiveGifs")]
@@ -1359,7 +1416,7 @@ namespace GifProcessorApp
             return false;
         }
 
-        public static async Task MergeMultipleGifs(List<string> gifPaths, string outputPath, GifToolMainForm mainForm, bool useFastPalette = false)
+        public static async Task MergeMultipleGifs(List<string> gifPaths, string outputPath, GifToolMainForm mainForm, bool useFastPalette = false, int primaryGifIndex = 0)
         {
             if (gifPaths == null || gifPaths.Count < 2 || gifPaths.Count > 5)
             {
@@ -1455,7 +1512,7 @@ namespace GifProcessorApp
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Message_MergingGifs);
                 await Task.Delay(1); // Allow UI update
                 // Build shared palette from first frames
-                var palette = BuildSharedPalette(collections, useFastPalette);
+                var palette = BuildSharedPalette(collections, useFastPalette, primaryGifIndex);
                 Application.DoEvents(); // Allow UI to respond after palette building
 
                 var mergedCollection = new MagickImageCollection();
@@ -2253,7 +2310,8 @@ namespace GifProcessorApp
                         OptimizeLevel = (int)mainForm.numUpDownOptimize.Value,
                         Dither = mainForm.DitherMethod
                     };
-                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing);                    await GifsicleWrapper.OptimizeGif(outputPath, outputPath, options);
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing);
+                    await GifsicleWrapper.OptimizeGif(outputPath, outputPath, options);
                 }
 
                 SetProgressBar(mainForm.pBarTaskStatus, mainForm.pBarTaskStatus.Maximum, mainForm.pBarTaskStatus.Maximum);
@@ -2317,7 +2375,7 @@ namespace GifProcessorApp
             return resampled;
         }
 
-        public static void OverlayGif(GifToolMainForm mainForm)
+        public static async Task OverlayGif(GifToolMainForm mainForm)
         {
             using var dialog = new OverlayGifDialog();
             if (dialog.ShowDialog(mainForm) != DialogResult.OK)
@@ -2465,7 +2523,7 @@ namespace GifProcessorApp
                     Dither = mainForm.DitherMethod,
                 };
 
-                GifsicleWrapper.OptimizeGif(outputPath, outputPath, options).GetAwaiter().GetResult();
+                await GifsicleWrapper.OptimizeGif(outputPath, outputPath, options);
             }
 
             SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);

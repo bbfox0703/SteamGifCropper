@@ -1283,6 +1283,51 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("MergeDialog_CannotCreateDir", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Palette source:.
+        /// </summary>
+        internal static string MergeDialog_PaletteSource {
+            get {
+                return ResourceManager.GetString("MergeDialog_PaletteSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select GIF files to merge.
+        /// </summary>
+        internal static string MergeDialog_SelectGifFiles {
+            get {
+                return ResourceManager.GetString("MergeDialog_SelectGifFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save merged GIF as....
+        /// </summary>
+        internal static string MergeDialog_SaveMergedGif {
+            get {
+                return ResourceManager.GetString("MergeDialog_SaveMergedGif", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GIF Files (*.gif)|*.gif.
+        /// </summary>
+        internal static string MergeDialog_GifFilter {
+            get {
+                return ResourceManager.GetString("MergeDialog_GifFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GIF {0}: {1}.
+        /// </summary>
+        internal static string MergeDialog_GifNumberFormat {
+            get {
+                return ResourceManager.GetString("MergeDialog_GifNumberFormat", resourceCulture);
+            }
+        }
 
         /// <summary>
         ///   Looks up a localized string similar to Input MP4 file:.
