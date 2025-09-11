@@ -2519,6 +2519,305 @@ namespace GifProcessorApp
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        #region GIF Concatenation Methods
 
+        public static async Task ConcatenateGifs(GifToolMainForm mainForm, GifConcatenationSettings settings)
+        {
+            if (settings.GifFilePaths == null || settings.GifFilePaths.Count < 2)
+            {
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                    "Please select at least 2 GIF files to concatenate.",
+                    SteamGifCropper.Properties.Resources.Title_Error,
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Validate all files exist
+            foreach (string filePath in settings.GifFilePaths)
+            {
+                if (!File.Exists(filePath))
+                {
+                    WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                        string.Format(SteamGifCropper.Properties.Resources.MergeDialog_FileNotFound, 
+                                     Path.GetFileName(filePath)),
+                        SteamGifCropper.Properties.Resources.Title_Error,
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
+            try
+            {
+                mainForm.pBarTaskStatus.Minimum = 0;
+                mainForm.pBarTaskStatus.Maximum = 100;
+                SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Loading);
+
+                // Step 1: Load all GIF files
+                var gifCollections = new List<MagickImageCollection>();
+                for (int i = 0; i < settings.GifFilePaths.Count; i++)
+                {
+                    var collection = new MagickImageCollection(settings.GifFilePaths[i]);
+                    collection.Coalesce();
+                    gifCollections.Add(collection);
+                    
+                    SetProgressBar(mainForm.pBarTaskStatus, (i + 1) * 10 / settings.GifFilePaths.Count, 100);
+                }
+
+                SetProgressBar(mainForm.pBarTaskStatus, 15, 100);
+                SetStatusText(mainForm, "Analyzing GIF properties...");
+
+                // Step 2: Analyze GIF properties
+                var analysis = AnalyzeGifProperties(gifCollections);
+                SetProgressBar(mainForm.pBarTaskStatus, 25, 100);
+
+                // Step 3: Unify FPS
+                SetStatusText(mainForm, "Unifying frame rates...");
+                await UnifyFrameRates(gifCollections, settings, analysis);
+                SetProgressBar(mainForm.pBarTaskStatus, 40, 100);
+
+                // Step 4: Unify dimensions if requested
+                if (settings.UnifyDimensions)
+                {
+                    SetStatusText(mainForm, "Unifying dimensions...");
+                    UnifyDimensions(gifCollections, analysis);
+                    SetProgressBar(mainForm.pBarTaskStatus, 55, 100);
+                }
+
+                // Step 5: Build unified palette
+                SetStatusText(mainForm, "Building unified palette...");
+                var unifiedPalette = BuildUnifiedPalette(gifCollections, settings);
+                SetProgressBar(mainForm.pBarTaskStatus, 65, 100);
+
+                // Step 6: Apply unified palette
+                SetStatusText(mainForm, "Applying unified palette...");
+                await ApplyUnifiedPalette(gifCollections, unifiedPalette, settings.UseFasterPalette);
+                SetProgressBar(mainForm.pBarTaskStatus, 80, 100);
+
+                // Step 7: Concatenate GIFs
+                SetStatusText(mainForm, "Concatenating GIF files...");
+                var result = ConcatenateGifCollections(gifCollections);
+                SetProgressBar(mainForm.pBarTaskStatus, 90, 100);
+
+                // Step 8: Save result
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
+                result.Write(settings.OutputFilePath);
+                SetProgressBar(mainForm.pBarTaskStatus, 95, 100);
+
+                // Step 9: Optional gifsicle optimization
+                if (settings.UseGifsicleOptimization)
+                {
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing);
+                    var options = new GifsicleWrapper.GifsicleOptions
+                    {
+                        Colors = (int)mainForm.numUpDownPaletteSicle.Value,
+                        Lossy = (int)mainForm.numUpDownLossy.Value,
+                        OptimizeLevel = (int)mainForm.numUpDownOptimize.Value,
+                        Dither = mainForm.DitherMethod
+                    };
+                    await GifsicleWrapper.OptimizeGif(settings.OutputFilePath, settings.OutputFilePath, options);
+                }
+
+                SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
+
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                    string.Format("GIF concatenation completed successfully!\nSaved as: {0}", settings.OutputFilePath),
+                    SteamGifCropper.Properties.Resources.Title_Success,
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Cleanup
+                foreach (var collection in gifCollections)
+                {
+                    collection.Dispose();
+                }
+                result.Dispose();
+            }
+            catch (Exception ex)
+            {
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Error);
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                    string.Format(SteamGifCropper.Properties.Resources.Error_Processing, ex.Message),
+                    SteamGifCropper.Properties.Resources.Title_Error, 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static GifPropertyAnalysis AnalyzeGifProperties(List<MagickImageCollection> gifCollections)
+        {
+            var analysis = new GifPropertyAnalysis();
+
+            foreach (var collection in gifCollections)
+            {
+                if (collection.Count > 0)
+                {
+                    var fps = GetGifFrameRate(collection);
+                    var dimensions = new { Width = collection[0].Width, Height = collection[0].Height };
+
+                    analysis.FrameRates.Add(fps);
+                    analysis.Dimensions.Add(dimensions);
+                    
+                    if (fps > analysis.MaxFps) analysis.MaxFps = fps;
+                    if (analysis.MinFps == 0 || fps < analysis.MinFps) analysis.MinFps = fps;
+                    
+                    if (dimensions.Width > analysis.MaxWidth) analysis.MaxWidth = (int)dimensions.Width;
+                    if (dimensions.Height > analysis.MaxHeight) analysis.MaxHeight = (int)dimensions.Height;
+                }
+            }
+
+            return analysis;
+        }
+
+        private static async Task UnifyFrameRates(List<MagickImageCollection> gifCollections, 
+                                                 GifConcatenationSettings settings, 
+                                                 GifPropertyAnalysis analysis)
+        {
+            int targetFps = DetermineTargetFps(settings, analysis);
+
+            for (int i = 0; i < gifCollections.Count; i++)
+            {
+                var collection = gifCollections[i];
+                var currentFps = GetGifFrameRate(collection);
+
+                if (currentFps != targetFps)
+                {
+                    await ResampleGifFrameRate(collection, targetFps);
+                }
+            }
+        }
+
+        private static int DetermineTargetFps(GifConcatenationSettings settings, GifPropertyAnalysis analysis)
+        {
+            switch (settings.FpsMode)
+            {
+                case FpsUnificationMode.AutoHighest:
+                    return analysis.MaxFps;
+
+                case FpsUnificationMode.UseReference:
+                    if (settings.ReferenceFpsGifIndex >= 0 && settings.ReferenceFpsGifIndex < analysis.FrameRates.Count)
+                        return analysis.FrameRates[settings.ReferenceFpsGifIndex];
+                    return analysis.MaxFps;
+
+                case FpsUnificationMode.Custom:
+                    return settings.CustomFps;
+
+                default:
+                    return 30;
+            }
+        }
+
+        private static async Task ResampleGifFrameRate(MagickImageCollection collection, int targetFps)
+        {
+            // Calculate new frame delay based on target FPS
+            int newDelay = Math.Max(1, 100 / targetFps); // Delay in 1/100ths of a second
+
+            await Task.Run(() =>
+            {
+                foreach (var frame in collection)
+                {
+                    frame.AnimationDelay = (uint)newDelay;
+                }
+            });
+        }
+
+        private static int GetGifFrameRate(MagickImageCollection collection)
+        {
+            if (collection.Count == 0) return 30;
+
+            var avgDelay = collection.Average(frame => frame.AnimationDelay);
+            if (avgDelay <= 0) return 30;
+
+            return Math.Max(1, (int)Math.Round(100.0 / avgDelay));
+        }
+
+        private static void UnifyDimensions(List<MagickImageCollection> gifCollections, GifPropertyAnalysis analysis)
+        {
+            var targetSize = new MagickGeometry((uint)analysis.MaxWidth, (uint)analysis.MaxHeight);
+
+            foreach (var collection in gifCollections)
+            {
+                if (collection[0].Width != targetSize.Width || collection[0].Height != targetSize.Height)
+                {
+                    foreach (var frame in collection)
+                    {
+                        frame.Resize(targetSize);
+                    }
+                }
+            }
+        }
+
+        private static MagickImage BuildUnifiedPalette(List<MagickImageCollection> gifCollections, 
+                                                      GifConcatenationSettings settings)
+        {
+            switch (settings.PaletteMode)
+            {
+                case PaletteUnificationMode.UseReference:
+                    if (settings.ReferencePaletteGifIndex >= 0 && 
+                        settings.ReferencePaletteGifIndex < gifCollections.Count)
+                    {
+                        return BuildSharedPalette(gifCollections.ToArray(), 
+                                                settings.UseFasterPalette, 
+                                                settings.ReferencePaletteGifIndex);
+                    }
+                    goto case PaletteUnificationMode.AutoMerge;
+
+                case PaletteUnificationMode.AutoMerge:
+                default:
+                    return BuildSharedPalette(gifCollections.ToArray(), settings.UseFasterPalette);
+            }
+        }
+
+        private static async Task ApplyUnifiedPalette(List<MagickImageCollection> gifCollections, 
+                                                     MagickImage palette, 
+                                                     bool useFastPalette)
+        {
+            var mapSettings = new QuantizeSettings
+            {
+                Colors = 256,
+                ColorSpace = ColorSpace.RGB,
+                DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+            };
+
+            foreach (var collection in gifCollections)
+            {
+                await Task.Run(() =>
+                {
+                    collection.Quantize(mapSettings);
+                });
+            }
+        }
+
+        private static MagickImageCollection ConcatenateGifCollections(List<MagickImageCollection> gifCollections)
+        {
+            var result = new MagickImageCollection();
+
+            foreach (var collection in gifCollections)
+            {
+                foreach (var frame in collection)
+                {
+                    result.Add(frame.Clone());
+                }
+            }
+
+            // Optimize the result
+            result.Optimize();
+            
+            return result;
+        }
+
+        #endregion
+
+
+    }
+
+    // Helper class for analyzing GIF properties
+    public class GifPropertyAnalysis
+    {
+        public List<int> FrameRates { get; set; } = new List<int>();
+        public List<dynamic> Dimensions { get; set; } = new List<dynamic>();
+        public int MaxFps { get; set; } = 0;
+        public int MinFps { get; set; } = 0;
+        public int MaxWidth { get; set; } = 0;
+        public int MaxHeight { get; set; } = 0;
     }
 }

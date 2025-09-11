@@ -801,6 +801,88 @@ Technical details: {5}</value>
   <data name="ScrollDialog_DirRightDown" xml:space="preserve">
     <value>Right-Down</value>
   </data>
+  <data name="Button_ConcatenateGifs" xml:space="preserve">
+    <value>Concatenate GIF files (with FPS/Palette control)</value>
+  </data>
+  <data name="ConcatenateDialog_Title" xml:space="preserve">
+    <value>Concatenate GIF Files</value>
+  </data>
+  <data name="ConcatenateDialog_Instructions" xml:space="preserve">
+    <value>Select GIF files to concatenate (in order):</value>
+  </data>
+  <data name="ConcatenateDialog_GifFiles" xml:space="preserve">
+    <value>GIF Files (2 or more):</value>
+  </data>
+  <data name="ConcatenateDialog_FpsSettings" xml:space="preserve">
+    <value>FPS Settings</value>
+  </data>
+  <data name="ConcatenateDialog_PaletteSettings" xml:space="preserve">
+    <value>Palette Settings</value>
+  </data>
+  <data name="ConcatenateDialog_FpsAutoHighest" xml:space="preserve">
+    <value>Auto (Use Highest)</value>
+  </data>
+  <data name="ConcatenateDialog_FpsUseReference" xml:space="preserve">
+    <value>Use Reference GIF:</value>
+  </data>
+  <data name="ConcatenateDialog_FpsCustom" xml:space="preserve">
+    <value>Custom FPS:</value>
+  </data>
+  <data name="ConcatenateDialog_PaletteAutoMerge" xml:space="preserve">
+    <value>Auto Merge</value>
+  </data>
+  <data name="ConcatenateDialog_PaletteUseReference" xml:space="preserve">
+    <value>Use Reference GIF:</value>
+  </data>
+  <data name="ConcatenateDialog_StrongPaletteWeighting" xml:space="preserve">
+    <value>8x weight for reference palette</value>
+  </data>
+  <data name="ConcatenateDialog_UnifyDimensions" xml:space="preserve">
+    <value>Unify dimensions (resize to largest)</value>
+  </data>
+  <data name="ConcatenateDialog_UseFasterPalette" xml:space="preserve">
+    <value>Faster palette (lower quality)</value>
+  </data>
+  <data name="ConcatenateDialog_UseGifsicleOptimization" xml:space="preserve">
+    <value>Use gifsicle optimization</value>
+  </data>
+  <data name="ConcatenateDialog_Concatenate" xml:space="preserve">
+    <value>Concatenate</value>
+  </data>
+  <data name="ConcatenateDialog_RequireMinGifs" xml:space="preserve">
+    <value>Please select at least 2 GIF files to concatenate.</value>
+  </data>
+  <data name="ConcatenateDialog_RequireOutput" xml:space="preserve">
+    <value>Please specify an output file.</value>
+  </data>
+  <data name="ConcatenateDialog_SelectGifFiles" xml:space="preserve">
+    <value>Select GIF files to concatenate</value>
+  </data>
+  <data name="ConcatenateDialog_SaveGif" xml:space="preserve">
+    <value>Save concatenated GIF as...</value>
+  </data>
+  <data name="Status_AnalyzingGifs" xml:space="preserve">
+    <value>Analyzing GIF properties...</value>
+  </data>
+  <data name="Status_UnifyingFrameRates" xml:space="preserve">
+    <value>Unifying frame rates...</value>
+  </data>
+  <data name="Status_UnifyingDimensions" xml:space="preserve">
+    <value>Unifying dimensions...</value>
+  </data>
+  <data name="Status_BuildingUnifiedPalette" xml:space="preserve">
+    <value>Building unified palette...</value>
+  </data>
+  <data name="Status_ApplyingUnifiedPalette" xml:space="preserve">
+    <value>Applying unified palette...</value>
+  </data>
+  <data name="Status_ConcatenatingGifs" xml:space="preserve">
+    <value>Concatenating GIF files...</value>
+  </data>
+  <data name="Message_ConcatenationComplete" xml:space="preserve">
+    <value>GIF concatenation completed successfully!
+Saved as: {0}</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\lang_switch.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
