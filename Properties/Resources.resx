@@ -887,4 +887,81 @@ Saved as: {0}</value>
   <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\lang_switch.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  
+  <!-- Transition Dialog Strings -->
+  <data name="TransitionDialog_TransitionSettings" xml:space="preserve">
+    <value>Transition Settings</value>
+  </data>
+  <data name="TransitionDialog_NoTransition" xml:space="preserve">
+    <value>No Transition</value>
+  </data>
+  <data name="TransitionDialog_Fade" xml:space="preserve">
+    <value>Fade</value>
+  </data>
+  <data name="TransitionDialog_Slide" xml:space="preserve">
+    <value>Slide</value>
+  </data>
+  <data name="TransitionDialog_Zoom" xml:space="preserve">
+    <value>Zoom</value>
+  </data>
+  <data name="TransitionDialog_Dissolve" xml:space="preserve">
+    <value>Dissolve</value>
+  </data>
+  <data name="TransitionDialog_Left" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="TransitionDialog_Right" xml:space="preserve">
+    <value>Right</value>
+  </data>
+  <data name="TransitionDialog_Up" xml:space="preserve">
+    <value>Up</value>
+  </data>
+  <data name="TransitionDialog_Down" xml:space="preserve">
+    <value>Down</value>
+  </data>
+  <data name="TransitionDialog_ZoomIn" xml:space="preserve">
+    <value>Zoom In</value>
+  </data>
+  <data name="TransitionDialog_ZoomOut" xml:space="preserve">
+    <value>Zoom Out</value>
+  </data>
+  <data name="TransitionDialog_TransitionDuration" xml:space="preserve">
+    <value>Transition Duration:</value>
+  </data>
+  <data name="TransitionDialog_Seconds" xml:space="preserve">
+    <value>seconds</value>
+  </data>
+  <data name="TransitionDialog_PreviewTransition" xml:space="preserve">
+    <value>Preview Transition</value>
+  </data>
+  <data name="TransitionDialog_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="TransitionDialog_Generating" xml:space="preserve">
+    <value>Generating...</value>
+  </data>
+  <data name="TransitionDialog_Cancelling" xml:space="preserve">
+    <value>Cancelling...</value>
+  </data>
+  <data name="TransitionDialog_PreviewError" xml:space="preserve">
+    <value>Preview Error</value>
+  </data>
+  <data name="TransitionDialog_PreviewCancelled" xml:space="preserve">
+    <value>Preview cancelled by user</value>
+  </data>
+  <data name="TransitionDialog_RequireMinTwoGifs" xml:space="preserve">
+    <value>Please select at least 2 GIF files to preview transitions.</value>
+  </data>
+  <data name="TransitionDialog_SelectTransitionType" xml:space="preserve">
+    <value>Please select a transition type to preview.</value>
+  </data>
+  <data name="TransitionDialog_InitializingPreview" xml:space="preserve">
+    <value>Initializing preview...</value>
+  </data>
+  <data name="TransitionDialog_ResizingForPreview" xml:space="preserve">
+    <value>Resizing images for preview...</value>
+  </data>
+  <data name="TransitionDialog_ErrorGeneratingPreview" xml:space="preserve">
+    <value>Error generating transition preview: {0}</value>
+  </data>
 </root>

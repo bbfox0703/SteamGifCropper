@@ -799,4 +799,81 @@ FFmpeg 輸出 (部分)：
 
 若 GPU 驅動程式過舊或未正確安裝 CUDA，這是正常情況。</value>
   </data>
+  
+  <!-- Transition Dialog Strings -->
+  <data name="TransitionDialog_TransitionSettings" xml:space="preserve">
+    <value>過場轉換設定</value>
+  </data>
+  <data name="TransitionDialog_NoTransition" xml:space="preserve">
+    <value>無過場轉換</value>
+  </data>
+  <data name="TransitionDialog_Fade" xml:space="preserve">
+    <value>淡入淡出</value>
+  </data>
+  <data name="TransitionDialog_Slide" xml:space="preserve">
+    <value>滑動</value>
+  </data>
+  <data name="TransitionDialog_Zoom" xml:space="preserve">
+    <value>縮放</value>
+  </data>
+  <data name="TransitionDialog_Dissolve" xml:space="preserve">
+    <value>溶解</value>
+  </data>
+  <data name="TransitionDialog_Left" xml:space="preserve">
+    <value>向左</value>
+  </data>
+  <data name="TransitionDialog_Right" xml:space="preserve">
+    <value>向右</value>
+  </data>
+  <data name="TransitionDialog_Up" xml:space="preserve">
+    <value>向上</value>
+  </data>
+  <data name="TransitionDialog_Down" xml:space="preserve">
+    <value>向下</value>
+  </data>
+  <data name="TransitionDialog_ZoomIn" xml:space="preserve">
+    <value>放大</value>
+  </data>
+  <data name="TransitionDialog_ZoomOut" xml:space="preserve">
+    <value>縮小</value>
+  </data>
+  <data name="TransitionDialog_TransitionDuration" xml:space="preserve">
+    <value>過場持續時間：</value>
+  </data>
+  <data name="TransitionDialog_Seconds" xml:space="preserve">
+    <value>秒</value>
+  </data>
+  <data name="TransitionDialog_PreviewTransition" xml:space="preserve">
+    <value>預覽過場</value>
+  </data>
+  <data name="TransitionDialog_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="TransitionDialog_Generating" xml:space="preserve">
+    <value>生成中...</value>
+  </data>
+  <data name="TransitionDialog_Cancelling" xml:space="preserve">
+    <value>取消中...</value>
+  </data>
+  <data name="TransitionDialog_PreviewError" xml:space="preserve">
+    <value>預覽錯誤</value>
+  </data>
+  <data name="TransitionDialog_PreviewCancelled" xml:space="preserve">
+    <value>預覽已被用戶取消</value>
+  </data>
+  <data name="TransitionDialog_RequireMinTwoGifs" xml:space="preserve">
+    <value>請選擇至少2個GIF檔案以預覽過場轉換。</value>
+  </data>
+  <data name="TransitionDialog_SelectTransitionType" xml:space="preserve">
+    <value>請選擇過場轉換類型以進行預覽。</value>
+  </data>
+  <data name="TransitionDialog_InitializingPreview" xml:space="preserve">
+    <value>初始化預覽中...</value>
+  </data>
+  <data name="TransitionDialog_ResizingForPreview" xml:space="preserve">
+    <value>調整圖片大小以供預覽...</value>
+  </data>
+  <data name="TransitionDialog_ErrorGeneratingPreview" xml:space="preserve">
+    <value>生成過場預覽時發生錯誤：{0}</value>
+  </data>
 </root>
