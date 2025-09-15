@@ -876,4 +876,105 @@ FFmpeg 輸出 (部分)：
   <data name="TransitionDialog_ErrorGeneratingPreview" xml:space="preserve">
     <value>生成過場預覽時發生錯誤：{0}</value>
   </data>
+  
+  <!-- Concatenate Dialog Strings -->
+  <data name="ConcatenateDialog_Title" xml:space="preserve">
+    <value>串接 GIF 檔案</value>
+  </data>
+  <data name="ConcatenateDialog_Instructions" xml:space="preserve">
+    <value>選擇要串接的 GIF 檔案（按順序）：</value>
+  </data>
+  <data name="ConcatenateDialog_GifFiles" xml:space="preserve">
+    <value>GIF 檔案（2個或以上）：</value>
+  </data>
+  <data name="ConcatenateDialog_FpsSettings" xml:space="preserve">
+    <value>FPS 設定</value>
+  </data>
+  <data name="ConcatenateDialog_PaletteSettings" xml:space="preserve">
+    <value>色彩調色盤設定</value>
+  </data>
+  <data name="ConcatenateDialog_FpsAutoHighest" xml:space="preserve">
+    <value>自動（使用最高）</value>
+  </data>
+  <data name="ConcatenateDialog_FpsUseReference" xml:space="preserve">
+    <value>使用參考 GIF：</value>
+  </data>
+  <data name="ConcatenateDialog_FpsCustom" xml:space="preserve">
+    <value>自訂 FPS：</value>
+  </data>
+  <data name="ConcatenateDialog_PaletteAutoMerge" xml:space="preserve">
+    <value>自動合併</value>
+  </data>
+  <data name="ConcatenateDialog_PaletteUseReference" xml:space="preserve">
+    <value>使用參考 GIF：</value>
+  </data>
+  <data name="ConcatenateDialog_StrongPaletteWeighting" xml:space="preserve">
+    <value>8倍權重給參考調色盤</value>
+  </data>
+  <data name="ConcatenateDialog_UnifyDimensions" xml:space="preserve">
+    <value>統一尺寸（調整為最大）</value>
+  </data>
+  <data name="ConcatenateDialog_UseFasterPalette" xml:space="preserve">
+    <value>快速調色盤（較低品質）</value>
+  </data>
+  <data name="ConcatenateDialog_UseGifsicleOptimization" xml:space="preserve">
+    <value>使用 gifsicle 最佳化</value>
+  </data>
+  <data name="ConcatenateDialog_Concatenate" xml:space="preserve">
+    <value>串接</value>
+  </data>
+  <data name="ConcatenateDialog_RequireMinGifs" xml:space="preserve">
+    <value>請選擇至少2個 GIF 檔案進行串接。</value>
+  </data>
+  <data name="ConcatenateDialog_RequireOutput" xml:space="preserve">
+    <value>請指定輸出檔案。</value>
+  </data>
+  <data name="ConcatenateDialog_SelectGifFiles" xml:space="preserve">
+    <value>選擇要串接的 GIF 檔案</value>
+  </data>
+  <data name="ConcatenateDialog_SaveGif" xml:space="preserve">
+    <value>儲存串接的 GIF 為...</value>
+  </data>
+  <data name="ConcatenateDialog_OutputFile" xml:space="preserve">
+    <value>輸出 GIF 檔案：</value>
+  </data>
+  <data name="ConcatenateDialog_AddFiles" xml:space="preserve">
+    <value>加入檔案...</value>
+  </data>
+  <data name="ConcatenateDialog_Remove" xml:space="preserve">
+    <value>移除</value>
+  </data>
+  <data name="ConcatenateDialog_MoveUp" xml:space="preserve">
+    <value>上移</value>
+  </data>
+  <data name="ConcatenateDialog_MoveDown" xml:space="preserve">
+    <value>下移</value>
+  </data>
+  <data name="ConcatenateDialog_Browse" xml:space="preserve">
+    <value>瀏覽...</value>
+  </data>
+  <data name="ConcatenateDialog_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="ConcatenateDialog_Preview" xml:space="preserve">
+    <value>預覽</value>
+  </data>
+  <data name="ConcatenateDialog_AutoUpdatePreview" xml:space="preserve">
+    <value>自動更新預覽</value>
+  </data>
+  <data name="ConcatenateDialog_NoPreviewAvailable" xml:space="preserve">
+    <value>沒有可用的預覽</value>
+  </data>
+  <data name="ConcatenateDialog_GeneratingPreview" xml:space="preserve">
+    <value>生成預覽中...</value>
+  </data>
+  <data name="ConcatenateDialog_FrameInfo" xml:space="preserve">
+    <value>第 {0} 格，共 {1} 格</value>
+  </data>
+  <data name="ConcatenateDialog_PreviewError" xml:space="preserve">
+    <value>預覽錯誤：{0}</value>
+  </data>
+  <data name="ConcatenateDialog_FailedToGeneratePreview" xml:space="preserve">
+    <value>生成預覽失敗</value>
+  </data>
 </root>
