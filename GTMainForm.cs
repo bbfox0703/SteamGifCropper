@@ -204,6 +204,20 @@ namespace GifProcessorApp
             }, "GIF merge");
         }
 
+        private async void btnConcatenateGifs_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(async () =>
+            {
+                using (var dialog = new ConcatenateGifsDialog())
+                {
+                    if (dialog.ShowDialog() == DialogResult.OK)
+                    {
+                        await GifProcessor.ConcatenateGifs(this, dialog.Settings);
+                    }
+                }
+            }, "GIF concatenation");
+        }
+
         private async void btnReverseGIF_Click(object sender, EventArgs e)
         {
             await ExecuteWithErrorHandling(async () => await GifProcessor.ReverseGif(this), "GIF reversal");
