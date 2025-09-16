@@ -298,7 +298,7 @@ namespace GifProcessorApp
             lblInstructions.Name = "lblInstructions";
             lblInstructions.Size = new Size(233, 15);
             lblInstructions.TabIndex = 0;
-            lblInstructions.Text = "Select GIF files to concatenate (in order):";
+            lblInstructions.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_Instructions;
             // 
             // lblGifFiles
             // 
@@ -307,7 +307,7 @@ namespace GifProcessorApp
             lblGifFiles.Name = "lblGifFiles";
             lblGifFiles.Size = new Size(121, 15);
             lblGifFiles.TabIndex = 1;
-            lblGifFiles.Text = "GIF Files (2 or more):";
+            lblGifFiles.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_GifFiles;
             // 
             // lstGifFiles
             // 
@@ -324,7 +324,7 @@ namespace GifProcessorApp
             btnAddFiles.Name = "btnAddFiles";
             btnAddFiles.Size = new Size(80, 25);
             btnAddFiles.TabIndex = 3;
-            btnAddFiles.Text = "Add Files...";
+            btnAddFiles.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_AddFiles;
             btnAddFiles.UseVisualStyleBackColor = true;
             btnAddFiles.Click += BtnAddFiles_Click;
             // 
@@ -334,7 +334,7 @@ namespace GifProcessorApp
             btnRemoveSelected.Name = "btnRemoveSelected";
             btnRemoveSelected.Size = new Size(80, 25);
             btnRemoveSelected.TabIndex = 4;
-            btnRemoveSelected.Text = "Remove";
+            btnRemoveSelected.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_Remove;
             btnRemoveSelected.UseVisualStyleBackColor = true;
             btnRemoveSelected.Click += BtnRemoveSelected_Click;
             // 
@@ -344,7 +344,7 @@ namespace GifProcessorApp
             btnMoveUp.Name = "btnMoveUp";
             btnMoveUp.Size = new Size(80, 25);
             btnMoveUp.TabIndex = 5;
-            btnMoveUp.Text = "Move Up";
+            btnMoveUp.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_MoveUp;
             btnMoveUp.UseVisualStyleBackColor = true;
             btnMoveUp.Click += BtnMoveUp_Click;
             // 
@@ -354,7 +354,7 @@ namespace GifProcessorApp
             btnMoveDown.Name = "btnMoveDown";
             btnMoveDown.Size = new Size(80, 25);
             btnMoveDown.TabIndex = 6;
-            btnMoveDown.Text = "Move Down";
+            btnMoveDown.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_MoveDown;
             btnMoveDown.UseVisualStyleBackColor = true;
             btnMoveDown.Click += BtnMoveDown_Click;
             // 
@@ -371,7 +371,7 @@ namespace GifProcessorApp
             grpFpsSettings.Size = new Size(240, 120);
             grpFpsSettings.TabIndex = 7;
             grpFpsSettings.TabStop = false;
-            grpFpsSettings.Text = "FPS Settings";
+            grpFpsSettings.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_FpsSettings;
             // 
             // rbFpsAutoHighest
             // 
@@ -382,7 +382,7 @@ namespace GifProcessorApp
             rbFpsAutoHighest.Size = new Size(130, 19);
             rbFpsAutoHighest.TabIndex = 0;
             rbFpsAutoHighest.TabStop = true;
-            rbFpsAutoHighest.Text = "Auto (Use Highest)";
+            rbFpsAutoHighest.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_FpsAutoHighest;
             rbFpsAutoHighest.UseVisualStyleBackColor = true;
             rbFpsAutoHighest.CheckedChanged += RbFps_CheckedChanged;
             // 
@@ -393,7 +393,7 @@ namespace GifProcessorApp
             rbFpsUseReference.Name = "rbFpsUseReference";
             rbFpsUseReference.Size = new Size(130, 19);
             rbFpsUseReference.TabIndex = 1;
-            rbFpsUseReference.Text = "Use Reference GIF:";
+            rbFpsUseReference.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_FpsUseReference;
             rbFpsUseReference.UseVisualStyleBackColor = true;
             rbFpsUseReference.CheckedChanged += RbFps_CheckedChanged;
             // 
@@ -413,7 +413,7 @@ namespace GifProcessorApp
             rbFpsCustom.Name = "rbFpsCustom";
             rbFpsCustom.Size = new Size(94, 19);
             rbFpsCustom.TabIndex = 3;
-            rbFpsCustom.Text = "Custom FPS:";
+            rbFpsCustom.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_FpsCustom;
             rbFpsCustom.UseVisualStyleBackColor = true;
             rbFpsCustom.CheckedChanged += RbFps_CheckedChanged;
             // 
@@ -448,7 +448,7 @@ namespace GifProcessorApp
             grpPaletteSettings.Size = new Size(248, 120);
             grpPaletteSettings.TabIndex = 8;
             grpPaletteSettings.TabStop = false;
-            grpPaletteSettings.Text = "Palette Settings";
+            grpPaletteSettings.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_PaletteSettings;
             // 
             // cmbPaletteReference
             // 
@@ -468,7 +468,7 @@ namespace GifProcessorApp
             rbPaletteAutoMerge.Size = new Size(93, 19);
             rbPaletteAutoMerge.TabIndex = 0;
             rbPaletteAutoMerge.TabStop = true;
-            rbPaletteAutoMerge.Text = "Auto Merge";
+            rbPaletteAutoMerge.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_PaletteAutoMerge;
             rbPaletteAutoMerge.UseVisualStyleBackColor = true;
             rbPaletteAutoMerge.CheckedChanged += RbPalette_CheckedChanged;
             // 
@@ -479,7 +479,7 @@ namespace GifProcessorApp
             rbPaletteUseReference.Name = "rbPaletteUseReference";
             rbPaletteUseReference.Size = new Size(130, 19);
             rbPaletteUseReference.TabIndex = 1;
-            rbPaletteUseReference.Text = "Use Reference GIF:";
+            rbPaletteUseReference.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_PaletteUseReference;
             rbPaletteUseReference.UseVisualStyleBackColor = true;
             rbPaletteUseReference.CheckedChanged += RbPalette_CheckedChanged;
             // 
@@ -517,7 +517,7 @@ namespace GifProcessorApp
             btnBrowseOutput.Name = "btnBrowseOutput";
             btnBrowseOutput.Size = new Size(80, 23);
             btnBrowseOutput.TabIndex = 20;
-            btnBrowseOutput.Text = "Browse...";
+            btnBrowseOutput.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_Browse;
             btnBrowseOutput.UseVisualStyleBackColor = true;
             btnBrowseOutput.Click += BtnBrowseOutput_Click;
             // 
@@ -615,7 +615,7 @@ namespace GifProcessorApp
             grpTransitionSettings.Size = new Size(496, 146);
             grpTransitionSettings.TabIndex = 17;
             grpTransitionSettings.TabStop = false;
-            grpTransitionSettings.Text = "Transition Settings";
+            grpTransitionSettings.Text = SteamGifCropper.Properties.Resources.TransitionDialog_TransitionSettings;
             // 
             // rbTransitionNone
             // 
@@ -626,7 +626,7 @@ namespace GifProcessorApp
             rbTransitionNone.Size = new Size(101, 19);
             rbTransitionNone.TabIndex = 0;
             rbTransitionNone.TabStop = true;
-            rbTransitionNone.Text = "No Transition";
+            rbTransitionNone.Text = SteamGifCropper.Properties.Resources.TransitionDialog_NoTransition;
             rbTransitionNone.UseVisualStyleBackColor = true;
             rbTransitionNone.CheckedChanged += RbTransition_CheckedChanged;
             // 
@@ -637,7 +637,7 @@ namespace GifProcessorApp
             rbTransitionFade.Name = "rbTransitionFade";
             rbTransitionFade.Size = new Size(53, 19);
             rbTransitionFade.TabIndex = 1;
-            rbTransitionFade.Text = "Fade";
+            rbTransitionFade.Text = SteamGifCropper.Properties.Resources.TransitionDialog_Fade;
             rbTransitionFade.UseVisualStyleBackColor = true;
             rbTransitionFade.CheckedChanged += RbTransition_CheckedChanged;
             // 
@@ -801,7 +801,7 @@ namespace GifProcessorApp
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(105, 25);
             btnOK.TabIndex = 24;
-            btnOK.Text = "Concatenate";
+            btnOK.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_Concatenate;
             btnOK.UseVisualStyleBackColor = true;
             btnOK.Click += BtnOK_Click;
             // 
@@ -812,7 +812,7 @@ namespace GifProcessorApp
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(75, 25);
             btnCancel.TabIndex = 25;
-            btnCancel.Text = "Cancel";
+            btnCancel.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_Cancel;
             btnCancel.UseVisualStyleBackColor = true;
             // 
             // ConcatenateGifsDialog
@@ -846,7 +846,7 @@ namespace GifProcessorApp
             MinimizeBox = false;
             Name = "ConcatenateGifsDialog";
             StartPosition = FormStartPosition.CenterParent;
-            Text = "Concatenate GIF Files";
+            Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_Title;
             grpFpsSettings.ResumeLayout(false);
             grpFpsSettings.PerformLayout();
             ((ISupportInitialize)nudCustomFps).EndInit();
