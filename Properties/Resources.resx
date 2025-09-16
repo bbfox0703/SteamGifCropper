@@ -292,7 +292,9 @@
     <value>{0} of {1} GIF files processed successfully!</value>
   </data>
   <data name="Message_RestorationComplete" xml:space="preserve">
-    <value>Restoration completed!&#xA;Files processed: {0}&#xA;Files skipped (not 0x21): {1}</value>
+    <value>Restoration completed!
+Files processed: {0}
+Files skipped (not 0x21): {1}</value>
   </data>
   <data name="Error_UnsupportedWidth" xml:space="preserve">
     <value>Unsupported GIF canvas width: {0}px. Only {1}px and {2}px are supported.</value>
@@ -887,8 +889,6 @@ Saved as: {0}</value>
   <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\lang_switch.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  
-  <!-- Transition Dialog Strings -->
   <data name="TransitionDialog_TransitionSettings" xml:space="preserve">
     <value>Transition Settings</value>
   </data>
@@ -963,5 +963,47 @@ Saved as: {0}</value>
   </data>
   <data name="TransitionDialog_ErrorGeneratingPreview" xml:space="preserve">
     <value>Error generating transition preview: {0}</value>
+  </data>
+  <data name="ConcatenateDialog_OutputFile" xml:space="preserve">
+    <value>Output GIF file:</value>
+  </data>
+  <data name="ConcatenateDialog_AddFiles" xml:space="preserve">
+    <value>Add Files...</value>
+  </data>
+  <data name="ConcatenateDialog_Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="ConcatenateDialog_MoveUp" xml:space="preserve">
+    <value>Move up</value>
+  </data>
+  <data name="ConcatenateDialog_MoveDown" xml:space="preserve">
+    <value>Move down</value>
+  </data>
+  <data name="ConcatenateDialog_Browse" xml:space="preserve">
+    <value>Browse...</value>
+  </data>
+  <data name="ConcatenateDialog_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ConcatenateDialog_Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="ConcatenateDialog_AutoUpdatePreview" xml:space="preserve">
+    <value>Auto-update preview</value>
+  </data>
+  <data name="ConcatenateDialog_NoPreviewAvailable" xml:space="preserve">
+    <value>No preview available</value>
+  </data>
+  <data name="ConcatenateDialog_GeneratingPreview" xml:space="preserve">
+    <value>Generating preview...</value>
+  </data>
+  <data name="ConcatenateDialog_FrameInfo" xml:space="preserve">
+    <value>Frame: {0}, Total: {1}</value>
+  </data>
+  <data name="ConcatenateDialog_PreviewError" xml:space="preserve">
+    <value>Preview error: {0}</value>
+  </data>
+  <data name="ConcatenateDialog_FailedToGeneratePreview" xml:space="preserve">
+    <value>Failed to generate preview.</value>
   </data>
 </root>

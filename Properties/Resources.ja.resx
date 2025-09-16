@@ -574,6 +574,21 @@
   <data name="MergeDialog_GifNumberFormat" xml:space="preserve">
     <value>GIF {0}: {1}</value>
   </data>
+  <data name="MergeFiveGifDialog_Instructions" xml:space="preserve">
+    <value>結合および分割するGIFファイルをちょうど5つ、左から右の順に選択してください。</value>
+  </data>
+  <data name="MergeFiveGifDialog_GifFiles" xml:space="preserve">
+    <value>GIFファイル（ちょうど5つ）：</value>
+  </data>
+  <data name="MergeFiveGifDialog_Title" xml:space="preserve">
+    <value>5つのGIFファイルを結合</value>
+  </data>
+  <data name="MergeFiveGifDialog_MaxFiles" xml:space="preserve">
+    <value>GIFファイルは最大5つまでです。</value>
+  </data>
+  <data name="MergeFiveGifDialog_RequireExactly5" xml:space="preserve">
+    <value>GIFファイルをちょうど5つ選択してください。</value>
+  </data>
   <data name="Mp4Dialog_InputLabel" xml:space="preserve">
     <value>入力ファイル：</value>
   </data>
@@ -606,6 +621,12 @@
   </data>
   <data name="Mp4Dialog_FFmpegHelp" xml:space="preserve">
     <value>FFmpeg をインストールする方法は？（MP4 変換に必須）</value>
+  </data>
+  <data name="Mp4Dialog_GPUDecode" xml:space="preserve">
+    <value>GPUデコード（デコードのみ、GIFエンコードはCPUを使用）</value>
+  </data>
+  <data name="Mp4Dialog_CheckingGPU" xml:space="preserve">
+    <value>GPUを確認中...</value>
   </data>
   <data name="Mp4Dialog_Title" xml:space="preserve">
     <value>MP4 → GIF コンバーター</value>
@@ -790,8 +811,207 @@ FFmpeg 出力（切り捨て）:
   <data name="ScrollDialog_DirRightDown" xml:space="preserve">
     <value>右下</value>
   </data>
+  <data name="Button_ConcatenateGifs" xml:space="preserve">
+    <value>GIFファイルを結合（FPS／パレット制御付き）</value>
+  </data>
+  <data name="ConcatenateDialog_Title" xml:space="preserve">
+    <value>GIFファイルを結合</value>
+  </data>
+  <data name="ConcatenateDialog_Instructions" xml:space="preserve">
+    <value>結合するGIFファイルを順番に選択：</value>
+  </data>
+  <data name="ConcatenateDialog_GifFiles" xml:space="preserve">
+    <value>GIFファイル（2つ以上）：</value>
+  </data>
+  <data name="ConcatenateDialog_FpsSettings" xml:space="preserve">
+    <value>FPS設定</value>
+  </data>
+  <data name="ConcatenateDialog_PaletteSettings" xml:space="preserve">
+    <value>パレット設定</value>
+  </data>
+  <data name="ConcatenateDialog_FpsAutoHighest" xml:space="preserve">
+    <value>自動（最高値を使用）</value>
+  </data>
+  <data name="ConcatenateDialog_FpsUseReference" xml:space="preserve">
+    <value>参照GIFを使用：</value>
+  </data>
+  <data name="ConcatenateDialog_FpsCustom" xml:space="preserve">
+    <value>カスタムFPS：</value>
+  </data>
+  <data name="ConcatenateDialog_PaletteAutoMerge" xml:space="preserve">
+    <value>動結合</value>
+  </data>
+  <data name="ConcatenateDialog_PaletteUseReference" xml:space="preserve">
+    <value>参照GIFを使用：</value>
+  </data>
+  <data name="ConcatenateDialog_StrongPaletteWeighting" xml:space="preserve">
+    <value>参照パレットに8倍の重み付け</value>
+  </data>
+  <data name="ConcatenateDialog_UnifyDimensions" xml:space="preserve">
+    <value>寸法を統一（最大にリサイズ）</value>
+  </data>
+  <data name="ConcatenateDialog_UseFasterPalette" xml:space="preserve">
+    <value>高速パレット（低品質）</value>
+  </data>
+  <data name="ConcatenateDialog_UseGifsicleOptimization" xml:space="preserve">
+    <value>gifsicle最適化を使用</value>
+  </data>
+  <data name="ConcatenateDialog_Concatenate" xml:space="preserve">
+    <value>結合</value>
+  </data>
+  <data name="ConcatenateDialog_RequireMinGifs" xml:space="preserve">
+    <value>結合するにはGIFファイルを少なくとも2つ選択してください。</value>
+  </data>
+  <data name="ConcatenateDialog_RequireOutput" xml:space="preserve">
+    <value>出力ファイルを指定してください。</value>
+  </data>
+  <data name="ConcatenateDialog_SelectGifFiles" xml:space="preserve">
+    <value>結合するGIFファイルを選択</value>
+  </data>
+  <data name="ConcatenateDialog_SaveGif" xml:space="preserve">
+    <value>結合したGIFを名前を付けて保存...</value>
+  </data>
+  <data name="Status_AnalyzingGifs" xml:space="preserve">
+    <value>GIFプロパティを解析中...</value>
+  </data>
+  <data name="Status_UnifyingFrameRates" xml:space="preserve">
+    <value>フレームレートを統一中...</value>
+  </data>
+  <data name="Status_UnifyingDimensions" xml:space="preserve">
+    <value>寸法を統一中...</value>
+  </data>
+  <data name="Status_BuildingUnifiedPalette" xml:space="preserve">
+    <value>統一パレットを生成中...</value>
+  </data>
+  <data name="Status_ApplyingUnifiedPalette" xml:space="preserve">
+    <value>統一パレットを適用中...</value>
+  </data>
+  <data name="Status_ConcatenatingGifs" xml:space="preserve">
+    <value>GIFファイルを結合中...</value>
+  </data>
+  <data name="Message_ConcatenationComplete" xml:space="preserve">
+    <value>GIFの結合が正常に完了しました！
+保存先: {0}</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\lang_switch.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TransitionDialog_TransitionSettings" xml:space="preserve">
+    <value>トランジション設定</value>
+  </data>
+  <data name="TransitionDialog_NoTransition" xml:space="preserve">
+    <value>トランジションなし</value>
+  </data>
+  <data name="TransitionDialog_Fade" xml:space="preserve">
+    <value>フェード</value>
+  </data>
+  <data name="TransitionDialog_Slide" xml:space="preserve">
+    <value>スライド</value>
+  </data>
+  <data name="TransitionDialog_Zoom" xml:space="preserve">
+    <value>ズーム</value>
+  </data>
+  <data name="TransitionDialog_Dissolve" xml:space="preserve">
+    <value>ディゾルブ</value>
+  </data>
+  <data name="TransitionDialog_Left" xml:space="preserve">
+    <value>左</value>
+  </data>
+  <data name="TransitionDialog_Right" xml:space="preserve">
+    <value>右</value>
+  </data>
+  <data name="TransitionDialog_Up" xml:space="preserve">
+    <value>上</value>
+  </data>
+  <data name="TransitionDialog_Down" xml:space="preserve">
+    <value>下</value>
+  </data>
+  <data name="TransitionDialog_ZoomIn" xml:space="preserve">
+    <value>ズームイン</value>
+  </data>
+  <data name="TransitionDialog_ZoomOut" xml:space="preserve">
+    <value>ズームアウト</value>
+  </data>
+  <data name="TransitionDialog_TransitionDuration" xml:space="preserve">
+    <value>トランジション時間：</value>
+  </data>
+  <data name="TransitionDialog_Seconds" xml:space="preserve">
+    <value>秒</value>
+  </data>
+  <data name="TransitionDialog_PreviewTransition" xml:space="preserve">
+    <value>トランジションをプレビュー</value>
+  </data>
+  <data name="TransitionDialog_Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="TransitionDialog_Generating" xml:space="preserve">
+    <value>生成中...</value>
+  </data>
+  <data name="TransitionDialog_Cancelling" xml:space="preserve">
+    <value>キャンセル中...</value>
+  </data>
+  <data name="TransitionDialog_PreviewError" xml:space="preserve">
+    <value>プレビューエラー</value>
+  </data>
+  <data name="TransitionDialog_PreviewCancelled" xml:space="preserve">
+    <value>ユーザーによりプレビューがキャンセルされました</value>
+  </data>
+  <data name="TransitionDialog_RequireMinTwoGifs" xml:space="preserve">
+    <value>トランジションをプレビューするにはGIFファイルを少なくとも2つ選択してください。</value>
+  </data>
+  <data name="TransitionDialog_SelectTransitionType" xml:space="preserve">
+    <value>プレビューするトランジションの種類を選択してください。</value>
+  </data>
+  <data name="TransitionDialog_InitializingPreview" xml:space="preserve">
+    <value>プレビューを初期化中...</value>
+  </data>
+  <data name="TransitionDialog_ResizingForPreview" xml:space="preserve">
+    <value>プレビュー用に画像をリサイズ中...</value>
+  </data>
+  <data name="TransitionDialog_ErrorGeneratingPreview" xml:space="preserve">
+    <value>トランジションプレビューの生成に失敗しました: {0}</value>
+  </data>
+  <data name="ConcatenateDialog_OutputFile" xml:space="preserve">
+    <value>出力GIFファイル：</value>
+  </data>
+  <data name="ConcatenateDialog_AddFiles" xml:space="preserve">
+    <value>ファイルを追加...</value>
+  </data>
+  <data name="ConcatenateDialog_Remove" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="ConcatenateDialog_MoveUp" xml:space="preserve">
+    <value>上へ移動</value>
+  </data>
+  <data name="ConcatenateDialog_MoveDown" xml:space="preserve">
+    <value>下へ移動</value>
+  </data>
+  <data name="ConcatenateDialog_Browse" xml:space="preserve">
+    <value>参照...</value>
+  </data>
+  <data name="ConcatenateDialog_Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="ConcatenateDialog_Preview" xml:space="preserve">
+    <value>プレビュー</value>
+  </data>
+  <data name="ConcatenateDialog_AutoUpdatePreview" xml:space="preserve">
+    <value>プレビューを自動更新</value>
+  </data>
+  <data name="ConcatenateDialog_NoPreviewAvailable" xml:space="preserve">
+    <value>プレビューは利用できません</value>
+  </data>
+  <data name="ConcatenateDialog_GeneratingPreview" xml:space="preserve">
+    <value>プレビューを生成中...</value>
+  </data>
+  <data name="ConcatenateDialog_FrameInfo" xml:space="preserve">
+    <value>フレーム: {0}, 合計: {1}</value>
+  </data>
+  <data name="ConcatenateDialog_PreviewError" xml:space="preserve">
+    <value>プレビューエラー: {0}</value>
+  </data>
+  <data name="ConcatenateDialog_FailedToGeneratePreview" xml:space="preserve">
+    <value>プレビューの生成に失敗しました。</value>
   </data>
 </root>
