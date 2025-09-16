@@ -1988,5 +1988,211 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Warning_FPS_Mismatch", resourceCulture);
             }
         }
+
+        // Concatenate Dialog Resources
+        internal static string ConcatenateDialog_Title {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_Title", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_Instructions {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_Instructions", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_GifFiles {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_GifFiles", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_AddFiles {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_AddFiles", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_Remove {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_Remove", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_MoveUp {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_MoveUp", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_MoveDown {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_MoveDown", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_FpsSettings {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_FpsSettings", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_PaletteSettings {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_PaletteSettings", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_FpsAutoHighest {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_FpsAutoHighest", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_FpsUseReference {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_FpsUseReference", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_FpsCustom {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_FpsCustom", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_PaletteAutoMerge {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_PaletteAutoMerge", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_PaletteUseReference {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_PaletteUseReference", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_OutputFile {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_OutputFile", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_Browse {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_Browse", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_Concatenate {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_Concatenate", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_Cancel {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_Cancel", resourceCulture);
+            }
+        }
+
+        // Transition Dialog Resources
+        internal static string TransitionDialog_TransitionSettings {
+            get {
+                return ResourceManager.GetString("TransitionDialog_TransitionSettings", resourceCulture);
+            }
+        }
+
+        internal static string TransitionDialog_NoTransition {
+            get {
+                return ResourceManager.GetString("TransitionDialog_NoTransition", resourceCulture);
+            }
+        }
+
+        internal static string TransitionDialog_Fade {
+            get {
+                return ResourceManager.GetString("TransitionDialog_Fade", resourceCulture);
+            }
+        }
+
+        internal static string TransitionDialog_Slide {
+            get {
+                return ResourceManager.GetString("TransitionDialog_Slide", resourceCulture);
+            }
+        }
+
+        internal static string TransitionDialog_Zoom {
+            get {
+                return ResourceManager.GetString("TransitionDialog_Zoom", resourceCulture);
+            }
+        }
+
+        internal static string TransitionDialog_Dissolve {
+            get {
+                return ResourceManager.GetString("TransitionDialog_Dissolve", resourceCulture);
+            }
+        }
+
+        internal static string TransitionDialog_Left {
+            get {
+                return ResourceManager.GetString("TransitionDialog_Left", resourceCulture);
+            }
+        }
+
+        internal static string TransitionDialog_Right {
+            get {
+                return ResourceManager.GetString("TransitionDialog_Right", resourceCulture);
+            }
+        }
+
+        internal static string TransitionDialog_Up {
+            get {
+                return ResourceManager.GetString("TransitionDialog_Up", resourceCulture);
+            }
+        }
+
+        internal static string TransitionDialog_Down {
+            get {
+                return ResourceManager.GetString("TransitionDialog_Down", resourceCulture);
+            }
+        }
+
+        internal static string TransitionDialog_ZoomIn {
+            get {
+                return ResourceManager.GetString("TransitionDialog_ZoomIn", resourceCulture);
+            }
+        }
+
+        internal static string TransitionDialog_ZoomOut {
+            get {
+                return ResourceManager.GetString("TransitionDialog_ZoomOut", resourceCulture);
+            }
+        }
+
+        internal static string TransitionDialog_TransitionDuration {
+            get {
+                return ResourceManager.GetString("TransitionDialog_TransitionDuration", resourceCulture);
+            }
+        }
+
+        internal static string TransitionDialog_Seconds {
+            get {
+                return ResourceManager.GetString("TransitionDialog_Seconds", resourceCulture);
+            }
+        }
+
+        internal static string TransitionDialog_PreviewTransition {
+            get {
+                return ResourceManager.GetString("TransitionDialog_PreviewTransition", resourceCulture);
+            }
+        }
+
+        internal static string TransitionDialog_Cancel {
+            get {
+                return ResourceManager.GetString("TransitionDialog_Cancel", resourceCulture);
+            }
+        }
     }
 }
