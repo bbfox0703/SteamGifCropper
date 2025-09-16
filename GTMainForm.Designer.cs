@@ -498,7 +498,7 @@
             btnConcatenateGifs.Name = "btnConcatenateGifs";
             btnConcatenateGifs.Size = new System.Drawing.Size(300, 26);
             btnConcatenateGifs.TabIndex = 17;
-            btnConcatenateGifs.Text = "Concatenate GIF files (with FPS/Palette control)";
+            btnConcatenateGifs.Text = SteamGifCropper.Properties.Resources.GTMainForm_ConcatenateGifs;
             btnConcatenateGifs.UseVisualStyleBackColor = true;
             btnConcatenateGifs.Click += btnConcatenateGifs_Click;
             // 

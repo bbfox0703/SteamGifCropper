@@ -2194,5 +2194,101 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("TransitionDialog_Cancel", resourceCulture);
             }
         }
+
+        internal static string ConcatenateDialog_FrameInfoLabel {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_FrameInfoLabel", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_AutoPreview {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_AutoPreview", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_StrongPaletteWeightingShort {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_StrongPaletteWeightingShort", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_TransitionDurationLabel {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_TransitionDurationLabel", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_SecondsLabel {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_SecondsLabel", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_PreviewGroup {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_PreviewGroup", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_TransitionSlide {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_TransitionSlide", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_TransitionZoom {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_TransitionZoom", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_TransitionDissolve {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_TransitionDissolve", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_PreviewTransition {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_PreviewTransition", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_CancelPreview {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_CancelPreview", resourceCulture);
+            }
+        }
+
+        internal static string GTMainForm_ConcatenateGifs {
+            get {
+                return ResourceManager.GetString("GTMainForm_ConcatenateGifs", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_NoPreviewAvailable {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_NoPreviewAvailable", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_UnifyDimensions {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_UnifyDimensions", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_UseFasterPalette {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_UseFasterPalette", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_UseGifsicleOptimization {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_UseGifsicleOptimization", resourceCulture);
+            }
+        }
     }
 }

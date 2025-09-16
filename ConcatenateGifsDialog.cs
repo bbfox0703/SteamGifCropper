@@ -86,6 +86,7 @@ namespace GifProcessorApp
 
         // Action Buttons
         private Button btnOK;
+        private IContainer components;
         private Button btnCancel;
 
         public ConcatenateGifsDialog()
@@ -228,6 +229,7 @@ namespace GifProcessorApp
 
         private void InitializeComponent()
         {
+            components = new Container();
             lblInstructions = new Label();
             lblGifFiles = new Label();
             lstGifFiles = new ListBox();
@@ -236,9 +238,9 @@ namespace GifProcessorApp
             btnMoveUp = new Button();
             btnMoveDown = new Button();
             grpFpsSettings = new GroupBox();
+            cmbFpsReference = new ComboBox();
             rbFpsAutoHighest = new RadioButton();
             rbFpsUseReference = new RadioButton();
-            cmbFpsReference = new ComboBox();
             rbFpsCustom = new RadioButton();
             nudCustomFps = new NumericUpDown();
             lblCustomFps = new Label();
@@ -265,8 +267,6 @@ namespace GifProcessorApp
             btnCancelPreview = new Button();
             prgPreview = new ProgressBar();
             lblPreviewStatus = new Label();
-            
-            // Initialize embedded preview controls
             grpPreview = new GroupBox();
             picPreview = new PictureBox();
             btnPlay = new Button();
@@ -275,10 +275,7 @@ namespace GifProcessorApp
             prgAnimation = new ProgressBar();
             lblFrameInfo = new Label();
             chkAutoPreview = new CheckBox();
-            
-            _animationTimer = new System.Windows.Forms.Timer();
-            _previewFrames = new List<System.Drawing.Image>();
-            _currentFrame = 0;
+            _animationTimer = new System.Windows.Forms.Timer(components);
             chkUnifyDimensions = new CheckBox();
             chkUseFasterPalette = new CheckBox();
             chkUseGifsicleOptimization = new CheckBox();
@@ -289,6 +286,8 @@ namespace GifProcessorApp
             grpPaletteSettings.SuspendLayout();
             grpTransitionSettings.SuspendLayout();
             ((ISupportInitialize)nudTransitionDuration).BeginInit();
+            grpPreview.SuspendLayout();
+            ((ISupportInitialize)picPreview).BeginInit();
             SuspendLayout();
             // 
             // lblInstructions
@@ -373,6 +372,15 @@ namespace GifProcessorApp
             grpFpsSettings.TabStop = false;
             grpFpsSettings.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_FpsSettings;
             // 
+            // cmbFpsReference
+            // 
+            cmbFpsReference.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbFpsReference.Enabled = false;
+            cmbFpsReference.Location = new Point(134, 47);
+            cmbFpsReference.Name = "cmbFpsReference";
+            cmbFpsReference.Size = new Size(100, 23);
+            cmbFpsReference.TabIndex = 2;
+            // 
             // rbFpsAutoHighest
             // 
             rbFpsAutoHighest.AutoSize = true;
@@ -396,15 +404,6 @@ namespace GifProcessorApp
             rbFpsUseReference.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_FpsUseReference;
             rbFpsUseReference.UseVisualStyleBackColor = true;
             rbFpsUseReference.CheckedChanged += RbFps_CheckedChanged;
-            // 
-            // cmbFpsReference
-            // 
-            cmbFpsReference.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbFpsReference.Enabled = false;
-            cmbFpsReference.Location = new Point(134, 47);
-            cmbFpsReference.Name = "cmbFpsReference";
-            cmbFpsReference.Size = new Size(100, 23);
-            cmbFpsReference.TabIndex = 2;
             // 
             // rbFpsCustom
             // 
@@ -492,7 +491,7 @@ namespace GifProcessorApp
             chkStrongPaletteWeighting.Name = "chkStrongPaletteWeighting";
             chkStrongPaletteWeighting.Size = new Size(198, 19);
             chkStrongPaletteWeighting.TabIndex = 3;
-            chkStrongPaletteWeighting.Text = "8x weight for reference palette";
+            chkStrongPaletteWeighting.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_StrongPaletteWeightingShort;
             chkStrongPaletteWeighting.UseVisualStyleBackColor = true;
             // 
             // lblOutputFile
@@ -537,85 +536,12 @@ namespace GifProcessorApp
             grpTransitionSettings.Controls.Add(btnCancelPreview);
             grpTransitionSettings.Controls.Add(prgPreview);
             grpTransitionSettings.Controls.Add(lblPreviewStatus);
-            
-            // Configure embedded preview panel
-            grpPreview.Location = new Point(530, 12);
-            grpPreview.Size = new Size(260, 350);
-            grpPreview.TabIndex = 26;
-            grpPreview.TabStop = false;
-            grpPreview.Text = "Preview";
-            
-            // Configure preview picture box
-            picPreview.Location = new Point(10, 25);
-            picPreview.Size = new Size(240, 180);
-            picPreview.TabIndex = 0;
-            picPreview.TabStop = false;
-            picPreview.SizeMode = PictureBoxSizeMode.Zoom;
-            picPreview.BorderStyle = BorderStyle.FixedSingle;
-            picPreview.BackColor = Color.Black;
-            
-            // Configure playback controls
-            btnPlay.Location = new Point(10, 215);
-            btnPlay.Size = new Size(50, 25);
-            btnPlay.TabIndex = 1;
-            btnPlay.Text = "▶";
-            btnPlay.UseVisualStyleBackColor = true;
-            btnPlay.Click += BtnPlay_Click;
-            
-            btnPause.Location = new Point(70, 215);
-            btnPause.Size = new Size(50, 25);
-            btnPause.TabIndex = 2;
-            btnPause.Text = "⏸";
-            btnPause.UseVisualStyleBackColor = true;
-            btnPause.Click += BtnPause_Click;
-            
-            btnReplay.Location = new Point(130, 215);
-            btnReplay.Size = new Size(50, 25);
-            btnReplay.TabIndex = 3;
-            btnReplay.Text = "⏮";
-            btnReplay.UseVisualStyleBackColor = true;
-            btnReplay.Click += BtnReplay_Click;
-            
-            // Configure animation progress bar
-            prgAnimation.Location = new Point(10, 250);
-            prgAnimation.Size = new Size(240, 15);
-            prgAnimation.TabIndex = 4;
-            
-            // Configure frame info label
-            lblFrameInfo.AutoSize = true;
-            lblFrameInfo.Location = new Point(10, 275);
-            lblFrameInfo.Size = new Size(200, 15);
-            lblFrameInfo.TabIndex = 5;
-            lblFrameInfo.Text = "No preview available";
-            
-            // Configure auto-preview checkbox
-            chkAutoPreview.AutoSize = true;
-            chkAutoPreview.Checked = true;
-            chkAutoPreview.Location = new Point(10, 300);
-            chkAutoPreview.Size = new Size(150, 19);
-            chkAutoPreview.TabIndex = 6;
-            chkAutoPreview.Text = "Auto-update preview";
-            chkAutoPreview.UseVisualStyleBackColor = true;
-            chkAutoPreview.CheckedChanged += ChkAutoPreview_CheckedChanged;
-            
-            // Add controls to preview group
-            grpPreview.Controls.Add(picPreview);
-            grpPreview.Controls.Add(btnPlay);
-            grpPreview.Controls.Add(btnPause);
-            grpPreview.Controls.Add(btnReplay);
-            grpPreview.Controls.Add(prgAnimation);
-            grpPreview.Controls.Add(lblFrameInfo);
-            grpPreview.Controls.Add(chkAutoPreview);
-            
-            // Configure animation timer
-            _animationTimer.Interval = 100; // 10 FPS for preview
-            _animationTimer.Tick += AnimationTimer_Tick;
             grpTransitionSettings.Location = new Point(12, 315);
             grpTransitionSettings.Name = "grpTransitionSettings";
             grpTransitionSettings.Size = new Size(496, 146);
             grpTransitionSettings.TabIndex = 17;
             grpTransitionSettings.TabStop = false;
-            grpTransitionSettings.Text = SteamGifCropper.Properties.Resources.TransitionDialog_TransitionSettings;
+            grpTransitionSettings.Text = "Transition Settings";
             // 
             // rbTransitionNone
             // 
@@ -644,33 +570,33 @@ namespace GifProcessorApp
             // rbTransitionSlide
             // 
             rbTransitionSlide.AutoSize = true;
-            rbTransitionSlide.Location = new Point(172, 22);
+            rbTransitionSlide.Location = new Point(189, 22);
             rbTransitionSlide.Name = "rbTransitionSlide";
             rbTransitionSlide.Size = new Size(53, 19);
             rbTransitionSlide.TabIndex = 2;
-            rbTransitionSlide.Text = "Slide";
+            rbTransitionSlide.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_TransitionSlide;
             rbTransitionSlide.UseVisualStyleBackColor = true;
             rbTransitionSlide.CheckedChanged += RbTransition_CheckedChanged;
             // 
             // rbTransitionZoom
             // 
             rbTransitionZoom.AutoSize = true;
-            rbTransitionZoom.Location = new Point(232, 22);
+            rbTransitionZoom.Location = new Point(266, 22);
             rbTransitionZoom.Name = "rbTransitionZoom";
             rbTransitionZoom.Size = new Size(59, 19);
             rbTransitionZoom.TabIndex = 3;
-            rbTransitionZoom.Text = "Zoom";
+            rbTransitionZoom.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_TransitionZoom;
             rbTransitionZoom.UseVisualStyleBackColor = true;
             rbTransitionZoom.CheckedChanged += RbTransition_CheckedChanged;
             // 
             // rbTransitionDissolve
             // 
             rbTransitionDissolve.AutoSize = true;
-            rbTransitionDissolve.Location = new Point(297, 22);
+            rbTransitionDissolve.Location = new Point(351, 22);
             rbTransitionDissolve.Name = "rbTransitionDissolve";
             rbTransitionDissolve.Size = new Size(71, 19);
             rbTransitionDissolve.TabIndex = 4;
-            rbTransitionDissolve.Text = "Dissolve";
+            rbTransitionDissolve.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_TransitionDissolve;
             rbTransitionDissolve.UseVisualStyleBackColor = true;
             rbTransitionDissolve.CheckedChanged += RbTransition_CheckedChanged;
             // 
@@ -701,7 +627,7 @@ namespace GifProcessorApp
             lblTransitionDuration.Name = "lblTransitionDuration";
             lblTransitionDuration.Size = new Size(117, 15);
             lblTransitionDuration.TabIndex = 7;
-            lblTransitionDuration.Text = "Transition Duration:";
+            lblTransitionDuration.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_TransitionDurationLabel;
             // 
             // nudTransitionDuration
             // 
@@ -722,7 +648,7 @@ namespace GifProcessorApp
             lblSeconds.Name = "lblSeconds";
             lblSeconds.Size = new Size(53, 15);
             lblSeconds.TabIndex = 9;
-            lblSeconds.Text = "seconds";
+            lblSeconds.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_SecondsLabel;
             // 
             // btnPreviewTransition
             // 
@@ -731,7 +657,7 @@ namespace GifProcessorApp
             btnPreviewTransition.Name = "btnPreviewTransition";
             btnPreviewTransition.Size = new Size(100, 25);
             btnPreviewTransition.TabIndex = 10;
-            btnPreviewTransition.Text = "Preview Transition";
+            btnPreviewTransition.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_PreviewTransition;
             btnPreviewTransition.UseVisualStyleBackColor = true;
             btnPreviewTransition.Click += BtnPreviewTransition_Click;
             // 
@@ -742,7 +668,7 @@ namespace GifProcessorApp
             btnCancelPreview.Name = "btnCancelPreview";
             btnCancelPreview.Size = new Size(60, 25);
             btnCancelPreview.TabIndex = 11;
-            btnCancelPreview.Text = "Cancel";
+            btnCancelPreview.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_CancelPreview;
             btnCancelPreview.UseVisualStyleBackColor = true;
             btnCancelPreview.Click += BtnCancelPreview_Click;
             // 
@@ -763,6 +689,96 @@ namespace GifProcessorApp
             lblPreviewStatus.TabIndex = 13;
             lblPreviewStatus.Visible = false;
             // 
+            // grpPreview
+            // 
+            grpPreview.Controls.Add(picPreview);
+            grpPreview.Controls.Add(btnPlay);
+            grpPreview.Controls.Add(btnPause);
+            grpPreview.Controls.Add(btnReplay);
+            grpPreview.Controls.Add(prgAnimation);
+            grpPreview.Controls.Add(lblFrameInfo);
+            grpPreview.Controls.Add(chkAutoPreview);
+            grpPreview.Location = new Point(530, 12);
+            grpPreview.Name = "grpPreview";
+            grpPreview.Size = new Size(260, 350);
+            grpPreview.TabIndex = 26;
+            grpPreview.TabStop = false;
+            grpPreview.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_PreviewGroup;
+            // 
+            // picPreview
+            // 
+            picPreview.BackColor = Color.Black;
+            picPreview.BorderStyle = BorderStyle.FixedSingle;
+            picPreview.Location = new Point(10, 25);
+            picPreview.Name = "picPreview";
+            picPreview.Size = new Size(240, 180);
+            picPreview.SizeMode = PictureBoxSizeMode.Zoom;
+            picPreview.TabIndex = 0;
+            picPreview.TabStop = false;
+            // 
+            // btnPlay
+            // 
+            btnPlay.Location = new Point(10, 215);
+            btnPlay.Name = "btnPlay";
+            btnPlay.Size = new Size(50, 25);
+            btnPlay.TabIndex = 1;
+            btnPlay.Text = "▶";
+            btnPlay.UseVisualStyleBackColor = true;
+            btnPlay.Click += BtnPlay_Click;
+            // 
+            // btnPause
+            // 
+            btnPause.Location = new Point(70, 215);
+            btnPause.Name = "btnPause";
+            btnPause.Size = new Size(50, 25);
+            btnPause.TabIndex = 2;
+            btnPause.Text = "⏸";
+            btnPause.UseVisualStyleBackColor = true;
+            btnPause.Click += BtnPause_Click;
+            // 
+            // btnReplay
+            // 
+            btnReplay.Location = new Point(130, 215);
+            btnReplay.Name = "btnReplay";
+            btnReplay.Size = new Size(50, 25);
+            btnReplay.TabIndex = 3;
+            btnReplay.Text = "⏮";
+            btnReplay.UseVisualStyleBackColor = true;
+            btnReplay.Click += BtnReplay_Click;
+            // 
+            // prgAnimation
+            // 
+            prgAnimation.Location = new Point(10, 250);
+            prgAnimation.Name = "prgAnimation";
+            prgAnimation.Size = new Size(240, 15);
+            prgAnimation.TabIndex = 4;
+            // 
+            // lblFrameInfo
+            // 
+            lblFrameInfo.AutoSize = true;
+            lblFrameInfo.Location = new Point(10, 275);
+            lblFrameInfo.Name = "lblFrameInfo";
+            lblFrameInfo.Size = new Size(126, 15);
+            lblFrameInfo.TabIndex = 5;
+            lblFrameInfo.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_NoPreviewAvailable;
+            // 
+            // chkAutoPreview
+            // 
+            chkAutoPreview.AutoSize = true;
+            chkAutoPreview.Checked = true;
+            chkAutoPreview.CheckState = CheckState.Checked;
+            chkAutoPreview.Location = new Point(10, 300);
+            chkAutoPreview.Name = "chkAutoPreview";
+            chkAutoPreview.Size = new Size(146, 19);
+            chkAutoPreview.TabIndex = 6;
+            chkAutoPreview.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_AutoPreview;
+            chkAutoPreview.UseVisualStyleBackColor = true;
+            chkAutoPreview.CheckedChanged += ChkAutoPreview_CheckedChanged;
+            // 
+            // _animationTimer
+            // 
+            _animationTimer.Tick += AnimationTimer_Tick;
+            // 
             // chkUnifyDimensions
             // 
             chkUnifyDimensions.AutoSize = true;
@@ -772,7 +788,7 @@ namespace GifProcessorApp
             chkUnifyDimensions.Name = "chkUnifyDimensions";
             chkUnifyDimensions.Size = new Size(221, 19);
             chkUnifyDimensions.TabIndex = 21;
-            chkUnifyDimensions.Text = "Unify dimensions (resize to largest)";
+            chkUnifyDimensions.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_UnifyDimensions;
             chkUnifyDimensions.UseVisualStyleBackColor = true;
             // 
             // chkUseFasterPalette
@@ -782,7 +798,7 @@ namespace GifProcessorApp
             chkUseFasterPalette.Name = "chkUseFasterPalette";
             chkUseFasterPalette.Size = new Size(185, 19);
             chkUseFasterPalette.TabIndex = 22;
-            chkUseFasterPalette.Text = "Faster palette (lower quality)";
+            chkUseFasterPalette.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_UseFasterPalette;
             chkUseFasterPalette.UseVisualStyleBackColor = true;
             // 
             // chkUseGifsicleOptimization
@@ -792,7 +808,7 @@ namespace GifProcessorApp
             chkUseGifsicleOptimization.Name = "chkUseGifsicleOptimization";
             chkUseGifsicleOptimization.Size = new Size(164, 19);
             chkUseGifsicleOptimization.TabIndex = 23;
-            chkUseGifsicleOptimization.Text = "Use gifsicle optimization";
+            chkUseGifsicleOptimization.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_UseGifsicleOptimization;
             chkUseGifsicleOptimization.UseVisualStyleBackColor = true;
             // 
             // btnOK
@@ -846,7 +862,7 @@ namespace GifProcessorApp
             MinimizeBox = false;
             Name = "ConcatenateGifsDialog";
             StartPosition = FormStartPosition.CenterParent;
-            Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_Title;
+            Text = "Concatenate GIF Files";
             grpFpsSettings.ResumeLayout(false);
             grpFpsSettings.PerformLayout();
             ((ISupportInitialize)nudCustomFps).EndInit();
@@ -855,6 +871,9 @@ namespace GifProcessorApp
             grpTransitionSettings.ResumeLayout(false);
             grpTransitionSettings.PerformLayout();
             ((ISupportInitialize)nudTransitionDuration).EndInit();
+            grpPreview.ResumeLayout(false);
+            grpPreview.PerformLayout();
+            ((ISupportInitialize)picPreview).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -1176,7 +1195,7 @@ namespace GifProcessorApp
             {
                 btnPreviewTransition.Enabled = true;
                 btnCancelPreview.Enabled = false;
-                btnPreviewTransition.Text = "Preview Transition";
+                btnPreviewTransition.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_PreviewTransition;
                 prgPreview.Visible = false;
                 lblPreviewStatus.Visible = false;
                 lblPreviewStatus.Text = "";
@@ -1498,7 +1517,7 @@ namespace GifProcessorApp
             _animationTimer.Stop();
             DisposePreviewFrames();
             picPreview.Image = null;
-            lblFrameInfo.Text = "No preview available";
+            lblFrameInfo.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_NoPreviewAvailable;
             prgAnimation.Value = 0;
             btnPlay.Enabled = false;
             btnPause.Enabled = false;

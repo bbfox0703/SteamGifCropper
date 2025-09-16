@@ -1019,4 +1019,40 @@ FFmpeg 輸出 (部分)：
   <data name="ConcatenateDialog_FailedToGeneratePreview" xml:space="preserve">
     <value>生成預覽失敗</value>
   </data>
+  <data name="ConcatenateDialog_FrameInfoLabel" xml:space="preserve">
+    <value>播放資訊</value>
+  </data>
+  <data name="ConcatenateDialog_AutoPreview" xml:space="preserve">
+    <value>自動預覽</value>
+  </data>
+  <data name="ConcatenateDialog_StrongPaletteWeightingShort" xml:space="preserve">
+    <value>強化調色盤權重</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionDurationLabel" xml:space="preserve">
+    <value>過場時間：</value>
+  </data>
+  <data name="ConcatenateDialog_SecondsLabel" xml:space="preserve">
+    <value>秒</value>
+  </data>
+  <data name="ConcatenateDialog_PreviewGroup" xml:space="preserve">
+    <value>預覽</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionSlide" xml:space="preserve">
+    <value>滑動</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionZoom" xml:space="preserve">
+    <value>縮放</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionDissolve" xml:space="preserve">
+    <value>溶解</value>
+  </data>
+  <data name="ConcatenateDialog_PreviewTransition" xml:space="preserve">
+    <value>預覽過場</value>
+  </data>
+  <data name="ConcatenateDialog_CancelPreview" xml:space="preserve">
+    <value>取消預覽</value>
+  </data>
+  <data name="GTMainForm_ConcatenateGifs" xml:space="preserve">
+    <value>串接GIF檔案</value>
+  </data>
 </root>
