@@ -2290,5 +2290,23 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("ConcatenateDialog_UseGifsicleOptimization", resourceCulture);
             }
         }
+
+        internal static string ConcatenateDialog_WindowTitle {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_WindowTitle", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_TransitionSettings {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_TransitionSettings", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_OutputFileLabel {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_OutputFileLabel", resourceCulture);
+            }
+        }
     }
 }

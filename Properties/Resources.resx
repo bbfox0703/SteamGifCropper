@@ -1042,4 +1042,13 @@ Saved as: {0}</value>
   <data name="GTMainForm_ConcatenateGifs" xml:space="preserve">
     <value>Concatenate GIFs</value>
   </data>
+  <data name="ConcatenateDialog_WindowTitle" xml:space="preserve">
+    <value>Concatenate GIF Files</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionSettings" xml:space="preserve">
+    <value>Transition Settings</value>
+  </data>
+  <data name="ConcatenateDialog_OutputFileLabel" xml:space="preserve">
+    <value>Output GIF file:</value>
+  </data>
 </root>

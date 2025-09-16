@@ -501,7 +501,7 @@ namespace GifProcessorApp
             lblOutputFile.Name = "lblOutputFile";
             lblOutputFile.Size = new Size(91, 15);
             lblOutputFile.TabIndex = 18;
-            lblOutputFile.Text = "Output GIF file:";
+            lblOutputFile.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_OutputFileLabel;
             // 
             // txtOutputFile
             // 
@@ -541,7 +541,7 @@ namespace GifProcessorApp
             grpTransitionSettings.Size = new Size(496, 146);
             grpTransitionSettings.TabIndex = 17;
             grpTransitionSettings.TabStop = false;
-            grpTransitionSettings.Text = "Transition Settings";
+            grpTransitionSettings.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_TransitionSettings;
             // 
             // rbTransitionNone
             // 
@@ -862,7 +862,7 @@ namespace GifProcessorApp
             MinimizeBox = false;
             Name = "ConcatenateGifsDialog";
             StartPosition = FormStartPosition.CenterParent;
-            Text = "Concatenate GIF Files";
+            Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_WindowTitle;
             grpFpsSettings.ResumeLayout(false);
             grpFpsSettings.PerformLayout();
             ((ISupportInitialize)nudCustomFps).EndInit();

@@ -1055,4 +1055,13 @@ FFmpeg 輸出 (部分)：
   <data name="GTMainForm_ConcatenateGifs" xml:space="preserve">
     <value>串接GIF檔案</value>
   </data>
+  <data name="ConcatenateDialog_WindowTitle" xml:space="preserve">
+    <value>串接GIF檔案</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionSettings" xml:space="preserve">
+    <value>過場轉換設定</value>
+  </data>
+  <data name="ConcatenateDialog_OutputFileLabel" xml:space="preserve">
+    <value>輸出GIF檔案：</value>
+  </data>
 </root>
