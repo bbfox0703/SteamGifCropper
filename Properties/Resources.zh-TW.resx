@@ -1064,4 +1064,7 @@ FFmpeg 輸出 (部分)：
   <data name="ConcatenateDialog_OutputFileLabel" xml:space="preserve">
     <value>輸出GIF檔案：</value>
   </data>
+  <data name="ConcatenateDialog_FastPreview" xml:space="preserve">
+    <value>快速預覽模式</value>
+  </data>
 </root>

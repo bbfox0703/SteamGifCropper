@@ -1051,4 +1051,7 @@ Saved as: {0}</value>
   <data name="ConcatenateDialog_OutputFileLabel" xml:space="preserve">
     <value>Output GIF file:</value>
   </data>
+  <data name="ConcatenateDialog_FastPreview" xml:space="preserve">
+    <value>Fast Preview Mode</value>
+  </data>
 </root>

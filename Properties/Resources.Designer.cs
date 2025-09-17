@@ -2308,5 +2308,11 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("ConcatenateDialog_OutputFileLabel", resourceCulture);
             }
         }
+
+        internal static string ConcatenateDialog_FastPreview {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_FastPreview", resourceCulture);
+            }
+        }
     }
 }
