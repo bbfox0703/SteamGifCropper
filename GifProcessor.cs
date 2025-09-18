@@ -2596,11 +2596,18 @@ namespace GifProcessorApp
 
             if (fullCycle)
             {
-                // For full cycle, normalize to bring back to starting position
+                // For full cycle, the final position should maintain the wrap-around effect
+                // Don't reset to 0 - keep the modulo position to show the scroll effect
                 finalScrollX = finalScrollX % originalWidth;
                 finalScrollY = finalScrollY % originalHeight;
                 if (finalScrollX < 0) finalScrollX += originalWidth;
                 if (finalScrollY < 0) finalScrollY += originalHeight;
+
+                // Debug: Show final position for full cycle
+                mainForm.Invoke((Action)(() =>
+                {
+                    SetStatusText(mainForm, $"Full cycle final position: X={finalScrollX}, Y={finalScrollY} (not reset to 0)");
+                }));
             }
 
             // Phase 2: Continue with normal animation from the correct timeline position
@@ -2630,10 +2637,8 @@ namespace GifProcessorApp
                     continueFrame.Format = MagickFormat.Gif;
 
                     using var temp = originalFrame.Clone();
-                    if (!fullCycle && (finalScrollX != 0 || finalScrollY != 0))
-                    {
-                        temp.Roll(-finalScrollX, -finalScrollY);
-                    }
+                    // Always apply final scroll position for both full cycle and non-full cycle
+                    temp.Roll(-finalScrollX, -finalScrollY);
 
                     continueFrame.Composite(temp, 0, 0, CompositeOperator.Over);
                     continueFrame.AnimationDelay = originalFrame.AnimationDelay;
@@ -2652,18 +2657,31 @@ namespace GifProcessorApp
             }
             else
             {
-                // For step-based scrolling, play the full original animation at final position
-                for (int frameIndex = 0; frameIndex < inputCollection.Count; frameIndex++)
+                // For step-based scrolling, calculate timeline continuity based on scroll duration
+                // The scroll took 'scrollFrames' steps, each using one frame of original animation
+                int lastUsedFrameIndex = (scrollFrames - 1) % inputCollection.Count;
+                int nextFrameIndex = (lastUsedFrameIndex + 1) % inputCollection.Count;
+
+                // Debug: Show step-based timeline continuity
+                mainForm.Invoke((Action)(() =>
                 {
+                    SetStatusText(mainForm, $"Step-based continuity: Used {scrollFrames} scroll frames, last frame {lastUsedFrameIndex}, continuing from frame {nextFrameIndex}");
+                }));
+
+                // Continue the animation from the next frame in sequence
+                int remainingFrames = inputCollection.Count - (nextFrameIndex == 0 ? 0 : nextFrameIndex);
+                if (nextFrameIndex == 0) remainingFrames = inputCollection.Count; // Full cycle if we're back at start
+
+                for (int i = 0; i < remainingFrames; i++)
+                {
+                    int frameIndex = (nextFrameIndex + i) % inputCollection.Count;
                     var originalFrame = inputCollection[frameIndex];
                     var continueFrame = new MagickImage(MagickColors.Transparent, (uint)originalWidth, (uint)originalHeight);
                     continueFrame.Format = MagickFormat.Gif;
 
                     using var temp = originalFrame.Clone();
-                    if (!fullCycle && (finalScrollX != 0 || finalScrollY != 0))
-                    {
-                        temp.Roll(-finalScrollX, -finalScrollY);
-                    }
+                    // Always apply final scroll position for both full cycle and non-full cycle
+                    temp.Roll(-finalScrollX, -finalScrollY);
 
                     continueFrame.Composite(temp, 0, 0, CompositeOperator.Over);
                     continueFrame.AnimationDelay = originalFrame.AnimationDelay;
@@ -2673,7 +2691,7 @@ namespace GifProcessorApp
                     outputFrameCount++;
 
                     // Update progress
-                    int progress = 70 + (int)((double)(frameIndex + 1) / inputCollection.Count * 30);
+                    int progress = 70 + (int)((double)(i + 1) / remainingFrames * 30);
                     mainForm.Invoke((Action)(() =>
                     {
                         SetProgressBar(mainForm.pBarTaskStatus, progress, 100);
