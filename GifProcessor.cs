@@ -2443,6 +2443,12 @@ namespace GifProcessorApp
             using var inputCollection = new MagickImageCollection(inputFilePath);
             inputCollection.Coalesce();
 
+            // Debug: Show input GIF information
+            mainForm.Invoke((Action)(() =>
+            {
+                SetStatusText(mainForm, $"Input GIF: {inputCollection.Count} frames, {inputCollection[0].Width}x{inputCollection[0].Height}, delays: {string.Join(",", inputCollection.Take(5).Select(f => f.AnimationDelay))}");
+            }));
+
             // Validate total estimated frames to prevent memory explosion
             int estimatedScrollFrames = EstimateScrollFrames(direction, stepPixels, durationSeconds, fullCycle, moveCount,
                 (int)inputCollection[0].Width, (int)inputCollection[0].Height, targetFramerate);
@@ -2492,8 +2498,8 @@ namespace GifProcessorApp
             double step = 0;
             if (durationSeconds > 0)
             {
-                scrollFrames = Math.Max(1, durationSeconds * targetFramerate);
-                scrollFrames = Math.Min(scrollFrames, distance);
+                // For duration-based scrolling, calculate frames to exactly cover the distance
+                scrollFrames = durationSeconds * targetFramerate;
                 step = (double)distance / scrollFrames;
             }
             else
@@ -2515,72 +2521,130 @@ namespace GifProcessorApp
 
             int frameDelay = Math.Max(1, 100 / targetFramerate);
 
-            // Use streaming approach to avoid memory buildup
-            using var stream = File.Open(outputFilePath, FileMode.Create);
-            var defines = new GifWriteDefines { RepeatCount = 0, WriteMode = GifWriteMode.Gif };
+            // Calculate original GIF timing
+            double originalFPS = 100.0 / inputCollection[0].AnimationDelay; // AnimationDelay is in 1/100 seconds
+            int totalScrollDurationMs = durationSeconds * 1000;
 
-            bool isFirstFrame = true;
-            int totalFrames = scrollFrames * inputCollection.Count;
-            int currentFrameIndex = 0;
-
-            // For each scroll position
-            for (int scrollPos = 0; scrollPos < scrollFrames; scrollPos++)
+            // Calculate how much to scroll per original frame
+            double scrollPixelsPerFrame = 0;
+            if (durationSeconds > 0)
             {
-                // Calculate current scroll offset
-                int currentX, currentY;
+                scrollPixelsPerFrame = (double)distance / (originalFPS * durationSeconds);
+            }
+
+            // Use collection approach for proper GIF animation
+            using var outputCollection = new MagickImageCollection();
+
+            // Debug: Show scroll parameters
+            mainForm.Invoke((Action)(() =>
+            {
+                SetStatusText(mainForm, $"Original FPS: {originalFPS:F1}, Scroll per frame: {scrollPixelsPerFrame:F2}px, Total scroll: {distance}px over {durationSeconds}s");
+            }));
+
+            double accumulatedScrollX = 0;
+            double accumulatedScrollY = 0;
+            int outputFrameCount = 0;
+
+            // Calculate how long the scroll animation should last in terms of original frames
+            int scrollAnimationFrames = durationSeconds > 0 ? (int)(originalFPS * durationSeconds) : scrollFrames;
+
+            // Phase 1: Scrolling animation with original GIF playing
+            for (int scrollFrame = 0; scrollFrame < scrollAnimationFrames; scrollFrame++)
+            {
+                // Calculate which original frame to use (cycle through the original animation)
+                int originalFrameIndex = scrollFrame % inputCollection.Count;
+                var originalFrame = inputCollection[originalFrameIndex];
+
+                // Calculate current accumulated scroll offset
                 if (durationSeconds > 0)
                 {
-                    currentX = (int)(step * scrollPos * signX);
-                    currentY = (int)(step * scrollPos * signY);
+                    accumulatedScrollX += scrollPixelsPerFrame * signX;
+                    accumulatedScrollY += scrollPixelsPerFrame * signY;
                 }
                 else
                 {
-                    currentX = dx * scrollPos;
-                    currentY = dy * scrollPos;
+                    accumulatedScrollX = dx * scrollFrame;
+                    accumulatedScrollY = dy * scrollFrame;
                 }
 
-                // For each frame in the original GIF
-                for (int frameIndex = 0; frameIndex < inputCollection.Count; frameIndex++)
-                {
-                    var originalFrame = inputCollection[frameIndex];
-                    using var scrolledFrame = new MagickImage(MagickColors.Transparent, (uint)originalWidth, (uint)originalHeight);
-                    scrolledFrame.Format = MagickFormat.Gif;
+                // Create scrolled version of this frame
+                var scrolledFrame = new MagickImage(MagickColors.Transparent, (uint)originalWidth, (uint)originalHeight);
+                scrolledFrame.Format = MagickFormat.Gif;
 
-                    // Create scrolled version of this frame
-                    using var temp = originalFrame.Clone();
-                    temp.VirtualPixelMethod = VirtualPixelMethod.Edge;
+                using var temp = originalFrame.Clone();
+                temp.Roll(-(int)accumulatedScrollX, -(int)accumulatedScrollY);
 
-                    scrolledFrame.Composite(temp, currentX, currentY, CompositeOperator.Over);
-                    scrolledFrame.AnimationDelay = (uint)frameDelay;
+                scrolledFrame.Composite(temp, 0, 0, CompositeOperator.Over);
+                scrolledFrame.AnimationDelay = originalFrame.AnimationDelay; // Use original frame timing
+                scrolledFrame.GifDisposeMethod = GifDisposeMethod.Background;
 
-                    // Write frame directly to stream
-                    scrolledFrame.Write(stream, defines);
-
-                    // After first frame, switch to frame mode
-                    if (isFirstFrame)
-                    {
-                        defines.WriteMode = GifWriteMode.Frame;
-                        isFirstFrame = false;
-                    }
-
-                    currentFrameIndex++;
-
-                    // Force garbage collection every 10 frames to manage memory aggressively
-                    if (currentFrameIndex % 10 == 0)
-                    {
-                        GC.Collect();
-                        GC.WaitForPendingFinalizers();
-                        GC.Collect(); // Second collection to clean up finalizer queue
-                    }
-                }
+                outputCollection.Add(scrolledFrame);
+                outputFrameCount++;
 
                 // Update progress
-                int progress = (int)((double)(scrollPos + 1) / scrollFrames * 100);
+                int progress = (int)((double)(scrollFrame + 1) / scrollAnimationFrames * 70); // 70% for scrolling
                 mainForm.Invoke((Action)(() =>
                 {
                     SetProgressBar(mainForm.pBarTaskStatus, progress, 100);
                 }));
             }
+
+            // Phase 2: Continue normal animation after scroll completes
+            // Calculate final scroll position
+            int finalScrollX = (int)accumulatedScrollX;
+            int finalScrollY = (int)accumulatedScrollY;
+
+            if (fullCycle)
+            {
+                // For full cycle, normalize to bring back to starting position
+                finalScrollX = finalScrollX % originalWidth;
+                finalScrollY = finalScrollY % originalHeight;
+                if (finalScrollX < 0) finalScrollX += originalWidth;
+                if (finalScrollY < 0) finalScrollY += originalHeight;
+            }
+
+            // Continue with normal animation at the final scroll position
+            // Play the full original animation once more with the final scroll offset applied
+            for (int frameIndex = 0; frameIndex < inputCollection.Count; frameIndex++)
+            {
+                var originalFrame = inputCollection[frameIndex];
+                var continueFrame = new MagickImage(MagickColors.Transparent, (uint)originalWidth, (uint)originalHeight);
+                continueFrame.Format = MagickFormat.Gif;
+
+                using var temp = originalFrame.Clone();
+                if (!fullCycle && (finalScrollX != 0 || finalScrollY != 0))
+                {
+                    temp.Roll(-finalScrollX, -finalScrollY);
+                }
+
+                continueFrame.Composite(temp, 0, 0, CompositeOperator.Over);
+                continueFrame.AnimationDelay = originalFrame.AnimationDelay; // Use original timing
+                continueFrame.GifDisposeMethod = GifDisposeMethod.Background;
+
+                outputCollection.Add(continueFrame);
+                outputFrameCount++;
+
+                // Update progress
+                int progress = 70 + (int)((double)(frameIndex + 1) / inputCollection.Count * 30); // Last 30%
+                mainForm.Invoke((Action)(() =>
+                {
+                    SetProgressBar(mainForm.pBarTaskStatus, progress, 100);
+                }));
+            }
+
+            // Write the complete collection to file
+            mainForm.Invoke((Action)(() =>
+            {
+                SetStatusText(mainForm, $"Writing output GIF with {outputCollection.Count} frames...");
+            }));
+
+            outputCollection.Write(outputFilePath);
+
+            // Debug: Show output info
+            mainForm.Invoke((Action)(() =>
+            {
+                SetStatusText(mainForm, $"Output GIF created: {outputCollection.Count} frames, delays: {string.Join(",", outputCollection.Take(5).Select(f => f.AnimationDelay))}");
+            }));
 
             mainForm.Invoke((Action)(() =>
             {
