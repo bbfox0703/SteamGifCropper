@@ -2279,5 +2279,35 @@ namespace SteamGifCropper.Properties {
             }
         }
 
+        internal static string Button_ScrollAnimatedGif {
+            get {
+                return ResourceManager.GetString("Button_ScrollAnimatedGif", resourceCulture);
+            }
+        }
+
+        internal static string FileDialog_ImageAndGifFilter {
+            get {
+                return ResourceManager.GetString("FileDialog_ImageAndGifFilter", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_TitleImageAndGif {
+            get {
+                return ResourceManager.GetString("ScrollDialog_TitleImageAndGif", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_InputImageOrGif {
+            get {
+                return ResourceManager.GetString("ScrollDialog_InputImageOrGif", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_SelectImageOrGif {
+            get {
+                return ResourceManager.GetString("ScrollDialog_SelectImageOrGif", resourceCulture);
+            }
+        }
+
     }
 }

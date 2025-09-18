@@ -15,6 +15,7 @@ namespace GifProcessorApp
         public int DurationSeconds { get; private set; } = 0;
         public int MoveCount { get; private set; } = 0;
         public bool FullCycle { get; private set; }
+        public bool SupportGifInput { get; private set; }
 
         private TextBox txtInputPath = null!;
         private Button btnBrowseInput = null!;
@@ -34,8 +35,9 @@ namespace GifProcessorApp
         private Label lblDuration = null!;
         private Label lblMoveCount = null!;
 
-        public ScrollStaticImageDialog()
+        public ScrollStaticImageDialog(bool supportGifInput = true)
         {
+            SupportGifInput = supportGifInput;
             InitializeComponent();
             chkFullCycle.CheckedChanged += ChkFullCycle_CheckedChanged;
             numDuration.ValueChanged += NumDuration_ValueChanged;
@@ -47,6 +49,8 @@ namespace GifProcessorApp
         private void UpdateUIText()
         {
             lblInput.Text = Resources.ScrollDialog_InputLabel;
+            Text = Resources.ScrollDialog_Title;
+
             lblOutput.Text = Resources.ScrollDialog_OutputLabel;
             lblDirection.Text = Resources.ScrollDialog_Direction;
             lblStep.Text = Resources.ScrollDialog_Step;
@@ -57,7 +61,6 @@ namespace GifProcessorApp
             btnBrowseOutput.Text = Resources.ScrollDialog_Browse;
             btnOK.Text = Resources.ScrollDialog_OK;
             btnCancel.Text = Resources.ScrollDialog_Cancel;
-            Text = Resources.ScrollDialog_Title;
 
             cmbDirection.Items.Clear();
             cmbDirection.Items.AddRange(new object[]
@@ -188,7 +191,7 @@ namespace GifProcessorApp
         {
             using var ofd = new OpenFileDialog
             {
-                Filter = Resources.FileDialog_ImageFilter,
+                Filter = Resources.FileDialog_ImageAndGifFilter,
                 Title = Resources.ScrollDialog_SelectInput
             };
             if (ofd.ShowDialog() == DialogResult.OK)

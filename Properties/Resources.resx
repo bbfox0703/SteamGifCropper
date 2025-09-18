@@ -350,6 +350,9 @@ Files skipped (not 0x21): {1}</value>
   <data name="FileDialog_ImageFilter" xml:space="preserve">
     <value>Image Files (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp</value>
   </data>
+  <data name="FileDialog_ImageAndGifFilter" xml:space="preserve">
+    <value>Image and GIF Files (*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.png;*.jpg;*.jpeg;*.bmp;*.gif</value>
+  </data>
   <data name="FileDialog_SelectGifOrder" xml:space="preserve">
     <value>Select GIF file #{0} (position {1} from left to right)</value>
   </data>
@@ -414,7 +417,10 @@ Files skipped (not 0x21): {1}</value>
     <value>FFMPEG: Reverse animated GIF</value>
   </data>
   <data name="Button_ScrollStaticImage" xml:space="preserve">
-    <value>Scroll static image</value>
+    <value>Scroll image/GIF</value>
+  </data>
+  <data name="Button_ScrollAnimatedGif" xml:space="preserve">
+    <value>Scroll animated GIF</value>
   </data>
   <data name="Button_OverlayGif" xml:space="preserve">
     <value>Overlay GIF over GIF</value>
@@ -735,10 +741,16 @@ Duration: {4}
 Technical details: {5}</value>
   </data>
   <data name="ScrollDialog_Title" xml:space="preserve">
-    <value>Scroll Static Image</value>
+    <value>Scroll Image/GIF</value>
+  </data>
+  <data name="ScrollDialog_TitleImageAndGif" xml:space="preserve">
+    <value>Scroll Image/GIF</value>
   </data>
   <data name="ScrollDialog_InputLabel" xml:space="preserve">
-    <value>Input image</value>
+    <value>Input image or GIF</value>
+  </data>
+  <data name="ScrollDialog_InputImageOrGif" xml:space="preserve">
+    <value>Input image or GIF</value>
   </data>
   <data name="ScrollDialog_OutputLabel" xml:space="preserve">
     <value>Output GIF</value>
@@ -768,7 +780,10 @@ Technical details: {5}</value>
     <value>Cancel</value>
   </data>
   <data name="ScrollDialog_SelectInput" xml:space="preserve">
-    <value>Select an image file</value>
+    <value>Select an image or GIF file</value>
+  </data>
+  <data name="ScrollDialog_SelectImageOrGif" xml:space="preserve">
+    <value>Select an image or GIF file</value>
   </data>
   <data name="ScrollDialog_SelectOutput" xml:space="preserve">
     <value>Save scrolled GIF as</value>

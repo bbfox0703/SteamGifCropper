@@ -352,6 +352,9 @@
   <data name="FileDialog_ImageFilter" xml:space="preserve">
     <value>圖像檔案 (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp</value>
   </data>
+  <data name="FileDialog_ImageAndGifFilter" xml:space="preserve">
+    <value>圖片及GIF檔案 (*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.png;*.jpg;*.jpeg;*.bmp;*.gif</value>
+  </data>
   <data name="FileDialog_SelectGifOrder" xml:space="preserve">
     <value>選擇 GIF 檔案 #{0}（從左至右的第 {1} 個位置）</value>
   </data>
@@ -422,7 +425,10 @@
     <value>FFMPEG：反轉動畫GIF</value>
   </data>
   <data name="Button_ScrollStaticImage" xml:space="preserve">
-    <value>捲動靜態圖</value>
+    <value>捲動圖片/GIF</value>
+  </data>
+  <data name="Button_ScrollAnimatedGif" xml:space="preserve">
+    <value>捲動動畫GIF</value>
   </data>
   <data name="Button_OverlayGif" xml:space="preserve">
     <value>將GIF疊加在GIF上</value>
@@ -743,10 +749,16 @@ FFmpeg 輸出 (部分)：
 技術詳細資訊: {5}</value>
   </data>
   <data name="ScrollDialog_Title" xml:space="preserve">
-    <value>靜態圖捲動</value>
+    <value>捲動圖片/GIF</value>
+  </data>
+  <data name="ScrollDialog_TitleImageAndGif" xml:space="preserve">
+    <value>捲動圖片/GIF</value>
   </data>
   <data name="ScrollDialog_InputLabel" xml:space="preserve">
-    <value>輸入圖像</value>
+    <value>輸入圖片或GIF</value>
+  </data>
+  <data name="ScrollDialog_InputImageOrGif" xml:space="preserve">
+    <value>輸入圖片或GIF</value>
   </data>
   <data name="ScrollDialog_OutputLabel" xml:space="preserve">
     <value>輸出GIF</value>
@@ -776,7 +788,10 @@ FFmpeg 輸出 (部分)：
     <value>取消</value>
   </data>
   <data name="ScrollDialog_SelectInput" xml:space="preserve">
-    <value>選擇圖像檔案</value>
+    <value>選擇圖片或GIF檔案</value>
+  </data>
+  <data name="ScrollDialog_SelectImageOrGif" xml:space="preserve">
+    <value>選擇圖片或GIF檔案</value>
   </data>
   <data name="ScrollDialog_SelectOutput" xml:space="preserve">
     <value>儲存捲動後GIF</value>

@@ -65,6 +65,7 @@
             toolStripLangTradChinese = new System.Windows.Forms.ToolStripMenuItem();
             toolStripLangJapanese = new System.Windows.Forms.ToolStripMenuItem();
             btnScrollStaticImage = new System.Windows.Forms.Button();
+            btnScrollAnimatedGif = new System.Windows.Forms.Button();
             btnOverlayGIF = new System.Windows.Forms.Button();
             btnResizeNfpsGIF = new System.Windows.Forms.Button();
             lblResourceLimitDesc = new System.Windows.Forms.Label();
@@ -451,7 +452,17 @@
             btnScrollStaticImage.Text = SteamGifCropper.Properties.Resources.Button_ScrollStaticImage;
             btnScrollStaticImage.UseVisualStyleBackColor = true;
             btnScrollStaticImage.Click += btnScrollStaticImage_Click;
-            // 
+            //
+            // btnScrollAnimatedGif
+            //
+            btnScrollAnimatedGif.Location = new System.Drawing.Point(7, 125);
+            btnScrollAnimatedGif.Name = "btnScrollAnimatedGif";
+            btnScrollAnimatedGif.Size = new System.Drawing.Size(300, 26);
+            btnScrollAnimatedGif.TabIndex = 6;
+            btnScrollAnimatedGif.Text = SteamGifCropper.Properties.Resources.Button_ScrollAnimatedGif;
+            btnScrollAnimatedGif.UseVisualStyleBackColor = true;
+            btnScrollAnimatedGif.Click += btnScrollAnimatedGif_Click;
+            //
             // btnOverlayGIF
             // 
             btnOverlayGIF.Location = new System.Drawing.Point(7, 187);
@@ -512,6 +523,7 @@
             Controls.Add(btnResizeNfpsGIF);
             Controls.Add(btnOverlayGIF);
             Controls.Add(btnScrollStaticImage);
+            Controls.Add(btnScrollAnimatedGif);
             Controls.Add(btnLanguageChange);
             Controls.Add(btnReverseGIF);
             Controls.Add(chk5GIFMergeFasterPaletteProcess);
@@ -586,6 +598,7 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripLangTradChinese;
         private System.Windows.Forms.ToolStripMenuItem toolStripLangJapanese;
         private System.Windows.Forms.Button btnScrollStaticImage;
+        private System.Windows.Forms.Button btnScrollAnimatedGif;
         private System.Windows.Forms.Button btnOverlayGIF;
         private System.Windows.Forms.Button btnResizeNfpsGIF;
         private System.Windows.Forms.Label lblResourceLimitDesc;

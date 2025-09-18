@@ -2265,7 +2265,7 @@ namespace GifProcessorApp
 
         public static async Task ScrollStaticImage(GifToolMainForm mainForm)
         {
-            using var dialog = new ScrollStaticImageDialog();
+            using var dialog = new ScrollStaticImageDialog(true);
             if (dialog.ShowDialog() != DialogResult.OK)
                 return;
 
@@ -2285,7 +2285,17 @@ namespace GifProcessorApp
                 SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Processing);
 
-                await Task.Run(() => ScrollStaticImage(inputPath, outputPath, direction, step, duration, fullCycle, moveCount, targetFramerate, mainForm));
+                await Task.Run(() => {
+                    // Detect if input is GIF or static image
+                    if (Path.GetExtension(inputPath).ToLowerInvariant() == ".gif")
+                    {
+                        ScrollAnimatedGif(inputPath, outputPath, direction, step, duration, fullCycle, moveCount, targetFramerate, mainForm);
+                    }
+                    else
+                    {
+                        ScrollStaticImage(inputPath, outputPath, direction, step, duration, fullCycle, moveCount, targetFramerate, mainForm);
+                    }
+                });
 
                 if (mainForm.chkGifsicle.Checked)
                 {
@@ -2329,6 +2339,278 @@ namespace GifProcessorApp
                 SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
                 //mainForm.pBarTaskStatus.Visible = false;
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Ready);
+            }
+        }
+
+        public static async Task ScrollAnimatedGif(GifToolMainForm mainForm)
+        {
+            using var dialog = new ScrollStaticImageDialog(true);
+            if (dialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            string inputPath = dialog.InputFilePath;
+            string outputPath = dialog.OutputFilePath;
+            ScrollDirection direction = dialog.Direction;
+            int step = dialog.StepPixels;
+            int duration = dialog.DurationSeconds;
+            int moveCount = dialog.MoveCount;
+            bool fullCycle = dialog.FullCycle;
+            int targetFramerate = (int)mainForm.numUpDownFramerate.Value;
+
+            mainForm.Enabled = false;
+            try
+            {
+                mainForm.pBarTaskStatus.Visible = true;
+                SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Processing);
+
+                await Task.Run(() => {
+                    // Detect if input is GIF or static image
+                    if (Path.GetExtension(inputPath).ToLowerInvariant() == ".gif")
+                    {
+                        ScrollAnimatedGif(inputPath, outputPath, direction, step, duration, fullCycle, moveCount, targetFramerate, mainForm);
+                    }
+                    else
+                    {
+                        ScrollStaticImage(inputPath, outputPath, direction, step, duration, fullCycle, moveCount, targetFramerate, mainForm);
+                    }
+                });
+
+                if (mainForm.chkGifsicle.Checked)
+                {
+                    var options = new GifsicleWrapper.GifsicleOptions
+                    {
+                        Colors = (int)mainForm.numUpDownPaletteSicle.Value,
+                        Lossy = (int)mainForm.numUpDownLossy.Value,
+                        OptimizeLevel = (int)mainForm.numUpDownOptimize.Value,
+                        Dither = mainForm.DitherMethod
+                    };
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing);
+                    await GifsicleWrapper.OptimizeGif(outputPath, outputPath, options);
+                }
+
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                                SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
+                                SteamGifCropper.Properties.Resources.Title_Success,
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (MagickResourceLimitErrorException)
+            {
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Error);
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                                SteamGifCropper.Properties.Resources.Error_CacheResourcesExhausted,
+                                SteamGifCropper.Properties.Resources.Title_Error,
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Error);
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                                string.Format(SteamGifCropper.Properties.Resources.Error_Occurred, ex.Message),
+                                SteamGifCropper.Properties.Resources.Title_Error,
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                mainForm.Enabled = true;
+                SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Ready);
+            }
+        }
+
+        public static void ScrollAnimatedGif(string inputFilePath, string outputFilePath,
+            ScrollDirection direction, int stepPixels, int durationSeconds, bool fullCycle, int moveCount, int targetFramerate, GifToolMainForm mainForm)
+        {
+            // Memory usage estimation and validation
+            var fileInfo = new FileInfo(inputFilePath);
+            long fileSizeMB = fileInfo.Length / (1024 * 1024);
+
+            // Warn user for large files
+            if (fileSizeMB > 50)
+            {
+                DialogResult result = DialogResult.No;
+                mainForm.Invoke((Action)(() =>
+                {
+                    result = WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                        $"Large GIF file detected ({fileSizeMB}MB). Processing may use significant memory and time. Continue?",
+                        "Memory Warning",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                }));
+                if (result == DialogResult.No)
+                    return;
+            }
+
+            using var inputCollection = new MagickImageCollection(inputFilePath);
+            inputCollection.Coalesce();
+
+            // Validate total estimated frames to prevent memory explosion
+            int estimatedScrollFrames = EstimateScrollFrames(direction, stepPixels, durationSeconds, fullCycle, moveCount,
+                (int)inputCollection[0].Width, (int)inputCollection[0].Height, targetFramerate);
+            long totalEstimatedFrames = (long)estimatedScrollFrames * inputCollection.Count;
+
+            // Show diagnostic info
+            mainForm.Invoke((Action)(() =>
+            {
+                SetStatusText(mainForm, $"Processing: {inputCollection.Count} original frames × {estimatedScrollFrames} scroll positions = {totalEstimatedFrames} output frames");
+            }));
+
+            if (totalEstimatedFrames > 100000) // Increased limit - 100K frames should be manageable with streaming
+            {
+                throw new InvalidOperationException($"Too many frames would be generated ({totalEstimatedFrames}).\n" +
+                    $"Original frames: {inputCollection.Count}\n" +
+                    $"Scroll positions: {estimatedScrollFrames}\n" +
+                    $"Please reduce scroll duration, increase step size, or reduce move count.");
+            }
+
+            // Get original GIF properties
+            var firstFrame = inputCollection[0];
+            int originalWidth = (int)firstFrame.Width;
+            int originalHeight = (int)firstFrame.Height;
+            int originalDelay = (int)inputCollection[0].AnimationDelay;
+
+            int distance = direction switch
+            {
+                ScrollDirection.Up or ScrollDirection.Down => originalHeight,
+                _ => originalWidth
+            };
+
+            int signX = 0, signY = 0;
+            switch (direction)
+            {
+                case ScrollDirection.Right: signX = 1; break;
+                case ScrollDirection.Left: signX = -1; break;
+                case ScrollDirection.Down: signY = 1; break;
+                case ScrollDirection.Up: signY = -1; break;
+                case ScrollDirection.LeftUp: signX = -1; signY = -1; break;
+                case ScrollDirection.LeftDown: signX = -1; signY = 1; break;
+                case ScrollDirection.RightUp: signX = 1; signY = -1; break;
+                case ScrollDirection.RightDown: signX = 1; signY = 1; break;
+            }
+
+            int scrollFrames;
+            int dx = 0, dy = 0;
+            double step = 0;
+            if (durationSeconds > 0)
+            {
+                scrollFrames = Math.Max(1, durationSeconds * targetFramerate);
+                scrollFrames = Math.Min(scrollFrames, distance);
+                step = (double)distance / scrollFrames;
+            }
+            else
+            {
+                dx = signX * stepPixels;
+                dy = signY * stepPixels;
+                if (fullCycle)
+                {
+                    int stepsX = dx != 0 ? (int)Math.Ceiling((double)originalWidth / Math.Abs(dx)) : 0;
+                    int stepsY = dy != 0 ? (int)Math.Ceiling((double)originalHeight / Math.Abs(dy)) : 0;
+                    scrollFrames = Math.Max(stepsX, stepsY);
+                    if (scrollFrames <= 0) scrollFrames = 1;
+                }
+                else
+                {
+                    scrollFrames = moveCount;
+                }
+            }
+
+            int frameDelay = Math.Max(1, 100 / targetFramerate);
+
+            // Use streaming approach to avoid memory buildup
+            using var stream = File.Open(outputFilePath, FileMode.Create);
+            var defines = new GifWriteDefines { RepeatCount = 0, WriteMode = GifWriteMode.Gif };
+
+            bool isFirstFrame = true;
+            int totalFrames = scrollFrames * inputCollection.Count;
+            int currentFrameIndex = 0;
+
+            // For each scroll position
+            for (int scrollPos = 0; scrollPos < scrollFrames; scrollPos++)
+            {
+                // Calculate current scroll offset
+                int currentX, currentY;
+                if (durationSeconds > 0)
+                {
+                    currentX = (int)(step * scrollPos * signX);
+                    currentY = (int)(step * scrollPos * signY);
+                }
+                else
+                {
+                    currentX = dx * scrollPos;
+                    currentY = dy * scrollPos;
+                }
+
+                // For each frame in the original GIF
+                for (int frameIndex = 0; frameIndex < inputCollection.Count; frameIndex++)
+                {
+                    var originalFrame = inputCollection[frameIndex];
+                    using var scrolledFrame = new MagickImage(MagickColors.Transparent, (uint)originalWidth, (uint)originalHeight);
+                    scrolledFrame.Format = MagickFormat.Gif;
+
+                    // Create scrolled version of this frame
+                    using var temp = originalFrame.Clone();
+                    temp.VirtualPixelMethod = VirtualPixelMethod.Edge;
+
+                    scrolledFrame.Composite(temp, currentX, currentY, CompositeOperator.Over);
+                    scrolledFrame.AnimationDelay = (uint)frameDelay;
+
+                    // Write frame directly to stream
+                    scrolledFrame.Write(stream, defines);
+
+                    // After first frame, switch to frame mode
+                    if (isFirstFrame)
+                    {
+                        defines.WriteMode = GifWriteMode.Frame;
+                        isFirstFrame = false;
+                    }
+
+                    currentFrameIndex++;
+
+                    // Force garbage collection every 10 frames to manage memory aggressively
+                    if (currentFrameIndex % 10 == 0)
+                    {
+                        GC.Collect();
+                        GC.WaitForPendingFinalizers();
+                        GC.Collect(); // Second collection to clean up finalizer queue
+                    }
+                }
+
+                // Update progress
+                int progress = (int)((double)(scrollPos + 1) / scrollFrames * 100);
+                mainForm.Invoke((Action)(() =>
+                {
+                    SetProgressBar(mainForm.pBarTaskStatus, progress, 100);
+                }));
+            }
+
+            mainForm.Invoke((Action)(() =>
+            {
+                SetStatusText(mainForm, Resources.Status_Done);
+            }));
+        }
+
+        private static int EstimateScrollFrames(ScrollDirection direction, int stepPixels, int durationSeconds,
+            bool fullCycle, int moveCount, int width, int height, int targetFramerate)
+        {
+            int distance = direction switch
+            {
+                ScrollDirection.Up or ScrollDirection.Down => height,
+                _ => width
+            };
+
+            if (durationSeconds > 0)
+            {
+                // For duration-based scrolling, just use the time calculation
+                return Math.Max(1, durationSeconds * targetFramerate);
+            }
+            else if (fullCycle)
+            {
+                // For full cycle, calculate based on step size
+                return Math.Max(1, distance / Math.Max(1, stepPixels));
+            }
+            else
+            {
+                // For move count, just return the count
+                return moveCount;
             }
         }
 
