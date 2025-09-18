@@ -1067,4 +1067,16 @@ FFmpeg 輸出 (部分)：
   <data name="ConcatenateDialog_FastPreview" xml:space="preserve">
     <value>快速預覽模式</value>
   </data>
+  <data name="ConcatenateDialog_GeneratingPreview" xml:space="preserve">
+    <value>生成中...</value>
+  </data>
+  <data name="ConcatenateDialog_InitializingPreview" xml:space="preserve">
+    <value>初始化預覽中...</value>
+  </data>
+  <data name="ConcatenateDialog_PreviewCancelled" xml:space="preserve">
+    <value>預覽已被使用者取消</value>
+  </data>
+  <data name="ConcatenateDialog_Cancelling" xml:space="preserve">
+    <value>取消中...</value>
+  </data>
 </root>

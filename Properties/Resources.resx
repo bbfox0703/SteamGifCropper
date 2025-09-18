@@ -1054,4 +1054,16 @@ Saved as: {0}</value>
   <data name="ConcatenateDialog_FastPreview" xml:space="preserve">
     <value>Fast Preview Mode</value>
   </data>
+  <data name="ConcatenateDialog_GeneratingPreview" xml:space="preserve">
+    <value>Generating...</value>
+  </data>
+  <data name="ConcatenateDialog_InitializingPreview" xml:space="preserve">
+    <value>Initializing preview...</value>
+  </data>
+  <data name="ConcatenateDialog_PreviewCancelled" xml:space="preserve">
+    <value>Preview cancelled by user</value>
+  </data>
+  <data name="ConcatenateDialog_Cancelling" xml:space="preserve">
+    <value>Cancelling...</value>
+  </data>
 </root>

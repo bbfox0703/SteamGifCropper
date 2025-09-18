@@ -2314,5 +2314,29 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("ConcatenateDialog_FastPreview", resourceCulture);
             }
         }
+
+        internal static string ConcatenateDialog_GeneratingPreview {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_GeneratingPreview", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_InitializingPreview {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_InitializingPreview", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_PreviewCancelled {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_PreviewCancelled", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_Cancelling {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_Cancelling", resourceCulture);
+            }
+        }
     }
 }
