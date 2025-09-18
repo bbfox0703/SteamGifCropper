@@ -2048,12 +2048,13 @@ namespace GifProcessorApp
 
             int frames;
             int dx = 0, dy = 0;
-            double step = 0;
+            double stepX = 0, stepY = 0;
             if (durationSeconds > 0)
             {
                 frames = Math.Max(1, durationSeconds * targetFramerate);
-                frames = Math.Min(frames, distance);
-                step = (double)distance / frames;
+                // Calculate separate steps for X and Y axes
+                if (signX != 0) stepX = (double)width / frames;
+                if (signY != 0) stepY = (double)height / frames;
             }
             else
             {
@@ -2091,9 +2092,8 @@ namespace GifProcessorApp
                 int offsetX, offsetY;
                 if (durationSeconds > 0)
                 {
-                    int offset = (int)Math.Round(step * i);
-                    offsetX = signX * offset;
-                    offsetY = signY * offset;
+                    offsetX = signX * (int)Math.Round(stepX * i);
+                    offsetY = signY * (int)Math.Round(stepY * i);
                 }
                 else
                 {
@@ -2133,12 +2133,6 @@ namespace GifProcessorApp
             int width = (int)baseImage.Width;
             int height = (int)baseImage.Height;
 
-            int distance = direction switch
-            {
-                ScrollDirection.Up or ScrollDirection.Down => height,
-                _ => width
-            };
-
             int signX = 0, signY = 0;
             switch (direction)
             {
@@ -2154,12 +2148,13 @@ namespace GifProcessorApp
 
             int frames;
             int dx = 0, dy = 0;
-            double step = 0;
+            double stepX = 0, stepY = 0;
             if (durationSeconds > 0)
             {
                 frames = Math.Max(1, durationSeconds * targetFramerate);
-                frames = Math.Min(frames, distance);
-                step = (double)distance / frames;
+                // Calculate separate steps for X and Y axes
+                if (signX != 0) stepX = (double)width / frames;
+                if (signY != 0) stepY = (double)height / frames;
             }
             else
             {
@@ -2204,9 +2199,8 @@ namespace GifProcessorApp
                 int offsetX, offsetY;
                 if (durationSeconds > 0)
                 {
-                    int offset = (int)Math.Round(step * i);
-                    offsetX = signX * offset;
-                    offsetY = signY * offset;
+                    offsetX = signX * (int)Math.Round(stepX * i);
+                    offsetY = signY * (int)Math.Round(stepY * i);
                 }
                 else
                 {
