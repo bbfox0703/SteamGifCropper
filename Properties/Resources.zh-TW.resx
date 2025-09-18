@@ -433,6 +433,30 @@
   <data name="ScrollDialog_AutoDuration" xml:space="preserve">
     <value>自動計算GIF週期時間</value>
   </data>
+  <data name="Status_AutoCalculatedDuration" xml:space="preserve">
+    <value>自動計算GIF週期時間: {0:F2}秒 → {1}秒</value>
+  </data>
+  <data name="Status_AutoDurationMode" xml:space="preserve">
+    <value>自動時間模式</value>
+  </data>
+  <data name="Status_ManualDurationMode" xml:space="preserve">
+    <value>手動 {0}秒</value>
+  </data>
+  <data name="Status_ScrollParameters" xml:space="preserve">
+    <value>{0}: {1} 幀, X:{2:F2}像素/幀, Y:{3:F2}像素/幀</value>
+  </data>
+  <data name="Status_FullCycleFinalPosition" xml:space="preserve">
+    <value>完整週期最終位置: X={0}, Y={1} (未重置為0)</value>
+  </data>
+  <data name="Status_AutoDurationComplete" xml:space="preserve">
+    <value>自動時間完成: {0} 幀 (與來源相同)</value>
+  </data>
+  <data name="Status_TimelineContinuity" xml:space="preserve">
+    <value>時間軸連續性: 最後使用幀 {0}, 從幀 {1} 繼續</value>
+  </data>
+  <data name="Status_StepBasedContinuity" xml:space="preserve">
+    <value>步進式連續性: 使用 {0} 個捲動幀, 最後幀 {1}, 從幀 {2} 繼續</value>
+  </data>
   <data name="Button_OverlayGif" xml:space="preserve">
     <value>將GIF疊加在GIF上</value>
   </data>

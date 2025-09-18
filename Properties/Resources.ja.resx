@@ -1014,4 +1014,31 @@ FFmpeg 出力（切り捨て）:
   <data name="ConcatenateDialog_FailedToGeneratePreview" xml:space="preserve">
     <value>プレビューの生成に失敗しました。</value>
   </data>
+  <data name="ScrollDialog_AutoDuration" xml:space="preserve">
+    <value>GIFサイクル期間を自動計算</value>
+  </data>
+  <data name="Status_AutoCalculatedDuration" xml:space="preserve">
+    <value>GIFサイクル期間を自動計算：{0:F2}秒 → {1}秒</value>
+  </data>
+  <data name="Status_AutoDurationMode" xml:space="preserve">
+    <value>自動期間モード</value>
+  </data>
+  <data name="Status_ManualDurationMode" xml:space="preserve">
+    <value>手動{0}秒</value>
+  </data>
+  <data name="Status_ScrollParameters" xml:space="preserve">
+    <value>{0}：{1}フレーム、X:{2:F2}px/フレーム、Y:{3:F2}px/フレーム</value>
+  </data>
+  <data name="Status_FullCycleFinalPosition" xml:space="preserve">
+    <value>フルサイクル最終位置：X={0}、Y={1}（0にリセットしない）</value>
+  </data>
+  <data name="Status_AutoDurationComplete" xml:space="preserve">
+    <value>自動期間完了：{0}フレーム（ソースと同じ）</value>
+  </data>
+  <data name="Status_TimelineContinuity" xml:space="preserve">
+    <value>タイムライン継続性：最後に使用したフレーム{0}、フレーム{1}から継続</value>
+  </data>
+  <data name="Status_StepBasedContinuity" xml:space="preserve">
+    <value>ステップベース継続性：{0}スクロールフレームを使用、最後のフレーム{1}、フレーム{2}から継続</value>
+  </data>
 </root>

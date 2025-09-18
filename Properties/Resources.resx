@@ -425,6 +425,30 @@ Files skipped (not 0x21): {1}</value>
   <data name="ScrollDialog_AutoDuration" xml:space="preserve">
     <value>Auto-calculate GIF cycle duration</value>
   </data>
+  <data name="Status_AutoCalculatedDuration" xml:space="preserve">
+    <value>Auto-calculated GIF cycle duration: {0:F2}s → {1}s</value>
+  </data>
+  <data name="Status_AutoDurationMode" xml:space="preserve">
+    <value>Auto-duration mode</value>
+  </data>
+  <data name="Status_ManualDurationMode" xml:space="preserve">
+    <value>Manual {0}s</value>
+  </data>
+  <data name="Status_ScrollParameters" xml:space="preserve">
+    <value>{0}: {1} frames, X:{2:F2}px/frame, Y:{3:F2}px/frame</value>
+  </data>
+  <data name="Status_FullCycleFinalPosition" xml:space="preserve">
+    <value>Full cycle final position: X={0}, Y={1} (not reset to 0)</value>
+  </data>
+  <data name="Status_AutoDurationComplete" xml:space="preserve">
+    <value>Auto-duration complete: {0} frames (same as source)</value>
+  </data>
+  <data name="Status_TimelineContinuity" xml:space="preserve">
+    <value>Timeline continuity: Last used frame {0}, continuing from frame {1}</value>
+  </data>
+  <data name="Status_StepBasedContinuity" xml:space="preserve">
+    <value>Step-based continuity: Used {0} scroll frames, last frame {1}, continuing from frame {2}</value>
+  </data>
   <data name="Button_OverlayGif" xml:space="preserve">
     <value>Overlay GIF over GIF</value>
   </data>
