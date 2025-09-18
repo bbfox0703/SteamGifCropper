@@ -2183,27 +2183,9 @@ namespace SteamGifCropper.Properties {
             }
         }
 
-        internal static string TransitionDialog_PreviewTransition {
-            get {
-                return ResourceManager.GetString("TransitionDialog_PreviewTransition", resourceCulture);
-            }
-        }
-
         internal static string TransitionDialog_Cancel {
             get {
                 return ResourceManager.GetString("TransitionDialog_Cancel", resourceCulture);
-            }
-        }
-
-        internal static string ConcatenateDialog_FrameInfoLabel {
-            get {
-                return ResourceManager.GetString("ConcatenateDialog_FrameInfoLabel", resourceCulture);
-            }
-        }
-
-        internal static string ConcatenateDialog_AutoPreview {
-            get {
-                return ResourceManager.GetString("ConcatenateDialog_AutoPreview", resourceCulture);
             }
         }
 
@@ -2225,12 +2207,6 @@ namespace SteamGifCropper.Properties {
             }
         }
 
-        internal static string ConcatenateDialog_PreviewGroup {
-            get {
-                return ResourceManager.GetString("ConcatenateDialog_PreviewGroup", resourceCulture);
-            }
-        }
-
         internal static string ConcatenateDialog_TransitionSlide {
             get {
                 return ResourceManager.GetString("ConcatenateDialog_TransitionSlide", resourceCulture);
@@ -2249,27 +2225,9 @@ namespace SteamGifCropper.Properties {
             }
         }
 
-        internal static string ConcatenateDialog_PreviewTransition {
-            get {
-                return ResourceManager.GetString("ConcatenateDialog_PreviewTransition", resourceCulture);
-            }
-        }
-
-        internal static string ConcatenateDialog_CancelPreview {
-            get {
-                return ResourceManager.GetString("ConcatenateDialog_CancelPreview", resourceCulture);
-            }
-        }
-
         internal static string GTMainForm_ConcatenateGifs {
             get {
                 return ResourceManager.GetString("GTMainForm_ConcatenateGifs", resourceCulture);
-            }
-        }
-
-        internal static string ConcatenateDialog_NoPreviewAvailable {
-            get {
-                return ResourceManager.GetString("ConcatenateDialog_NoPreviewAvailable", resourceCulture);
             }
         }
 
@@ -2309,34 +2267,17 @@ namespace SteamGifCropper.Properties {
             }
         }
 
-        internal static string ConcatenateDialog_FastPreview {
+        internal static string ConcatenateDialog_RequireMinGifs {
             get {
-                return ResourceManager.GetString("ConcatenateDialog_FastPreview", resourceCulture);
+                return ResourceManager.GetString("ConcatenateDialog_RequireMinGifs", resourceCulture);
             }
         }
 
-        internal static string ConcatenateDialog_GeneratingPreview {
+        internal static string ConcatenateDialog_RequireOutput {
             get {
-                return ResourceManager.GetString("ConcatenateDialog_GeneratingPreview", resourceCulture);
+                return ResourceManager.GetString("ConcatenateDialog_RequireOutput", resourceCulture);
             }
         }
 
-        internal static string ConcatenateDialog_InitializingPreview {
-            get {
-                return ResourceManager.GetString("ConcatenateDialog_InitializingPreview", resourceCulture);
-            }
-        }
-
-        internal static string ConcatenateDialog_PreviewCancelled {
-            get {
-                return ResourceManager.GetString("ConcatenateDialog_PreviewCancelled", resourceCulture);
-            }
-        }
-
-        internal static string ConcatenateDialog_Cancelling {
-            get {
-                return ResourceManager.GetString("ConcatenateDialog_Cancelling", resourceCulture);
-            }
-        }
     }
 }

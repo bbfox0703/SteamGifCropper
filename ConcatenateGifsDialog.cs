@@ -263,7 +263,7 @@ namespace GifProcessorApp
             lblInstructions.Name = "lblInstructions";
             lblInstructions.Size = new Size(233, 15);
             lblInstructions.TabIndex = 0;
-            lblInstructions.Text = "Select GIF files to concatenate (in order):";
+            lblInstructions.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_Instructions;
             // 
             // lblGifFiles
             // 
@@ -272,7 +272,7 @@ namespace GifProcessorApp
             lblGifFiles.Name = "lblGifFiles";
             lblGifFiles.Size = new Size(121, 15);
             lblGifFiles.TabIndex = 1;
-            lblGifFiles.Text = "GIF Files (2 or more):";
+            lblGifFiles.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_GifFiles;
             // 
             // lstGifFiles
             // 
@@ -336,7 +336,7 @@ namespace GifProcessorApp
             grpFpsSettings.Size = new Size(240, 120);
             grpFpsSettings.TabIndex = 7;
             grpFpsSettings.TabStop = false;
-            grpFpsSettings.Text = "FPS Settings";
+            grpFpsSettings.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_FpsSettings;
             // 
             // cmbFpsReference
             // 
@@ -400,7 +400,7 @@ namespace GifProcessorApp
             lblCustomFps.Name = "lblCustomFps";
             lblCustomFps.Size = new Size(24, 15);
             lblCustomFps.TabIndex = 5;
-            lblCustomFps.Text = "fps";
+            lblCustomFps.Text = SteamGifCropper.Properties.Resources.Label_FPS;
             // 
             // grpPaletteSettings
             // 
@@ -413,7 +413,7 @@ namespace GifProcessorApp
             grpPaletteSettings.Size = new Size(248, 120);
             grpPaletteSettings.TabIndex = 8;
             grpPaletteSettings.TabStop = false;
-            grpPaletteSettings.Text = "Palette Settings";
+            grpPaletteSettings.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_PaletteSettings;
             // 
             // cmbPaletteReference
             // 
@@ -467,7 +467,7 @@ namespace GifProcessorApp
             lblOutputFile.Name = "lblOutputFile";
             lblOutputFile.Size = new Size(91, 15);
             lblOutputFile.TabIndex = 18;
-            lblOutputFile.Text = "Output GIF file:";
+            lblOutputFile.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_OutputFile;
             // 
             // txtOutputFile
             // 
@@ -503,7 +503,7 @@ namespace GifProcessorApp
             grpTransitionSettings.Size = new Size(496, 146);
             grpTransitionSettings.TabIndex = 17;
             grpTransitionSettings.TabStop = false;
-            grpTransitionSettings.Text = "Transition Settings";
+            grpTransitionSettings.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_TransitionSettings;
             // 
             // rbTransitionNone
             // 
@@ -589,7 +589,7 @@ namespace GifProcessorApp
             lblTransitionDuration.Name = "lblTransitionDuration";
             lblTransitionDuration.Size = new Size(117, 15);
             lblTransitionDuration.TabIndex = 7;
-            lblTransitionDuration.Text = "Transition Duration:";
+            lblTransitionDuration.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_TransitionDurationLabel;
             // 
             // nudTransitionDuration
             // 
@@ -610,7 +610,7 @@ namespace GifProcessorApp
             lblSeconds.Name = "lblSeconds";
             lblSeconds.Size = new Size(53, 15);
             lblSeconds.TabIndex = 9;
-            lblSeconds.Text = "seconds";
+            lblSeconds.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_SecondsLabel;
             // 
             // chkUnifyDimensions
             // 
@@ -694,7 +694,7 @@ namespace GifProcessorApp
             MinimizeBox = false;
             Name = "ConcatenateGifsDialog";
             StartPosition = FormStartPosition.CenterParent;
-            Text = "Concatenate GIF Files";
+            Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_Title;
             grpFpsSettings.ResumeLayout(false);
             grpFpsSettings.PerformLayout();
             ((ISupportInitialize)nudCustomFps).EndInit();
@@ -862,15 +862,15 @@ namespace GifProcessorApp
             // Validate inputs
             if (lstGifFiles.Items.Count < 2)
             {
-                MessageBox.Show("Please select at least 2 GIF files to concatenate.",
-                               "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(SteamGifCropper.Properties.Resources.ConcatenateDialog_RequireMinGifs,
+                               SteamGifCropper.Properties.Resources.Mp4Dialog_InputRequired, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (string.IsNullOrEmpty(txtOutputFile.Text))
             {
-                MessageBox.Show("Please specify an output file.",
-                               "Output Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(SteamGifCropper.Properties.Resources.ConcatenateDialog_RequireOutput,
+                               SteamGifCropper.Properties.Resources.Mp4Dialog_OutputRequired, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 

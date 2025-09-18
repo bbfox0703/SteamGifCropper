@@ -939,38 +939,8 @@ FFmpeg 輸出 (部分)：
   <data name="TransitionDialog_Seconds" xml:space="preserve">
     <value>秒</value>
   </data>
-  <data name="TransitionDialog_PreviewTransition" xml:space="preserve">
-    <value>預覽過場</value>
-  </data>
   <data name="TransitionDialog_Cancel" xml:space="preserve">
     <value>取消</value>
-  </data>
-  <data name="TransitionDialog_Generating" xml:space="preserve">
-    <value>生成中...</value>
-  </data>
-  <data name="TransitionDialog_Cancelling" xml:space="preserve">
-    <value>取消中...</value>
-  </data>
-  <data name="TransitionDialog_PreviewError" xml:space="preserve">
-    <value>預覽錯誤</value>
-  </data>
-  <data name="TransitionDialog_PreviewCancelled" xml:space="preserve">
-    <value>預覽已被使用者取消</value>
-  </data>
-  <data name="TransitionDialog_RequireMinTwoGifs" xml:space="preserve">
-    <value>請選擇至少2個GIF檔案以預覽過場轉換。</value>
-  </data>
-  <data name="TransitionDialog_SelectTransitionType" xml:space="preserve">
-    <value>請選擇過場轉換類型以進行預覽。</value>
-  </data>
-  <data name="TransitionDialog_InitializingPreview" xml:space="preserve">
-    <value>初始化預覽中...</value>
-  </data>
-  <data name="TransitionDialog_ResizingForPreview" xml:space="preserve">
-    <value>調整圖片大小以供預覽...</value>
-  </data>
-  <data name="TransitionDialog_ErrorGeneratingPreview" xml:space="preserve">
-    <value>生成過場預覽時發生錯誤：{0}</value>
   </data>
   <data name="Mp4ToGif_Error_GPUFailed" xml:space="preserve">
     <value>GPU 加速失敗。轉換將自動改用 CPU 處理。
@@ -998,33 +968,6 @@ FFmpeg 輸出 (部分)：
   <data name="ConcatenateDialog_Cancel" xml:space="preserve">
     <value>取消</value>
   </data>
-  <data name="ConcatenateDialog_Preview" xml:space="preserve">
-    <value>預覽</value>
-  </data>
-  <data name="ConcatenateDialog_AutoUpdatePreview" xml:space="preserve">
-    <value>自動更新預覽</value>
-  </data>
-  <data name="ConcatenateDialog_NoPreviewAvailable" xml:space="preserve">
-    <value>沒有可用的預覽</value>
-  </data>
-  <data name="ConcatenateDialog_GeneratingPreview" xml:space="preserve">
-    <value>生成預覽中...</value>
-  </data>
-  <data name="ConcatenateDialog_FrameInfo" xml:space="preserve">
-    <value>第 {0} 格，共 {1} 格</value>
-  </data>
-  <data name="ConcatenateDialog_PreviewError" xml:space="preserve">
-    <value>預覽錯誤：{0}</value>
-  </data>
-  <data name="ConcatenateDialog_FailedToGeneratePreview" xml:space="preserve">
-    <value>生成預覽失敗</value>
-  </data>
-  <data name="ConcatenateDialog_FrameInfoLabel" xml:space="preserve">
-    <value>播放資訊</value>
-  </data>
-  <data name="ConcatenateDialog_AutoPreview" xml:space="preserve">
-    <value>自動預覽</value>
-  </data>
   <data name="ConcatenateDialog_StrongPaletteWeightingShort" xml:space="preserve">
     <value>強化調色盤權重</value>
   </data>
@@ -1034,9 +977,6 @@ FFmpeg 輸出 (部分)：
   <data name="ConcatenateDialog_SecondsLabel" xml:space="preserve">
     <value>秒</value>
   </data>
-  <data name="ConcatenateDialog_PreviewGroup" xml:space="preserve">
-    <value>預覽</value>
-  </data>
   <data name="ConcatenateDialog_TransitionSlide" xml:space="preserve">
     <value>滑動</value>
   </data>
@@ -1045,12 +985,6 @@ FFmpeg 輸出 (部分)：
   </data>
   <data name="ConcatenateDialog_TransitionDissolve" xml:space="preserve">
     <value>溶解</value>
-  </data>
-  <data name="ConcatenateDialog_PreviewTransition" xml:space="preserve">
-    <value>預覽過場</value>
-  </data>
-  <data name="ConcatenateDialog_CancelPreview" xml:space="preserve">
-    <value>取消預覽</value>
   </data>
   <data name="GTMainForm_ConcatenateGifs" xml:space="preserve">
     <value>串接GIF檔案</value>
@@ -1063,20 +997,5 @@ FFmpeg 輸出 (部分)：
   </data>
   <data name="ConcatenateDialog_OutputFileLabel" xml:space="preserve">
     <value>輸出GIF檔案：</value>
-  </data>
-  <data name="ConcatenateDialog_FastPreview" xml:space="preserve">
-    <value>快速預覽模式</value>
-  </data>
-  <data name="ConcatenateDialog_GeneratingPreview" xml:space="preserve">
-    <value>生成中...</value>
-  </data>
-  <data name="ConcatenateDialog_InitializingPreview" xml:space="preserve">
-    <value>初始化預覽中...</value>
-  </data>
-  <data name="ConcatenateDialog_PreviewCancelled" xml:space="preserve">
-    <value>預覽已被使用者取消</value>
-  </data>
-  <data name="ConcatenateDialog_Cancelling" xml:space="preserve">
-    <value>取消中...</value>
   </data>
 </root>
