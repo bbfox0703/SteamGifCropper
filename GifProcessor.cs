@@ -2276,7 +2276,33 @@ namespace GifProcessorApp
             int duration = dialog.DurationSeconds;
             int moveCount = dialog.MoveCount;
             bool fullCycle = dialog.FullCycle;
+            bool autoDuration = dialog.AutoDuration;
             int targetFramerate = (int)mainForm.numUpDownFramerate.Value;
+
+            // Auto-calculate duration if requested and input is GIF
+            if (autoDuration && Path.GetExtension(inputPath).ToLowerInvariant() == ".gif")
+            {
+                try
+                {
+                    using var inputCollection = new MagickImageCollection(inputPath);
+                    // Calculate total duration of one complete GIF cycle
+                    double totalDurationSeconds = inputCollection.Sum(frame => (double)frame.AnimationDelay) / 100.0;
+                    duration = (int)Math.Ceiling(totalDurationSeconds);
+
+                    mainForm.Invoke((Action)(() =>
+                    {
+                        SetStatusText(mainForm, $"Auto-calculated GIF cycle duration: {totalDurationSeconds:F2}s → {duration}s");
+                    }));
+                }
+                catch (Exception ex)
+                {
+                    mainForm.Invoke((Action)(() =>
+                    {
+                        SetStatusText(mainForm, $"Failed to calculate auto-duration: {ex.Message}");
+                    }));
+                    duration = 5; // Fallback to 5 seconds
+                }
+            }
 
             mainForm.Enabled = false;
             try
@@ -2289,7 +2315,7 @@ namespace GifProcessorApp
                     // Detect if input is GIF or static image
                     if (Path.GetExtension(inputPath).ToLowerInvariant() == ".gif")
                     {
-                        ScrollAnimatedGif(inputPath, outputPath, direction, step, duration, fullCycle, moveCount, targetFramerate, mainForm);
+                        ScrollAnimatedGif(inputPath, outputPath, direction, step, duration, fullCycle, moveCount, targetFramerate, mainForm, autoDuration);
                     }
                     else
                     {
@@ -2355,7 +2381,33 @@ namespace GifProcessorApp
             int duration = dialog.DurationSeconds;
             int moveCount = dialog.MoveCount;
             bool fullCycle = dialog.FullCycle;
+            bool autoDuration = dialog.AutoDuration;
             int targetFramerate = (int)mainForm.numUpDownFramerate.Value;
+
+            // Auto-calculate duration for GIF cycle
+            if (autoDuration)
+            {
+                try
+                {
+                    using var inputCollection = new MagickImageCollection(inputPath);
+                    // Calculate total duration of one complete GIF cycle
+                    double totalDurationSeconds = inputCollection.Sum(frame => (double)frame.AnimationDelay) / 100.0;
+                    duration = (int)Math.Ceiling(totalDurationSeconds);
+
+                    mainForm.Invoke((Action)(() =>
+                    {
+                        SetStatusText(mainForm, $"Auto-calculated GIF cycle duration: {totalDurationSeconds:F2}s → {duration}s");
+                    }));
+                }
+                catch (Exception ex)
+                {
+                    mainForm.Invoke((Action)(() =>
+                    {
+                        SetStatusText(mainForm, $"Failed to calculate auto-duration: {ex.Message}");
+                    }));
+                    duration = 5; // Fallback to 5 seconds
+                }
+            }
 
             mainForm.Enabled = false;
             try
@@ -2368,7 +2420,7 @@ namespace GifProcessorApp
                     // Detect if input is GIF or static image
                     if (Path.GetExtension(inputPath).ToLowerInvariant() == ".gif")
                     {
-                        ScrollAnimatedGif(inputPath, outputPath, direction, step, duration, fullCycle, moveCount, targetFramerate, mainForm);
+                        ScrollAnimatedGif(inputPath, outputPath, direction, step, duration, fullCycle, moveCount, targetFramerate, mainForm, autoDuration);
                     }
                     else
                     {
@@ -2419,7 +2471,7 @@ namespace GifProcessorApp
         }
 
         public static void ScrollAnimatedGif(string inputFilePath, string outputFilePath,
-            ScrollDirection direction, int stepPixels, int durationSeconds, bool fullCycle, int moveCount, int targetFramerate, GifToolMainForm mainForm)
+            ScrollDirection direction, int stepPixels, int durationSeconds, bool fullCycle, int moveCount, int targetFramerate, GifToolMainForm mainForm, bool autoDuration = false)
         {
             // Memory usage estimation and validation
             var fileInfo = new FileInfo(inputFilePath);
@@ -2450,8 +2502,17 @@ namespace GifProcessorApp
             }));
 
             // Validate total estimated frames to prevent memory explosion
-            int estimatedScrollFrames = EstimateScrollFrames(direction, stepPixels, durationSeconds, fullCycle, moveCount,
-                (int)inputCollection[0].Width, (int)inputCollection[0].Height, targetFramerate);
+            int estimatedScrollFrames;
+            if (autoDuration)
+            {
+                // For auto-duration, use the GIF frame count directly
+                estimatedScrollFrames = inputCollection.Count;
+            }
+            else
+            {
+                estimatedScrollFrames = EstimateScrollFrames(direction, stepPixels, durationSeconds, fullCycle, moveCount,
+                    (int)inputCollection[0].Width, (int)inputCollection[0].Height, targetFramerate);
+            }
             long totalEstimatedFrames = (long)estimatedScrollFrames * inputCollection.Count;
 
             // Show diagnostic info
@@ -2460,9 +2521,12 @@ namespace GifProcessorApp
                 SetStatusText(mainForm, $"Processing: {inputCollection.Count} original frames × {estimatedScrollFrames} scroll positions = {totalEstimatedFrames} output frames");
             }));
 
-            if (totalEstimatedFrames > 100000) // Increased limit - 100K frames should be manageable with streaming
+            // Apply different limits for auto-duration vs manual modes
+            int frameLimit = autoDuration ? 500000 : 100000; // More generous limit for auto-duration
+            if (totalEstimatedFrames > frameLimit)
             {
-                throw new InvalidOperationException($"Too many frames would be generated ({totalEstimatedFrames}).\n" +
+                string modeInfo = autoDuration ? "auto-duration" : "manual";
+                throw new InvalidOperationException($"Too many frames would be generated ({totalEstimatedFrames}) in {modeInfo} mode.\n" +
                     $"Original frames: {inputCollection.Count}\n" +
                     $"Scroll positions: {estimatedScrollFrames}\n" +
                     $"Please reduce scroll duration, increase step size, or reduce move count.");
@@ -2527,13 +2591,31 @@ namespace GifProcessorApp
 
             // Calculate how much to scroll per original frame
             double scrollPixelsPerFrame = 0;
-            if (durationSeconds > 0)
+            if (autoDuration)
+            {
+                // For auto-duration, scroll exactly one full distance over the GIF's frame count
+                scrollPixelsPerFrame = (double)distance / inputCollection.Count;
+            }
+            else if (durationSeconds > 0)
             {
                 scrollPixelsPerFrame = (double)distance / (originalFPS * durationSeconds);
             }
 
             // Calculate how long the scroll animation should last in terms of original frames
-            int scrollAnimationFrames = durationSeconds > 0 ? (int)(originalFPS * durationSeconds) : scrollFrames;
+            int scrollAnimationFrames;
+            if (autoDuration)
+            {
+                // For auto-duration, use the exact number of frames in the original GIF
+                scrollAnimationFrames = inputCollection.Count;
+            }
+            else if (durationSeconds > 0)
+            {
+                scrollAnimationFrames = (int)(originalFPS * durationSeconds);
+            }
+            else
+            {
+                scrollAnimationFrames = scrollFrames;
+            }
 
             // Use collection approach for proper GIF animation
             using var outputCollection = new MagickImageCollection();
@@ -2541,7 +2623,8 @@ namespace GifProcessorApp
             // Debug: Show scroll parameters
             mainForm.Invoke((Action)(() =>
             {
-                SetStatusText(mainForm, $"Original FPS: {originalFPS:F1}, Scroll per frame: {scrollPixelsPerFrame:F2}px, Scroll frames: {scrollAnimationFrames}, Total scroll: {distance}px over {durationSeconds}s");
+                string modeInfo = autoDuration ? "Auto-duration mode" : $"Manual {durationSeconds}s";
+                SetStatusText(mainForm, $"{modeInfo}: {scrollAnimationFrames} frames, {scrollPixelsPerFrame:F2}px/frame, {distance}px total");
             }));
 
             double accumulatedScrollX = 0;
@@ -2556,7 +2639,7 @@ namespace GifProcessorApp
                 var originalFrame = inputCollection[originalFrameIndex];
 
                 // Calculate current accumulated scroll offset
-                if (durationSeconds > 0)
+                if (autoDuration || durationSeconds > 0)
                 {
                     accumulatedScrollX += scrollPixelsPerFrame * signX;
                     accumulatedScrollY += scrollPixelsPerFrame * signY;

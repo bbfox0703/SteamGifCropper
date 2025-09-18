@@ -430,6 +430,9 @@
   <data name="Button_ScrollAnimatedGif" xml:space="preserve">
     <value>捲動動畫GIF</value>
   </data>
+  <data name="ScrollDialog_AutoDuration" xml:space="preserve">
+    <value>自動計算GIF週期時間</value>
+  </data>
   <data name="Button_OverlayGif" xml:space="preserve">
     <value>將GIF疊加在GIF上</value>
   </data>

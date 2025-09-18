@@ -422,6 +422,9 @@ Files skipped (not 0x21): {1}</value>
   <data name="Button_ScrollAnimatedGif" xml:space="preserve">
     <value>Scroll animated GIF</value>
   </data>
+  <data name="ScrollDialog_AutoDuration" xml:space="preserve">
+    <value>Auto-calculate GIF cycle duration</value>
+  </data>
   <data name="Button_OverlayGif" xml:space="preserve">
     <value>Overlay GIF over GIF</value>
   </data>

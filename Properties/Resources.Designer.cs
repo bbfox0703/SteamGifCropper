@@ -2285,6 +2285,12 @@ namespace SteamGifCropper.Properties {
             }
         }
 
+        internal static string ScrollDialog_AutoDuration {
+            get {
+                return ResourceManager.GetString("ScrollDialog_AutoDuration", resourceCulture);
+            }
+        }
+
         internal static string FileDialog_ImageAndGifFilter {
             get {
                 return ResourceManager.GetString("FileDialog_ImageAndGifFilter", resourceCulture);
