@@ -2183,27 +2183,9 @@ namespace SteamGifCropper.Properties {
             }
         }
 
-        internal static string TransitionDialog_PreviewTransition {
-            get {
-                return ResourceManager.GetString("TransitionDialog_PreviewTransition", resourceCulture);
-            }
-        }
-
         internal static string TransitionDialog_Cancel {
             get {
                 return ResourceManager.GetString("TransitionDialog_Cancel", resourceCulture);
-            }
-        }
-
-        internal static string ConcatenateDialog_FrameInfoLabel {
-            get {
-                return ResourceManager.GetString("ConcatenateDialog_FrameInfoLabel", resourceCulture);
-            }
-        }
-
-        internal static string ConcatenateDialog_AutoPreview {
-            get {
-                return ResourceManager.GetString("ConcatenateDialog_AutoPreview", resourceCulture);
             }
         }
 
@@ -2225,12 +2207,6 @@ namespace SteamGifCropper.Properties {
             }
         }
 
-        internal static string ConcatenateDialog_PreviewGroup {
-            get {
-                return ResourceManager.GetString("ConcatenateDialog_PreviewGroup", resourceCulture);
-            }
-        }
-
         internal static string ConcatenateDialog_TransitionSlide {
             get {
                 return ResourceManager.GetString("ConcatenateDialog_TransitionSlide", resourceCulture);
@@ -2249,27 +2225,9 @@ namespace SteamGifCropper.Properties {
             }
         }
 
-        internal static string ConcatenateDialog_PreviewTransition {
-            get {
-                return ResourceManager.GetString("ConcatenateDialog_PreviewTransition", resourceCulture);
-            }
-        }
-
-        internal static string ConcatenateDialog_CancelPreview {
-            get {
-                return ResourceManager.GetString("ConcatenateDialog_CancelPreview", resourceCulture);
-            }
-        }
-
         internal static string GTMainForm_ConcatenateGifs {
             get {
                 return ResourceManager.GetString("GTMainForm_ConcatenateGifs", resourceCulture);
-            }
-        }
-
-        internal static string ConcatenateDialog_NoPreviewAvailable {
-            get {
-                return ResourceManager.GetString("ConcatenateDialog_NoPreviewAvailable", resourceCulture);
             }
         }
 
@@ -2308,5 +2266,54 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("ConcatenateDialog_OutputFileLabel", resourceCulture);
             }
         }
+
+        internal static string ConcatenateDialog_RequireMinGifs {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_RequireMinGifs", resourceCulture);
+            }
+        }
+
+        internal static string ConcatenateDialog_RequireOutput {
+            get {
+                return ResourceManager.GetString("ConcatenateDialog_RequireOutput", resourceCulture);
+            }
+        }
+
+        internal static string Button_ScrollAnimatedGif {
+            get {
+                return ResourceManager.GetString("Button_ScrollAnimatedGif", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_AutoDuration {
+            get {
+                return ResourceManager.GetString("ScrollDialog_AutoDuration", resourceCulture);
+            }
+        }
+
+        internal static string FileDialog_ImageAndGifFilter {
+            get {
+                return ResourceManager.GetString("FileDialog_ImageAndGifFilter", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_TitleImageAndGif {
+            get {
+                return ResourceManager.GetString("ScrollDialog_TitleImageAndGif", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_InputImageOrGif {
+            get {
+                return ResourceManager.GetString("ScrollDialog_InputImageOrGif", resourceCulture);
+            }
+        }
+
+        internal static string ScrollDialog_SelectImageOrGif {
+            get {
+                return ResourceManager.GetString("ScrollDialog_SelectImageOrGif", resourceCulture);
+            }
+        }
+
     }
 }

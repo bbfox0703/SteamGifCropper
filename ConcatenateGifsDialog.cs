@@ -59,25 +59,8 @@ namespace GifProcessorApp
         private NumericUpDown nudTransitionDuration;
         private Label lblTransitionDuration;
         private Label lblSeconds;
-        private Button btnPreviewTransition;
-        private Button btnCancelPreview;
-        private ProgressBar prgPreview;
-        private Label lblPreviewStatus;
-        
-        // Embedded Preview Panel
-        private GroupBox grpPreview;
-        private PictureBox picPreview;
-        private Button btnPlay;
-        private Button btnPause;
-        private Button btnReplay;
-        private ProgressBar prgAnimation;
-        private Label lblFrameInfo;
-        private CheckBox chkAutoPreview;
-        
-        private CancellationTokenSource _previewCancellationTokenSource;
-        private System.Windows.Forms.Timer _animationTimer;
-        private List<System.Drawing.Image> _previewFrames;
-        private int _currentFrame;
+
+        // Preview functionality removed
 
         // General Settings
         private CheckBox chkUnifyDimensions;
@@ -86,7 +69,6 @@ namespace GifProcessorApp
 
         // Action Buttons
         private Button btnOK;
-        private IContainer components;
         private Button btnCancel;
 
         public ConcatenateGifsDialog()
@@ -95,7 +77,7 @@ namespace GifProcessorApp
             InitializeSettings();
             ApplyTheme();
             UpdateReferenceComboBoxes();
-            
+
             // Add event handlers for preview updates (after InitializeComponent)
             cmbSlideDirection.SelectedIndexChanged += CmbSlideDirection_SelectedIndexChanged;
             cmbZoomType.SelectedIndexChanged += CmbZoomType_SelectedIndexChanged;
@@ -111,7 +93,7 @@ namespace GifProcessorApp
         private void ApplyTheme()
         {
             bool isDarkMode = WindowsThemeManager.IsDarkModeEnabled();
-            
+
             if (isDarkMode)
             {
                 BackColor = Color.FromArgb(32, 32, 32);
@@ -171,7 +153,7 @@ namespace GifProcessorApp
                 {
                     groupBox.ForeColor = Color.White;
                 }
-                
+
                 if (control.HasChildren)
                 {
                     ApplyDarkThemeToControls(control.Controls);
@@ -219,7 +201,7 @@ namespace GifProcessorApp
                 {
                     groupBox.ForeColor = SystemColors.ControlText;
                 }
-                
+
                 if (control.HasChildren)
                 {
                     ApplyLightThemeToControls(control.Controls);
@@ -229,7 +211,6 @@ namespace GifProcessorApp
 
         private void InitializeComponent()
         {
-            components = new Container();
             lblInstructions = new Label();
             lblGifFiles = new Label();
             lstGifFiles = new ListBox();
@@ -263,19 +244,6 @@ namespace GifProcessorApp
             lblTransitionDuration = new Label();
             nudTransitionDuration = new NumericUpDown();
             lblSeconds = new Label();
-            btnPreviewTransition = new Button();
-            btnCancelPreview = new Button();
-            prgPreview = new ProgressBar();
-            lblPreviewStatus = new Label();
-            grpPreview = new GroupBox();
-            picPreview = new PictureBox();
-            btnPlay = new Button();
-            btnPause = new Button();
-            btnReplay = new Button();
-            prgAnimation = new ProgressBar();
-            lblFrameInfo = new Label();
-            chkAutoPreview = new CheckBox();
-            _animationTimer = new System.Windows.Forms.Timer(components);
             chkUnifyDimensions = new CheckBox();
             chkUseFasterPalette = new CheckBox();
             chkUseGifsicleOptimization = new CheckBox();
@@ -286,8 +254,6 @@ namespace GifProcessorApp
             grpPaletteSettings.SuspendLayout();
             grpTransitionSettings.SuspendLayout();
             ((ISupportInitialize)nudTransitionDuration).BeginInit();
-            grpPreview.SuspendLayout();
-            ((ISupportInitialize)picPreview).BeginInit();
             SuspendLayout();
             // 
             // lblInstructions
@@ -434,7 +400,7 @@ namespace GifProcessorApp
             lblCustomFps.Name = "lblCustomFps";
             lblCustomFps.Size = new Size(24, 15);
             lblCustomFps.TabIndex = 5;
-            lblCustomFps.Text = "fps";
+            lblCustomFps.Text = SteamGifCropper.Properties.Resources.Label_FPS;
             // 
             // grpPaletteSettings
             // 
@@ -489,7 +455,7 @@ namespace GifProcessorApp
             chkStrongPaletteWeighting.CheckState = CheckState.Checked;
             chkStrongPaletteWeighting.Location = new Point(6, 72);
             chkStrongPaletteWeighting.Name = "chkStrongPaletteWeighting";
-            chkStrongPaletteWeighting.Size = new Size(198, 19);
+            chkStrongPaletteWeighting.Size = new Size(168, 19);
             chkStrongPaletteWeighting.TabIndex = 3;
             chkStrongPaletteWeighting.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_StrongPaletteWeightingShort;
             chkStrongPaletteWeighting.UseVisualStyleBackColor = true;
@@ -501,7 +467,7 @@ namespace GifProcessorApp
             lblOutputFile.Name = "lblOutputFile";
             lblOutputFile.Size = new Size(91, 15);
             lblOutputFile.TabIndex = 18;
-            lblOutputFile.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_OutputFileLabel;
+            lblOutputFile.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_OutputFile;
             // 
             // txtOutputFile
             // 
@@ -532,10 +498,6 @@ namespace GifProcessorApp
             grpTransitionSettings.Controls.Add(lblTransitionDuration);
             grpTransitionSettings.Controls.Add(nudTransitionDuration);
             grpTransitionSettings.Controls.Add(lblSeconds);
-            grpTransitionSettings.Controls.Add(btnPreviewTransition);
-            grpTransitionSettings.Controls.Add(btnCancelPreview);
-            grpTransitionSettings.Controls.Add(prgPreview);
-            grpTransitionSettings.Controls.Add(lblPreviewStatus);
             grpTransitionSettings.Location = new Point(12, 315);
             grpTransitionSettings.Name = "grpTransitionSettings";
             grpTransitionSettings.Size = new Size(496, 146);
@@ -605,7 +567,7 @@ namespace GifProcessorApp
             cmbSlideDirection.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbSlideDirection.Enabled = false;
             cmbSlideDirection.Items.AddRange(new object[] { "Left", "Right", "Up", "Down" });
-            cmbSlideDirection.Location = new Point(113, 46);
+            cmbSlideDirection.Location = new Point(180, 46);
             cmbSlideDirection.Name = "cmbSlideDirection";
             cmbSlideDirection.Size = new Size(80, 23);
             cmbSlideDirection.TabIndex = 5;
@@ -615,7 +577,7 @@ namespace GifProcessorApp
             cmbZoomType.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbZoomType.Enabled = false;
             cmbZoomType.Items.AddRange(new object[] { "Zoom In", "Zoom Out" });
-            cmbZoomType.Location = new Point(232, 46);
+            cmbZoomType.Location = new Point(269, 46);
             cmbZoomType.Name = "cmbZoomType";
             cmbZoomType.Size = new Size(80, 23);
             cmbZoomType.TabIndex = 6;
@@ -623,7 +585,7 @@ namespace GifProcessorApp
             // lblTransitionDuration
             // 
             lblTransitionDuration.AutoSize = true;
-            lblTransitionDuration.Location = new Point(6, 77);
+            lblTransitionDuration.Location = new Point(6, 89);
             lblTransitionDuration.Name = "lblTransitionDuration";
             lblTransitionDuration.Size = new Size(117, 15);
             lblTransitionDuration.TabIndex = 7;
@@ -633,7 +595,7 @@ namespace GifProcessorApp
             // 
             nudTransitionDuration.DecimalPlaces = 1;
             nudTransitionDuration.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
-            nudTransitionDuration.Location = new Point(130, 75);
+            nudTransitionDuration.Location = new Point(129, 87);
             nudTransitionDuration.Maximum = new decimal(new int[] { 30, 0, 0, 65536 });
             nudTransitionDuration.Minimum = new decimal(new int[] { 1, 0, 0, 65536 });
             nudTransitionDuration.Name = "nudTransitionDuration";
@@ -644,140 +606,11 @@ namespace GifProcessorApp
             // lblSeconds
             // 
             lblSeconds.AutoSize = true;
-            lblSeconds.Location = new Point(195, 77);
+            lblSeconds.Location = new Point(195, 89);
             lblSeconds.Name = "lblSeconds";
             lblSeconds.Size = new Size(53, 15);
             lblSeconds.TabIndex = 9;
             lblSeconds.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_SecondsLabel;
-            // 
-            // btnPreviewTransition
-            // 
-            btnPreviewTransition.Enabled = false;
-            btnPreviewTransition.Location = new Point(3, 104);
-            btnPreviewTransition.Name = "btnPreviewTransition";
-            btnPreviewTransition.Size = new Size(100, 25);
-            btnPreviewTransition.TabIndex = 10;
-            btnPreviewTransition.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_PreviewTransition;
-            btnPreviewTransition.UseVisualStyleBackColor = true;
-            btnPreviewTransition.Click += BtnPreviewTransition_Click;
-            // 
-            // btnCancelPreview
-            // 
-            btnCancelPreview.Enabled = false;
-            btnCancelPreview.Location = new Point(308, 104);
-            btnCancelPreview.Name = "btnCancelPreview";
-            btnCancelPreview.Size = new Size(60, 25);
-            btnCancelPreview.TabIndex = 11;
-            btnCancelPreview.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_CancelPreview;
-            btnCancelPreview.UseVisualStyleBackColor = true;
-            btnCancelPreview.Click += BtnCancelPreview_Click;
-            // 
-            // prgPreview
-            // 
-            prgPreview.Location = new Point(378, 104);
-            prgPreview.Name = "prgPreview";
-            prgPreview.Size = new Size(100, 25);
-            prgPreview.TabIndex = 12;
-            prgPreview.Visible = false;
-            // 
-            // lblPreviewStatus
-            // 
-            lblPreviewStatus.AutoSize = true;
-            lblPreviewStatus.Location = new Point(200, 100);
-            lblPreviewStatus.Name = "lblPreviewStatus";
-            lblPreviewStatus.Size = new Size(0, 15);
-            lblPreviewStatus.TabIndex = 13;
-            lblPreviewStatus.Visible = false;
-            // 
-            // grpPreview
-            // 
-            grpPreview.Controls.Add(picPreview);
-            grpPreview.Controls.Add(btnPlay);
-            grpPreview.Controls.Add(btnPause);
-            grpPreview.Controls.Add(btnReplay);
-            grpPreview.Controls.Add(prgAnimation);
-            grpPreview.Controls.Add(lblFrameInfo);
-            grpPreview.Controls.Add(chkAutoPreview);
-            grpPreview.Location = new Point(530, 12);
-            grpPreview.Name = "grpPreview";
-            grpPreview.Size = new Size(260, 350);
-            grpPreview.TabIndex = 26;
-            grpPreview.TabStop = false;
-            grpPreview.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_PreviewGroup;
-            // 
-            // picPreview
-            // 
-            picPreview.BackColor = Color.Black;
-            picPreview.BorderStyle = BorderStyle.FixedSingle;
-            picPreview.Location = new Point(10, 25);
-            picPreview.Name = "picPreview";
-            picPreview.Size = new Size(240, 180);
-            picPreview.SizeMode = PictureBoxSizeMode.Zoom;
-            picPreview.TabIndex = 0;
-            picPreview.TabStop = false;
-            // 
-            // btnPlay
-            // 
-            btnPlay.Location = new Point(10, 215);
-            btnPlay.Name = "btnPlay";
-            btnPlay.Size = new Size(50, 25);
-            btnPlay.TabIndex = 1;
-            btnPlay.Text = "▶";
-            btnPlay.UseVisualStyleBackColor = true;
-            btnPlay.Click += BtnPlay_Click;
-            // 
-            // btnPause
-            // 
-            btnPause.Location = new Point(70, 215);
-            btnPause.Name = "btnPause";
-            btnPause.Size = new Size(50, 25);
-            btnPause.TabIndex = 2;
-            btnPause.Text = "⏸";
-            btnPause.UseVisualStyleBackColor = true;
-            btnPause.Click += BtnPause_Click;
-            // 
-            // btnReplay
-            // 
-            btnReplay.Location = new Point(130, 215);
-            btnReplay.Name = "btnReplay";
-            btnReplay.Size = new Size(50, 25);
-            btnReplay.TabIndex = 3;
-            btnReplay.Text = "⏮";
-            btnReplay.UseVisualStyleBackColor = true;
-            btnReplay.Click += BtnReplay_Click;
-            // 
-            // prgAnimation
-            // 
-            prgAnimation.Location = new Point(10, 250);
-            prgAnimation.Name = "prgAnimation";
-            prgAnimation.Size = new Size(240, 15);
-            prgAnimation.TabIndex = 4;
-            // 
-            // lblFrameInfo
-            // 
-            lblFrameInfo.AutoSize = true;
-            lblFrameInfo.Location = new Point(10, 275);
-            lblFrameInfo.Name = "lblFrameInfo";
-            lblFrameInfo.Size = new Size(126, 15);
-            lblFrameInfo.TabIndex = 5;
-            lblFrameInfo.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_NoPreviewAvailable;
-            // 
-            // chkAutoPreview
-            // 
-            chkAutoPreview.AutoSize = true;
-            chkAutoPreview.Checked = true;
-            chkAutoPreview.CheckState = CheckState.Checked;
-            chkAutoPreview.Location = new Point(10, 300);
-            chkAutoPreview.Name = "chkAutoPreview";
-            chkAutoPreview.Size = new Size(146, 19);
-            chkAutoPreview.TabIndex = 6;
-            chkAutoPreview.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_AutoPreview;
-            chkAutoPreview.UseVisualStyleBackColor = true;
-            chkAutoPreview.CheckedChanged += ChkAutoPreview_CheckedChanged;
-            // 
-            // _animationTimer
-            // 
-            _animationTimer.Tick += AnimationTimer_Tick;
             // 
             // chkUnifyDimensions
             // 
@@ -837,7 +670,7 @@ namespace GifProcessorApp
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
             CancelButton = btnCancel;
-            ClientSize = new Size(800, 595);
+            ClientSize = new Size(520, 595);
             Controls.Add(lblInstructions);
             Controls.Add(lblGifFiles);
             Controls.Add(lstGifFiles);
@@ -856,13 +689,12 @@ namespace GifProcessorApp
             Controls.Add(chkUseGifsicleOptimization);
             Controls.Add(btnOK);
             Controls.Add(btnCancel);
-            Controls.Add(grpPreview);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "ConcatenateGifsDialog";
             StartPosition = FormStartPosition.CenterParent;
-            Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_WindowTitle;
+            Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_Title;
             grpFpsSettings.ResumeLayout(false);
             grpFpsSettings.PerformLayout();
             ((ISupportInitialize)nudCustomFps).EndInit();
@@ -871,9 +703,6 @@ namespace GifProcessorApp
             grpTransitionSettings.ResumeLayout(false);
             grpTransitionSettings.PerformLayout();
             ((ISupportInitialize)nudTransitionDuration).EndInit();
-            grpPreview.ResumeLayout(false);
-            grpPreview.PerformLayout();
-            ((ISupportInitialize)picPreview).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -896,7 +725,7 @@ namespace GifProcessorApp
                             lstGifFiles.Items.Add(fileName);
                         }
                     }
-                    
+
                     UpdateReferenceComboBoxes();
                     UpdateOutputFileName();
                 }
@@ -977,21 +806,13 @@ namespace GifProcessorApp
         {
             cmbSlideDirection.Enabled = rbTransitionSlide.Checked;
             cmbZoomType.Enabled = rbTransitionZoom.Checked;
-            
+
             // Enable/disable transition duration for all transition types except None
             bool hasTransition = !rbTransitionNone.Checked;
             nudTransitionDuration.Enabled = hasTransition;
             lblTransitionDuration.Enabled = hasTransition;
             lblSeconds.Enabled = hasTransition;
-            
-            // Enable preview button only if there are GIFs and transition is selected
-            btnPreviewTransition.Enabled = hasTransition && lstGifFiles.Items.Count >= 2;
-            
-            // Update embedded preview when transition changes
-            if (chkAutoPreview.Checked)
-            {
-                UpdatePreview();
-            }
+
         }
 
         private void UpdateReferenceComboBoxes()
@@ -1013,24 +834,16 @@ namespace GifProcessorApp
             // Restore selections or default to first item
             if (cmbFpsReference.Items.Count > 0)
             {
-                cmbFpsReference.SelectedIndex = (fpsSelection >= 0 && fpsSelection < cmbFpsReference.Items.Count) ? 
+                cmbFpsReference.SelectedIndex = (fpsSelection >= 0 && fpsSelection < cmbFpsReference.Items.Count) ?
                                               fpsSelection : 0;
             }
 
             if (cmbPaletteReference.Items.Count > 0)
             {
-                cmbPaletteReference.SelectedIndex = (paletteSelection >= 0 && paletteSelection < cmbPaletteReference.Items.Count) ? 
+                cmbPaletteReference.SelectedIndex = (paletteSelection >= 0 && paletteSelection < cmbPaletteReference.Items.Count) ?
                                                    paletteSelection : 0;
             }
-            
-            // Update preview button availability
-            btnPreviewTransition.Enabled = !rbTransitionNone.Checked && lstGifFiles.Items.Count >= 2;
-            
-            // Update embedded preview when GIF files change
-            if (chkAutoPreview.Checked)
-            {
-                UpdatePreview();
-            }
+
         }
 
         private void UpdateOutputFileName()
@@ -1049,15 +862,15 @@ namespace GifProcessorApp
             // Validate inputs
             if (lstGifFiles.Items.Count < 2)
             {
-                MessageBox.Show("Please select at least 2 GIF files to concatenate.",
-                               "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(SteamGifCropper.Properties.Resources.ConcatenateDialog_RequireMinGifs,
+                               SteamGifCropper.Properties.Resources.Mp4Dialog_InputRequired, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (string.IsNullOrEmpty(txtOutputFile.Text))
             {
-                MessageBox.Show("Please specify an output file.",
-                               "Output Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(SteamGifCropper.Properties.Resources.ConcatenateDialog_RequireOutput,
+                               SteamGifCropper.Properties.Resources.Mp4Dialog_OutputRequired, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -1126,173 +939,7 @@ namespace GifProcessorApp
             Close();
         }
 
-        private async void BtnPreviewTransition_Click(object sender, EventArgs e)
-        {
-            if (lstGifFiles.Items.Count < 2)
-            {
-                MessageBox.Show("Please select at least 2 GIF files to preview transitions.",
-                               "Preview Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (rbTransitionNone.Checked)
-            {
-                MessageBox.Show("Please select a transition type to preview.",
-                               "Preview Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            // Create new cancellation token for this operation
-            _previewCancellationTokenSource?.Cancel();
-            _previewCancellationTokenSource = new CancellationTokenSource();
-            
-            btnPreviewTransition.Enabled = false;
-            btnCancelPreview.Enabled = true;
-            btnPreviewTransition.Text = "Generating...";
-            prgPreview.Visible = true;
-            lblPreviewStatus.Visible = true;
-            prgPreview.Value = 0;
-            lblPreviewStatus.Text = "Initializing preview...";
-
-            var progress = new Progress<(int current, int total, string status)>(report =>
-            {
-                if (this.InvokeRequired)
-                {
-                    this.BeginInvoke((Action)(() =>
-                    {
-                        prgPreview.Maximum = report.total;
-                        prgPreview.Value = Math.Min(report.current, report.total);
-                        lblPreviewStatus.Text = report.status;
-                    }));
-                }
-                else
-                {
-                    prgPreview.Maximum = report.total;
-                    prgPreview.Value = Math.Min(report.current, report.total);
-                    lblPreviewStatus.Text = report.status;
-                }
-            });
-
-            try
-            {
-                // Get first two GIFs for preview
-                string firstGif = lstGifFiles.Items[0].ToString();
-                string secondGif = lstGifFiles.Items[1].ToString();
-
-                await Task.Run(() => GenerateTransitionPreview(firstGif, secondGif, progress, _previewCancellationTokenSource.Token), _previewCancellationTokenSource.Token);
-            }
-            catch (OperationCanceledException)
-            {
-                lblPreviewStatus.Text = "Preview cancelled by user";
-                await Task.Delay(1000); // Show message briefly
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error generating transition preview: {ex.Message}",
-                               "Preview Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                btnPreviewTransition.Enabled = true;
-                btnCancelPreview.Enabled = false;
-                btnPreviewTransition.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_PreviewTransition;
-                prgPreview.Visible = false;
-                lblPreviewStatus.Visible = false;
-                lblPreviewStatus.Text = "";
-                
-                _previewCancellationTokenSource?.Dispose();
-                _previewCancellationTokenSource = null;
-            }
-        }
-
-        private void GenerateTransitionPreview(string firstGifPath, string secondGifPath, IProgress<(int current, int total, string status)> progress = null, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                using var firstCollection = new ImageMagick.MagickImageCollection(firstGifPath);
-                using var secondCollection = new ImageMagick.MagickImageCollection(secondGifPath);
-                
-                // Optimize for preview: resize large images to reduce memory usage
-                const int maxPreviewSize = 400;
-                bool needsResize = firstCollection.Count > 0 && 
-                                 (firstCollection[0].Width > maxPreviewSize || firstCollection[0].Height > maxPreviewSize);
-                
-                if (needsResize)
-                {
-                    progress?.Report((0, 1, "Resizing images for preview..."));
-                    
-                    foreach (var frame in firstCollection)
-                    {
-                        var geometry = new MagickGeometry(maxPreviewSize, maxPreviewSize) { IgnoreAspectRatio = false };
-                        frame.Resize(geometry);
-                    }
-                    
-                    foreach (var frame in secondCollection)
-                    {
-                        var geometry = new MagickGeometry(maxPreviewSize, maxPreviewSize) { IgnoreAspectRatio = false };
-                        frame.Resize(geometry);
-                    }
-                }
-
-                // Get transition type
-                var transitionType = GetSelectedTransitionType();
-                float duration = (float)nudTransitionDuration.Value;
-
-                // Generate a short preview (0.3 seconds max)
-                float previewDuration = Math.Min(duration, 0.3f);
-                int fps = 10; // Lower FPS for faster preview generation
-
-                var previewFrames = TransitionGenerator.GenerateTransition(
-                    firstCollection,
-                    secondCollection,
-                    transitionType,
-                    previewDuration,
-                    fps,
-                    progress,
-                    cancellationToken);
-
-                if (previewFrames != null && previewFrames.Count > 0)
-                {
-                    // Save preview to temp file
-                    string tempPath = Path.Combine(Path.GetTempPath(), $"transition_preview_{DateTime.Now.Ticks}.gif");
-                    previewFrames.Write(tempPath);
-
-                    // Show preview in default application
-                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                    {
-                        FileName = tempPath,
-                        UseShellExecute = true
-                    });
-
-                    // Clean up temp file after a delay
-                    Task.Delay(10000).ContinueWith(_ =>
-                    {
-                        try
-                        {
-                            if (File.Exists(tempPath))
-                                File.Delete(tempPath);
-                        }
-                        catch { }
-                    });
-                    
-                    // Immediately dispose preview frames to free memory
-                    previewFrames.Dispose();
-                }
-                
-                // Force garbage collection after preview generation
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-            }
-            catch (Exception ex)
-            {
-                this.Invoke((Action)(() =>
-                {
-                    MessageBox.Show($"Error generating preview: {ex.Message}",
-                                   "Preview Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }));
-            }
-        }
-
+        // Transition preview functionality removed - keeping GetSelectedTransitionType for main processing
         private TransitionType GetSelectedTransitionType()
         {
             if (rbTransitionFade.Checked) return TransitionType.Fade;
@@ -1312,241 +959,33 @@ namespace GifProcessorApp
             if (rbTransitionDissolve.Checked) return TransitionType.Dissolve;
             return TransitionType.None;
         }
-        
-        private void BtnCancelPreview_Click(object sender, EventArgs e)
-        {
-            _previewCancellationTokenSource?.Cancel();
-            btnCancelPreview.Enabled = false;
-            lblPreviewStatus.Text = "Cancelling...";
-        }
-        
+
         // Event handlers for preview updates
         private void CmbSlideDirection_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (chkAutoPreview.Checked)
-            {
-                UpdatePreview();
-            }
+            // Auto preview removed
         }
 
         private void CmbZoomType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (chkAutoPreview.Checked)
-            {
-                UpdatePreview();
-            }
+            // Auto preview removed
         }
 
         private void NudTransitionDuration_ValueChanged(object sender, EventArgs e)
         {
-            if (chkAutoPreview.Checked)
-            {
-                UpdatePreview();
-            }
-        }
-        
-        // Embedded Preview Implementation
-        private void BtnPlay_Click(object sender, EventArgs e)
-        {
-            if (_previewFrames != null && _previewFrames.Count > 0)
-            {
-                _animationTimer.Start();
-                btnPlay.Enabled = false;
-                btnPause.Enabled = true;
-            }
+            // Auto preview removed
         }
 
-        private void BtnPause_Click(object sender, EventArgs e)
-        {
-            _animationTimer.Stop();
-            btnPlay.Enabled = true;
-            btnPause.Enabled = false;
-        }
-
-        private void BtnReplay_Click(object sender, EventArgs e)
-        {
-            if (_previewFrames != null && _previewFrames.Count > 0)
-            {
-                _currentFrame = 0;
-                DisplayCurrentFrame();
-                _animationTimer.Start();
-                btnPlay.Enabled = false;
-                btnPause.Enabled = true;
-            }
-        }
-
-        private void AnimationTimer_Tick(object sender, EventArgs e)
-        {
-            if (_previewFrames == null || _previewFrames.Count == 0) return;
-
-            DisplayCurrentFrame();
-            
-            _currentFrame = (_currentFrame + 1) % _previewFrames.Count;
-            prgAnimation.Value = (int)((double)_currentFrame / _previewFrames.Count * 100);
-            
-            if (_currentFrame == 0) // Loop completed
-            {
-                _animationTimer.Stop();
-                btnPlay.Enabled = true;
-                btnPause.Enabled = false;
-            }
-        }
-
-        private void DisplayCurrentFrame()
-        {
-            if (_previewFrames != null && _currentFrame >= 0 && _currentFrame < _previewFrames.Count)
-            {
-                picPreview.Image = _previewFrames[_currentFrame];
-                lblFrameInfo.Text = $"Frame {_currentFrame + 1} of {_previewFrames.Count}";
-            }
-        }
-
-        private void ChkAutoPreview_CheckedChanged(object sender, EventArgs e)
-        {
-            if (chkAutoPreview.Checked)
-            {
-                UpdatePreview();
-            }
-        }
-
-        private async void UpdatePreview()
-        {
-            if (!chkAutoPreview.Checked || lstGifFiles.Items.Count < 2 || rbTransitionNone.Checked)
-            {
-                ClearPreview();
-                return;
-            }
-
-            try
-            {
-                await GenerateEmbeddedPreview();
-            }
-            catch (Exception ex)
-            {
-                lblFrameInfo.Text = $"Preview error: {ex.Message}";
-                ClearPreview();
-            }
-        }
-
-        private async Task GenerateEmbeddedPreview()
-        {
-            btnPlay.Enabled = false;
-            btnPause.Enabled = false;
-            btnReplay.Enabled = false;
-            lblFrameInfo.Text = "Generating preview...";
-
-            await Task.Run(() =>
-            {
-                try
-                {
-                    // Dispose existing preview frames
-                    DisposePreviewFrames();
-
-                    string firstGif = lstGifFiles.Items[0].ToString();
-                    string secondGif = lstGifFiles.Items[1].ToString();
-
-                    using var firstCollection = new ImageMagick.MagickImageCollection(firstGif);
-                    using var secondCollection = new ImageMagick.MagickImageCollection(secondGif);
-
-                    // Resize for preview performance
-                    const int previewSize = 200;
-                    foreach (var frame in firstCollection)
-                    {
-                        var geometry = new MagickGeometry(previewSize, previewSize) { IgnoreAspectRatio = false };
-                        frame.Resize(geometry);
-                    }
-                    
-                    foreach (var frame in secondCollection)
-                    {
-                        var geometry = new MagickGeometry(previewSize, previewSize) { IgnoreAspectRatio = false };
-                        frame.Resize(geometry);
-                    }
-
-                    var transitionType = GetSelectedTransitionType();
-                    float duration = Math.Min((float)nudTransitionDuration.Value, 1.0f); // Max 1 second for preview
-                    int fps = 8; // Lower FPS for smoother UI
-
-                    var previewCollection = TransitionGenerator.GenerateTransition(
-                        firstCollection,
-                        secondCollection,
-                        transitionType,
-                        duration,
-                        fps);
-
-                    if (previewCollection != null && previewCollection.Count > 0)
-                    {
-                        _previewFrames = new List<System.Drawing.Image>();
-                        foreach (var frame in previewCollection)
-                        {
-                            var magickImage = (MagickImage)frame;
-                            byte[] imageBytes = magickImage.ToByteArray(MagickFormat.Png);
-                            using (var ms = new System.IO.MemoryStream(imageBytes))
-                            {
-                                _previewFrames.Add(System.Drawing.Image.FromStream(ms));
-                            }
-                        }
-                        previewCollection.Dispose();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    this.Invoke((Action)(() =>
-                    {
-                        lblFrameInfo.Text = $"Preview error: {ex.Message}";
-                    }));
-                }
-            });
-
-            if (_previewFrames != null && _previewFrames.Count > 0)
-            {
-                _currentFrame = 0;
-                DisplayCurrentFrame();
-                btnPlay.Enabled = true;
-                btnReplay.Enabled = true;
-                prgAnimation.Maximum = 100;
-                prgAnimation.Value = 0;
-            }
-            else
-            {
-                lblFrameInfo.Text = "Failed to generate preview";
-            }
-        }
-
-        private void ClearPreview()
-        {
-            _animationTimer.Stop();
-            DisposePreviewFrames();
-            picPreview.Image = null;
-            lblFrameInfo.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_NoPreviewAvailable;
-            prgAnimation.Value = 0;
-            btnPlay.Enabled = false;
-            btnPause.Enabled = false;
-            btnReplay.Enabled = false;
-        }
-
-        private void DisposePreviewFrames()
-        {
-            if (_previewFrames != null)
-            {
-                foreach (var frame in _previewFrames)
-                {
-                    frame?.Dispose();
-                }
-                _previewFrames.Clear();
-            }
-        }
+        // Preview functionality completely removed
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                _previewCancellationTokenSource?.Cancel();
-                _previewCancellationTokenSource?.Dispose();
-                _animationTimer?.Stop();
-                _animationTimer?.Dispose();
-                DisposePreviewFrames();
+                // Component cleanup handled by Windows Forms designer
             }
             base.Dispose(disposing);
         }
+
     }
 }

@@ -65,6 +65,7 @@
             toolStripLangTradChinese = new System.Windows.Forms.ToolStripMenuItem();
             toolStripLangJapanese = new System.Windows.Forms.ToolStripMenuItem();
             btnScrollStaticImage = new System.Windows.Forms.Button();
+            btnScrollAnimatedGif = new System.Windows.Forms.Button();
             btnOverlayGIF = new System.Windows.Forms.Button();
             btnResizeNfpsGIF = new System.Windows.Forms.Button();
             lblResourceLimitDesc = new System.Windows.Forms.Label();
@@ -360,7 +361,7 @@
             // lblFramerate
             // 
             lblFramerate.AutoSize = true;
-            lblFramerate.Location = new System.Drawing.Point(11, 262);
+            lblFramerate.Location = new System.Drawing.Point(11, 295);
             lblFramerate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFramerate.Name = "lblFramerate";
             lblFramerate.Size = new System.Drawing.Size(0, 15);
@@ -369,7 +370,7 @@
             // lblFPS
             // 
             lblFPS.AutoSize = true;
-            lblFPS.Location = new System.Drawing.Point(310, 309);
+            lblFPS.Location = new System.Drawing.Point(310, 295);
             lblFPS.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFPS.Name = "lblFPS";
             lblFPS.Size = new System.Drawing.Size(0, 15);
@@ -452,6 +453,16 @@
             btnScrollStaticImage.UseVisualStyleBackColor = true;
             btnScrollStaticImage.Click += btnScrollStaticImage_Click;
             // 
+            // btnScrollAnimatedGif
+            // 
+            btnScrollAnimatedGif.Location = new System.Drawing.Point(7, 125);
+            btnScrollAnimatedGif.Name = "btnScrollAnimatedGif";
+            btnScrollAnimatedGif.Size = new System.Drawing.Size(300, 26);
+            btnScrollAnimatedGif.TabIndex = 6;
+            btnScrollAnimatedGif.Text = SteamGifCropper.Properties.Resources.Button_ScrollAnimatedGif;
+            btnScrollAnimatedGif.UseVisualStyleBackColor = true;
+            btnScrollAnimatedGif.Click += btnScrollAnimatedGif_Click;
+            // 
             // btnOverlayGIF
             // 
             btnOverlayGIF.Location = new System.Drawing.Point(7, 187);
@@ -475,7 +486,7 @@
             // lblResourceLimitDesc
             // 
             lblResourceLimitDesc.AutoSize = true;
-            lblResourceLimitDesc.Location = new System.Drawing.Point(7, 276);
+            lblResourceLimitDesc.Location = new System.Drawing.Point(7, 269);
             lblResourceLimitDesc.Name = "lblResourceLimitDesc";
             lblResourceLimitDesc.Size = new System.Drawing.Size(234, 15);
             lblResourceLimitDesc.TabIndex = 15;
@@ -483,7 +494,7 @@
             // 
             // numUpDownFramerate
             // 
-            numUpDownFramerate.Location = new System.Drawing.Point(255, 307);
+            numUpDownFramerate.Location = new System.Drawing.Point(255, 293);
             numUpDownFramerate.Margin = new System.Windows.Forms.Padding(2);
             numUpDownFramerate.Maximum = new decimal(new int[] { 30, 0, 0, 0 });
             numUpDownFramerate.Minimum = new decimal(new int[] { 5, 0, 0, 0 });
@@ -512,6 +523,7 @@
             Controls.Add(btnResizeNfpsGIF);
             Controls.Add(btnOverlayGIF);
             Controls.Add(btnScrollStaticImage);
+            Controls.Add(btnScrollAnimatedGif);
             Controls.Add(btnLanguageChange);
             Controls.Add(btnReverseGIF);
             Controls.Add(chk5GIFMergeFasterPaletteProcess);
@@ -586,6 +598,7 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripLangTradChinese;
         private System.Windows.Forms.ToolStripMenuItem toolStripLangJapanese;
         private System.Windows.Forms.Button btnScrollStaticImage;
+        private System.Windows.Forms.Button btnScrollAnimatedGif;
         private System.Windows.Forms.Button btnOverlayGIF;
         private System.Windows.Forms.Button btnResizeNfpsGIF;
         private System.Windows.Forms.Label lblResourceLimitDesc;

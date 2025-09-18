@@ -228,6 +228,11 @@ namespace GifProcessorApp
             await ExecuteWithErrorHandling(async () => await GifProcessor.ScrollStaticImage(this), "static image scroll");
         }
 
+        private async void btnScrollAnimatedGif_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(async () => await GifProcessor.ScrollAnimatedGif(this), "animated GIF scroll");
+        }
+
         private async void btnOverlayGIF_Click(object sender, EventArgs e)
         {
             await ExecuteWithErrorHandling(() => GifProcessor.OverlayGif(this), "GIF overlay");

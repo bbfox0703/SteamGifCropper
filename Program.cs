@@ -18,6 +18,9 @@ namespace GifProcessorApp
                 // Configure ImageMagick resource limits, allowing overrides via config or command line
                 ConfigureResourceLimits(args);
 
+                // Test and configure OpenCL GPU acceleration
+                TestAndConfigureOpenCL();
+
                 // Initialize localization based on OS language
                 InitializeLocalization();
 
@@ -112,6 +115,39 @@ namespace GifProcessorApp
                            SteamGifCropper.Properties.Resources.Title_Error, 
                            MessageBoxButtons.OK, 
                            MessageBoxIcon.Error);
+        }
+
+        /// <summary>
+        /// Test and configure OpenCL GPU acceleration if available
+        /// </summary>
+        private static void TestAndConfigureOpenCL()
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("Testing OpenCL GPU acceleration...");
+
+                // Try to enable OpenCL - this will work if the Magick.NET build supports it
+                // and the system has OpenCL-compatible devices
+                OpenCL.IsEnabled = true;
+
+                System.Diagnostics.Debug.WriteLine($"OpenCL IsEnabled: {OpenCL.IsEnabled}");
+
+                if (OpenCL.IsEnabled)
+                {
+                    System.Diagnostics.Debug.WriteLine("OpenCL GPU acceleration is enabled");
+                    System.Diagnostics.Debug.WriteLine("The first OpenCL operation will run a benchmark to determine optimal device");
+                    System.Diagnostics.Debug.WriteLine("Benchmark results will be stored at: %LOCALAPPDATA%\\ImageMagick\\ImagemagickOpenCLDeviceProfile.xml");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("OpenCL is not available - either not supported in this build or no compatible devices found");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"OpenCL configuration failed: {ex.Message}");
+                // Continue without OpenCL acceleration
+            }
         }
 
         /// <summary>

@@ -350,6 +350,9 @@ Files skipped (not 0x21): {1}</value>
   <data name="FileDialog_ImageFilter" xml:space="preserve">
     <value>Image Files (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp</value>
   </data>
+  <data name="FileDialog_ImageAndGifFilter" xml:space="preserve">
+    <value>Image and GIF Files (*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.png;*.jpg;*.jpeg;*.bmp;*.gif</value>
+  </data>
   <data name="FileDialog_SelectGifOrder" xml:space="preserve">
     <value>Select GIF file #{0} (position {1} from left to right)</value>
   </data>
@@ -414,7 +417,37 @@ Files skipped (not 0x21): {1}</value>
     <value>FFMPEG: Reverse animated GIF</value>
   </data>
   <data name="Button_ScrollStaticImage" xml:space="preserve">
-    <value>Scroll static image</value>
+    <value>Scroll image/GIF</value>
+  </data>
+  <data name="Button_ScrollAnimatedGif" xml:space="preserve">
+    <value>Scroll animated GIF</value>
+  </data>
+  <data name="ScrollDialog_AutoDuration" xml:space="preserve">
+    <value>Auto-calculate GIF cycle duration</value>
+  </data>
+  <data name="Status_AutoCalculatedDuration" xml:space="preserve">
+    <value>Auto-calculated GIF cycle duration: {0:F2}s → {1}s</value>
+  </data>
+  <data name="Status_AutoDurationMode" xml:space="preserve">
+    <value>Auto-duration mode</value>
+  </data>
+  <data name="Status_ManualDurationMode" xml:space="preserve">
+    <value>Manual {0}s</value>
+  </data>
+  <data name="Status_ScrollParameters" xml:space="preserve">
+    <value>{0}: {1} frames, X:{2:F2}px/frame, Y:{3:F2}px/frame</value>
+  </data>
+  <data name="Status_FullCycleFinalPosition" xml:space="preserve">
+    <value>Full cycle final position: X={0}, Y={1} (not reset to 0)</value>
+  </data>
+  <data name="Status_AutoDurationComplete" xml:space="preserve">
+    <value>Auto-duration complete: {0} frames (same as source)</value>
+  </data>
+  <data name="Status_TimelineContinuity" xml:space="preserve">
+    <value>Timeline continuity: Last used frame {0}, continuing from frame {1}</value>
+  </data>
+  <data name="Status_StepBasedContinuity" xml:space="preserve">
+    <value>Step-based continuity: Used {0} scroll frames, last frame {1}, continuing from frame {2}</value>
   </data>
   <data name="Button_OverlayGif" xml:space="preserve">
     <value>Overlay GIF over GIF</value>
@@ -735,10 +768,16 @@ Duration: {4}
 Technical details: {5}</value>
   </data>
   <data name="ScrollDialog_Title" xml:space="preserve">
-    <value>Scroll Static Image</value>
+    <value>Scroll Image/GIF</value>
+  </data>
+  <data name="ScrollDialog_TitleImageAndGif" xml:space="preserve">
+    <value>Scroll Image/GIF</value>
   </data>
   <data name="ScrollDialog_InputLabel" xml:space="preserve">
-    <value>Input image</value>
+    <value>Input image or GIF</value>
+  </data>
+  <data name="ScrollDialog_InputImageOrGif" xml:space="preserve">
+    <value>Input image or GIF</value>
   </data>
   <data name="ScrollDialog_OutputLabel" xml:space="preserve">
     <value>Output GIF</value>
@@ -768,7 +807,10 @@ Technical details: {5}</value>
     <value>Cancel</value>
   </data>
   <data name="ScrollDialog_SelectInput" xml:space="preserve">
-    <value>Select an image file</value>
+    <value>Select an image or GIF file</value>
+  </data>
+  <data name="ScrollDialog_SelectImageOrGif" xml:space="preserve">
+    <value>Select an image or GIF file</value>
   </data>
   <data name="ScrollDialog_SelectOutput" xml:space="preserve">
     <value>Save scrolled GIF as</value>
@@ -931,38 +973,8 @@ Saved as: {0}</value>
   <data name="TransitionDialog_Seconds" xml:space="preserve">
     <value>seconds</value>
   </data>
-  <data name="TransitionDialog_PreviewTransition" xml:space="preserve">
-    <value>Preview Transition</value>
-  </data>
   <data name="TransitionDialog_Cancel" xml:space="preserve">
     <value>Cancel</value>
-  </data>
-  <data name="TransitionDialog_Generating" xml:space="preserve">
-    <value>Generating...</value>
-  </data>
-  <data name="TransitionDialog_Cancelling" xml:space="preserve">
-    <value>Cancelling...</value>
-  </data>
-  <data name="TransitionDialog_PreviewError" xml:space="preserve">
-    <value>Preview Error</value>
-  </data>
-  <data name="TransitionDialog_PreviewCancelled" xml:space="preserve">
-    <value>Preview cancelled by user</value>
-  </data>
-  <data name="TransitionDialog_RequireMinTwoGifs" xml:space="preserve">
-    <value>Please select at least 2 GIF files to preview transitions.</value>
-  </data>
-  <data name="TransitionDialog_SelectTransitionType" xml:space="preserve">
-    <value>Please select a transition type to preview.</value>
-  </data>
-  <data name="TransitionDialog_InitializingPreview" xml:space="preserve">
-    <value>Initializing preview...</value>
-  </data>
-  <data name="TransitionDialog_ResizingForPreview" xml:space="preserve">
-    <value>Resizing images for preview...</value>
-  </data>
-  <data name="TransitionDialog_ErrorGeneratingPreview" xml:space="preserve">
-    <value>Error generating transition preview: {0}</value>
   </data>
   <data name="ConcatenateDialog_OutputFile" xml:space="preserve">
     <value>Output GIF file:</value>
@@ -985,33 +997,6 @@ Saved as: {0}</value>
   <data name="ConcatenateDialog_Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
-  <data name="ConcatenateDialog_Preview" xml:space="preserve">
-    <value>Preview</value>
-  </data>
-  <data name="ConcatenateDialog_AutoUpdatePreview" xml:space="preserve">
-    <value>Auto-update preview</value>
-  </data>
-  <data name="ConcatenateDialog_NoPreviewAvailable" xml:space="preserve">
-    <value>No preview available</value>
-  </data>
-  <data name="ConcatenateDialog_GeneratingPreview" xml:space="preserve">
-    <value>Generating preview...</value>
-  </data>
-  <data name="ConcatenateDialog_FrameInfo" xml:space="preserve">
-    <value>Frame: {0}, Total: {1}</value>
-  </data>
-  <data name="ConcatenateDialog_PreviewError" xml:space="preserve">
-    <value>Preview error: {0}</value>
-  </data>
-  <data name="ConcatenateDialog_FailedToGeneratePreview" xml:space="preserve">
-    <value>Failed to generate preview.</value>
-  </data>
-  <data name="ConcatenateDialog_FrameInfoLabel" xml:space="preserve">
-    <value>Frame Info</value>
-  </data>
-  <data name="ConcatenateDialog_AutoPreview" xml:space="preserve">
-    <value>Auto Preview</value>
-  </data>
   <data name="ConcatenateDialog_StrongPaletteWeightingShort" xml:space="preserve">
     <value>Strong Palette Weighting</value>
   </data>
@@ -1021,9 +1006,6 @@ Saved as: {0}</value>
   <data name="ConcatenateDialog_SecondsLabel" xml:space="preserve">
     <value>seconds</value>
   </data>
-  <data name="ConcatenateDialog_PreviewGroup" xml:space="preserve">
-    <value>Preview</value>
-  </data>
   <data name="ConcatenateDialog_TransitionSlide" xml:space="preserve">
     <value>Slide</value>
   </data>
@@ -1032,12 +1014,6 @@ Saved as: {0}</value>
   </data>
   <data name="ConcatenateDialog_TransitionDissolve" xml:space="preserve">
     <value>Dissolve</value>
-  </data>
-  <data name="ConcatenateDialog_PreviewTransition" xml:space="preserve">
-    <value>Preview Transition</value>
-  </data>
-  <data name="ConcatenateDialog_CancelPreview" xml:space="preserve">
-    <value>Cancel Preview</value>
   </data>
   <data name="GTMainForm_ConcatenateGifs" xml:space="preserve">
     <value>Concatenate GIFs</value>

@@ -15,6 +15,8 @@ namespace GifProcessorApp
         public int DurationSeconds { get; private set; } = 0;
         public int MoveCount { get; private set; } = 0;
         public bool FullCycle { get; private set; }
+        public bool AutoDuration { get; private set; }
+        public bool SupportGifInput { get; private set; }
 
         private TextBox txtInputPath = null!;
         private Button btnBrowseInput = null!;
@@ -25,6 +27,7 @@ namespace GifProcessorApp
         private NumericUpDown numDuration = null!;
         private NumericUpDown numMoveCount = null!;
         private CheckBox chkFullCycle = null!;
+        private CheckBox chkAutoDuration = null!;
         private Button btnOK = null!;
         private Button btnCancel = null!;
         private Label lblInput = null!;
@@ -34,12 +37,15 @@ namespace GifProcessorApp
         private Label lblDuration = null!;
         private Label lblMoveCount = null!;
 
-        public ScrollStaticImageDialog()
+        public ScrollStaticImageDialog(bool supportGifInput = true)
         {
+            SupportGifInput = supportGifInput;
             InitializeComponent();
             chkFullCycle.CheckedChanged += ChkFullCycle_CheckedChanged;
+            chkAutoDuration.CheckedChanged += ChkAutoDuration_CheckedChanged;
             numDuration.ValueChanged += NumDuration_ValueChanged;
             ChkFullCycle_CheckedChanged(null, EventArgs.Empty);
+            chkAutoDuration.Visible = false; // Initially hidden until GIF is selected
             UpdateUIText();
             ApplyTheme();
         }
@@ -47,6 +53,8 @@ namespace GifProcessorApp
         private void UpdateUIText()
         {
             lblInput.Text = Resources.ScrollDialog_InputLabel;
+            Text = Resources.ScrollDialog_Title;
+
             lblOutput.Text = Resources.ScrollDialog_OutputLabel;
             lblDirection.Text = Resources.ScrollDialog_Direction;
             lblStep.Text = Resources.ScrollDialog_Step;
@@ -57,7 +65,6 @@ namespace GifProcessorApp
             btnBrowseOutput.Text = Resources.ScrollDialog_Browse;
             btnOK.Text = Resources.ScrollDialog_OK;
             btnCancel.Text = Resources.ScrollDialog_Cancel;
-            Text = Resources.ScrollDialog_Title;
 
             cmbDirection.Items.Clear();
             cmbDirection.Items.AddRange(new object[]
@@ -188,12 +195,13 @@ namespace GifProcessorApp
         {
             using var ofd = new OpenFileDialog
             {
-                Filter = Resources.FileDialog_ImageFilter,
+                Filter = Resources.FileDialog_ImageAndGifFilter,
                 Title = Resources.ScrollDialog_SelectInput
             };
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 txtInputPath.Text = ofd.FileName;
+                ChkAutoDuration_CheckedChanged(sender, e); // Update AutoDuration visibility
             }
         }
 
@@ -213,9 +221,19 @@ namespace GifProcessorApp
 
         private void ChkFullCycle_CheckedChanged(object? sender, EventArgs e)
         {
-            numDuration.Enabled = chkFullCycle.Checked;
+            numDuration.Enabled = chkFullCycle.Checked && !chkAutoDuration.Checked;
             NumDuration_ValueChanged(sender, e);
             UpdateMoveCountVisibility();
+        }
+
+        private void ChkAutoDuration_CheckedChanged(object? sender, EventArgs e)
+        {
+            numDuration.Enabled = chkFullCycle.Checked && !chkAutoDuration.Checked;
+            NumDuration_ValueChanged(sender, e);
+
+            // Show/hide AutoDuration checkbox only for GIF input
+            chkAutoDuration.Visible = SupportGifInput && !string.IsNullOrEmpty(txtInputPath.Text) &&
+                                     Path.GetExtension(txtInputPath.Text).ToLowerInvariant() == ".gif";
         }
 
         private void NumDuration_ValueChanged(object? sender, EventArgs e)
@@ -254,6 +272,7 @@ namespace GifProcessorApp
             DurationSeconds = numDuration.Enabled ? (int)numDuration.Value : 0;
             MoveCount = numMoveCount.Visible ? (int)numMoveCount.Value : 0;
             FullCycle = chkFullCycle.Checked;
+            AutoDuration = chkAutoDuration.Checked;
             DialogResult = DialogResult.OK;
             Close();
         }
@@ -276,6 +295,7 @@ namespace GifProcessorApp
             lblDuration = new Label();
             numDuration = new NumericUpDown();
             chkFullCycle = new CheckBox();
+            chkAutoDuration = new CheckBox();
             btnOK = new Button();
             btnCancel = new Button();
             ((System.ComponentModel.ISupportInitialize)numStep).BeginInit();
@@ -404,19 +424,27 @@ namespace GifProcessorApp
             numDuration.TabIndex = 13;
             // 
             // chkFullCycle
-            // 
+            //
             chkFullCycle.Location = new System.Drawing.Point(220, 198);
             chkFullCycle.Name = "chkFullCycle";
             chkFullCycle.Size = new System.Drawing.Size(130, 24);
             chkFullCycle.TabIndex = 14;
             chkFullCycle.Text = "整個捲動一次";
-            // 
+            //
+            // chkAutoDuration
+            //
+            chkAutoDuration.Location = new System.Drawing.Point(14, 238);
+            chkAutoDuration.Name = "chkAutoDuration";
+            chkAutoDuration.Size = new System.Drawing.Size(200, 24);
+            chkAutoDuration.TabIndex = 15;
+            chkAutoDuration.Text = Resources.ScrollDialog_AutoDuration;
+            //
             // btnOK
             // 
-            btnOK.Location = new System.Drawing.Point(272, 238);
+            btnOK.Location = new System.Drawing.Point(272, 268);
             btnOK.Name = "btnOK";
             btnOK.Size = new System.Drawing.Size(75, 25);
-            btnOK.TabIndex = 15;
+            btnOK.TabIndex = 16;
             btnOK.Text = "OK";
             btnOK.UseVisualStyleBackColor = true;
             btnOK.Click += BtnOK_Click;
@@ -424,10 +452,10 @@ namespace GifProcessorApp
             // btnCancel
             // 
             btnCancel.DialogResult = DialogResult.Cancel;
-            btnCancel.Location = new System.Drawing.Point(353, 238);
+            btnCancel.Location = new System.Drawing.Point(353, 268);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new System.Drawing.Size(88, 25);
-            btnCancel.TabIndex = 16;
+            btnCancel.TabIndex = 17;
             btnCancel.Text = Resources.ScrollDialog_Cancel;
             btnCancel.UseVisualStyleBackColor = true;
             // 
@@ -435,10 +463,11 @@ namespace GifProcessorApp
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(455, 275);
+            ClientSize = new System.Drawing.Size(455, 305);
             Controls.Add(btnCancel);
             Controls.Add(btnOK);
             Controls.Add(chkFullCycle);
+            Controls.Add(chkAutoDuration);
             Controls.Add(numDuration);
             Controls.Add(lblDuration);
             Controls.Add(numMoveCount);
