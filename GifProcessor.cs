@@ -2589,16 +2589,20 @@ namespace GifProcessorApp
             double originalFPS = 100.0 / inputCollection[0].AnimationDelay; // AnimationDelay is in 1/100 seconds
             int totalScrollDurationMs = durationSeconds * 1000;
 
-            // Calculate how much to scroll per original frame
-            double scrollPixelsPerFrame = 0;
+            // Calculate how much to scroll per original frame for X and Y separately
+            double scrollPixelsPerFrameX = 0;
+            double scrollPixelsPerFrameY = 0;
+
             if (autoDuration)
             {
                 // For auto-duration, scroll exactly one full distance over the GIF's frame count
-                scrollPixelsPerFrame = (double)distance / inputCollection.Count;
+                if (signX != 0) scrollPixelsPerFrameX = (double)originalWidth / inputCollection.Count;
+                if (signY != 0) scrollPixelsPerFrameY = (double)originalHeight / inputCollection.Count;
             }
             else if (durationSeconds > 0)
             {
-                scrollPixelsPerFrame = (double)distance / (originalFPS * durationSeconds);
+                if (signX != 0) scrollPixelsPerFrameX = (double)originalWidth / (originalFPS * durationSeconds);
+                if (signY != 0) scrollPixelsPerFrameY = (double)originalHeight / (originalFPS * durationSeconds);
             }
 
             // Calculate how long the scroll animation should last in terms of original frames
@@ -2624,7 +2628,7 @@ namespace GifProcessorApp
             mainForm.Invoke((Action)(() =>
             {
                 string modeInfo = autoDuration ? "Auto-duration mode" : $"Manual {durationSeconds}s";
-                SetStatusText(mainForm, $"{modeInfo}: {scrollAnimationFrames} frames, {scrollPixelsPerFrame:F2}px/frame, {distance}px total");
+                SetStatusText(mainForm, $"{modeInfo}: {scrollAnimationFrames} frames, X:{scrollPixelsPerFrameX:F2}px/frame, Y:{scrollPixelsPerFrameY:F2}px/frame");
             }));
 
             double accumulatedScrollX = 0;
@@ -2641,8 +2645,8 @@ namespace GifProcessorApp
                 // Calculate current accumulated scroll offset
                 if (autoDuration || durationSeconds > 0)
                 {
-                    accumulatedScrollX += scrollPixelsPerFrame * signX;
-                    accumulatedScrollY += scrollPixelsPerFrame * signY;
+                    accumulatedScrollX += scrollPixelsPerFrameX * signX;
+                    accumulatedScrollY += scrollPixelsPerFrameY * signY;
                 }
                 else
                 {
@@ -2655,7 +2659,7 @@ namespace GifProcessorApp
                 scrolledFrame.Format = MagickFormat.Gif;
 
                 using var temp = originalFrame.Clone();
-                temp.Roll(-(int)accumulatedScrollX, -(int)accumulatedScrollY);
+                temp.Roll((int)accumulatedScrollX, (int)accumulatedScrollY);
 
                 scrolledFrame.Composite(temp, 0, 0, CompositeOperator.Over);
                 scrolledFrame.AnimationDelay = originalFrame.AnimationDelay; // Use original frame timing
@@ -2694,10 +2698,18 @@ namespace GifProcessorApp
             }
 
             // Phase 2: Continue with normal animation from the correct timeline position
-            if (durationSeconds > 0)
+            if (autoDuration)
             {
-                // For duration-based scrolling, continue from where the animation timeline left off
-                // The last frame used was: (scrollAnimationFrames - 1) % inputCollection.Count
+                // For auto-duration, we skip Phase 2 since we already played the complete cycle
+                // The output should have exactly the same number of frames as the input
+                mainForm.Invoke((Action)(() =>
+                {
+                    SetStatusText(mainForm, $"Auto-duration complete: {outputCollection.Count} frames (same as source)");
+                }));
+            }
+            else if (durationSeconds > 0)
+            {
+                // For manual duration-based scrolling, continue from where the animation timeline left off
                 int lastUsedFrameIndex = (scrollAnimationFrames - 1) % inputCollection.Count;
                 int nextFrameIndex = (lastUsedFrameIndex + 1) % inputCollection.Count;
 
@@ -2721,7 +2733,7 @@ namespace GifProcessorApp
 
                     using var temp = originalFrame.Clone();
                     // Always apply final scroll position for both full cycle and non-full cycle
-                    temp.Roll(-finalScrollX, -finalScrollY);
+                    temp.Roll(finalScrollX, finalScrollY);
 
                     continueFrame.Composite(temp, 0, 0, CompositeOperator.Over);
                     continueFrame.AnimationDelay = originalFrame.AnimationDelay;
@@ -2738,7 +2750,7 @@ namespace GifProcessorApp
                     }));
                 }
             }
-            else
+            else if (!autoDuration)
             {
                 // For step-based scrolling, calculate timeline continuity based on scroll duration
                 // The scroll took 'scrollFrames' steps, each using one frame of original animation
@@ -2764,7 +2776,7 @@ namespace GifProcessorApp
 
                     using var temp = originalFrame.Clone();
                     // Always apply final scroll position for both full cycle and non-full cycle
-                    temp.Roll(-finalScrollX, -finalScrollY);
+                    temp.Roll(finalScrollX, finalScrollY);
 
                     continueFrame.Composite(temp, 0, 0, CompositeOperator.Over);
                     continueFrame.AnimationDelay = originalFrame.AnimationDelay;
