@@ -567,7 +567,7 @@ namespace GifProcessorApp
             cmbSlideDirection.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbSlideDirection.Enabled = false;
             cmbSlideDirection.Items.AddRange(new object[] { "Left", "Right", "Up", "Down" });
-            cmbSlideDirection.Location = new Point(113, 46);
+            cmbSlideDirection.Location = new Point(180, 46);
             cmbSlideDirection.Name = "cmbSlideDirection";
             cmbSlideDirection.Size = new Size(80, 23);
             cmbSlideDirection.TabIndex = 5;
@@ -577,7 +577,7 @@ namespace GifProcessorApp
             cmbZoomType.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbZoomType.Enabled = false;
             cmbZoomType.Items.AddRange(new object[] { "Zoom In", "Zoom Out" });
-            cmbZoomType.Location = new Point(232, 46);
+            cmbZoomType.Location = new Point(269, 46);
             cmbZoomType.Name = "cmbZoomType";
             cmbZoomType.Size = new Size(80, 23);
             cmbZoomType.TabIndex = 6;
@@ -585,7 +585,7 @@ namespace GifProcessorApp
             // lblTransitionDuration
             // 
             lblTransitionDuration.AutoSize = true;
-            lblTransitionDuration.Location = new Point(6, 77);
+            lblTransitionDuration.Location = new Point(6, 89);
             lblTransitionDuration.Name = "lblTransitionDuration";
             lblTransitionDuration.Size = new Size(117, 15);
             lblTransitionDuration.TabIndex = 7;
@@ -595,7 +595,7 @@ namespace GifProcessorApp
             // 
             nudTransitionDuration.DecimalPlaces = 1;
             nudTransitionDuration.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
-            nudTransitionDuration.Location = new Point(130, 75);
+            nudTransitionDuration.Location = new Point(129, 87);
             nudTransitionDuration.Maximum = new decimal(new int[] { 30, 0, 0, 65536 });
             nudTransitionDuration.Minimum = new decimal(new int[] { 1, 0, 0, 65536 });
             nudTransitionDuration.Name = "nudTransitionDuration";
@@ -606,7 +606,7 @@ namespace GifProcessorApp
             // lblSeconds
             // 
             lblSeconds.AutoSize = true;
-            lblSeconds.Location = new Point(195, 77);
+            lblSeconds.Location = new Point(195, 89);
             lblSeconds.Name = "lblSeconds";
             lblSeconds.Size = new Size(53, 15);
             lblSeconds.TabIndex = 9;
