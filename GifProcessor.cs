@@ -2532,21 +2532,21 @@ namespace GifProcessorApp
                 scrollPixelsPerFrame = (double)distance / (originalFPS * durationSeconds);
             }
 
+            // Calculate how long the scroll animation should last in terms of original frames
+            int scrollAnimationFrames = durationSeconds > 0 ? (int)(originalFPS * durationSeconds) : scrollFrames;
+
             // Use collection approach for proper GIF animation
             using var outputCollection = new MagickImageCollection();
 
             // Debug: Show scroll parameters
             mainForm.Invoke((Action)(() =>
             {
-                SetStatusText(mainForm, $"Original FPS: {originalFPS:F1}, Scroll per frame: {scrollPixelsPerFrame:F2}px, Total scroll: {distance}px over {durationSeconds}s");
+                SetStatusText(mainForm, $"Original FPS: {originalFPS:F1}, Scroll per frame: {scrollPixelsPerFrame:F2}px, Scroll frames: {scrollAnimationFrames}, Total scroll: {distance}px over {durationSeconds}s");
             }));
 
             double accumulatedScrollX = 0;
             double accumulatedScrollY = 0;
             int outputFrameCount = 0;
-
-            // Calculate how long the scroll animation should last in terms of original frames
-            int scrollAnimationFrames = durationSeconds > 0 ? (int)(originalFPS * durationSeconds) : scrollFrames;
 
             // Phase 1: Scrolling animation with original GIF playing
             for (int scrollFrame = 0; scrollFrame < scrollAnimationFrames; scrollFrame++)
@@ -2603,33 +2603,82 @@ namespace GifProcessorApp
                 if (finalScrollY < 0) finalScrollY += originalHeight;
             }
 
-            // Continue with normal animation at the final scroll position
-            // Play the full original animation once more with the final scroll offset applied
-            for (int frameIndex = 0; frameIndex < inputCollection.Count; frameIndex++)
+            // Phase 2: Continue with normal animation from the correct timeline position
+            if (durationSeconds > 0)
             {
-                var originalFrame = inputCollection[frameIndex];
-                var continueFrame = new MagickImage(MagickColors.Transparent, (uint)originalWidth, (uint)originalHeight);
-                continueFrame.Format = MagickFormat.Gif;
+                // For duration-based scrolling, continue from where the animation timeline left off
+                // The last frame used was: (scrollAnimationFrames - 1) % inputCollection.Count
+                int lastUsedFrameIndex = (scrollAnimationFrames - 1) % inputCollection.Count;
+                int nextFrameIndex = (lastUsedFrameIndex + 1) % inputCollection.Count;
 
-                using var temp = originalFrame.Clone();
-                if (!fullCycle && (finalScrollX != 0 || finalScrollY != 0))
-                {
-                    temp.Roll(-finalScrollX, -finalScrollY);
-                }
-
-                continueFrame.Composite(temp, 0, 0, CompositeOperator.Over);
-                continueFrame.AnimationDelay = originalFrame.AnimationDelay; // Use original timing
-                continueFrame.GifDisposeMethod = GifDisposeMethod.Background;
-
-                outputCollection.Add(continueFrame);
-                outputFrameCount++;
-
-                // Update progress
-                int progress = 70 + (int)((double)(frameIndex + 1) / inputCollection.Count * 30); // Last 30%
+                // Debug: Show timeline continuity
                 mainForm.Invoke((Action)(() =>
                 {
-                    SetProgressBar(mainForm.pBarTaskStatus, progress, 100);
+                    SetStatusText(mainForm, $"Timeline continuity: Last used frame {lastUsedFrameIndex}, continuing from frame {nextFrameIndex}");
                 }));
+
+                // Continue the animation from the next frame in sequence
+                // Play the remaining frames to complete the current animation cycle
+                int remainingFrames = inputCollection.Count - (nextFrameIndex == 0 ? 0 : nextFrameIndex);
+                if (nextFrameIndex == 0) remainingFrames = inputCollection.Count; // Full cycle if we're back at start
+
+                for (int i = 0; i < remainingFrames; i++)
+                {
+                    int frameIndex = (nextFrameIndex + i) % inputCollection.Count;
+                    var originalFrame = inputCollection[frameIndex];
+                    var continueFrame = new MagickImage(MagickColors.Transparent, (uint)originalWidth, (uint)originalHeight);
+                    continueFrame.Format = MagickFormat.Gif;
+
+                    using var temp = originalFrame.Clone();
+                    if (!fullCycle && (finalScrollX != 0 || finalScrollY != 0))
+                    {
+                        temp.Roll(-finalScrollX, -finalScrollY);
+                    }
+
+                    continueFrame.Composite(temp, 0, 0, CompositeOperator.Over);
+                    continueFrame.AnimationDelay = originalFrame.AnimationDelay;
+                    continueFrame.GifDisposeMethod = GifDisposeMethod.Background;
+
+                    outputCollection.Add(continueFrame);
+                    outputFrameCount++;
+
+                    // Update progress
+                    int progress = 70 + (int)((double)(i + 1) / remainingFrames * 30);
+                    mainForm.Invoke((Action)(() =>
+                    {
+                        SetProgressBar(mainForm.pBarTaskStatus, progress, 100);
+                    }));
+                }
+            }
+            else
+            {
+                // For step-based scrolling, play the full original animation at final position
+                for (int frameIndex = 0; frameIndex < inputCollection.Count; frameIndex++)
+                {
+                    var originalFrame = inputCollection[frameIndex];
+                    var continueFrame = new MagickImage(MagickColors.Transparent, (uint)originalWidth, (uint)originalHeight);
+                    continueFrame.Format = MagickFormat.Gif;
+
+                    using var temp = originalFrame.Clone();
+                    if (!fullCycle && (finalScrollX != 0 || finalScrollY != 0))
+                    {
+                        temp.Roll(-finalScrollX, -finalScrollY);
+                    }
+
+                    continueFrame.Composite(temp, 0, 0, CompositeOperator.Over);
+                    continueFrame.AnimationDelay = originalFrame.AnimationDelay;
+                    continueFrame.GifDisposeMethod = GifDisposeMethod.Background;
+
+                    outputCollection.Add(continueFrame);
+                    outputFrameCount++;
+
+                    // Update progress
+                    int progress = 70 + (int)((double)(frameIndex + 1) / inputCollection.Count * 30);
+                    mainForm.Invoke((Action)(() =>
+                    {
+                        SetProgressBar(mainForm.pBarTaskStatus, progress, 100);
+                    }));
+                }
             }
 
             // Write the complete collection to file
