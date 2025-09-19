@@ -1,12 +1,29 @@
 # SteamGifCropper
-
 [繁體中文](./Readme.md) | [English](./Readme_en.md)
 
-SteamGifCropper は **Steam ワークショップのショーケース** 用に作られた小さなツールです。GIF 画像を切り分けたり、調整して Steam プロフィールで横一列に表示できるようにします。GIF ファイルを扱うための補助機能も備えています。
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/screenshots/MainWindowJa.png" style="width: 75%; height: auto;">
+</div>
+
+SteamGifCropper は **Steam ワークショップ個人ショーケース** 用に設計された小さなツールです。GIF ファイルを切り分けて処理し、幅の広い GIF（766px または 774px 幅）を 5 つの部分に分割したり、GIF を 766px 幅にリサイズしたり、Steam 互換性のために GIF バイトデータを変更したりできます。gifsicle の後処理をサポートしています。
+
+---
+以下の画像は SteamGifCropper v0.2.1 で分割された 5 つの GIF ファイルです  
+読み込み時間の差により、ここで 5 つの GIF アニメーションを見ると少し同期がずれて見える場合があります。ページを更新して再同期できます（PC ブラウザでは F5 キーを押してください）  
+
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/new_shiny1_766px_Part1.gif" style="flex: 1 1 18%; height: auto;">
+  <img src="./res/new_shiny1_766px_Part2.gif" style="flex: 1 1 18%; height: auto;">
+  <img src="./res/new_shiny1_766px_Part3.gif" style="flex: 1 1 18%; height: auto;">
+  <img src="./res/new_shiny1_766px_Part4.gif" style="flex: 1 1 18%; height: auto;">
+  <img src="./res/new_shiny1_766px_Part5.gif" style="flex: 1 1 18%; height: auto;">
+</div>
+
 
 ---
 
 ## 機能
+
 
 - **GIF の幅を確認** – ソース GIF の幅は **766px**（推奨）または **774px** に対応。
 - **自動分割** – 設定済みの範囲に基づき 5 つに分割し、各パートの下に **100px** の透明領域を追加してもフレーム遅延を維持します。
@@ -29,13 +46,13 @@ SteamGifCropper は **Steam ワークショップのショーケース** 用に�
 
 ## 動作環境
 
-- **OS**: Windows 10 1904 以降
+- **オペレーティングシステム**: Windows 10 1904 以降
 - **ランタイム**: .NET 8 runtime
-- **ライブラリ**: Magick.NET（zip に同梱）
-- **FFMPEG**: MP4 機能を利用する場合はインストールし、`PATH` に設定してください。
-- **gifsicle.exe**: 別途ダウンロードし、`PATH` に設定してください。
-
+- **依存ライブラリ**: Magick.NET（ImageMagick ベース）-- zip ファイルに既に含まれています
+- **FFMPEG**: FFMPEG 機能を使用する部分では、システムに FFMPEG がインストールされ、OS システム環境変数 **PATH** に設定されている必要があります。そうでないと呼び出すことができません。PowerShell 7 で直接コマンドを使用してインストールできます: `winget install ffmpeg`。
+- **gifsicle.exe 外部プログラム**: 「gifsicle for Windows」などのキーワードで検索、ダウンロード、設定を行ってください。gifsicle.exe の場所は OS システム環境変数 **PATH** に含まれている必要があります。そうでないと呼び出すことができません。
 ---
+
 
 ## リソース制限と FFmpeg 設定
 
@@ -64,27 +81,30 @@ SteamGifCropper.exe --memory-limit=2048 --disk-limit=8192
 
 ## 使い方
 
-### 出力ファイル
-分割後、5 つの GIF が次の名前で保存されます。
 ```
-[元のファイル名]_Part1.gif
-[元のファイル名]_Part2.gif
-[元のファイル名]_Part3.gif
-[元のファイル名]_Part4.gif
-[元のファイル名]_Part5.gif
+SteamGifCropper.exe --memory-limit=2048 --disk-limit=8192
 ```
-Steam にアップロードするには各ファイルのサイズを **5MB** 未満にしてください。必要に応じて調整や最適化を行ってください。
 
-### リサイズ
-リサイズ機能は簡易的なものです。大きな GIF ではメモリと時間を消費します。
+`SteamGifCropper.dll.config`、`App.config` を通じて FFmpeg の動作を調整することもできます:
 
-### GIF の重ね合わせ
-1. **Overlay GIF** ボタンを押して基となる GIF を選択します。
-2. 重ねる GIF を選び、X/Y 位置を指定します。
-3. OK を押すと 2 つの GIF が合成されます。
+- `FFmpeg.TimeoutSeconds`: 各 FFmpeg 実行のタイムアウト秒数を設定（デフォルト 300 秒）。
+- `FFmpeg.Threads`: FFmpeg が使用するスレッド数を制限、`0` はデフォルト値を使用することを意味します。
 
-このダイアログは日本語・繁體中文・English に対応しており、ライト／ダーク テーマでも動作します。
-**注意:** 高解像度の GIF を重ねると多くのメモリを消費する場合があります。
+---
+
+## インストールと使用
+
+### GIF 分割結果の確認
+- 分割処理が完了すると、5 つの切り分けファイルが指定されたフォルダに保存され、ファイル名の形式は以下のようになります:
+  ```
+  [元のファイル名]_Part1.gif
+  [元のファイル名]_Part2.gif
+  [元のファイル名]_Part3.gif
+  [元のファイル名]_Part4.gif
+  [元のファイル名]_Part5.gif
+  ```
+単一ファイルは 5MB を超えてはいけません。そうでないと Steam にアップロードできません。単一ファイルが 5MB を超える場合は、ソース GIF を調整するか、EZGif などの他のツールを使用してその分割ファイルを個別に調整できますが、最後にファイルの末尾バイトを変更することを忘れないでください。
+
 
 ### 2～5 個の GIF を結合
 元の幅のまま横方向に結合し、共通パレットの生成（高速モードあり）や FPS 差異の警告を行います。
@@ -134,17 +154,43 @@ Steam にアップロードするには各ファイルのサイズを **5MB** �
 
 ## 注意事項
 
-1. ソース GIF の幅は **766px** または **774px** である必要があります。
-1. 出力形式は GIF のみで、分割範囲や高さは固定です。
-1. Steam のショーケース要件を満たし、各ファイルが 5MB 未満であることを確認してください。
-1. 大きな GIF を処理するとメモリを大量に消費する場合があります。
-1. 主に 766×432 と 766×353 の GIF でテストされています。
+1. **分割ファイルのソース GIF 幅制限**: **766px** / **774px** の幅の GIF ファイル。
+1. **出力ファイル形式**: プログラムは GIF ファイルの出力のみをサポートし、分割範囲と画像の高さの両方にはカスタマイズできないデフォルト値があります。
+1. **Steam 個人ショーケース**: GIF ファイルが Steam ショーケース要件に準拠していることを確認してください。切り分けファイルは Steam 個人ページでの表示に使用できます。
+1. **実行中にかなりのメモリを消費する可能性があります**: GIF ファイルサイズによります。
+1. **766px × 432px（16:9）および 766px × 353px（iPhone 14 Pro 動画）の GIF のみでテストされています**
 
 ## 既知の問題
+1. **すべての GIF を正常に処理できるわけではありません**: 結局のところ、すべての関連ツールでテストすることは不可能です。
+1. **GIF 作成プログラムの互換性を確認できません**: Filmora と EZGif で正常にテストされています。
+1. **分割した画像の端に黒い線が出る場合があります**: 修正が面倒で、動画作成ツールの問題なのかプログラムの問題なのかわからない？
 
-- すべての GIF を確実に処理できるわけではありません。
-- すべての GIF 作成ツールとの互換性は保証されていません。
-- 分割した画像の端に細い黒線が出ることがあります。
+## 参考: クリエイティブワークショップ変換方法
+1. 希望する動画ソースを見つけるか、自分で作成します。
+1. GIF アニメーション形式に変換する方法を見つけます。[EZGif](https://ezgif.com/) を使用していくつかの処理を行うことができます。
+1. 元の GIF を **766px** 幅に調整します。
+1. このプログラムを使用して **766px** の GIF を 5 等分に分割します（150×5 ファイル、各ファイルに 4px の間隔があり、合計 4×4=16）。
+1. 付属の arrange.html を使用して分割ファイルに問題がないかテストできます。
+1. 個々のファイルは 5MB を超えてはいけません。
+1. Chrome / Brave ブラウザを使用してファイルをアップロードします。ショーケースアップロードアドレス: https://steamcommunity.com/sharedfiles/edititem/767/3/
+1. 最初にブラウザコンソール（F12 を押した後、console ページ）で入力する必要があります: $J('#ConsumerAppID').val(480),$J('[name=file_type]').val(0),$J('[name=visibility]').val(0);
+1. 一部のブラウザにはセキュリティ対策があります。たとえば、上記の操作を実行する前に最初に「allow paste」を入力する必要があります。
+1. 入力後にファイルをアップロードし、ファイル名に番号を付けることを忘れないでください。後続の処理が容易になります。
+1. アップロード操作を繰り返します。問題がなければファイルがワークショップにアップロードされます。
+1. Steam 個人ページでワークショップ展示セクションを追加し、アップロードした GIF を順番に配置すれば完了です。
+
+## 参考: アートワークアップロード / アートワーク展示
+1. 画像をアップロードした後:
+
+var num= document.getElementsByName("image_width")[0].value;
+document.getElementsByName("image_height")[0].value = num-(num-1);document.getElementsByName("image_width")[0].value= num*100;
+
+## 参考: スクリーンショット展示
+document.getElementsByName("file_type")[0].value= 5;
+var num= document.getElementsByName("image_width")[0].value;
+document.getElementsByName("image_height")[0].value = num-(num-1);
+document.getElementsByName("image_width")[0].value= num*100;
+
 
 ---
 
