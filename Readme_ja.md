@@ -19,7 +19,21 @@ SteamGifCropper は **Steam ワークショップ個人ショーケース** 用�
   <img src="./res/new_shiny1_766px_Part5.gif" style="flex: 1 1 18%; height: auto;">
 </div>
 
-
+連結
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/KFC2-0_concatenated_resized.gif" style="flex: 1 1 95%; height: auto;">
+</div>
+  
+合成
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/KFC2-0_merged_resized.gif" style="flex: 1 1 95%; height: auto;">
+</div>
+  
+スクロール
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/KFC2-0_merged_scroll_resized.gif" style="flex: 1 1 95%; height: auto;">
+</div>
+  
 ---
 
 ## 機能
