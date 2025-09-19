@@ -1,8 +1,10 @@
 #nullable enable
 using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Resources;
 using System.Windows.Forms;
 using ImageMagick;
 using SteamGifCropper.Properties;
@@ -28,7 +30,7 @@ namespace GifProcessorApp
 
         public bool ResampleBaseFrames => chkResampleBase.Checked;
 
-        private readonly ComponentResourceManager _resources = new(typeof(OverlayGifDialog));
+        private static readonly ResourceManager DialogResourceManager = Resources.ResourceManager;
 
         private TextBox txtBaseGif = null!;
         private Button btnBrowseBase = null!;
@@ -113,19 +115,19 @@ namespace GifProcessorApp
             // Validate inputs
             if (string.IsNullOrWhiteSpace(txtBaseGif.Text))
             {
-                MessageBox.Show("Please select a base GIF file.", Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(GetDialogString("OverlayDialog_SelectBaseGif", "Please select a base GIF file."), Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(txtOverlayGif.Text))
             {
-                MessageBox.Show("Please select an overlay GIF file.", Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(GetDialogString("OverlayDialog_SelectOverlayGif", "Please select an overlay GIF file."), Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(txtOutputGif.Text))
             {
-                MessageBox.Show("Please specify an output GIF file.", Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(GetDialogString("OverlayDialog_SelectOutputGif", "Please specify an output GIF file."), Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -149,48 +151,54 @@ namespace GifProcessorApp
             if (DesignMode) return;
 
             // Debug: Check if resources are loading
-            System.Diagnostics.Debug.WriteLine($"UpdateUIText called. Culture: {System.Globalization.CultureInfo.CurrentUICulture.Name}");
+            System.Diagnostics.Debug.WriteLine($"UpdateUIText called. Culture: {CultureInfo.CurrentUICulture.Name}");
             // File selection
-            lblBase.Text = _resources.GetString("lblBase.Text") ?? "Base GIF:";
-            btnBrowseBase.Text = _resources.GetString("btnBrowseBase.Text") ?? "Browse...";
-            lblOverlay.Text = _resources.GetString("lblOverlay.Text") ?? "Overlay GIF:";
-            btnBrowseOverlay.Text = _resources.GetString("btnBrowseOverlay.Text") ?? "Browse...";
-            lblOutput.Text = _resources.GetString("lblOutput.Text") ?? "Output GIF:";
-            btnBrowseOutput.Text = _resources.GetString("btnBrowseOutput.Text") ?? "Browse...";
+            lblBase.Text = GetDialogString("lblBase.Text", "Base GIF:");
+            btnBrowseBase.Text = GetDialogString("btnBrowseBase.Text", "Browse...");
+            lblOverlay.Text = GetDialogString("lblOverlay.Text", "Overlay GIF:");
+            btnBrowseOverlay.Text = GetDialogString("btnBrowseOverlay.Text", "Browse...");
+            lblOutput.Text = GetDialogString("lblOutput.Text", "Output GIF:");
+            btnBrowseOutput.Text = GetDialogString("btnBrowseOutput.Text", "Browse...");
 
             // Options
-            chkResampleBase.Text = _resources.GetString("chkResampleBase.Text") ?? "Resample base GIF to overlay FPS";
+            chkResampleBase.Text = GetDialogString("chkResampleBase.Text", "Resample base GIF to overlay FPS");
 
             // Static overlay
-            grpStaticOverlay.Text = _resources.GetString("grpStaticOverlay.Text") ?? "Overlay starting position";
-            lblStaticX.Text = _resources.GetString("lblStaticX.Text") ?? "X:";
-            lblStaticY.Text = _resources.GetString("lblStaticY.Text") ?? "Y:";
+            grpStaticOverlay.Text = GetDialogString("grpStaticOverlay.Text", "Overlay starting position");
+            lblStaticX.Text = GetDialogString("lblStaticX.Text", "X:");
+            lblStaticY.Text = GetDialogString("lblStaticY.Text", "Y:");
 
             // Movement
-            chkEnableMovement.Text = _resources.GetString("chkEnableMovement.Text") ?? "Enable overlay movement";
-            grpMovement.Text = _resources.GetString("grpMovement.Text") ?? "Movement Settings";
-            lblDirection.Text = _resources.GetString("lblDirection.Text") ?? "Direction:";
-            lblStepPixels.Text = _resources.GetString("lblStepPixels.Text") ?? "Pixels per step:";
-            lblMoveCount.Text = _resources.GetString("lblMoveCount.Text") ?? "Move count:";
-            chkInfiniteMovement.Text = _resources.GetString("chkInfiniteMovement.Text") ?? "Infinite movement (match base GIF duration)";
+            chkEnableMovement.Text = GetDialogString("chkEnableMovement.Text", "Enable overlay movement");
+            grpMovement.Text = GetDialogString("grpMovement.Text", "Movement Settings");
+            lblDirection.Text = GetDialogString("lblDirection.Text", "Direction:");
+            lblStepPixels.Text = GetDialogString("lblStepPixels.Text", "Pixels per step:");
+            lblMoveCount.Text = GetDialogString("lblMoveCount.Text", "Move count:");
+            chkInfiniteMovement.Text = GetDialogString("chkInfiniteMovement.Text", "Infinite movement (match base GIF duration)");
 
             // Buttons
-            btnOK.Text = _resources.GetString("btnOK.Text") ?? "OK";
-            btnCancel.Text = _resources.GetString("btnCancel.Text") ?? "Cancel";
-            Text = _resources.GetString("$this.Text") ?? "Overlay GIF with Movement";
+            btnOK.Text = GetDialogString("btnOK.Text", "OK");
+            btnCancel.Text = GetDialogString("btnCancel.Text", "Cancel");
+            Text = GetDialogString("$this.Text", "Overlay GIF with Movement");
 
             // Populate direction combo box with localized text
             int selectedIndex = cmbDirection.SelectedIndex;
             cmbDirection.Items.Clear();
-            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.Right, _resources.GetString("Direction_Right") ?? "Right"));
-            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.Left, _resources.GetString("Direction_Left") ?? "Left"));
-            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.Down, _resources.GetString("Direction_Down") ?? "Down"));
-            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.Up, _resources.GetString("Direction_Up") ?? "Up"));
-            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.LeftUp, _resources.GetString("Direction_LeftUp") ?? "Left Up"));
-            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.LeftDown, _resources.GetString("Direction_LeftDown") ?? "Left Down"));
-            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.RightUp, _resources.GetString("Direction_RightUp") ?? "Right Up"));
-            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.RightDown, _resources.GetString("Direction_RightDown") ?? "Right Down"));
+            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.Right, GetDialogString("Direction_Right", "Right")));
+            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.Left, GetDialogString("Direction_Left", "Left")));
+            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.Down, GetDialogString("Direction_Down", "Down")));
+            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.Up, GetDialogString("Direction_Up", "Up")));
+            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.LeftUp, GetDialogString("Direction_LeftUp", "Left Up")));
+            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.LeftDown, GetDialogString("Direction_LeftDown", "Left Down")));
+            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.RightUp, GetDialogString("Direction_RightUp", "Right Up")));
+            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.RightDown, GetDialogString("Direction_RightDown", "Right Down")));
             cmbDirection.SelectedIndex = selectedIndex >= 0 ? selectedIndex : 0; // Restore or default to Right
+        }
+
+        private static string GetDialogString(string key, string fallback)
+        {
+            CultureInfo culture = Resources.Culture ?? CultureInfo.CurrentUICulture;
+            return DialogResourceManager.GetString(key, culture) ?? fallback;
         }
 
         private void BtnBrowseBase_Click(object? sender, EventArgs e)
@@ -198,7 +206,7 @@ namespace GifProcessorApp
             using var dialog = new OpenFileDialog
             {
                 Filter = Resources.FileDialog_GifFilter,
-                Title = "Select base GIF file"
+                Title = GetDialogString("OverlayDialog_SelectBaseGif", "Select base GIF file")
             };
             if (dialog.ShowDialog() == DialogResult.OK)
             {
@@ -216,10 +224,11 @@ namespace GifProcessorApp
                     double avgDelay = collection.Average(img => (double)img.AnimationDelay);
                     double fps = avgDelay > 0 ? 100.0 / avgDelay : 0;
                     lblBaseInfo.Text = string.Format(
-                        _resources.GetString("GifInfoFormat") ?? "{0}×{1}, {2} fps, {3} frames",
+                        CultureInfo.CurrentCulture,
+                        GetDialogString("GifInfoFormat", "{0}×{1}, {2} fps, {3} frames"),
                         width,
                         height,
-                        fps.ToString("0.##"),
+                        fps.ToString("0.##", CultureInfo.CurrentCulture),
                         collection.Count);
                 }
                 catch
@@ -234,7 +243,7 @@ namespace GifProcessorApp
             using var dialog = new OpenFileDialog
             {
                 Filter = Resources.FileDialog_GifFilter,
-                Title = "Select overlay GIF file"
+                Title = GetDialogString("OverlayDialog_SelectOverlayGif", "Select overlay GIF file")
             };
             if (dialog.ShowDialog() == DialogResult.OK)
             {
@@ -248,10 +257,11 @@ namespace GifProcessorApp
                     double avgDelay = collection.Average(img => (double)img.AnimationDelay);
                     double fps = avgDelay > 0 ? 100.0 / avgDelay : 0;
                     lblOverlayInfo.Text = string.Format(
-                        _resources.GetString("GifInfoFormat") ?? "{0}×{1}, {2} fps, {3} frames",
+                        CultureInfo.CurrentCulture,
+                        GetDialogString("GifInfoFormat", "{0}×{1}, {2} fps, {3} frames"),
                         width,
                         height,
-                        fps.ToString("0.##"),
+                        fps.ToString("0.##", CultureInfo.CurrentCulture),
                         collection.Count);
                 }
                 catch
@@ -266,7 +276,7 @@ namespace GifProcessorApp
             using var dialog = new SaveFileDialog
             {
                 Filter = Resources.FileDialog_GifFilter,
-                Title = "Save overlay GIF as...",
+                Title = GetDialogString("OverlayDialog_SaveOutputGif", "Save overlay GIF as..."),
                 DefaultExt = "gif"
             };
 
