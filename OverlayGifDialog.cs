@@ -147,6 +147,9 @@ namespace GifProcessorApp
         public void UpdateUIText()
         {
             if (DesignMode) return;
+
+            // Debug: Check if resources are loading
+            System.Diagnostics.Debug.WriteLine($"UpdateUIText called. Culture: {System.Globalization.CultureInfo.CurrentUICulture.Name}");
             // File selection
             lblBase.Text = _resources.GetString("lblBase.Text") ?? "Base GIF:";
             btnBrowseBase.Text = _resources.GetString("btnBrowseBase.Text") ?? "Browse...";
@@ -177,18 +180,17 @@ namespace GifProcessorApp
             Text = _resources.GetString("$this.Text") ?? "Overlay GIF with Movement";
 
             // Populate direction combo box with localized text
-            if (cmbDirection.Items.Count == 0)
-            {
-                cmbDirection.Items.Add(new DirectionItem(ScrollDirection.Right, _resources.GetString("Direction_Right") ?? "Right"));
-                cmbDirection.Items.Add(new DirectionItem(ScrollDirection.Left, _resources.GetString("Direction_Left") ?? "Left"));
-                cmbDirection.Items.Add(new DirectionItem(ScrollDirection.Down, _resources.GetString("Direction_Down") ?? "Down"));
-                cmbDirection.Items.Add(new DirectionItem(ScrollDirection.Up, _resources.GetString("Direction_Up") ?? "Up"));
-                cmbDirection.Items.Add(new DirectionItem(ScrollDirection.LeftUp, _resources.GetString("Direction_LeftUp") ?? "Left Up"));
-                cmbDirection.Items.Add(new DirectionItem(ScrollDirection.LeftDown, _resources.GetString("Direction_LeftDown") ?? "Left Down"));
-                cmbDirection.Items.Add(new DirectionItem(ScrollDirection.RightUp, _resources.GetString("Direction_RightUp") ?? "Right Up"));
-                cmbDirection.Items.Add(new DirectionItem(ScrollDirection.RightDown, _resources.GetString("Direction_RightDown") ?? "Right Down"));
-                cmbDirection.SelectedIndex = 0; // Default to Right
-            }
+            int selectedIndex = cmbDirection.SelectedIndex;
+            cmbDirection.Items.Clear();
+            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.Right, _resources.GetString("Direction_Right") ?? "Right"));
+            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.Left, _resources.GetString("Direction_Left") ?? "Left"));
+            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.Down, _resources.GetString("Direction_Down") ?? "Down"));
+            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.Up, _resources.GetString("Direction_Up") ?? "Up"));
+            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.LeftUp, _resources.GetString("Direction_LeftUp") ?? "Left Up"));
+            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.LeftDown, _resources.GetString("Direction_LeftDown") ?? "Left Down"));
+            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.RightUp, _resources.GetString("Direction_RightUp") ?? "Right Up"));
+            cmbDirection.Items.Add(new DirectionItem(ScrollDirection.RightDown, _resources.GetString("Direction_RightDown") ?? "Right Down"));
+            cmbDirection.SelectedIndex = selectedIndex >= 0 ? selectedIndex : 0; // Restore or default to Right
         }
 
         private void BtnBrowseBase_Click(object? sender, EventArgs e)
