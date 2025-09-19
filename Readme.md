@@ -19,6 +19,21 @@ SteamGifCropper 是一個設計為 **Steam 工作坊個人展示櫃**的小工�
   <img src="./res/new_shiny1_766px_Part5.gif" style="flex: 1 1 18%; height: auto;">
 </div>
 
+串接
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/KFC2-0_concatenated_resized.gif" style="flex: 1 1 95%; height: auto;">
+</div>
+  
+合併
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/KFC2-0_merged_resized.gif" style="flex: 1 1 95%; height: auto;">
+</div>
+  
+捲動
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/KFC2-0_merged_scroll_resized.gif" style="flex: 1 1 95%; height: auto;">
+</div>
+  
 
 ---
 

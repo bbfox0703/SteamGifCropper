@@ -328,6 +328,8 @@ namespace GifProcessorApp
                 {
                     btnResizeNfpsGIF.Text = "FFMPEG: " + btnResizeNfpsGIF.Text;
                 }
+                btnConcatenateGifs.Text = SteamGifCropper.Properties.Resources.GTMainForm_ConcatenateGifs;
+                btnScrollAnimatedGif.Text = SteamGifCropper.Properties.Resources.Button_ScrollAnimatedGif;
                 label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
                 lblFramerate.Text = SteamGifCropper.Properties.Resources.Label_Framerate;
                 lblFPS.Text = SteamGifCropper.Properties.Resources.Label_FPS;
