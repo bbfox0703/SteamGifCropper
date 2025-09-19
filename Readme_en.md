@@ -19,7 +19,21 @@ Due to loading time differences, the five GIF animations might appear slightly o
   <img src="./res/new_shiny1_766px_Part5.gif" style="flex: 1 1 18%; height: auto;">
 </div>
 
-
+Concatenate
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/KFC2-0_concatenated_resized.gif" style="flex: 1 1 95%; height: auto;">
+</div>
+  
+Merge
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/KFC2-0_merged_resized.gif" style="flex: 1 1 95%; height: auto;">
+</div>
+  
+Scroll
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/KFC2-0_merged_scroll_resized.gif" style="flex: 1 1 95%; height: auto;">
+</div>
+  
 ---
 
 ## Features
