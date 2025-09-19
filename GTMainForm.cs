@@ -204,6 +204,20 @@ namespace GifProcessorApp
             }, "GIF merge");
         }
 
+        private async void btnConcatenateGifs_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(async () =>
+            {
+                using (var dialog = new ConcatenateGifsDialog())
+                {
+                    if (dialog.ShowDialog() == DialogResult.OK)
+                    {
+                        await GifProcessor.ConcatenateGifs(this, dialog.Settings);
+                    }
+                }
+            }, "GIF concatenation");
+        }
+
         private async void btnReverseGIF_Click(object sender, EventArgs e)
         {
             await ExecuteWithErrorHandling(async () => await GifProcessor.ReverseGif(this), "GIF reversal");
@@ -212,6 +226,11 @@ namespace GifProcessorApp
         private async void btnScrollStaticImage_Click(object sender, EventArgs e)
         {
             await ExecuteWithErrorHandling(async () => await GifProcessor.ScrollStaticImage(this), "static image scroll");
+        }
+
+        private async void btnScrollAnimatedGif_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(async () => await GifProcessor.ScrollAnimatedGif(this), "animated GIF scroll");
         }
 
         private async void btnOverlayGIF_Click(object sender, EventArgs e)
@@ -309,6 +328,8 @@ namespace GifProcessorApp
                 {
                     btnResizeNfpsGIF.Text = "FFMPEG: " + btnResizeNfpsGIF.Text;
                 }
+                btnConcatenateGifs.Text = SteamGifCropper.Properties.Resources.GTMainForm_ConcatenateGifs;
+                btnScrollAnimatedGif.Text = SteamGifCropper.Properties.Resources.Button_ScrollAnimatedGif;
                 label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
                 lblFramerate.Text = SteamGifCropper.Properties.Resources.Label_Framerate;
                 lblFPS.Text = SteamGifCropper.Properties.Resources.Label_FPS;

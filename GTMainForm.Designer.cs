@@ -65,10 +65,12 @@
             toolStripLangTradChinese = new System.Windows.Forms.ToolStripMenuItem();
             toolStripLangJapanese = new System.Windows.Forms.ToolStripMenuItem();
             btnScrollStaticImage = new System.Windows.Forms.Button();
+            btnScrollAnimatedGif = new System.Windows.Forms.Button();
             btnOverlayGIF = new System.Windows.Forms.Button();
             btnResizeNfpsGIF = new System.Windows.Forms.Button();
             lblResourceLimitDesc = new System.Windows.Forms.Label();
             numUpDownFramerate = new System.Windows.Forms.NumericUpDown();
+            btnConcatenateGifs = new System.Windows.Forms.Button();
             panelGifsicle.SuspendLayout();
             groupDither.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).BeginInit();
@@ -126,7 +128,7 @@
             // pBarTaskStatus
             // 
             pBarTaskStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            pBarTaskStatus.Location = new System.Drawing.Point(0, 424);
+            pBarTaskStatus.Location = new System.Drawing.Point(0, 472);
             pBarTaskStatus.Margin = new System.Windows.Forms.Padding(2);
             pBarTaskStatus.Name = "pBarTaskStatus";
             pBarTaskStatus.Size = new System.Drawing.Size(619, 20);
@@ -135,7 +137,7 @@
             // lblStatus
             // 
             lblStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            lblStatus.Location = new System.Drawing.Point(0, 409);
+            lblStatus.Location = new System.Drawing.Point(0, 457);
             lblStatus.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new System.Drawing.Size(619, 15);
@@ -178,7 +180,7 @@
             panelGifsicle.Controls.Add(numUpDownPalette);
             panelGifsicle.Controls.Add(lblPaletteDesc);
             panelGifsicle.Dock = System.Windows.Forms.DockStyle.Bottom;
-            panelGifsicle.Location = new System.Drawing.Point(0, 290);
+            panelGifsicle.Location = new System.Drawing.Point(0, 338);
             panelGifsicle.Margin = new System.Windows.Forms.Padding(2);
             panelGifsicle.Name = "panelGifsicle";
             panelGifsicle.Size = new System.Drawing.Size(619, 119);
@@ -359,7 +361,7 @@
             // lblFramerate
             // 
             lblFramerate.AutoSize = true;
-            lblFramerate.Location = new System.Drawing.Point(11, 262);
+            lblFramerate.Location = new System.Drawing.Point(11, 295);
             lblFramerate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFramerate.Name = "lblFramerate";
             lblFramerate.Size = new System.Drawing.Size(0, 15);
@@ -368,7 +370,7 @@
             // lblFPS
             // 
             lblFPS.AutoSize = true;
-            lblFPS.Location = new System.Drawing.Point(310, 262);
+            lblFPS.Location = new System.Drawing.Point(310, 295);
             lblFPS.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFPS.Name = "lblFPS";
             lblFPS.Size = new System.Drawing.Size(0, 15);
@@ -387,7 +389,7 @@
             // chk5GIFMergeFasterPaletteProcess
             // 
             chk5GIFMergeFasterPaletteProcess.AutoSize = true;
-            chk5GIFMergeFasterPaletteProcess.Location = new System.Drawing.Point(313, 56);
+            chk5GIFMergeFasterPaletteProcess.Location = new System.Drawing.Point(315, 56);
             chk5GIFMergeFasterPaletteProcess.Name = "chk5GIFMergeFasterPaletteProcess";
             chk5GIFMergeFasterPaletteProcess.Size = new System.Drawing.Size(243, 19);
             chk5GIFMergeFasterPaletteProcess.TabIndex = 3;
@@ -396,7 +398,7 @@
             // 
             // btnReverseGIF
             // 
-            btnReverseGIF.Location = new System.Drawing.Point(312, 126);
+            btnReverseGIF.Location = new System.Drawing.Point(313, 95);
             btnReverseGIF.Name = "btnReverseGIF";
             btnReverseGIF.Size = new System.Drawing.Size(300, 26);
             btnReverseGIF.TabIndex = 7;
@@ -406,7 +408,7 @@
             // 
             // btnLanguageChange
             // 
-            btnLanguageChange.Location = new System.Drawing.Point(548, 229);
+            btnLanguageChange.Location = new System.Drawing.Point(548, 276);
             btnLanguageChange.Name = "btnLanguageChange";
             btnLanguageChange.Size = new System.Drawing.Size(64, 26);
             btnLanguageChange.TabIndex = 16;
@@ -443,13 +445,23 @@
             // 
             // btnScrollStaticImage
             // 
-            btnScrollStaticImage.Location = new System.Drawing.Point(313, 95);
+            btnScrollStaticImage.Location = new System.Drawing.Point(312, 126);
             btnScrollStaticImage.Name = "btnScrollStaticImage";
             btnScrollStaticImage.Size = new System.Drawing.Size(300, 26);
             btnScrollStaticImage.TabIndex = 5;
             btnScrollStaticImage.Text = SteamGifCropper.Properties.Resources.Button_ScrollStaticImage;
             btnScrollStaticImage.UseVisualStyleBackColor = true;
             btnScrollStaticImage.Click += btnScrollStaticImage_Click;
+            // 
+            // btnScrollAnimatedGif
+            // 
+            btnScrollAnimatedGif.Location = new System.Drawing.Point(7, 125);
+            btnScrollAnimatedGif.Name = "btnScrollAnimatedGif";
+            btnScrollAnimatedGif.Size = new System.Drawing.Size(300, 26);
+            btnScrollAnimatedGif.TabIndex = 6;
+            btnScrollAnimatedGif.Text = SteamGifCropper.Properties.Resources.Button_ScrollAnimatedGif;
+            btnScrollAnimatedGif.UseVisualStyleBackColor = true;
+            btnScrollAnimatedGif.Click += btnScrollAnimatedGif_Click;
             // 
             // btnOverlayGIF
             // 
@@ -474,7 +486,7 @@
             // lblResourceLimitDesc
             // 
             lblResourceLimitDesc.AutoSize = true;
-            lblResourceLimitDesc.Location = new System.Drawing.Point(7, 229);
+            lblResourceLimitDesc.Location = new System.Drawing.Point(7, 269);
             lblResourceLimitDesc.Name = "lblResourceLimitDesc";
             lblResourceLimitDesc.Size = new System.Drawing.Size(234, 15);
             lblResourceLimitDesc.TabIndex = 15;
@@ -482,7 +494,7 @@
             // 
             // numUpDownFramerate
             // 
-            numUpDownFramerate.Location = new System.Drawing.Point(255, 260);
+            numUpDownFramerate.Location = new System.Drawing.Point(255, 293);
             numUpDownFramerate.Margin = new System.Windows.Forms.Padding(2);
             numUpDownFramerate.Maximum = new decimal(new int[] { 30, 0, 0, 0 });
             numUpDownFramerate.Minimum = new decimal(new int[] { 5, 0, 0, 0 });
@@ -491,16 +503,27 @@
             numUpDownFramerate.TabIndex = 13;
             numUpDownFramerate.Value = new decimal(new int[] { 15, 0, 0, 0 });
             // 
+            // btnConcatenateGifs
+            // 
+            btnConcatenateGifs.Location = new System.Drawing.Point(7, 219);
+            btnConcatenateGifs.Name = "btnConcatenateGifs";
+            btnConcatenateGifs.Size = new System.Drawing.Size(300, 26);
+            btnConcatenateGifs.TabIndex = 17;
+            btnConcatenateGifs.Text = SteamGifCropper.Properties.Resources.GTMainForm_ConcatenateGifs;
+            btnConcatenateGifs.UseVisualStyleBackColor = true;
+            btnConcatenateGifs.Click += btnConcatenateGifs_Click;
+            // 
             // GifToolMainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            ClientSize = new System.Drawing.Size(619, 444);
+            ClientSize = new System.Drawing.Size(619, 492);
             Controls.Add(lblResourceLimitDesc);
             Controls.Add(btnResizeNfpsGIF);
             Controls.Add(btnOverlayGIF);
             Controls.Add(btnScrollStaticImage);
+            Controls.Add(btnScrollAnimatedGif);
             Controls.Add(btnLanguageChange);
             Controls.Add(btnReverseGIF);
             Controls.Add(chk5GIFMergeFasterPaletteProcess);
@@ -517,6 +540,7 @@
             Controls.Add(btnResizeGif766);
             Controls.Add(btnSplitGif);
             Controls.Add(btnMerge2to5GifToOne);
+            Controls.Add(btnConcatenateGifs);
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new System.Windows.Forms.Padding(2);
             Name = "GifToolMainForm";
@@ -574,9 +598,11 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripLangTradChinese;
         private System.Windows.Forms.ToolStripMenuItem toolStripLangJapanese;
         private System.Windows.Forms.Button btnScrollStaticImage;
+        private System.Windows.Forms.Button btnScrollAnimatedGif;
         private System.Windows.Forms.Button btnOverlayGIF;
         private System.Windows.Forms.Button btnResizeNfpsGIF;
         private System.Windows.Forms.Label lblResourceLimitDesc;
         public System.Windows.Forms.NumericUpDown numUpDownFramerate;
+        private System.Windows.Forms.Button btnConcatenateGifs;
     }
 }

@@ -2048,12 +2048,13 @@ namespace GifProcessorApp
 
             int frames;
             int dx = 0, dy = 0;
-            double step = 0;
+            double stepX = 0, stepY = 0;
             if (durationSeconds > 0)
             {
                 frames = Math.Max(1, durationSeconds * targetFramerate);
-                frames = Math.Min(frames, distance);
-                step = (double)distance / frames;
+                // Calculate separate steps for X and Y axes
+                if (signX != 0) stepX = (double)width / frames;
+                if (signY != 0) stepY = (double)height / frames;
             }
             else
             {
@@ -2091,9 +2092,8 @@ namespace GifProcessorApp
                 int offsetX, offsetY;
                 if (durationSeconds > 0)
                 {
-                    int offset = (int)Math.Round(step * i);
-                    offsetX = signX * offset;
-                    offsetY = signY * offset;
+                    offsetX = signX * (int)Math.Round(stepX * i);
+                    offsetY = signY * (int)Math.Round(stepY * i);
                 }
                 else
                 {
@@ -2133,12 +2133,6 @@ namespace GifProcessorApp
             int width = (int)baseImage.Width;
             int height = (int)baseImage.Height;
 
-            int distance = direction switch
-            {
-                ScrollDirection.Up or ScrollDirection.Down => height,
-                _ => width
-            };
-
             int signX = 0, signY = 0;
             switch (direction)
             {
@@ -2154,12 +2148,13 @@ namespace GifProcessorApp
 
             int frames;
             int dx = 0, dy = 0;
-            double step = 0;
+            double stepX = 0, stepY = 0;
             if (durationSeconds > 0)
             {
                 frames = Math.Max(1, durationSeconds * targetFramerate);
-                frames = Math.Min(frames, distance);
-                step = (double)distance / frames;
+                // Calculate separate steps for X and Y axes
+                if (signX != 0) stepX = (double)width / frames;
+                if (signY != 0) stepY = (double)height / frames;
             }
             else
             {
@@ -2204,9 +2199,8 @@ namespace GifProcessorApp
                 int offsetX, offsetY;
                 if (durationSeconds > 0)
                 {
-                    int offset = (int)Math.Round(step * i);
-                    offsetX = signX * offset;
-                    offsetY = signY * offset;
+                    offsetX = signX * (int)Math.Round(stepX * i);
+                    offsetY = signY * (int)Math.Round(stepY * i);
                 }
                 else
                 {
@@ -2265,7 +2259,7 @@ namespace GifProcessorApp
 
         public static async Task ScrollStaticImage(GifToolMainForm mainForm)
         {
-            using var dialog = new ScrollStaticImageDialog();
+            using var dialog = new ScrollStaticImageDialog(true);
             if (dialog.ShowDialog() != DialogResult.OK)
                 return;
 
@@ -2276,7 +2270,33 @@ namespace GifProcessorApp
             int duration = dialog.DurationSeconds;
             int moveCount = dialog.MoveCount;
             bool fullCycle = dialog.FullCycle;
+            bool autoDuration = dialog.AutoDuration;
             int targetFramerate = (int)mainForm.numUpDownFramerate.Value;
+
+            // Auto-calculate duration if requested and input is GIF
+            if (autoDuration && Path.GetExtension(inputPath).ToLowerInvariant() == ".gif")
+            {
+                try
+                {
+                    using var inputCollection = new MagickImageCollection(inputPath);
+                    // Calculate total duration of one complete GIF cycle
+                    double totalDurationSeconds = inputCollection.Sum(frame => (double)frame.AnimationDelay) / 100.0;
+                    duration = (int)Math.Ceiling(totalDurationSeconds);
+
+                    mainForm.Invoke((Action)(() =>
+                    {
+                        SetStatusText(mainForm, $"Auto-calculated GIF cycle duration: {totalDurationSeconds:F2}s → {duration}s");
+                    }));
+                }
+                catch (Exception ex)
+                {
+                    mainForm.Invoke((Action)(() =>
+                    {
+                        SetStatusText(mainForm, $"Failed to calculate auto-duration: {ex.Message}");
+                    }));
+                    duration = 5; // Fallback to 5 seconds
+                }
+            }
 
             mainForm.Enabled = false;
             try
@@ -2285,7 +2305,17 @@ namespace GifProcessorApp
                 SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Processing);
 
-                await Task.Run(() => ScrollStaticImage(inputPath, outputPath, direction, step, duration, fullCycle, moveCount, targetFramerate, mainForm));
+                await Task.Run(() => {
+                    // Detect if input is GIF or static image
+                    if (Path.GetExtension(inputPath).ToLowerInvariant() == ".gif")
+                    {
+                        ScrollAnimatedGif(inputPath, outputPath, direction, step, duration, fullCycle, moveCount, targetFramerate, mainForm, autoDuration);
+                    }
+                    else
+                    {
+                        ScrollStaticImage(inputPath, outputPath, direction, step, duration, fullCycle, moveCount, targetFramerate, mainForm);
+                    }
+                });
 
                 if (mainForm.chkGifsicle.Checked)
                 {
@@ -2332,6 +2362,478 @@ namespace GifProcessorApp
             }
         }
 
+        public static async Task ScrollAnimatedGif(GifToolMainForm mainForm)
+        {
+            using var dialog = new ScrollStaticImageDialog(true);
+            if (dialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            string inputPath = dialog.InputFilePath;
+            string outputPath = dialog.OutputFilePath;
+            ScrollDirection direction = dialog.Direction;
+            int step = dialog.StepPixels;
+            int duration = dialog.DurationSeconds;
+            int moveCount = dialog.MoveCount;
+            bool fullCycle = dialog.FullCycle;
+            bool autoDuration = dialog.AutoDuration;
+            int targetFramerate = (int)mainForm.numUpDownFramerate.Value;
+
+            // Auto-calculate duration for GIF cycle
+            if (autoDuration)
+            {
+                try
+                {
+                    using var inputCollection = new MagickImageCollection(inputPath);
+                    // Calculate total duration of one complete GIF cycle
+                    double totalDurationSeconds = inputCollection.Sum(frame => (double)frame.AnimationDelay) / 100.0;
+                    duration = (int)Math.Ceiling(totalDurationSeconds);
+
+                    mainForm.Invoke((Action)(() =>
+                    {
+                        SetStatusText(mainForm, $"Auto-calculated GIF cycle duration: {totalDurationSeconds:F2}s → {duration}s");
+                    }));
+                }
+                catch (Exception ex)
+                {
+                    mainForm.Invoke((Action)(() =>
+                    {
+                        SetStatusText(mainForm, $"Failed to calculate auto-duration: {ex.Message}");
+                    }));
+                    duration = 5; // Fallback to 5 seconds
+                }
+            }
+
+            mainForm.Enabled = false;
+            try
+            {
+                mainForm.pBarTaskStatus.Visible = true;
+                SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Processing);
+
+                await Task.Run(() => {
+                    // Detect if input is GIF or static image
+                    if (Path.GetExtension(inputPath).ToLowerInvariant() == ".gif")
+                    {
+                        ScrollAnimatedGif(inputPath, outputPath, direction, step, duration, fullCycle, moveCount, targetFramerate, mainForm, autoDuration);
+                    }
+                    else
+                    {
+                        ScrollStaticImage(inputPath, outputPath, direction, step, duration, fullCycle, moveCount, targetFramerate, mainForm);
+                    }
+                });
+
+                if (mainForm.chkGifsicle.Checked)
+                {
+                    var options = new GifsicleWrapper.GifsicleOptions
+                    {
+                        Colors = (int)mainForm.numUpDownPaletteSicle.Value,
+                        Lossy = (int)mainForm.numUpDownLossy.Value,
+                        OptimizeLevel = (int)mainForm.numUpDownOptimize.Value,
+                        Dither = mainForm.DitherMethod
+                    };
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing);
+                    await GifsicleWrapper.OptimizeGif(outputPath, outputPath, options);
+                }
+
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                                SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
+                                SteamGifCropper.Properties.Resources.Title_Success,
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (MagickResourceLimitErrorException)
+            {
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Error);
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                                SteamGifCropper.Properties.Resources.Error_CacheResourcesExhausted,
+                                SteamGifCropper.Properties.Resources.Title_Error,
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Error);
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                                string.Format(SteamGifCropper.Properties.Resources.Error_Occurred, ex.Message),
+                                SteamGifCropper.Properties.Resources.Title_Error,
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                mainForm.Enabled = true;
+                SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Ready);
+            }
+        }
+
+        public static void ScrollAnimatedGif(string inputFilePath, string outputFilePath,
+            ScrollDirection direction, int stepPixels, int durationSeconds, bool fullCycle, int moveCount, int targetFramerate, GifToolMainForm mainForm, bool autoDuration = false)
+        {
+            // Memory usage estimation and validation
+            var fileInfo = new FileInfo(inputFilePath);
+            long fileSizeMB = fileInfo.Length / (1024 * 1024);
+
+            // Warn user for large files
+            if (fileSizeMB > 50)
+            {
+                DialogResult result = DialogResult.No;
+                mainForm.Invoke((Action)(() =>
+                {
+                    result = WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                        $"Large GIF file detected ({fileSizeMB}MB). Processing may use significant memory and time. Continue?",
+                        "Memory Warning",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                }));
+                if (result == DialogResult.No)
+                    return;
+            }
+
+            using var inputCollection = new MagickImageCollection(inputFilePath);
+            inputCollection.Coalesce();
+
+            // Debug: Show input GIF information
+            mainForm.Invoke((Action)(() =>
+            {
+                SetStatusText(mainForm, $"Input GIF: {inputCollection.Count} frames, {inputCollection[0].Width}x{inputCollection[0].Height}, delays: {string.Join(",", inputCollection.Take(5).Select(f => f.AnimationDelay))}");
+            }));
+
+            // Validate total estimated frames to prevent memory explosion
+            int estimatedScrollFrames;
+            if (autoDuration)
+            {
+                // For auto-duration, use the GIF frame count directly
+                estimatedScrollFrames = inputCollection.Count;
+            }
+            else
+            {
+                estimatedScrollFrames = EstimateScrollFrames(direction, stepPixels, durationSeconds, fullCycle, moveCount,
+                    (int)inputCollection[0].Width, (int)inputCollection[0].Height, targetFramerate);
+            }
+            long totalEstimatedFrames = (long)estimatedScrollFrames * inputCollection.Count;
+
+            // Show diagnostic info
+            mainForm.Invoke((Action)(() =>
+            {
+                SetStatusText(mainForm, $"Processing: {inputCollection.Count} original frames × {estimatedScrollFrames} scroll positions = {totalEstimatedFrames} output frames");
+            }));
+
+            // Apply different limits for auto-duration vs manual modes
+            int frameLimit = autoDuration ? 500000 : 100000; // More generous limit for auto-duration
+            if (totalEstimatedFrames > frameLimit)
+            {
+                string modeInfo = autoDuration ? "auto-duration" : "manual";
+                throw new InvalidOperationException($"Too many frames would be generated ({totalEstimatedFrames}) in {modeInfo} mode.\n" +
+                    $"Original frames: {inputCollection.Count}\n" +
+                    $"Scroll positions: {estimatedScrollFrames}\n" +
+                    $"Please reduce scroll duration, increase step size, or reduce move count.");
+            }
+
+            // Get original GIF properties
+            var firstFrame = inputCollection[0];
+            int originalWidth = (int)firstFrame.Width;
+            int originalHeight = (int)firstFrame.Height;
+            int originalDelay = (int)inputCollection[0].AnimationDelay;
+
+            int distance = direction switch
+            {
+                ScrollDirection.Up or ScrollDirection.Down => originalHeight,
+                _ => originalWidth
+            };
+
+            int signX = 0, signY = 0;
+            switch (direction)
+            {
+                case ScrollDirection.Right: signX = 1; break;
+                case ScrollDirection.Left: signX = -1; break;
+                case ScrollDirection.Down: signY = 1; break;
+                case ScrollDirection.Up: signY = -1; break;
+                case ScrollDirection.LeftUp: signX = -1; signY = -1; break;
+                case ScrollDirection.LeftDown: signX = -1; signY = 1; break;
+                case ScrollDirection.RightUp: signX = 1; signY = -1; break;
+                case ScrollDirection.RightDown: signX = 1; signY = 1; break;
+            }
+
+            int scrollFrames;
+            int dx = 0, dy = 0;
+            double step = 0;
+            if (durationSeconds > 0)
+            {
+                // For duration-based scrolling, calculate frames to exactly cover the distance
+                scrollFrames = durationSeconds * targetFramerate;
+                step = (double)distance / scrollFrames;
+            }
+            else
+            {
+                dx = signX * stepPixels;
+                dy = signY * stepPixels;
+                if (fullCycle)
+                {
+                    int stepsX = dx != 0 ? (int)Math.Ceiling((double)originalWidth / Math.Abs(dx)) : 0;
+                    int stepsY = dy != 0 ? (int)Math.Ceiling((double)originalHeight / Math.Abs(dy)) : 0;
+                    scrollFrames = Math.Max(stepsX, stepsY);
+                    if (scrollFrames <= 0) scrollFrames = 1;
+                }
+                else
+                {
+                    scrollFrames = moveCount;
+                }
+            }
+
+            int frameDelay = Math.Max(1, 100 / targetFramerate);
+
+            // Calculate original GIF timing
+            double originalFPS = 100.0 / inputCollection[0].AnimationDelay; // AnimationDelay is in 1/100 seconds
+            int totalScrollDurationMs = durationSeconds * 1000;
+
+            // Calculate how much to scroll per original frame for X and Y separately
+            double scrollPixelsPerFrameX = 0;
+            double scrollPixelsPerFrameY = 0;
+
+            if (autoDuration)
+            {
+                // For auto-duration, scroll exactly one full distance over the GIF's frame count
+                if (signX != 0) scrollPixelsPerFrameX = (double)originalWidth / inputCollection.Count;
+                if (signY != 0) scrollPixelsPerFrameY = (double)originalHeight / inputCollection.Count;
+            }
+            else if (durationSeconds > 0)
+            {
+                if (signX != 0) scrollPixelsPerFrameX = (double)originalWidth / (originalFPS * durationSeconds);
+                if (signY != 0) scrollPixelsPerFrameY = (double)originalHeight / (originalFPS * durationSeconds);
+            }
+
+            // Calculate how long the scroll animation should last in terms of original frames
+            int scrollAnimationFrames;
+            if (autoDuration)
+            {
+                // For auto-duration, use the exact number of frames in the original GIF
+                scrollAnimationFrames = inputCollection.Count;
+            }
+            else if (durationSeconds > 0)
+            {
+                scrollAnimationFrames = (int)(originalFPS * durationSeconds);
+            }
+            else
+            {
+                scrollAnimationFrames = scrollFrames;
+            }
+
+            // Use collection approach for proper GIF animation
+            using var outputCollection = new MagickImageCollection();
+
+            // Debug: Show scroll parameters
+            mainForm.Invoke((Action)(() =>
+            {
+                string modeInfo = autoDuration ? "Auto-duration mode" : $"Manual {durationSeconds}s";
+                SetStatusText(mainForm, $"{modeInfo}: {scrollAnimationFrames} frames, X:{scrollPixelsPerFrameX:F2}px/frame, Y:{scrollPixelsPerFrameY:F2}px/frame");
+            }));
+
+            double accumulatedScrollX = 0;
+            double accumulatedScrollY = 0;
+            int outputFrameCount = 0;
+
+            // Phase 1: Scrolling animation with original GIF playing
+            for (int scrollFrame = 0; scrollFrame < scrollAnimationFrames; scrollFrame++)
+            {
+                // Calculate which original frame to use (cycle through the original animation)
+                int originalFrameIndex = scrollFrame % inputCollection.Count;
+                var originalFrame = inputCollection[originalFrameIndex];
+
+                // Calculate current accumulated scroll offset
+                if (autoDuration || durationSeconds > 0)
+                {
+                    accumulatedScrollX += scrollPixelsPerFrameX * signX;
+                    accumulatedScrollY += scrollPixelsPerFrameY * signY;
+                }
+                else
+                {
+                    accumulatedScrollX = dx * scrollFrame;
+                    accumulatedScrollY = dy * scrollFrame;
+                }
+
+                // Create scrolled version of this frame
+                var scrolledFrame = new MagickImage(MagickColors.Transparent, (uint)originalWidth, (uint)originalHeight);
+                scrolledFrame.Format = MagickFormat.Gif;
+
+                using var temp = originalFrame.Clone();
+                temp.Roll((int)accumulatedScrollX, (int)accumulatedScrollY);
+
+                scrolledFrame.Composite(temp, 0, 0, CompositeOperator.Over);
+                scrolledFrame.AnimationDelay = originalFrame.AnimationDelay; // Use original frame timing
+                scrolledFrame.GifDisposeMethod = GifDisposeMethod.Background;
+
+                outputCollection.Add(scrolledFrame);
+                outputFrameCount++;
+
+                // Update progress
+                int progress = (int)((double)(scrollFrame + 1) / scrollAnimationFrames * 70); // 70% for scrolling
+                mainForm.Invoke((Action)(() =>
+                {
+                    SetProgressBar(mainForm.pBarTaskStatus, progress, 100);
+                }));
+            }
+
+            // Phase 2: Continue normal animation after scroll completes
+            // Calculate final scroll position
+            int finalScrollX = (int)accumulatedScrollX;
+            int finalScrollY = (int)accumulatedScrollY;
+
+            if (fullCycle)
+            {
+                // For full cycle, the final position should maintain the wrap-around effect
+                // Don't reset to 0 - keep the modulo position to show the scroll effect
+                finalScrollX = finalScrollX % originalWidth;
+                finalScrollY = finalScrollY % originalHeight;
+                if (finalScrollX < 0) finalScrollX += originalWidth;
+                if (finalScrollY < 0) finalScrollY += originalHeight;
+
+                // Debug: Show final position for full cycle
+                mainForm.Invoke((Action)(() =>
+                {
+                    SetStatusText(mainForm, $"Full cycle final position: X={finalScrollX}, Y={finalScrollY} (not reset to 0)");
+                }));
+            }
+
+            // Phase 2: Continue with normal animation from the correct timeline position
+            if (autoDuration)
+            {
+                // For auto-duration, we skip Phase 2 since we already played the complete cycle
+                // The output should have exactly the same number of frames as the input
+                mainForm.Invoke((Action)(() =>
+                {
+                    SetStatusText(mainForm, $"Auto-duration complete: {outputCollection.Count} frames (same as source)");
+                }));
+            }
+            else if (durationSeconds > 0)
+            {
+                // For manual duration-based scrolling, continue from where the animation timeline left off
+                int lastUsedFrameIndex = (scrollAnimationFrames - 1) % inputCollection.Count;
+                int nextFrameIndex = (lastUsedFrameIndex + 1) % inputCollection.Count;
+
+                // Debug: Show timeline continuity
+                mainForm.Invoke((Action)(() =>
+                {
+                    SetStatusText(mainForm, $"Timeline continuity: Last used frame {lastUsedFrameIndex}, continuing from frame {nextFrameIndex}");
+                }));
+
+                // Continue the animation from the next frame in sequence
+                // Play the remaining frames to complete the current animation cycle
+                int remainingFrames = inputCollection.Count - (nextFrameIndex == 0 ? 0 : nextFrameIndex);
+                if (nextFrameIndex == 0) remainingFrames = inputCollection.Count; // Full cycle if we're back at start
+
+                for (int i = 0; i < remainingFrames; i++)
+                {
+                    int frameIndex = (nextFrameIndex + i) % inputCollection.Count;
+                    var originalFrame = inputCollection[frameIndex];
+                    var continueFrame = new MagickImage(MagickColors.Transparent, (uint)originalWidth, (uint)originalHeight);
+                    continueFrame.Format = MagickFormat.Gif;
+
+                    using var temp = originalFrame.Clone();
+                    // Always apply final scroll position for both full cycle and non-full cycle
+                    temp.Roll(finalScrollX, finalScrollY);
+
+                    continueFrame.Composite(temp, 0, 0, CompositeOperator.Over);
+                    continueFrame.AnimationDelay = originalFrame.AnimationDelay;
+                    continueFrame.GifDisposeMethod = GifDisposeMethod.Background;
+
+                    outputCollection.Add(continueFrame);
+                    outputFrameCount++;
+
+                    // Update progress
+                    int progress = 70 + (int)((double)(i + 1) / remainingFrames * 30);
+                    mainForm.Invoke((Action)(() =>
+                    {
+                        SetProgressBar(mainForm.pBarTaskStatus, progress, 100);
+                    }));
+                }
+            }
+            else if (!autoDuration)
+            {
+                // For step-based scrolling, calculate timeline continuity based on scroll duration
+                // The scroll took 'scrollFrames' steps, each using one frame of original animation
+                int lastUsedFrameIndex = (scrollFrames - 1) % inputCollection.Count;
+                int nextFrameIndex = (lastUsedFrameIndex + 1) % inputCollection.Count;
+
+                // Debug: Show step-based timeline continuity
+                mainForm.Invoke((Action)(() =>
+                {
+                    SetStatusText(mainForm, $"Step-based continuity: Used {scrollFrames} scroll frames, last frame {lastUsedFrameIndex}, continuing from frame {nextFrameIndex}");
+                }));
+
+                // Continue the animation from the next frame in sequence
+                int remainingFrames = inputCollection.Count - (nextFrameIndex == 0 ? 0 : nextFrameIndex);
+                if (nextFrameIndex == 0) remainingFrames = inputCollection.Count; // Full cycle if we're back at start
+
+                for (int i = 0; i < remainingFrames; i++)
+                {
+                    int frameIndex = (nextFrameIndex + i) % inputCollection.Count;
+                    var originalFrame = inputCollection[frameIndex];
+                    var continueFrame = new MagickImage(MagickColors.Transparent, (uint)originalWidth, (uint)originalHeight);
+                    continueFrame.Format = MagickFormat.Gif;
+
+                    using var temp = originalFrame.Clone();
+                    // Always apply final scroll position for both full cycle and non-full cycle
+                    temp.Roll(finalScrollX, finalScrollY);
+
+                    continueFrame.Composite(temp, 0, 0, CompositeOperator.Over);
+                    continueFrame.AnimationDelay = originalFrame.AnimationDelay;
+                    continueFrame.GifDisposeMethod = GifDisposeMethod.Background;
+
+                    outputCollection.Add(continueFrame);
+                    outputFrameCount++;
+
+                    // Update progress
+                    int progress = 70 + (int)((double)(i + 1) / remainingFrames * 30);
+                    mainForm.Invoke((Action)(() =>
+                    {
+                        SetProgressBar(mainForm.pBarTaskStatus, progress, 100);
+                    }));
+                }
+            }
+
+            // Write the complete collection to file
+            mainForm.Invoke((Action)(() =>
+            {
+                SetStatusText(mainForm, $"Writing output GIF with {outputCollection.Count} frames...");
+            }));
+
+            outputCollection.Write(outputFilePath);
+
+            // Debug: Show output info
+            mainForm.Invoke((Action)(() =>
+            {
+                SetStatusText(mainForm, $"Output GIF created: {outputCollection.Count} frames, delays: {string.Join(",", outputCollection.Take(5).Select(f => f.AnimationDelay))}");
+            }));
+
+            mainForm.Invoke((Action)(() =>
+            {
+                SetStatusText(mainForm, Resources.Status_Done);
+            }));
+        }
+
+        private static int EstimateScrollFrames(ScrollDirection direction, int stepPixels, int durationSeconds,
+            bool fullCycle, int moveCount, int width, int height, int targetFramerate)
+        {
+            int distance = direction switch
+            {
+                ScrollDirection.Up or ScrollDirection.Down => height,
+                _ => width
+            };
+
+            if (durationSeconds > 0)
+            {
+                // For duration-based scrolling, just use the time calculation
+                return Math.Max(1, durationSeconds * targetFramerate);
+            }
+            else if (fullCycle)
+            {
+                // For full cycle, calculate based on step size
+                return Math.Max(1, distance / Math.Max(1, stepPixels));
+            }
+            else
+            {
+                // For move count, just return the count
+                return moveCount;
+            }
+        }
+
         private static List<MagickImage> ResampleBaseFrames(MagickImageCollection baseCollection, MagickImageCollection overlayCollection)
         {
             var baseDelays = baseCollection.Select(f => (int)f.AnimationDelay).ToArray();
@@ -2361,6 +2863,252 @@ namespace GifProcessorApp
             return resampled;
         }
 
+        private static Task ProcessStaticOverlay(GifToolMainForm mainForm, MagickImageCollection baseCollection,
+            MagickImageCollection overlayCollection, MagickImageCollection resultCollection,
+            int offsetX, int offsetY, bool resampleBase, int baseWidth, int baseHeight)
+        {
+            // Initialize progress bar
+            if (mainForm != null)
+            {
+                mainForm.pBarTaskStatus.Minimum = 0;
+                mainForm.pBarTaskStatus.Maximum = 100;
+                SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+            }
+
+            if (resampleBase)
+            {
+                var resampledBaseFrames = ResampleBaseFrames(baseCollection, overlayCollection);
+                int overlayCount = overlayCollection.Count;
+
+                SetStatusText(mainForm, $"Processing static overlay (resampled): 0/{overlayCount} frames");
+
+                for (int i = 0; i < overlayCount; i++)
+                {
+                    using var baseFrame = resampledBaseFrames[i];
+                    using var overlayFrame = overlayCollection[i].Clone();
+
+                    // Handle partial visibility and bounds checking
+                    var overlayGeometry = CalculateOverlayGeometry((MagickImage)overlayFrame, baseWidth, baseHeight, offsetX, offsetY);
+                    if (overlayGeometry.Width <= 0 || overlayGeometry.Height <= 0)
+                    {
+                        // Overlay is completely out of bounds, add base frame only
+                        resultCollection.Add(baseFrame.Clone());
+                        continue;
+                    }
+
+                    // Crop overlay if it extends beyond base boundaries
+                    if (overlayGeometry.CropRequired)
+                    {
+                        overlayFrame.Crop(new MagickGeometry(overlayGeometry.CropX, overlayGeometry.CropY,
+                            (uint)overlayGeometry.Width, (uint)overlayGeometry.Height));
+                        overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
+                    }
+
+                    baseFrame.Composite(overlayFrame, overlayGeometry.CompositeX, overlayGeometry.CompositeY, CompositeOperator.Over);
+                    baseFrame.AnimationDelay = overlayFrame.AnimationDelay;
+                    baseFrame.AnimationTicksPerSecond = overlayFrame.AnimationTicksPerSecond;
+                    baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
+
+                    resultCollection.Add(baseFrame.Clone());
+                    UpdateFrameProgress(mainForm, i + 1, overlayCount);
+                }
+
+                resampledBaseFrames.Clear();
+            }
+            else
+            {
+                int baseCount = baseCollection.Count;
+                var overlayDelays = overlayCollection.Select(f => (int)f.AnimationDelay).ToArray();
+
+                SetStatusText(mainForm, $"Processing static overlay: 0/{baseCount} frames");
+                int overlayTotalDelay = overlayDelays.Sum();
+                int baseElapsed = 0;
+
+                for (int i = 0; i < baseCount; i++)
+                {
+                    using var baseFrame = (MagickImage)baseCollection[i].Clone();
+
+                    int startTime = overlayTotalDelay == 0 ? 0 : baseElapsed % overlayTotalDelay;
+                    int cumulative = 0;
+                    int overlayIndex = 0;
+                    for (int j = 0; j < overlayDelays.Length; j++)
+                    {
+                        cumulative += overlayDelays[j];
+                        if (startTime < cumulative)
+                        {
+                            overlayIndex = j;
+                            break;
+                        }
+                    }
+
+                    using var overlayFrame = overlayCollection[overlayIndex].Clone();
+
+                    // Handle partial visibility and bounds checking
+                    var overlayGeometry = CalculateOverlayGeometry((MagickImage)overlayFrame, baseWidth, baseHeight, offsetX, offsetY);
+                    if (overlayGeometry.Width <= 0 || overlayGeometry.Height <= 0)
+                    {
+                        // Overlay is completely out of bounds, add base frame only
+                        baseElapsed += (int)baseCollection[i].AnimationDelay;
+                        resultCollection.Add(baseFrame.Clone());
+                        continue;
+                    }
+
+                    // Crop overlay if it extends beyond base boundaries
+                    if (overlayGeometry.CropRequired)
+                    {
+                        overlayFrame.Crop(new MagickGeometry(overlayGeometry.CropX, overlayGeometry.CropY,
+                            (uint)overlayGeometry.Width, (uint)overlayGeometry.Height));
+                        overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
+                    }
+
+                    baseFrame.Composite(overlayFrame, overlayGeometry.CompositeX, overlayGeometry.CompositeY, CompositeOperator.Over);
+                    baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
+
+                    resultCollection.Add(baseFrame.Clone());
+
+                    baseElapsed += (int)baseCollection[i].AnimationDelay;
+                    UpdateFrameProgress(mainForm, i + 1, baseCount);
+                }
+            }
+            return Task.CompletedTask;
+        }
+
+        private static (int signX, int signY) GetDirectionSigns(ScrollDirection direction)
+        {
+            int signX = 0, signY = 0;
+            switch (direction)
+            {
+                case ScrollDirection.Right: signX = 1; break;
+                case ScrollDirection.Left: signX = -1; break;
+                case ScrollDirection.Down: signY = 1; break;
+                case ScrollDirection.Up: signY = -1; break;
+                case ScrollDirection.LeftUp: signX = -1; signY = -1; break;
+                case ScrollDirection.LeftDown: signX = -1; signY = 1; break;
+                case ScrollDirection.RightUp: signX = 1; signY = -1; break;
+                case ScrollDirection.RightDown: signX = 1; signY = 1; break;
+            }
+            return (signX, signY);
+        }
+
+        private static Task ProcessMovingOverlay(GifToolMainForm mainForm, MagickImageCollection baseCollection,
+            MagickImageCollection overlayCollection, MagickImageCollection resultCollection,
+            ScrollDirection direction, int stepPixels, int moveCount, bool infiniteMovement,
+            bool resampleBase, int baseWidth, int baseHeight, int overlayWidth, int overlayHeight,
+            int startX, int startY)
+        {
+            // Calculate movement direction vectors
+            (int signX, int signY) = GetDirectionSigns(direction);
+
+            // Calculate movement parameters
+            int totalFrames;
+            if (infiniteMovement)
+            {
+                // Match base GIF duration
+                totalFrames = baseCollection.Count;
+            }
+            else
+            {
+                // Use specified move count
+                totalFrames = moveCount;
+            }
+
+            // Starting position is provided from Static Overlay Position coordinates
+            // Movement will begin from these coordinates and proceed in the specified direction
+
+            // Initialize progress bar
+            if (mainForm != null)
+            {
+                mainForm.pBarTaskStatus.Minimum = 0;
+                mainForm.pBarTaskStatus.Maximum = 100;
+                SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+            }
+
+            SetStatusText(mainForm, $"Processing moving overlay: 0/{totalFrames} frames");
+
+            for (int frame = 0; frame < totalFrames; frame++)
+            {
+                // Calculate current overlay position
+                int currentX = startX + (signX * stepPixels * frame);
+                int currentY = startY + (signY * stepPixels * frame);
+
+                // Get corresponding base and overlay frames
+                var baseFrame = baseCollection[frame % baseCollection.Count].Clone();
+                var overlayFrame = overlayCollection[frame % overlayCollection.Count].Clone();
+
+                // Handle partial visibility and bounds checking
+                var overlayGeometry = CalculateOverlayGeometry((MagickImage)overlayFrame, baseWidth, baseHeight, currentX, currentY);
+
+                if (overlayGeometry.Width > 0 && overlayGeometry.Height > 0)
+                {
+                    // Overlay is at least partially visible
+                    if (overlayGeometry.CropRequired)
+                    {
+                        overlayFrame.Crop(new MagickGeometry(overlayGeometry.CropX, overlayGeometry.CropY,
+                            (uint)overlayGeometry.Width, (uint)overlayGeometry.Height));
+                        overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
+                    }
+
+                    baseFrame.Composite(overlayFrame, overlayGeometry.CompositeX, overlayGeometry.CompositeY, CompositeOperator.Over);
+                }
+
+                baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
+                resultCollection.Add(baseFrame);
+
+                overlayFrame.Dispose();
+                UpdateFrameProgress(mainForm, frame + 1, totalFrames);
+            }
+            return Task.CompletedTask;
+        }
+
+        private struct OverlayGeometry
+        {
+            public int Width;
+            public int Height;
+            public int CompositeX;
+            public int CompositeY;
+            public int CropX;
+            public int CropY;
+            public bool CropRequired;
+        }
+
+        private static OverlayGeometry CalculateOverlayGeometry(MagickImage overlayFrame, int baseWidth, int baseHeight, int offsetX, int offsetY)
+        {
+            var geometry = new OverlayGeometry();
+            int overlayWidth = (int)overlayFrame.Width;
+            int overlayHeight = (int)overlayFrame.Height;
+
+            // Calculate intersection with base boundaries
+            int leftBound = Math.Max(0, offsetX);
+            int topBound = Math.Max(0, offsetY);
+            int rightBound = Math.Min(baseWidth, offsetX + overlayWidth);
+            int bottomBound = Math.Min(baseHeight, offsetY + overlayHeight);
+
+            geometry.Width = Math.Max(0, rightBound - leftBound);
+            geometry.Height = Math.Max(0, bottomBound - topBound);
+
+            if (geometry.Width <= 0 || geometry.Height <= 0)
+            {
+                // Completely out of bounds
+                return geometry;
+            }
+
+            // Determine if cropping is needed
+            geometry.CropRequired = (offsetX < 0 || offsetY < 0 || offsetX + overlayWidth > baseWidth || offsetY + overlayHeight > baseHeight);
+
+            if (geometry.CropRequired)
+            {
+                // Calculate crop coordinates within overlay image
+                geometry.CropX = Math.Max(0, -offsetX);
+                geometry.CropY = Math.Max(0, -offsetY);
+            }
+
+            // Calculate composite position (always >= 0)
+            geometry.CompositeX = Math.Max(0, offsetX);
+            geometry.CompositeY = Math.Max(0, offsetY);
+
+            return geometry;
+        }
+
         public static async Task OverlayGif(GifToolMainForm mainForm)
         {
             using var dialog = new OverlayGifDialog();
@@ -2369,10 +3117,8 @@ namespace GifProcessorApp
 
             string basePath = dialog.BaseGifPath;
             string overlayPath = dialog.OverlayGifPath;
-            int offsetX = dialog.OverlayX;
-            int offsetY = dialog.OverlayY;
+            string outputPath = dialog.OutputGifPath;
             bool resampleBase = dialog.ResampleBaseFrames;
-            string outputPath = null;
 
             try
             {
@@ -2380,109 +3126,39 @@ namespace GifProcessorApp
                 mainForm.pBarTaskStatus.Minimum = 0;
                 mainForm.pBarTaskStatus.Maximum = 100;
                 SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
+
                 using var baseCollection = new MagickImageCollection(basePath);
                 using var overlayCollection = new MagickImageCollection(overlayPath);
                 using var resultCollection = new MagickImageCollection();
 
-                uint baseWidth = baseCollection[0].Width;
-                uint baseHeight = baseCollection[0].Height;
+                int baseWidth = (int)baseCollection[0].Width;
+                int baseHeight = (int)baseCollection[0].Height;
+                int overlayWidth = (int)overlayCollection[0].Width;
+                int overlayHeight = (int)overlayCollection[0].Height;
 
                 baseCollection.Coalesce();
                 overlayCollection.Coalesce();
 
-                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Overlaying);
-                if (resampleBase)
+                if (dialog.UseStaticOverlay)
                 {
-                    var resampledBaseFrames = ResampleBaseFrames(baseCollection, overlayCollection);
-                    int overlayCount = overlayCollection.Count;
-
-                    for (int i = 0; i < overlayCount; i++)
-                    {
-                        using var baseFrame = resampledBaseFrames[i];
-                        using var overlayFrame = overlayCollection[i].Clone();
-
-                        int width = (int)Math.Min(overlayFrame.Width, baseWidth - (uint)offsetX);
-                        int height = (int)Math.Min(overlayFrame.Height, baseHeight - (uint)offsetY);
-                        if (width <= 0 || height <= 0)
-                            continue;
-
-                        overlayFrame.Crop(new MagickGeometry(0, 0, (uint)width, (uint)height));
-                        overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
-
-                        baseFrame.Composite(overlayFrame, offsetX, offsetY, CompositeOperator.Over);
-                        baseFrame.AnimationDelay = overlayFrame.AnimationDelay;
-                        baseFrame.AnimationTicksPerSecond = overlayFrame.AnimationTicksPerSecond;
-                        baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
-
-                        resultCollection.Add(baseFrame.Clone());
-
-                        UpdateFrameProgress(mainForm, i + 1, overlayCount);
-                    }
-
-                    resampledBaseFrames.Clear();
+                    // Static overlay - use original logic with fixed position
+                    await ProcessStaticOverlay(mainForm, baseCollection, overlayCollection, resultCollection,
+                        dialog.StaticOverlayX, dialog.StaticOverlayY, resampleBase, baseWidth, baseHeight);
                 }
                 else
                 {
-                    int baseCount = baseCollection.Count;
-                    var overlayDelays = overlayCollection.Select(f => (int)f.AnimationDelay).ToArray();
-                    int overlayTotalDelay = overlayDelays.Sum();
-                    int baseElapsed = 0;
-
-                    for (int i = 0; i < baseCount; i++)
-                    {
-                        using var baseFrame = (MagickImage)baseCollection[i].Clone();
-
-                        int startTime = overlayTotalDelay == 0 ? 0 : baseElapsed % overlayTotalDelay;
-                        int cumulative = 0;
-                        int overlayIndex = 0;
-                        for (int j = 0; j < overlayDelays.Length; j++)
-                        {
-                            cumulative += overlayDelays[j];
-                            if (startTime < cumulative)
-                            {
-                                overlayIndex = j;
-                                break;
-                            }
-                        }
-
-                        using var overlayFrame = overlayCollection[overlayIndex].Clone();
-
-                        int width = (int)Math.Min(overlayFrame.Width, baseWidth - (uint)offsetX);
-                        int height = (int)Math.Min(overlayFrame.Height, baseHeight - (uint)offsetY);
-                        if (width <= 0 || height <= 0)
-                        {
-                            baseElapsed += (int)baseCollection[i].AnimationDelay;
-                            continue;
-                        }
-
-                        overlayFrame.Crop(new MagickGeometry(0, 0, (uint)width, (uint)height));
-                        overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
-
-                        baseFrame.Composite(overlayFrame, offsetX, offsetY, CompositeOperator.Over);
-                        baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
-
-                        resultCollection.Add(baseFrame.Clone());
-
-                        baseElapsed += (int)baseCollection[i].AnimationDelay;
-                        UpdateFrameProgress(mainForm, i + 1, baseCount);
-                    }
+                    // Moving overlay - new logic starting from static overlay position
+                    await ProcessMovingOverlay(mainForm, baseCollection, overlayCollection, resultCollection,
+                        dialog.MovementDirection, dialog.StepPixels, dialog.MoveCount, dialog.InfiniteMovement,
+                        resampleBase, baseWidth, baseHeight, overlayWidth, overlayHeight,
+                        dialog.StaticOverlayX, dialog.StaticOverlayY);
                 }
 
                 resultCollection.Quantize();
                 resultCollection.Optimize();
 
-                using var saveDialog = new SaveFileDialog
-                {
-                    Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
-                    FileName = Path.GetFileNameWithoutExtension(basePath) + "_overlay.gif",
-                    Title = "Save GIF",
-                };
-                if (saveDialog.ShowDialog() != DialogResult.OK)
-                    return;
-
-                outputPath = saveDialog.FileName;
-
-                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);                resultCollection.Write(outputPath);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
+                resultCollection.Write(outputPath);
             }
             catch (Exception ex)
             {
@@ -2499,9 +3175,10 @@ namespace GifProcessorApp
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Idle);
             }
 
-            if (!string.IsNullOrEmpty(outputPath) && mainForm.chkGifsicle.Checked)
+            if (mainForm.chkGifsicle.Checked)
             {
-                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing);                var options = new GifsicleWrapper.GifsicleOptions
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing);
+                var options = new GifsicleWrapper.GifsicleOptions
                 {
                     Colors = (int)mainForm.numUpDownPaletteSicle.Value,
                     Lossy = (int)mainForm.numUpDownLossy.Value,
@@ -2519,6 +3196,427 @@ namespace GifProcessorApp
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        #region GIF Concatenation Methods
 
+        public static async Task ConcatenateGifs(GifToolMainForm mainForm, GifConcatenationSettings settings)
+        {
+            if (settings.GifFilePaths == null || settings.GifFilePaths.Count < 2)
+            {
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                    "Please select at least 2 GIF files to concatenate.",
+                    SteamGifCropper.Properties.Resources.Title_Error,
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Validate all files exist
+            foreach (string filePath in settings.GifFilePaths)
+            {
+                if (!File.Exists(filePath))
+                {
+                    WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                        string.Format(SteamGifCropper.Properties.Resources.MergeDialog_FileNotFound, 
+                                     Path.GetFileName(filePath)),
+                        SteamGifCropper.Properties.Resources.Title_Error,
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
+            try
+            {
+                mainForm.pBarTaskStatus.Minimum = 0;
+                mainForm.pBarTaskStatus.Maximum = 100;
+                SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Loading);
+
+                // Step 1: Load all GIF files
+                var gifCollections = new List<MagickImageCollection>();
+                for (int i = 0; i < settings.GifFilePaths.Count; i++)
+                {
+                    var collection = new MagickImageCollection(settings.GifFilePaths[i]);
+                    collection.Coalesce();
+                    gifCollections.Add(collection);
+                    
+                    SetProgressBar(mainForm.pBarTaskStatus, (i + 1) * 10 / settings.GifFilePaths.Count, 100);
+                }
+
+                SetProgressBar(mainForm.pBarTaskStatus, 15, 100);
+                SetStatusText(mainForm, "Analyzing GIF properties...");
+
+                // Step 2: Analyze GIF properties
+                var analysis = AnalyzeGifProperties(gifCollections);
+                SetProgressBar(mainForm.pBarTaskStatus, 25, 100);
+
+                // Step 3: Unify FPS
+                SetStatusText(mainForm, "Unifying frame rates...");
+                await UnifyFrameRates(gifCollections, settings, analysis);
+                SetProgressBar(mainForm.pBarTaskStatus, 40, 100);
+
+                // Step 4: Unify dimensions if requested
+                if (settings.UnifyDimensions)
+                {
+                    SetStatusText(mainForm, "Unifying dimensions...");
+                    UnifyDimensions(gifCollections, analysis);
+                    SetProgressBar(mainForm.pBarTaskStatus, 55, 100);
+                }
+
+                // Step 5: Build unified palette
+                SetStatusText(mainForm, "Building unified palette...");
+                var unifiedPalette = BuildUnifiedPalette(gifCollections, settings);
+                SetProgressBar(mainForm.pBarTaskStatus, 65, 100);
+
+                // Step 6: Apply unified palette
+                SetStatusText(mainForm, "Applying unified palette...");
+                await ApplyUnifiedPalette(gifCollections, unifiedPalette, settings.UseFasterPalette);
+                SetProgressBar(mainForm.pBarTaskStatus, 80, 100);
+
+                // Step 7: Generate transitions and concatenate GIFs
+                SetStatusText(mainForm, "Generating transitions and concatenating GIF files...");
+                var transitionProgress = new Progress<(int current, int total, string status)>(report =>
+                {
+                    // Map transition progress to overall progress (80-90%)
+                    int overallProgress = 80 + (report.current * 10 / report.total);
+                    SetProgressBar(mainForm.pBarTaskStatus, overallProgress, 100);
+                    SetStatusText(mainForm, report.status);
+                });
+                
+                var result = await ConcatenateGifCollectionsWithTransitions(gifCollections, settings, analysis.MaxFps, transitionProgress);
+                SetProgressBar(mainForm.pBarTaskStatus, 90, 100);
+
+                // Step 8: Save result
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
+                result.Write(settings.OutputFilePath);
+                SetProgressBar(mainForm.pBarTaskStatus, 95, 100);
+
+                // Step 9: Optional gifsicle optimization
+                if (settings.UseGifsicleOptimization)
+                {
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing);
+                    var options = new GifsicleWrapper.GifsicleOptions
+                    {
+                        Colors = (int)mainForm.numUpDownPaletteSicle.Value,
+                        Lossy = (int)mainForm.numUpDownLossy.Value,
+                        OptimizeLevel = (int)mainForm.numUpDownOptimize.Value,
+                        Dither = mainForm.DitherMethod
+                    };
+                    await GifsicleWrapper.OptimizeGif(settings.OutputFilePath, settings.OutputFilePath, options);
+                }
+
+                SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
+
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                    string.Format("GIF concatenation completed successfully!\nSaved as: {0}", settings.OutputFilePath),
+                    SteamGifCropper.Properties.Resources.Title_Success,
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Cleanup
+                foreach (var collection in gifCollections)
+                {
+                    collection.Dispose();
+                }
+                result.Dispose();
+            }
+            catch (Exception ex)
+            {
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Error);
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                    string.Format(SteamGifCropper.Properties.Resources.Error_Processing, ex.Message),
+                    SteamGifCropper.Properties.Resources.Title_Error, 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static GifPropertyAnalysis AnalyzeGifProperties(List<MagickImageCollection> gifCollections)
+        {
+            var analysis = new GifPropertyAnalysis();
+
+            foreach (var collection in gifCollections)
+            {
+                if (collection.Count > 0)
+                {
+                    var fps = GetGifFrameRate(collection);
+                    var dimensions = new { Width = collection[0].Width, Height = collection[0].Height };
+
+                    analysis.FrameRates.Add(fps);
+                    analysis.Dimensions.Add(dimensions);
+                    
+                    if (fps > analysis.MaxFps) analysis.MaxFps = fps;
+                    if (analysis.MinFps == 0 || fps < analysis.MinFps) analysis.MinFps = fps;
+                    
+                    if (dimensions.Width > analysis.MaxWidth) analysis.MaxWidth = (int)dimensions.Width;
+                    if (dimensions.Height > analysis.MaxHeight) analysis.MaxHeight = (int)dimensions.Height;
+                }
+            }
+
+            return analysis;
+        }
+
+        private static async Task UnifyFrameRates(List<MagickImageCollection> gifCollections, 
+                                                 GifConcatenationSettings settings, 
+                                                 GifPropertyAnalysis analysis)
+        {
+            int targetFps = DetermineTargetFps(settings, analysis);
+
+            for (int i = 0; i < gifCollections.Count; i++)
+            {
+                var collection = gifCollections[i];
+                var currentFps = GetGifFrameRate(collection);
+
+                if (currentFps != targetFps)
+                {
+                    await ResampleGifFrameRate(collection, targetFps);
+                }
+            }
+        }
+
+        private static int DetermineTargetFps(GifConcatenationSettings settings, GifPropertyAnalysis analysis)
+        {
+            switch (settings.FpsMode)
+            {
+                case FpsUnificationMode.AutoHighest:
+                    return analysis.MaxFps;
+
+                case FpsUnificationMode.UseReference:
+                    if (settings.ReferenceFpsGifIndex >= 0 && settings.ReferenceFpsGifIndex < analysis.FrameRates.Count)
+                        return analysis.FrameRates[settings.ReferenceFpsGifIndex];
+                    return analysis.MaxFps;
+
+                case FpsUnificationMode.Custom:
+                    return settings.CustomFps;
+
+                default:
+                    return 30;
+            }
+        }
+
+        private static async Task ResampleGifFrameRate(MagickImageCollection collection, int targetFps)
+        {
+            // Calculate new frame delay based on target FPS
+            int newDelay = Math.Max(1, 100 / targetFps); // Delay in 1/100ths of a second
+
+            await Task.Run(() =>
+            {
+                foreach (var frame in collection)
+                {
+                    frame.AnimationDelay = (uint)newDelay;
+                }
+            });
+        }
+
+        private static int GetGifFrameRate(MagickImageCollection collection)
+        {
+            if (collection.Count == 0) return 30;
+
+            var avgDelay = collection.Average(frame => frame.AnimationDelay);
+            if (avgDelay <= 0) return 30;
+
+            return Math.Max(1, (int)Math.Round(100.0 / avgDelay));
+        }
+
+        private static void UnifyDimensions(List<MagickImageCollection> gifCollections, GifPropertyAnalysis analysis)
+        {
+            var targetSize = new MagickGeometry((uint)analysis.MaxWidth, (uint)analysis.MaxHeight);
+
+            foreach (var collection in gifCollections)
+            {
+                if (collection[0].Width != targetSize.Width || collection[0].Height != targetSize.Height)
+                {
+                    foreach (var frame in collection)
+                    {
+                        frame.Resize(targetSize);
+                    }
+                }
+            }
+        }
+
+        private static MagickImage BuildUnifiedPalette(List<MagickImageCollection> gifCollections, 
+                                                      GifConcatenationSettings settings)
+        {
+            switch (settings.PaletteMode)
+            {
+                case PaletteUnificationMode.UseReference:
+                    if (settings.ReferencePaletteGifIndex >= 0 && 
+                        settings.ReferencePaletteGifIndex < gifCollections.Count)
+                    {
+                        return BuildSharedPalette(gifCollections.ToArray(), 
+                                                settings.UseFasterPalette, 
+                                                settings.ReferencePaletteGifIndex);
+                    }
+                    goto case PaletteUnificationMode.AutoMerge;
+
+                case PaletteUnificationMode.AutoMerge:
+                default:
+                    return BuildSharedPalette(gifCollections.ToArray(), settings.UseFasterPalette);
+            }
+        }
+
+        private static async Task ApplyUnifiedPalette(List<MagickImageCollection> gifCollections, 
+                                                     MagickImage palette, 
+                                                     bool useFastPalette)
+        {
+            var mapSettings = new QuantizeSettings
+            {
+                Colors = 256,
+                ColorSpace = ColorSpace.RGB,
+                DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+            };
+
+            foreach (var collection in gifCollections)
+            {
+                await Task.Run(() =>
+                {
+                    collection.Quantize(mapSettings);
+                });
+            }
+        }
+
+        private static MagickImageCollection ConcatenateGifCollections(List<MagickImageCollection> gifCollections)
+        {
+            var result = new MagickImageCollection();
+
+            foreach (var collection in gifCollections)
+            {
+                foreach (var frame in collection)
+                {
+                    result.Add(frame.Clone());
+                }
+            }
+
+            // Optimize the result
+            result.Optimize();
+            
+            return result;
+        }
+
+        private static async Task<MagickImageCollection> ConcatenateGifCollectionsWithTransitions(
+            List<MagickImageCollection> gifCollections, 
+            GifConcatenationSettings settings,
+            int fps,
+            IProgress<(int current, int total, string status)> progress = null)
+        {
+            var result = new MagickImageCollection();
+
+            if (gifCollections == null || gifCollections.Count == 0)
+                return result;
+                
+            // Determine the target dimensions for all frames
+            int maxWidth = gifCollections.Max(c => c.Count > 0 ? (int)c[0].Width : 0);
+            int maxHeight = gifCollections.Max(c => c.Count > 0 ? (int)c[0].Height : 0);
+            var targetGeometry = new MagickGeometry((uint)maxWidth, (uint)maxHeight) { IgnoreAspectRatio = false };
+
+            try
+            {
+                for (int i = 0; i < gifCollections.Count; i++)
+                {
+                    var collection = gifCollections[i];
+                    
+                    // Add all frames from current GIF, ensuring consistent dimensions
+                    foreach (var frame in collection)
+                    {
+                        var clonedFrame = frame.Clone();
+                        
+                        // Ensure consistent dimensions
+                        if (clonedFrame.Width != maxWidth || clonedFrame.Height != maxHeight)
+                        {
+                            // Create canvas with target size and center the frame
+                            var canvas = new MagickImage(MagickColors.Transparent, (uint)maxWidth, (uint)maxHeight);
+                            
+                            // Calculate center position
+                            int x = (maxWidth - (int)clonedFrame.Width) / 2;
+                            int y = (maxHeight - (int)clonedFrame.Height) / 2;
+                            
+                            // Composite the frame onto the canvas
+                            canvas.Composite(clonedFrame, x, y, CompositeOperator.Over);
+                            canvas.AnimationDelay = clonedFrame.AnimationDelay;
+                            canvas.GifDisposeMethod = clonedFrame.GifDisposeMethod;
+                            
+                            clonedFrame.Dispose();
+                            result.Add(canvas);
+                        }
+                        else
+                        {
+                            result.Add(clonedFrame);
+                        }
+                    }
+
+                    // Generate transition to next GIF (if not the last one)
+                    if (i < gifCollections.Count - 1 && settings.Transition != TransitionType.None)
+                    {
+                        var currentCollection = gifCollections[i];
+                        var nextCollection = gifCollections[i + 1];
+
+                        var transitionFrames = await Task.Run(() => TransitionGenerator.GenerateTransition(
+                            currentCollection,
+                            nextCollection,
+                            settings.Transition,
+                            settings.TransitionDuration,
+                            fps,
+                            progress));
+
+                        // Add transition frames (they should already have correct dimensions)
+                        foreach (var transitionFrame in transitionFrames)
+                        {
+                            var clonedTransition = transitionFrame.Clone();
+                            
+                            // Double-check dimensions for transition frames
+                            if (clonedTransition.Width != maxWidth || clonedTransition.Height != maxHeight)
+                            {
+                                var canvas = new MagickImage(MagickColors.Transparent, (uint)maxWidth, (uint)maxHeight);
+                                int x = (maxWidth - (int)clonedTransition.Width) / 2;
+                                int y = (maxHeight - (int)clonedTransition.Height) / 2;
+                                canvas.Composite(clonedTransition, x, y, CompositeOperator.Over);
+                                canvas.AnimationDelay = clonedTransition.AnimationDelay;
+                                canvas.GifDisposeMethod = clonedTransition.GifDisposeMethod;
+                                
+                                clonedTransition.Dispose();
+                                result.Add(canvas);
+                            }
+                            else
+                            {
+                                result.Add(clonedTransition);
+                            }
+                        }
+
+                        // Cleanup transition frames
+                        transitionFrames.Dispose();
+                    }
+                }
+
+                // Optimize the result - now all frames should have consistent dimensions
+                try
+                {
+                    result.Optimize();
+                }
+                catch (Exception ex)
+                {
+                    // If optimization fails, continue without it
+                    progress?.Report((1, 1, $"Warning: Frame optimization failed: {ex.Message}"));
+                }
+                
+                return result;
+            }
+            catch
+            {
+                result.Dispose();
+                throw;
+            }
+        }
+
+        #endregion
+
+
+    }
+
+    // Helper class for analyzing GIF properties
+    public class GifPropertyAnalysis
+    {
+        public List<int> FrameRates { get; set; } = new List<int>();
+        public List<dynamic> Dimensions { get; set; } = new List<dynamic>();
+        public int MaxFps { get; set; } = 0;
+        public int MinFps { get; set; } = 0;
+        public int MaxWidth { get; set; } = 0;
+        public int MaxHeight { get; set; } = 0;
     }
 }

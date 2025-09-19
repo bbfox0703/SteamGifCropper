@@ -352,6 +352,9 @@
   <data name="FileDialog_ImageFilter" xml:space="preserve">
     <value>圖像檔案 (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp</value>
   </data>
+  <data name="FileDialog_ImageAndGifFilter" xml:space="preserve">
+    <value>圖片及GIF檔案 (*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.png;*.jpg;*.jpeg;*.bmp;*.gif</value>
+  </data>
   <data name="FileDialog_SelectGifOrder" xml:space="preserve">
     <value>選擇 GIF 檔案 #{0}（從左至右的第 {1} 個位置）</value>
   </data>
@@ -422,7 +425,37 @@
     <value>FFMPEG：反轉動畫GIF</value>
   </data>
   <data name="Button_ScrollStaticImage" xml:space="preserve">
-    <value>捲動靜態圖</value>
+    <value>捲動圖片/GIF</value>
+  </data>
+  <data name="Button_ScrollAnimatedGif" xml:space="preserve">
+    <value>捲動動畫GIF</value>
+  </data>
+  <data name="ScrollDialog_AutoDuration" xml:space="preserve">
+    <value>自動計算GIF週期時間</value>
+  </data>
+  <data name="Status_AutoCalculatedDuration" xml:space="preserve">
+    <value>自動計算GIF週期時間: {0:F2}秒 → {1}秒</value>
+  </data>
+  <data name="Status_AutoDurationMode" xml:space="preserve">
+    <value>自動時間模式</value>
+  </data>
+  <data name="Status_ManualDurationMode" xml:space="preserve">
+    <value>手動 {0}秒</value>
+  </data>
+  <data name="Status_ScrollParameters" xml:space="preserve">
+    <value>{0}: {1} 幀, X:{2:F2}像素/幀, Y:{3:F2}像素/幀</value>
+  </data>
+  <data name="Status_FullCycleFinalPosition" xml:space="preserve">
+    <value>完整週期最終位置: X={0}, Y={1} (未重置為0)</value>
+  </data>
+  <data name="Status_AutoDurationComplete" xml:space="preserve">
+    <value>自動時間完成: {0} 幀 (與來源相同)</value>
+  </data>
+  <data name="Status_TimelineContinuity" xml:space="preserve">
+    <value>時間軸連續性: 最後使用幀 {0}, 從幀 {1} 繼續</value>
+  </data>
+  <data name="Status_StepBasedContinuity" xml:space="preserve">
+    <value>步進式連續性: 使用 {0} 個捲動幀, 最後幀 {1}, 從幀 {2} 繼續</value>
   </data>
   <data name="Button_OverlayGif" xml:space="preserve">
     <value>將GIF疊加在GIF上</value>
@@ -574,6 +607,21 @@
   <data name="MergeDialog_GifNumberFormat" xml:space="preserve">
     <value>GIF {0}: {1}</value>
   </data>
+  <data name="MergeFiveGifDialog_Instructions" xml:space="preserve">
+    <value>請選擇正好 5 個要合併並分割的 GIF 檔案（由左至右的順序）：</value>
+  </data>
+  <data name="MergeFiveGifDialog_GifFiles" xml:space="preserve">
+    <value>GIF 檔案（正好 5 個）：</value>
+  </data>
+  <data name="MergeFiveGifDialog_Title" xml:space="preserve">
+    <value>合併 5 個 GIF 檔案</value>
+  </data>
+  <data name="MergeFiveGifDialog_MaxFiles" xml:space="preserve">
+    <value>最多允許 5 個 GIF 檔案。</value>
+  </data>
+  <data name="MergeFiveGifDialog_RequireExactly5" xml:space="preserve">
+    <value>請選擇正好 5 個 GIF 檔案。</value>
+  </data>
   <data name="Mp4Dialog_InputLabel" xml:space="preserve">
     <value>輸入檔案：</value>
   </data>
@@ -606,6 +654,12 @@
   </data>
   <data name="Mp4Dialog_FFmpegHelp" xml:space="preserve">
     <value>如何安裝 FFmpeg？（MP4 轉換需要）</value>
+  </data>
+  <data name="Mp4Dialog_GPUDecode" xml:space="preserve">
+    <value>GPU 解碼（僅解碼，GIF 編碼使用 CPU）</value>
+  </data>
+  <data name="Mp4Dialog_CheckingGPU" xml:space="preserve">
+    <value>正在檢查 GPU...</value>
   </data>
   <data name="Mp4Dialog_Title" xml:space="preserve">
     <value>MP4 轉 GIF 轉換器</value>
@@ -722,10 +776,16 @@ FFmpeg 輸出 (部分)：
 技術詳細資訊: {5}</value>
   </data>
   <data name="ScrollDialog_Title" xml:space="preserve">
-    <value>靜態圖捲動</value>
+    <value>捲動圖片/GIF</value>
+  </data>
+  <data name="ScrollDialog_TitleImageAndGif" xml:space="preserve">
+    <value>捲動圖片/GIF</value>
   </data>
   <data name="ScrollDialog_InputLabel" xml:space="preserve">
-    <value>輸入圖像</value>
+    <value>輸入圖片或GIF</value>
+  </data>
+  <data name="ScrollDialog_InputImageOrGif" xml:space="preserve">
+    <value>輸入圖片或GIF</value>
   </data>
   <data name="ScrollDialog_OutputLabel" xml:space="preserve">
     <value>輸出GIF</value>
@@ -755,7 +815,10 @@ FFmpeg 輸出 (部分)：
     <value>取消</value>
   </data>
   <data name="ScrollDialog_SelectInput" xml:space="preserve">
-    <value>選擇圖像檔案</value>
+    <value>選擇圖片或GIF檔案</value>
+  </data>
+  <data name="ScrollDialog_SelectImageOrGif" xml:space="preserve">
+    <value>選擇圖片或GIF檔案</value>
   </data>
   <data name="ScrollDialog_SelectOutput" xml:space="preserve">
     <value>儲存捲動後GIF</value>
@@ -790,9 +853,310 @@ FFmpeg 輸出 (部分)：
   <data name="ScrollDialog_DirRightDown" xml:space="preserve">
     <value>向右下</value>
   </data>
+  <data name="Button_ConcatenateGifs" xml:space="preserve">
+    <value>合併 GIF 檔案（支援 FPS／調色盤控制）</value>
+  </data>
+  <data name="ConcatenateDialog_Title" xml:space="preserve">
+    <value>串接 GIF 檔案</value>
+  </data>
+  <data name="ConcatenateDialog_Instructions" xml:space="preserve">
+    <value>選擇要串接的 GIF 檔案（按順序）：</value>
+  </data>
+  <data name="ConcatenateDialog_GifFiles" xml:space="preserve">
+    <value>GIF 檔案（2個或以上）：</value>
+  </data>
+  <data name="ConcatenateDialog_FpsSettings" xml:space="preserve">
+    <value>FPS 設定</value>
+  </data>
+  <data name="ConcatenateDialog_PaletteSettings" xml:space="preserve">
+    <value>色彩調色盤設定</value>
+  </data>
+  <data name="ConcatenateDialog_FpsAutoHighest" xml:space="preserve">
+    <value>自動（使用最高）</value>
+  </data>
+  <data name="ConcatenateDialog_FpsUseReference" xml:space="preserve">
+    <value>使用參考 GIF：</value>
+  </data>
+  <data name="ConcatenateDialog_FpsCustom" xml:space="preserve">
+    <value>自訂 FPS：</value>
+  </data>
+  <data name="ConcatenateDialog_PaletteAutoMerge" xml:space="preserve">
+    <value>自動合併</value>
+  </data>
+  <data name="ConcatenateDialog_PaletteUseReference" xml:space="preserve">
+    <value>使用參考 GIF：</value>
+  </data>
+  <data name="ConcatenateDialog_StrongPaletteWeighting" xml:space="preserve">
+    <value>8倍權重給參考調色盤</value>
+  </data>
+  <data name="ConcatenateDialog_UnifyDimensions" xml:space="preserve">
+    <value>統一尺寸（調整為最大）</value>
+  </data>
+  <data name="ConcatenateDialog_UseFasterPalette" xml:space="preserve">
+    <value>快速調色盤（較低品質）</value>
+  </data>
+  <data name="ConcatenateDialog_UseGifsicleOptimization" xml:space="preserve">
+    <value>使用 gifsicle 最佳化</value>
+  </data>
+  <data name="ConcatenateDialog_Concatenate" xml:space="preserve">
+    <value>串接</value>
+  </data>
+  <data name="ConcatenateDialog_RequireMinGifs" xml:space="preserve">
+    <value>請選擇至少2個 GIF 檔案進行串接。</value>
+  </data>
+  <data name="ConcatenateDialog_RequireOutput" xml:space="preserve">
+    <value>請指定輸出檔案。</value>
+  </data>
+  <data name="ConcatenateDialog_SelectGifFiles" xml:space="preserve">
+    <value>選擇要串接的 GIF 檔案</value>
+  </data>
+  <data name="ConcatenateDialog_SaveGif" xml:space="preserve">
+    <value>儲存串接的 GIF 為...</value>
+  </data>
+  <data name="Status_AnalyzingGifs" xml:space="preserve">
+    <value>正在分析 GIF 屬性...</value>
+  </data>
+  <data name="Status_UnifyingFrameRates" xml:space="preserve">
+    <value>正在統一影格率...</value>
+  </data>
+  <data name="Status_UnifyingDimensions" xml:space="preserve">
+    <value>正在統一尺寸...</value>
+  </data>
+  <data name="Status_BuildingUnifiedPalette" xml:space="preserve">
+    <value>正在建立統一調色盤...</value>
+  </data>
+  <data name="Status_ApplyingUnifiedPalette" xml:space="preserve">
+    <value>正在套用統一調色盤...</value>
+  </data>
+  <data name="Status_ConcatenatingGifs" xml:space="preserve">
+    <value>正在合併 GIF 檔案...</value>
+  </data>
+  <data name="Message_ConcatenationComplete" xml:space="preserve">
+    <value>GIF 合併已成功完成！
+已儲存為：{0}</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\lang_switch.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TransitionDialog_TransitionSettings" xml:space="preserve">
+    <value>過場轉換設定</value>
+  </data>
+  <data name="TransitionDialog_NoTransition" xml:space="preserve">
+    <value>無過場轉換</value>
+  </data>
+  <data name="TransitionDialog_Fade" xml:space="preserve">
+    <value>淡入淡出</value>
+  </data>
+  <data name="TransitionDialog_Slide" xml:space="preserve">
+    <value>滑動</value>
+  </data>
+  <data name="TransitionDialog_Zoom" xml:space="preserve">
+    <value>縮放</value>
+  </data>
+  <data name="TransitionDialog_Dissolve" xml:space="preserve">
+    <value>溶解</value>
+  </data>
+  <data name="TransitionDialog_Left" xml:space="preserve">
+    <value>向左</value>
+  </data>
+  <data name="TransitionDialog_Right" xml:space="preserve">
+    <value>向右</value>
+  </data>
+  <data name="TransitionDialog_Up" xml:space="preserve">
+    <value>向上</value>
+  </data>
+  <data name="TransitionDialog_Down" xml:space="preserve">
+    <value>向下</value>
+  </data>
+  <data name="TransitionDialog_ZoomIn" xml:space="preserve">
+    <value>放大</value>
+  </data>
+  <data name="TransitionDialog_ZoomOut" xml:space="preserve">
+    <value>縮小</value>
+  </data>
+  <data name="TransitionDialog_TransitionDuration" xml:space="preserve">
+    <value>過場持續時間：</value>
+  </data>
+  <data name="TransitionDialog_Seconds" xml:space="preserve">
+    <value>秒</value>
+  </data>
+  <data name="TransitionDialog_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="ConcatenateDialog_OutputFile" xml:space="preserve">
+    <value>輸出 GIF 檔案：</value>
+  </data>
+  <data name="ConcatenateDialog_AddFiles" xml:space="preserve">
+    <value>加入檔案...</value>
+  </data>
+  <data name="ConcatenateDialog_Remove" xml:space="preserve">
+    <value>移除</value>
+  </data>
+  <data name="ConcatenateDialog_MoveUp" xml:space="preserve">
+    <value>上移</value>
+  </data>
+  <data name="ConcatenateDialog_MoveDown" xml:space="preserve">
+    <value>下移</value>
+  </data>
+  <data name="ConcatenateDialog_Browse" xml:space="preserve">
+    <value>瀏覽...</value>
+  </data>
+  <data name="ConcatenateDialog_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="ConcatenateDialog_StrongPaletteWeightingShort" xml:space="preserve">
+    <value>強化調色盤權重</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionDurationLabel" xml:space="preserve">
+    <value>過場時間：</value>
+  </data>
+  <data name="ConcatenateDialog_SecondsLabel" xml:space="preserve">
+    <value>秒</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionSlide" xml:space="preserve">
+    <value>滑動</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionZoom" xml:space="preserve">
+    <value>縮放</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionDissolve" xml:space="preserve">
+    <value>溶解</value>
+  </data>
+  <data name="GTMainForm_ConcatenateGifs" xml:space="preserve">
+    <value>串接GIF檔案</value>
+  </data>
+  <data name="ConcatenateDialog_WindowTitle" xml:space="preserve">
+    <value>串接GIF檔案</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionSettings" xml:space="preserve">
+    <value>過場轉換設定</value>
+  </data>
+  <data name="ConcatenateDialog_OutputFileLabel" xml:space="preserve">
+    <value>輸出GIF檔案：</value>
+  </data>
+  <data name="OverlayDialog_SelectBaseGif" xml:space="preserve">
+    <value>請選擇底層GIF檔案。</value>
+  </data>
+  <data name="OverlayDialog_SelectOverlayGif" xml:space="preserve">
+    <value>請選擇疊加GIF檔案。</value>
+  </data>
+  <data name="OverlayDialog_SelectOutputGif" xml:space="preserve">
+    <value>請指定輸出GIF檔案。</value>
+  </data>
+  <data name="OverlayDialog_SaveOutputGif" xml:space="preserve">
+    <value>疊加GIF另存為...</value>
+  </data>
+  <data name="grpStaticOverlay.Text" xml:space="preserve">
+    <value>疊加圖起始位置</value>
+  </data>
+  <data name="chkEnableMovement.Text" xml:space="preserve">
+    <value>啟用疊加圖移動</value>
+  </data>
+  <data name="grpMovement.Text" xml:space="preserve">
+    <value>移動設定</value>
+  </data>
+  <data name="lblDirection.Text" xml:space="preserve">
+    <value>方向：</value>
+  </data>
+  <data name="lblStepPixels.Text" xml:space="preserve">
+    <value>每次移動像素：</value>
+  </data>
+  <data name="lblMoveCount.Text" xml:space="preserve">
+    <value>移動次數：</value>
+  </data>
+  <data name="chkInfiniteMovement.Text" xml:space="preserve">
+    <value>無限移動（配合底圖播放時間）</value>
+  </data>
+  <data name="lblBase.Text" xml:space="preserve">
+    <value>底圖GIF：</value>
+  </data>
+  <data name="btnBrowseBase.Text" xml:space="preserve">
+    <value>瀏覽...</value>
+  </data>
+  <data name="lblOverlay.Text" xml:space="preserve">
+    <value>疊加圖GIF：</value>
+  </data>
+  <data name="btnBrowseOverlay.Text" xml:space="preserve">
+    <value>瀏覽...</value>
+  </data>
+  <data name="lblOutput.Text" xml:space="preserve">
+    <value>輸出GIF：</value>
+  </data>
+  <data name="btnBrowseOutput.Text" xml:space="preserve">
+    <value>瀏覽...</value>
+  </data>
+  <data name="chkResampleBase.Text" xml:space="preserve">
+    <value>將底圖重新取樣至疊加圖FPS</value>
+  </data>
+  <data name="lblStaticX.Text" xml:space="preserve">
+    <value>X：</value>
+  </data>
+  <data name="lblStaticY.Text" xml:space="preserve">
+    <value>Y：</value>
+  </data>
+  <data name="btnOK.Text" xml:space="preserve">
+    <value>確定</value>
+  </data>
+  <data name="btnCancel.Text" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>疊加圖GIF與移動</value>
+  </data>
+  <data name="GifInfoFormat" xml:space="preserve">
+    <value>{0}×{1}，{2} fps，{3} 幀</value>
+  </data>
+  <data name="Direction_Right" xml:space="preserve">
+    <value>右</value>
+  </data>
+  <data name="Direction_Left" xml:space="preserve">
+    <value>左</value>
+  </data>
+  <data name="Direction_Down" xml:space="preserve">
+    <value>下</value>
+  </data>
+  <data name="Direction_Up" xml:space="preserve">
+    <value>上</value>
+  </data>
+  <data name="Direction_LeftUp" xml:space="preserve">
+    <value>左上</value>
+  </data>
+  <data name="Direction_LeftDown" xml:space="preserve">
+    <value>左下</value>
+  </data>
+  <data name="Direction_RightUp" xml:space="preserve">
+    <value>右上</value>
+  </data>
+  <data name="Direction_RightDown" xml:space="preserve">
+    <value>右下</value>
+  </data>
+  <data name="TransitionDialog_Cancelling" xml:space="preserve">
+    <value>取消中...</value>
+  </data>
+  <data name="TransitionDialog_SelectTransitionType" xml:space="preserve">
+    <value>選擇轉場效果類型</value>
+  </data>
+  <data name="ConcatenateDialog_Preview" xml:space="preserve">
+    <value>預覽</value>
+  </data>
+  <data name="ConcatenateDialog_AutoUpdatePreview" xml:space="preserve">
+    <value>自動更新預覽</value>
+  </data>
+  <data name="ConcatenateDialog_NoPreviewAvailable" xml:space="preserve">
+    <value>沒有可用的預覽</value>
+  </data>
+  <data name="ConcatenateDialog_GeneratingPreview" xml:space="preserve">
+    <value>正在產生預覽...</value>
+  </data>
+  <data name="ConcatenateDialog_FrameInfo" xml:space="preserve">
+    <value>影格：{0}，總計：{1}</value>
+  </data>
+  <data name="ConcatenateDialog_PreviewError" xml:space="preserve">
+    <value>預覽錯誤：{0}</value>
+  </data>
+  <data name="ConcatenateDialog_FailedToGeneratePreview" xml:space="preserve">
+    <value>更新預覽失敗</value>
   </data>
   <data name="Mp4ToGif_Error_GPUFailed" xml:space="preserve">
     <value>GPU 加速失敗。轉換將自動改用 CPU 處理。

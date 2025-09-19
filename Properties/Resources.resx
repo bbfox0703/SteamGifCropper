@@ -292,7 +292,9 @@
     <value>{0} of {1} GIF files processed successfully!</value>
   </data>
   <data name="Message_RestorationComplete" xml:space="preserve">
-    <value>Restoration completed!&#xA;Files processed: {0}&#xA;Files skipped (not 0x21): {1}</value>
+    <value>Restoration completed!
+Files processed: {0}
+Files skipped (not 0x21): {1}</value>
   </data>
   <data name="Error_UnsupportedWidth" xml:space="preserve">
     <value>Unsupported GIF canvas width: {0}px. Only {1}px and {2}px are supported.</value>
@@ -347,6 +349,9 @@
   </data>
   <data name="FileDialog_ImageFilter" xml:space="preserve">
     <value>Image Files (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp</value>
+  </data>
+  <data name="FileDialog_ImageAndGifFilter" xml:space="preserve">
+    <value>Image and GIF Files (*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.png;*.jpg;*.jpeg;*.bmp;*.gif</value>
   </data>
   <data name="FileDialog_SelectGifOrder" xml:space="preserve">
     <value>Select GIF file #{0} (position {1} from left to right)</value>
@@ -412,7 +417,37 @@
     <value>FFMPEG: Reverse animated GIF</value>
   </data>
   <data name="Button_ScrollStaticImage" xml:space="preserve">
-    <value>Scroll static image</value>
+    <value>Scroll image/GIF</value>
+  </data>
+  <data name="Button_ScrollAnimatedGif" xml:space="preserve">
+    <value>Scroll animated GIF</value>
+  </data>
+  <data name="ScrollDialog_AutoDuration" xml:space="preserve">
+    <value>Auto-calculate GIF cycle duration</value>
+  </data>
+  <data name="Status_AutoCalculatedDuration" xml:space="preserve">
+    <value>Auto-calculated GIF cycle duration: {0:F2}s → {1}s</value>
+  </data>
+  <data name="Status_AutoDurationMode" xml:space="preserve">
+    <value>Auto-duration mode</value>
+  </data>
+  <data name="Status_ManualDurationMode" xml:space="preserve">
+    <value>Manual {0}s</value>
+  </data>
+  <data name="Status_ScrollParameters" xml:space="preserve">
+    <value>{0}: {1} frames, X:{2:F2}px/frame, Y:{3:F2}px/frame</value>
+  </data>
+  <data name="Status_FullCycleFinalPosition" xml:space="preserve">
+    <value>Full cycle final position: X={0}, Y={1} (not reset to 0)</value>
+  </data>
+  <data name="Status_AutoDurationComplete" xml:space="preserve">
+    <value>Auto-duration complete: {0} frames (same as source)</value>
+  </data>
+  <data name="Status_TimelineContinuity" xml:space="preserve">
+    <value>Timeline continuity: Last used frame {0}, continuing from frame {1}</value>
+  </data>
+  <data name="Status_StepBasedContinuity" xml:space="preserve">
+    <value>Step-based continuity: Used {0} scroll frames, last frame {1}, continuing from frame {2}</value>
   </data>
   <data name="Button_OverlayGif" xml:space="preserve">
     <value>Overlay GIF over GIF</value>
@@ -733,10 +768,16 @@ Duration: {4}
 Technical details: {5}</value>
   </data>
   <data name="ScrollDialog_Title" xml:space="preserve">
-    <value>Scroll Static Image</value>
+    <value>Scroll Image/GIF</value>
+  </data>
+  <data name="ScrollDialog_TitleImageAndGif" xml:space="preserve">
+    <value>Scroll Image/GIF</value>
   </data>
   <data name="ScrollDialog_InputLabel" xml:space="preserve">
-    <value>Input image</value>
+    <value>Input image or GIF</value>
+  </data>
+  <data name="ScrollDialog_InputImageOrGif" xml:space="preserve">
+    <value>Input image or GIF</value>
   </data>
   <data name="ScrollDialog_OutputLabel" xml:space="preserve">
     <value>Output GIF</value>
@@ -766,7 +807,10 @@ Technical details: {5}</value>
     <value>Cancel</value>
   </data>
   <data name="ScrollDialog_SelectInput" xml:space="preserve">
-    <value>Select an image file</value>
+    <value>Select an image or GIF file</value>
+  </data>
+  <data name="ScrollDialog_SelectImageOrGif" xml:space="preserve">
+    <value>Select an image or GIF file</value>
   </data>
   <data name="ScrollDialog_SelectOutput" xml:space="preserve">
     <value>Save scrolled GIF as</value>
@@ -801,8 +845,309 @@ Technical details: {5}</value>
   <data name="ScrollDialog_DirRightDown" xml:space="preserve">
     <value>Right-Down</value>
   </data>
+  <data name="Button_ConcatenateGifs" xml:space="preserve">
+    <value>Concatenate GIF files (with FPS/Palette control)</value>
+  </data>
+  <data name="ConcatenateDialog_Title" xml:space="preserve">
+    <value>Concatenate GIF Files</value>
+  </data>
+  <data name="ConcatenateDialog_Instructions" xml:space="preserve">
+    <value>Select GIF files to concatenate (in order):</value>
+  </data>
+  <data name="ConcatenateDialog_GifFiles" xml:space="preserve">
+    <value>GIF Files (2 or more):</value>
+  </data>
+  <data name="ConcatenateDialog_FpsSettings" xml:space="preserve">
+    <value>FPS Settings</value>
+  </data>
+  <data name="ConcatenateDialog_PaletteSettings" xml:space="preserve">
+    <value>Palette Settings</value>
+  </data>
+  <data name="ConcatenateDialog_FpsAutoHighest" xml:space="preserve">
+    <value>Auto (Use Highest)</value>
+  </data>
+  <data name="ConcatenateDialog_FpsUseReference" xml:space="preserve">
+    <value>Use Reference GIF:</value>
+  </data>
+  <data name="ConcatenateDialog_FpsCustom" xml:space="preserve">
+    <value>Custom FPS:</value>
+  </data>
+  <data name="ConcatenateDialog_PaletteAutoMerge" xml:space="preserve">
+    <value>Auto Merge</value>
+  </data>
+  <data name="ConcatenateDialog_PaletteUseReference" xml:space="preserve">
+    <value>Use Reference GIF:</value>
+  </data>
+  <data name="ConcatenateDialog_StrongPaletteWeighting" xml:space="preserve">
+    <value>8x weight for reference palette</value>
+  </data>
+  <data name="ConcatenateDialog_UnifyDimensions" xml:space="preserve">
+    <value>Unify dimensions (resize to largest)</value>
+  </data>
+  <data name="ConcatenateDialog_UseFasterPalette" xml:space="preserve">
+    <value>Faster palette (lower quality)</value>
+  </data>
+  <data name="ConcatenateDialog_UseGifsicleOptimization" xml:space="preserve">
+    <value>Use gifsicle optimization</value>
+  </data>
+  <data name="ConcatenateDialog_Concatenate" xml:space="preserve">
+    <value>Concatenate</value>
+  </data>
+  <data name="ConcatenateDialog_RequireMinGifs" xml:space="preserve">
+    <value>Please select at least 2 GIF files to concatenate.</value>
+  </data>
+  <data name="ConcatenateDialog_RequireOutput" xml:space="preserve">
+    <value>Please specify an output file.</value>
+  </data>
+  <data name="ConcatenateDialog_SelectGifFiles" xml:space="preserve">
+    <value>Select GIF files to concatenate</value>
+  </data>
+  <data name="ConcatenateDialog_SaveGif" xml:space="preserve">
+    <value>Save concatenated GIF as...</value>
+  </data>
+  <data name="Status_AnalyzingGifs" xml:space="preserve">
+    <value>Analyzing GIF properties...</value>
+  </data>
+  <data name="Status_UnifyingFrameRates" xml:space="preserve">
+    <value>Unifying frame rates...</value>
+  </data>
+  <data name="Status_UnifyingDimensions" xml:space="preserve">
+    <value>Unifying dimensions...</value>
+  </data>
+  <data name="Status_BuildingUnifiedPalette" xml:space="preserve">
+    <value>Building unified palette...</value>
+  </data>
+  <data name="Status_ApplyingUnifiedPalette" xml:space="preserve">
+    <value>Applying unified palette...</value>
+  </data>
+  <data name="Status_ConcatenatingGifs" xml:space="preserve">
+    <value>Concatenating GIF files...</value>
+  </data>
+  <data name="Message_ConcatenationComplete" xml:space="preserve">
+    <value>GIF concatenation completed successfully!
+Saved as: {0}</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\lang_switch.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TransitionDialog_TransitionSettings" xml:space="preserve">
+    <value>Transition Settings</value>
+  </data>
+  <data name="TransitionDialog_NoTransition" xml:space="preserve">
+    <value>No Transition</value>
+  </data>
+  <data name="TransitionDialog_Fade" xml:space="preserve">
+    <value>Fade</value>
+  </data>
+  <data name="TransitionDialog_Slide" xml:space="preserve">
+    <value>Slide</value>
+  </data>
+  <data name="TransitionDialog_Zoom" xml:space="preserve">
+    <value>Zoom</value>
+  </data>
+  <data name="TransitionDialog_Dissolve" xml:space="preserve">
+    <value>Dissolve</value>
+  </data>
+  <data name="TransitionDialog_Left" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="TransitionDialog_Right" xml:space="preserve">
+    <value>Right</value>
+  </data>
+  <data name="TransitionDialog_Up" xml:space="preserve">
+    <value>Up</value>
+  </data>
+  <data name="TransitionDialog_Down" xml:space="preserve">
+    <value>Down</value>
+  </data>
+  <data name="TransitionDialog_ZoomIn" xml:space="preserve">
+    <value>Zoom In</value>
+  </data>
+  <data name="TransitionDialog_ZoomOut" xml:space="preserve">
+    <value>Zoom Out</value>
+  </data>
+  <data name="TransitionDialog_TransitionDuration" xml:space="preserve">
+    <value>Transition Duration:</value>
+  </data>
+  <data name="TransitionDialog_Seconds" xml:space="preserve">
+    <value>seconds</value>
+  </data>
+  <data name="TransitionDialog_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ConcatenateDialog_OutputFile" xml:space="preserve">
+    <value>Output GIF file:</value>
+  </data>
+  <data name="ConcatenateDialog_AddFiles" xml:space="preserve">
+    <value>Add Files...</value>
+  </data>
+  <data name="ConcatenateDialog_Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="ConcatenateDialog_MoveUp" xml:space="preserve">
+    <value>Move up</value>
+  </data>
+  <data name="ConcatenateDialog_MoveDown" xml:space="preserve">
+    <value>Move down</value>
+  </data>
+  <data name="ConcatenateDialog_Browse" xml:space="preserve">
+    <value>Browse...</value>
+  </data>
+  <data name="ConcatenateDialog_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ConcatenateDialog_StrongPaletteWeightingShort" xml:space="preserve">
+    <value>Strong Palette Weighting</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionDurationLabel" xml:space="preserve">
+    <value>Transition Duration:</value>
+  </data>
+  <data name="ConcatenateDialog_SecondsLabel" xml:space="preserve">
+    <value>seconds</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionSlide" xml:space="preserve">
+    <value>Slide</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionZoom" xml:space="preserve">
+    <value>Zoom</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionDissolve" xml:space="preserve">
+    <value>Dissolve</value>
+  </data>
+  <data name="GTMainForm_ConcatenateGifs" xml:space="preserve">
+    <value>Concatenate GIFs</value>
+  </data>
+  <data name="ConcatenateDialog_WindowTitle" xml:space="preserve">
+    <value>Concatenate GIF Files</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionSettings" xml:space="preserve">
+    <value>Transition Settings</value>
+  </data>
+  <data name="ConcatenateDialog_OutputFileLabel" xml:space="preserve">
+    <value>Output GIF file:</value>
+  </data>
+  <data name="OverlayDialog_SelectBaseGif" xml:space="preserve">
+    <value>Please select a base GIF file.</value>
+  </data>
+  <data name="OverlayDialog_SelectOverlayGif" xml:space="preserve">
+    <value>Please select an overlay GIF file.</value>
+  </data>
+  <data name="OverlayDialog_SelectOutputGif" xml:space="preserve">
+    <value>Please specify an output GIF file.</value>
+  </data>
+  <data name="OverlayDialog_SaveOutputGif" xml:space="preserve">
+    <value>Save overlay GIF as...</value>
+  </data>
+  <data name="grpStaticOverlay.Text" xml:space="preserve">
+    <value>Overlay starting position</value>
+  </data>
+  <data name="chkEnableMovement.Text" xml:space="preserve">
+    <value>Enable overlay movement</value>
+  </data>
+  <data name="grpMovement.Text" xml:space="preserve">
+    <value>Movement Settings</value>
+  </data>
+  <data name="lblDirection.Text" xml:space="preserve">
+    <value>Direction:</value>
+  </data>
+  <data name="lblStepPixels.Text" xml:space="preserve">
+    <value>Pixels per step:</value>
+  </data>
+  <data name="lblMoveCount.Text" xml:space="preserve">
+    <value>Move count:</value>
+  </data>
+  <data name="chkInfiniteMovement.Text" xml:space="preserve">
+    <value>Infinite movement (match base GIF duration)</value>
+  </data>
+  <data name="lblBase.Text" xml:space="preserve">
+    <value>Base GIF:</value>
+  </data>
+  <data name="btnBrowseBase.Text" xml:space="preserve">
+    <value>Browse...</value>
+  </data>
+  <data name="lblOverlay.Text" xml:space="preserve">
+    <value>Overlay GIF:</value>
+  </data>
+  <data name="btnBrowseOverlay.Text" xml:space="preserve">
+    <value>Browse...</value>
+  </data>
+  <data name="lblOutput.Text" xml:space="preserve">
+    <value>Output GIF:</value>
+  </data>
+  <data name="btnBrowseOutput.Text" xml:space="preserve">
+    <value>Browse...</value>
+  </data>
+  <data name="chkResampleBase.Text" xml:space="preserve">
+    <value>Resample base GIF to overlay FPS</value>
+  </data>
+  <data name="lblStaticX.Text" xml:space="preserve">
+    <value>X:</value>
+  </data>
+  <data name="lblStaticY.Text" xml:space="preserve">
+    <value>Y:</value>
+  </data>
+  <data name="btnOK.Text" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="btnCancel.Text" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>Overlay GIF with Movement</value>
+  </data>
+  <data name="GifInfoFormat" xml:space="preserve">
+    <value>{0}×{1}, {2} fps, {3} frames</value>
+  </data>
+  <data name="Direction_Right" xml:space="preserve">
+    <value>Right</value>
+  </data>
+  <data name="Direction_Left" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="Direction_Down" xml:space="preserve">
+    <value>Down</value>
+  </data>
+  <data name="Direction_Up" xml:space="preserve">
+    <value>Up</value>
+  </data>
+  <data name="Direction_LeftUp" xml:space="preserve">
+    <value>Left Up</value>
+  </data>
+  <data name="Direction_LeftDown" xml:space="preserve">
+    <value>Left Down</value>
+  </data>
+  <data name="Direction_RightUp" xml:space="preserve">
+    <value>Right Up</value>
+  </data>
+  <data name="Direction_RightDown" xml:space="preserve">
+    <value>Right Down</value>
+  </data>
+  <data name="TransitionDialog_Cancelling" xml:space="preserve">
+    <value>Cancel...</value>
+  </data>
+  <data name="TransitionDialog_SelectTransitionType" xml:space="preserve">
+    <value>Select transition type</value>
+  </data>
+  <data name="ConcatenateDialog_Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="ConcatenateDialog_AutoUpdatePreview" xml:space="preserve">
+    <value>Auto update preview</value>
+  </data>
+  <data name="ConcatenateDialog_NoPreviewAvailable" xml:space="preserve">
+    <value>No preview available</value>
+  </data>
+  <data name="ConcatenateDialog_GeneratingPreview" xml:space="preserve">
+    <value>Generating preview...</value>
+  </data>
+  <data name="ConcatenateDialog_FrameInfo" xml:space="preserve">
+    <value>Frame  info: {0}, total {1}</value>
+  </data>
+  <data name="ConcatenateDialog_PreviewError" xml:space="preserve">
+    <value>Preview error: {0}</value>
+  </data>
+  <data name="ConcatenateDialog_FailedToGeneratePreview" xml:space="preserve">
+    <value>Preview update failed</value>
   </data>
 </root>
