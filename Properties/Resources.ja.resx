@@ -1041,4 +1041,37 @@ FFmpeg 出力（切り捨て）:
   <data name="Status_StepBasedContinuity" xml:space="preserve">
     <value>ステップベース継続性：{0}スクロールフレームを使用、最後のフレーム{1}、フレーム{2}から継続</value>
   </data>
+  <data name="OverlayDialog_SelectBaseGif" xml:space="preserve">
+    <value>ベースGIFファイルを選択してください。</value>
+  </data>
+  <data name="OverlayDialog_SelectOverlayGif" xml:space="preserve">
+    <value>オーバーレイGIFファイルを選択してください。</value>
+  </data>
+  <data name="OverlayDialog_SelectOutputGif" xml:space="preserve">
+    <value>出力GIFファイルを指定してください。</value>
+  </data>
+  <data name="OverlayDialog_SaveOutputGif" xml:space="preserve">
+    <value>オーバーレイGIFを名前を付けて保存...</value>
+  </data>
+  <data name="grpStaticOverlay.Text" xml:space="preserve">
+    <value>オーバーレイの開始位置</value>
+  </data>
+  <data name="chkEnableMovement.Text" xml:space="preserve">
+    <value>オーバーレイの移動を有効にする</value>
+  </data>
+  <data name="grpMovement.Text" xml:space="preserve">
+    <value>移動設定</value>
+  </data>
+  <data name="lblDirection.Text" xml:space="preserve">
+    <value>方向：</value>
+  </data>
+  <data name="lblStepPixels.Text" xml:space="preserve">
+    <value>1ステップのピクセル数：</value>
+  </data>
+  <data name="lblMoveCount.Text" xml:space="preserve">
+    <value>移動回数：</value>
+  </data>
+  <data name="chkInfiniteMovement.Text" xml:space="preserve">
+    <value>無限移動（ベースGIFの再生時間に合わせる）</value>
+  </data>
 </root>

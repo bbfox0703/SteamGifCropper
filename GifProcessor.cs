@@ -2863,6 +2863,232 @@ namespace GifProcessorApp
             return resampled;
         }
 
+        private static Task ProcessStaticOverlay(GifToolMainForm mainForm, MagickImageCollection baseCollection,
+            MagickImageCollection overlayCollection, MagickImageCollection resultCollection,
+            int offsetX, int offsetY, bool resampleBase, int baseWidth, int baseHeight)
+        {
+            if (resampleBase)
+            {
+                var resampledBaseFrames = ResampleBaseFrames(baseCollection, overlayCollection);
+                int overlayCount = overlayCollection.Count;
+
+                for (int i = 0; i < overlayCount; i++)
+                {
+                    using var baseFrame = resampledBaseFrames[i];
+                    using var overlayFrame = overlayCollection[i].Clone();
+
+                    // Handle partial visibility and bounds checking
+                    var overlayGeometry = CalculateOverlayGeometry((MagickImage)overlayFrame, baseWidth, baseHeight, offsetX, offsetY);
+                    if (overlayGeometry.Width <= 0 || overlayGeometry.Height <= 0)
+                    {
+                        // Overlay is completely out of bounds, add base frame only
+                        resultCollection.Add(baseFrame.Clone());
+                        continue;
+                    }
+
+                    // Crop overlay if it extends beyond base boundaries
+                    if (overlayGeometry.CropRequired)
+                    {
+                        overlayFrame.Crop(new MagickGeometry(overlayGeometry.CropX, overlayGeometry.CropY,
+                            (uint)overlayGeometry.Width, (uint)overlayGeometry.Height));
+                        overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
+                    }
+
+                    baseFrame.Composite(overlayFrame, overlayGeometry.CompositeX, overlayGeometry.CompositeY, CompositeOperator.Over);
+                    baseFrame.AnimationDelay = overlayFrame.AnimationDelay;
+                    baseFrame.AnimationTicksPerSecond = overlayFrame.AnimationTicksPerSecond;
+                    baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
+
+                    resultCollection.Add(baseFrame.Clone());
+                    UpdateFrameProgress(mainForm, i + 1, overlayCount);
+                }
+
+                resampledBaseFrames.Clear();
+            }
+            else
+            {
+                int baseCount = baseCollection.Count;
+                var overlayDelays = overlayCollection.Select(f => (int)f.AnimationDelay).ToArray();
+                int overlayTotalDelay = overlayDelays.Sum();
+                int baseElapsed = 0;
+
+                for (int i = 0; i < baseCount; i++)
+                {
+                    using var baseFrame = (MagickImage)baseCollection[i].Clone();
+
+                    int startTime = overlayTotalDelay == 0 ? 0 : baseElapsed % overlayTotalDelay;
+                    int cumulative = 0;
+                    int overlayIndex = 0;
+                    for (int j = 0; j < overlayDelays.Length; j++)
+                    {
+                        cumulative += overlayDelays[j];
+                        if (startTime < cumulative)
+                        {
+                            overlayIndex = j;
+                            break;
+                        }
+                    }
+
+                    using var overlayFrame = overlayCollection[overlayIndex].Clone();
+
+                    // Handle partial visibility and bounds checking
+                    var overlayGeometry = CalculateOverlayGeometry((MagickImage)overlayFrame, baseWidth, baseHeight, offsetX, offsetY);
+                    if (overlayGeometry.Width <= 0 || overlayGeometry.Height <= 0)
+                    {
+                        // Overlay is completely out of bounds, add base frame only
+                        baseElapsed += (int)baseCollection[i].AnimationDelay;
+                        resultCollection.Add(baseFrame.Clone());
+                        continue;
+                    }
+
+                    // Crop overlay if it extends beyond base boundaries
+                    if (overlayGeometry.CropRequired)
+                    {
+                        overlayFrame.Crop(new MagickGeometry(overlayGeometry.CropX, overlayGeometry.CropY,
+                            (uint)overlayGeometry.Width, (uint)overlayGeometry.Height));
+                        overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
+                    }
+
+                    baseFrame.Composite(overlayFrame, overlayGeometry.CompositeX, overlayGeometry.CompositeY, CompositeOperator.Over);
+                    baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
+
+                    resultCollection.Add(baseFrame.Clone());
+
+                    baseElapsed += (int)baseCollection[i].AnimationDelay;
+                    UpdateFrameProgress(mainForm, i + 1, baseCount);
+                }
+            }
+            return Task.CompletedTask;
+        }
+
+        private static (int signX, int signY) GetDirectionSigns(ScrollDirection direction)
+        {
+            int signX = 0, signY = 0;
+            switch (direction)
+            {
+                case ScrollDirection.Right: signX = 1; break;
+                case ScrollDirection.Left: signX = -1; break;
+                case ScrollDirection.Down: signY = 1; break;
+                case ScrollDirection.Up: signY = -1; break;
+                case ScrollDirection.LeftUp: signX = -1; signY = -1; break;
+                case ScrollDirection.LeftDown: signX = -1; signY = 1; break;
+                case ScrollDirection.RightUp: signX = 1; signY = -1; break;
+                case ScrollDirection.RightDown: signX = 1; signY = 1; break;
+            }
+            return (signX, signY);
+        }
+
+        private static Task ProcessMovingOverlay(GifToolMainForm mainForm, MagickImageCollection baseCollection,
+            MagickImageCollection overlayCollection, MagickImageCollection resultCollection,
+            ScrollDirection direction, int stepPixels, int moveCount, bool infiniteMovement,
+            bool resampleBase, int baseWidth, int baseHeight, int overlayWidth, int overlayHeight,
+            int startX, int startY)
+        {
+            // Calculate movement direction vectors
+            (int signX, int signY) = GetDirectionSigns(direction);
+
+            // Calculate movement parameters
+            int totalFrames;
+            if (infiniteMovement)
+            {
+                // Match base GIF duration
+                totalFrames = baseCollection.Count;
+            }
+            else
+            {
+                // Use specified move count
+                totalFrames = moveCount;
+            }
+
+            // Starting position is provided from Static Overlay Position coordinates
+            // Movement will begin from these coordinates and proceed in the specified direction
+
+            SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Overlaying);
+
+            for (int frame = 0; frame < totalFrames; frame++)
+            {
+                // Calculate current overlay position
+                int currentX = startX + (signX * stepPixels * frame);
+                int currentY = startY + (signY * stepPixels * frame);
+
+                // Get corresponding base and overlay frames
+                var baseFrame = baseCollection[frame % baseCollection.Count].Clone();
+                var overlayFrame = overlayCollection[frame % overlayCollection.Count].Clone();
+
+                // Handle partial visibility and bounds checking
+                var overlayGeometry = CalculateOverlayGeometry((MagickImage)overlayFrame, baseWidth, baseHeight, currentX, currentY);
+
+                if (overlayGeometry.Width > 0 && overlayGeometry.Height > 0)
+                {
+                    // Overlay is at least partially visible
+                    if (overlayGeometry.CropRequired)
+                    {
+                        overlayFrame.Crop(new MagickGeometry(overlayGeometry.CropX, overlayGeometry.CropY,
+                            (uint)overlayGeometry.Width, (uint)overlayGeometry.Height));
+                        overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
+                    }
+
+                    baseFrame.Composite(overlayFrame, overlayGeometry.CompositeX, overlayGeometry.CompositeY, CompositeOperator.Over);
+                }
+
+                baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
+                resultCollection.Add(baseFrame);
+
+                overlayFrame.Dispose();
+                UpdateFrameProgress(mainForm, frame + 1, totalFrames);
+            }
+            return Task.CompletedTask;
+        }
+
+        private struct OverlayGeometry
+        {
+            public int Width;
+            public int Height;
+            public int CompositeX;
+            public int CompositeY;
+            public int CropX;
+            public int CropY;
+            public bool CropRequired;
+        }
+
+        private static OverlayGeometry CalculateOverlayGeometry(MagickImage overlayFrame, int baseWidth, int baseHeight, int offsetX, int offsetY)
+        {
+            var geometry = new OverlayGeometry();
+            int overlayWidth = (int)overlayFrame.Width;
+            int overlayHeight = (int)overlayFrame.Height;
+
+            // Calculate intersection with base boundaries
+            int leftBound = Math.Max(0, offsetX);
+            int topBound = Math.Max(0, offsetY);
+            int rightBound = Math.Min(baseWidth, offsetX + overlayWidth);
+            int bottomBound = Math.Min(baseHeight, offsetY + overlayHeight);
+
+            geometry.Width = Math.Max(0, rightBound - leftBound);
+            geometry.Height = Math.Max(0, bottomBound - topBound);
+
+            if (geometry.Width <= 0 || geometry.Height <= 0)
+            {
+                // Completely out of bounds
+                return geometry;
+            }
+
+            // Determine if cropping is needed
+            geometry.CropRequired = (offsetX < 0 || offsetY < 0 || offsetX + overlayWidth > baseWidth || offsetY + overlayHeight > baseHeight);
+
+            if (geometry.CropRequired)
+            {
+                // Calculate crop coordinates within overlay image
+                geometry.CropX = Math.Max(0, -offsetX);
+                geometry.CropY = Math.Max(0, -offsetY);
+            }
+
+            // Calculate composite position (always >= 0)
+            geometry.CompositeX = Math.Max(0, offsetX);
+            geometry.CompositeY = Math.Max(0, offsetY);
+
+            return geometry;
+        }
+
         public static async Task OverlayGif(GifToolMainForm mainForm)
         {
             using var dialog = new OverlayGifDialog();
@@ -2871,10 +3097,8 @@ namespace GifProcessorApp
 
             string basePath = dialog.BaseGifPath;
             string overlayPath = dialog.OverlayGifPath;
-            int offsetX = dialog.OverlayX;
-            int offsetY = dialog.OverlayY;
+            string outputPath = dialog.OutputGifPath;
             bool resampleBase = dialog.ResampleBaseFrames;
-            string outputPath = null;
 
             try
             {
@@ -2882,109 +3106,39 @@ namespace GifProcessorApp
                 mainForm.pBarTaskStatus.Minimum = 0;
                 mainForm.pBarTaskStatus.Maximum = 100;
                 SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
+
                 using var baseCollection = new MagickImageCollection(basePath);
                 using var overlayCollection = new MagickImageCollection(overlayPath);
                 using var resultCollection = new MagickImageCollection();
 
-                uint baseWidth = baseCollection[0].Width;
-                uint baseHeight = baseCollection[0].Height;
+                int baseWidth = (int)baseCollection[0].Width;
+                int baseHeight = (int)baseCollection[0].Height;
+                int overlayWidth = (int)overlayCollection[0].Width;
+                int overlayHeight = (int)overlayCollection[0].Height;
 
                 baseCollection.Coalesce();
                 overlayCollection.Coalesce();
 
-                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Overlaying);
-                if (resampleBase)
+                if (dialog.UseStaticOverlay)
                 {
-                    var resampledBaseFrames = ResampleBaseFrames(baseCollection, overlayCollection);
-                    int overlayCount = overlayCollection.Count;
-
-                    for (int i = 0; i < overlayCount; i++)
-                    {
-                        using var baseFrame = resampledBaseFrames[i];
-                        using var overlayFrame = overlayCollection[i].Clone();
-
-                        int width = (int)Math.Min(overlayFrame.Width, baseWidth - (uint)offsetX);
-                        int height = (int)Math.Min(overlayFrame.Height, baseHeight - (uint)offsetY);
-                        if (width <= 0 || height <= 0)
-                            continue;
-
-                        overlayFrame.Crop(new MagickGeometry(0, 0, (uint)width, (uint)height));
-                        overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
-
-                        baseFrame.Composite(overlayFrame, offsetX, offsetY, CompositeOperator.Over);
-                        baseFrame.AnimationDelay = overlayFrame.AnimationDelay;
-                        baseFrame.AnimationTicksPerSecond = overlayFrame.AnimationTicksPerSecond;
-                        baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
-
-                        resultCollection.Add(baseFrame.Clone());
-
-                        UpdateFrameProgress(mainForm, i + 1, overlayCount);
-                    }
-
-                    resampledBaseFrames.Clear();
+                    // Static overlay - use original logic with fixed position
+                    await ProcessStaticOverlay(mainForm, baseCollection, overlayCollection, resultCollection,
+                        dialog.StaticOverlayX, dialog.StaticOverlayY, resampleBase, baseWidth, baseHeight);
                 }
                 else
                 {
-                    int baseCount = baseCollection.Count;
-                    var overlayDelays = overlayCollection.Select(f => (int)f.AnimationDelay).ToArray();
-                    int overlayTotalDelay = overlayDelays.Sum();
-                    int baseElapsed = 0;
-
-                    for (int i = 0; i < baseCount; i++)
-                    {
-                        using var baseFrame = (MagickImage)baseCollection[i].Clone();
-
-                        int startTime = overlayTotalDelay == 0 ? 0 : baseElapsed % overlayTotalDelay;
-                        int cumulative = 0;
-                        int overlayIndex = 0;
-                        for (int j = 0; j < overlayDelays.Length; j++)
-                        {
-                            cumulative += overlayDelays[j];
-                            if (startTime < cumulative)
-                            {
-                                overlayIndex = j;
-                                break;
-                            }
-                        }
-
-                        using var overlayFrame = overlayCollection[overlayIndex].Clone();
-
-                        int width = (int)Math.Min(overlayFrame.Width, baseWidth - (uint)offsetX);
-                        int height = (int)Math.Min(overlayFrame.Height, baseHeight - (uint)offsetY);
-                        if (width <= 0 || height <= 0)
-                        {
-                            baseElapsed += (int)baseCollection[i].AnimationDelay;
-                            continue;
-                        }
-
-                        overlayFrame.Crop(new MagickGeometry(0, 0, (uint)width, (uint)height));
-                        overlayFrame.Page = new MagickGeometry(0, 0, overlayFrame.Width, overlayFrame.Height);
-
-                        baseFrame.Composite(overlayFrame, offsetX, offsetY, CompositeOperator.Over);
-                        baseFrame.GifDisposeMethod = GifDisposeMethod.Background;
-
-                        resultCollection.Add(baseFrame.Clone());
-
-                        baseElapsed += (int)baseCollection[i].AnimationDelay;
-                        UpdateFrameProgress(mainForm, i + 1, baseCount);
-                    }
+                    // Moving overlay - new logic starting from static overlay position
+                    await ProcessMovingOverlay(mainForm, baseCollection, overlayCollection, resultCollection,
+                        dialog.MovementDirection, dialog.StepPixels, dialog.MoveCount, dialog.InfiniteMovement,
+                        resampleBase, baseWidth, baseHeight, overlayWidth, overlayHeight,
+                        dialog.StaticOverlayX, dialog.StaticOverlayY);
                 }
 
                 resultCollection.Quantize();
                 resultCollection.Optimize();
 
-                using var saveDialog = new SaveFileDialog
-                {
-                    Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
-                    FileName = Path.GetFileNameWithoutExtension(basePath) + "_overlay.gif",
-                    Title = "Save GIF",
-                };
-                if (saveDialog.ShowDialog() != DialogResult.OK)
-                    return;
-
-                outputPath = saveDialog.FileName;
-
-                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);                resultCollection.Write(outputPath);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
+                resultCollection.Write(outputPath);
             }
             catch (Exception ex)
             {
@@ -3001,9 +3155,10 @@ namespace GifProcessorApp
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Idle);
             }
 
-            if (!string.IsNullOrEmpty(outputPath) && mainForm.chkGifsicle.Checked)
+            if (mainForm.chkGifsicle.Checked)
             {
-                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing);                var options = new GifsicleWrapper.GifsicleOptions
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing);
+                var options = new GifsicleWrapper.GifsicleOptions
                 {
                     Colors = (int)mainForm.numUpDownPaletteSicle.Value,
                     Lossy = (int)mainForm.numUpDownLossy.Value,

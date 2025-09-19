@@ -1040,4 +1040,37 @@ FFmpeg 輸出 (部分)：
   <data name="ConcatenateDialog_OutputFileLabel" xml:space="preserve">
     <value>輸出GIF檔案：</value>
   </data>
+  <data name="OverlayDialog_SelectBaseGif" xml:space="preserve">
+    <value>請選擇底層GIF檔案。</value>
+  </data>
+  <data name="OverlayDialog_SelectOverlayGif" xml:space="preserve">
+    <value>請選擇疊加GIF檔案。</value>
+  </data>
+  <data name="OverlayDialog_SelectOutputGif" xml:space="preserve">
+    <value>請指定輸出GIF檔案。</value>
+  </data>
+  <data name="OverlayDialog_SaveOutputGif" xml:space="preserve">
+    <value>疊加GIF另存為...</value>
+  </data>
+  <data name="grpStaticOverlay.Text" xml:space="preserve">
+    <value>疊加圖起始位置</value>
+  </data>
+  <data name="chkEnableMovement.Text" xml:space="preserve">
+    <value>啟用疊加圖移動</value>
+  </data>
+  <data name="grpMovement.Text" xml:space="preserve">
+    <value>移動設定</value>
+  </data>
+  <data name="lblDirection.Text" xml:space="preserve">
+    <value>方向：</value>
+  </data>
+  <data name="lblStepPixels.Text" xml:space="preserve">
+    <value>每次移動像素：</value>
+  </data>
+  <data name="lblMoveCount.Text" xml:space="preserve">
+    <value>移動次數：</value>
+  </data>
+  <data name="chkInfiniteMovement.Text" xml:space="preserve">
+    <value>無限移動（配合底圖播放時間）</value>
+  </data>
 </root>

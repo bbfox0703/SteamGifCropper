@@ -1,8 +1,11 @@
+#nullable enable
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using ImageMagick;
+using SteamGifCropper.Properties;
 
 namespace GifProcessorApp
 {
@@ -10,33 +13,118 @@ namespace GifProcessorApp
     {
         public string BaseGifPath => txtBaseGif.Text;
         public string OverlayGifPath => txtOverlayGif.Text;
-        public int OverlayX => (int)numX.Value;
-        public int OverlayY => (int)numY.Value;
+        public string OutputGifPath => txtOutputGif.Text;
+
+        // Movement settings
+        public ScrollDirection MovementDirection { get; private set; } = ScrollDirection.Right;
+        public int StepPixels { get; private set; } = 1;
+        public int MoveCount { get; private set; } = 1;
+        public bool InfiniteMovement { get; private set; } = false;
+
+        // Static overlay settings (when no movement)
+        public int StaticOverlayX => (int)numStaticX.Value;
+        public int StaticOverlayY => (int)numStaticY.Value;
+        public bool UseStaticOverlay => !chkEnableMovement.Checked;
+
         public bool ResampleBaseFrames => chkResampleBase.Checked;
 
         private readonly ComponentResourceManager _resources = new(typeof(OverlayGifDialog));
 
-        private TextBox txtBaseGif;
-        private Button btnBrowseBase;
-        private TextBox txtOverlayGif;
-        private Button btnBrowseOverlay;
-        private Label lblBase;
-        private Label lblOverlay;
-        private Label lblBaseInfo;
-        private Label lblOverlayInfo;
-        private Label lblX;
-        private Label lblY;
-        private CheckBox chkResampleBase;
-        private NumericUpDown numX;
-        private NumericUpDown numY;
-        private Button btnOK;
-        private Button btnCancel;
+        private TextBox txtBaseGif = null!;
+        private Button btnBrowseBase = null!;
+        private TextBox txtOverlayGif = null!;
+        private Button btnBrowseOverlay = null!;
+        private TextBox txtOutputGif = null!;
+        private Button btnBrowseOutput = null!;
+        private Label lblBase = null!;
+        private Label lblOverlay = null!;
+        private Label lblOutput = null!;
+        private Label lblBaseInfo = null!;
+        private Label lblOverlayInfo = null!;
+        private CheckBox chkResampleBase = null!;
+
+        // Static overlay controls
+        private GroupBox grpStaticOverlay = null!;
+        private Label lblStaticX = null!;
+        private Label lblStaticY = null!;
+        private NumericUpDown numStaticX = null!;
+        private NumericUpDown numStaticY = null!;
+
+        // Movement controls
+        private CheckBox chkEnableMovement = null!;
+        private GroupBox grpMovement = null!;
+        private Label lblDirection = null!;
+        private ComboBox cmbDirection = null!;
+        private Label lblStepPixels = null!;
+        private NumericUpDown numStepPixels = null!;
+        private Label lblMoveCount = null!;
+        private NumericUpDown numMoveCount = null!;
+        private CheckBox chkInfiniteMovement = null!;
+
+        private Button btnOK = null!;
+        private Button btnCancel = null!;
 
         public OverlayGifDialog()
         {
             InitializeComponent();
             UpdateUIText();
+            SetupEventHandlers();
             WindowsThemeManager.ApplyThemeToControl(this, WindowsThemeManager.IsDarkModeEnabled());
+        }
+
+        private void SetupEventHandlers()
+        {
+            chkEnableMovement.CheckedChanged += ChkEnableMovement_CheckedChanged;
+            chkInfiniteMovement.CheckedChanged += ChkInfiniteMovement_CheckedChanged;
+            btnOK.Click += BtnOK_Click;
+
+            // Initially disable movement controls
+            ChkEnableMovement_CheckedChanged(null, EventArgs.Empty);
+            ChkInfiniteMovement_CheckedChanged(null, EventArgs.Empty);
+        }
+
+        private void ChkEnableMovement_CheckedChanged(object? sender, EventArgs e)
+        {
+            grpMovement.Enabled = chkEnableMovement.Checked;
+            grpStaticOverlay.Enabled = !chkEnableMovement.Checked;
+        }
+
+        private void ChkInfiniteMovement_CheckedChanged(object? sender, EventArgs e)
+        {
+            numMoveCount.Enabled = !chkInfiniteMovement.Checked;
+        }
+
+        private void BtnOK_Click(object? sender, EventArgs e)
+        {
+            // Validate inputs
+            if (string.IsNullOrWhiteSpace(txtBaseGif.Text))
+            {
+                MessageBox.Show("Please select a base GIF file.", Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtOverlayGif.Text))
+            {
+                MessageBox.Show("Please select an overlay GIF file.", Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtOutputGif.Text))
+            {
+                MessageBox.Show("Please specify an output GIF file.", Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Capture movement settings
+            if (chkEnableMovement.Checked)
+            {
+                MovementDirection = (ScrollDirection)cmbDirection.SelectedItem!;
+                StepPixels = (int)numStepPixels.Value;
+                MoveCount = (int)numMoveCount.Value;
+                InfiniteMovement = chkInfiniteMovement.Checked;
+            }
+
+            DialogResult = DialogResult.OK;
         }
 
         /// <summary>
@@ -44,23 +132,56 @@ namespace GifProcessorApp
         /// </summary>
         public void UpdateUIText()
         {
-            lblBase.Text = _resources.GetString("lblBase.Text") ?? lblBase.Text;
-            btnBrowseBase.Text = _resources.GetString("btnBrowseBase.Text") ?? btnBrowseBase.Text;
-            lblOverlay.Text = _resources.GetString("lblOverlay.Text") ?? lblOverlay.Text;
-            btnBrowseOverlay.Text = _resources.GetString("btnBrowseOverlay.Text") ?? btnBrowseOverlay.Text;
-            chkResampleBase.Text = _resources.GetString("chkResampleBase.Text") ?? chkResampleBase.Text;
-            lblX.Text = _resources.GetString("lblX.Text") ?? lblX.Text;
-            lblY.Text = _resources.GetString("lblY.Text") ?? lblY.Text;
-            btnOK.Text = _resources.GetString("btnOK.Text") ?? btnOK.Text;
-            btnCancel.Text = _resources.GetString("btnCancel.Text") ?? btnCancel.Text;
-            Text = _resources.GetString("$this.Text") ?? Text;
+            // File selection
+            lblBase.Text = _resources.GetString("lblBase.Text") ?? "Base GIF:";
+            btnBrowseBase.Text = _resources.GetString("btnBrowseBase.Text") ?? "Browse...";
+            lblOverlay.Text = _resources.GetString("lblOverlay.Text") ?? "Overlay GIF:";
+            btnBrowseOverlay.Text = _resources.GetString("btnBrowseOverlay.Text") ?? "Browse...";
+            lblOutput.Text = _resources.GetString("lblOutput.Text") ?? "Output GIF:";
+            btnBrowseOutput.Text = _resources.GetString("btnBrowseOutput.Text") ?? "Browse...";
+
+            // Options
+            chkResampleBase.Text = _resources.GetString("chkResampleBase.Text") ?? "Resample base GIF to overlay FPS";
+
+            // Static overlay
+            grpStaticOverlay.Text = _resources.GetString("grpStaticOverlay.Text") ?? "Overlay starting position";
+            lblStaticX.Text = _resources.GetString("lblStaticX.Text") ?? "X:";
+            lblStaticY.Text = _resources.GetString("lblStaticY.Text") ?? "Y:";
+
+            // Movement
+            chkEnableMovement.Text = _resources.GetString("chkEnableMovement.Text") ?? "Enable overlay movement";
+            grpMovement.Text = _resources.GetString("grpMovement.Text") ?? "Movement Settings";
+            lblDirection.Text = _resources.GetString("lblDirection.Text") ?? "Direction:";
+            lblStepPixels.Text = _resources.GetString("lblStepPixels.Text") ?? "Pixels per step:";
+            lblMoveCount.Text = _resources.GetString("lblMoveCount.Text") ?? "Move count:";
+            chkInfiniteMovement.Text = _resources.GetString("chkInfiniteMovement.Text") ?? "Infinite movement (match base GIF duration)";
+
+            // Buttons
+            btnOK.Text = _resources.GetString("btnOK.Text") ?? "OK";
+            btnCancel.Text = _resources.GetString("btnCancel.Text") ?? "Cancel";
+            Text = _resources.GetString("$this.Text") ?? "Overlay GIF with Movement";
+
+            // Populate direction combo box
+            if (cmbDirection.Items.Count == 0)
+            {
+                cmbDirection.Items.Add(ScrollDirection.Right);
+                cmbDirection.Items.Add(ScrollDirection.Left);
+                cmbDirection.Items.Add(ScrollDirection.Down);
+                cmbDirection.Items.Add(ScrollDirection.Up);
+                cmbDirection.Items.Add(ScrollDirection.LeftUp);
+                cmbDirection.Items.Add(ScrollDirection.LeftDown);
+                cmbDirection.Items.Add(ScrollDirection.RightUp);
+                cmbDirection.Items.Add(ScrollDirection.RightDown);
+                cmbDirection.SelectedIndex = 0; // Default to Right
+            }
         }
 
-        private void BtnBrowseBase_Click(object sender, EventArgs e)
+        private void BtnBrowseBase_Click(object? sender, EventArgs e)
         {
             using var dialog = new OpenFileDialog
             {
-                Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter
+                Filter = Resources.FileDialog_GifFilter,
+                Title = "Select base GIF file"
             };
             if (dialog.ShowDialog() == DialogResult.OK)
             {
@@ -70,16 +191,19 @@ namespace GifProcessorApp
                     using var collection = new MagickImageCollection(dialog.FileName);
                     int width = (int)collection[0].Width;
                     int height = (int)collection[0].Height;
-                    numX.Maximum = width > 0 ? width - 1 : 0;
-                    numY.Maximum = height > 0 ? height - 1 : 0;
+
+                    // Update static overlay position limits
+                    numStaticX.Maximum = width > 0 ? width - 1 : 0;
+                    numStaticY.Maximum = height > 0 ? height - 1 : 0;
 
                     double avgDelay = collection.Average(img => (double)img.AnimationDelay);
                     double fps = avgDelay > 0 ? 100.0 / avgDelay : 0;
                     lblBaseInfo.Text = string.Format(
-                        _resources.GetString("GifInfoFormat") ?? "{0}×{1}, {2} fps",
+                        _resources.GetString("GifInfoFormat") ?? "{0}×{1}, {2} fps, {3} frames",
                         width,
                         height,
-                        fps.ToString("0.##"));
+                        fps.ToString("0.##"),
+                        collection.Count);
                 }
                 catch
                 {
@@ -88,11 +212,12 @@ namespace GifProcessorApp
             }
         }
 
-        private void BtnBrowseOverlay_Click(object sender, EventArgs e)
+        private void BtnBrowseOverlay_Click(object? sender, EventArgs e)
         {
             using var dialog = new OpenFileDialog
             {
-                Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter
+                Filter = Resources.FileDialog_GifFilter,
+                Title = "Select overlay GIF file"
             };
             if (dialog.ShowDialog() == DialogResult.OK)
             {
@@ -106,10 +231,11 @@ namespace GifProcessorApp
                     double avgDelay = collection.Average(img => (double)img.AnimationDelay);
                     double fps = avgDelay > 0 ? 100.0 / avgDelay : 0;
                     lblOverlayInfo.Text = string.Format(
-                        _resources.GetString("GifInfoFormat") ?? "{0}×{1}, {2} fps",
+                        _resources.GetString("GifInfoFormat") ?? "{0}×{1}, {2} fps, {3} frames",
                         width,
                         height,
-                        fps.ToString("0.##"));
+                        fps.ToString("0.##"),
+                        collection.Count);
                 }
                 catch
                 {
@@ -118,46 +244,92 @@ namespace GifProcessorApp
             }
         }
 
+        private void BtnBrowseOutput_Click(object? sender, EventArgs e)
+        {
+            using var dialog = new SaveFileDialog
+            {
+                Filter = Resources.FileDialog_GifFilter,
+                Title = "Save overlay GIF as...",
+                DefaultExt = "gif"
+            };
+
+            if (!string.IsNullOrEmpty(txtBaseGif.Text))
+            {
+                string baseName = Path.GetFileNameWithoutExtension(txtBaseGif.Text);
+                dialog.FileName = $"{baseName}_overlay.gif";
+            }
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                txtOutputGif.Text = dialog.FileName;
+            }
+        }
+
         private void InitializeComponent()
         {
             ComponentResourceManager resources = new ComponentResourceManager(typeof(OverlayGifDialog));
+
+            // Initialize controls
             lblBase = new Label();
             txtBaseGif = new TextBox();
             btnBrowseBase = new Button();
+            lblBaseInfo = new Label();
+
             lblOverlay = new Label();
             txtOverlayGif = new TextBox();
             btnBrowseOverlay = new Button();
-            lblBaseInfo = new Label();
             lblOverlayInfo = new Label();
+
+            lblOutput = new Label();
+            txtOutputGif = new TextBox();
+            btnBrowseOutput = new Button();
+
             chkResampleBase = new CheckBox();
-            lblX = new Label();
-            numX = new NumericUpDown();
-            lblY = new Label();
-            numY = new NumericUpDown();
+
+            // Static overlay group
+            grpStaticOverlay = new GroupBox();
+            lblStaticX = new Label();
+            numStaticX = new NumericUpDown();
+            lblStaticY = new Label();
+            numStaticY = new NumericUpDown();
+
+            // Movement group
+            chkEnableMovement = new CheckBox();
+            grpMovement = new GroupBox();
+            lblDirection = new Label();
+            cmbDirection = new ComboBox();
+            lblStepPixels = new Label();
+            numStepPixels = new NumericUpDown();
+            lblMoveCount = new Label();
+            numMoveCount = new NumericUpDown();
+            chkInfiniteMovement = new CheckBox();
+
             btnOK = new Button();
             btnCancel = new Button();
-            ((ISupportInitialize)numX).BeginInit();
-            ((ISupportInitialize)numY).BeginInit();
+
+            ((ISupportInitialize)numStaticX).BeginInit();
+            ((ISupportInitialize)numStaticY).BeginInit();
+            ((ISupportInitialize)numStepPixels).BeginInit();
+            ((ISupportInitialize)numMoveCount).BeginInit();
+            grpStaticOverlay.SuspendLayout();
+            grpMovement.SuspendLayout();
             SuspendLayout();
-            // 
+
             // lblBase
-            // 
             lblBase.AutoSize = true;
             lblBase.Location = new System.Drawing.Point(12, 15);
             lblBase.Name = "lblBase";
             lblBase.Size = new System.Drawing.Size(57, 15);
             lblBase.TabIndex = 0;
             lblBase.Text = "Base GIF:";
-            // 
+
             // txtBaseGif
-            // 
             txtBaseGif.Location = new System.Drawing.Point(96, 12);
             txtBaseGif.Name = "txtBaseGif";
             txtBaseGif.Size = new System.Drawing.Size(260, 23);
             txtBaseGif.TabIndex = 1;
-            // 
+
             // btnBrowseBase
-            // 
             btnBrowseBase.Location = new System.Drawing.Point(362, 12);
             btnBrowseBase.Name = "btnBrowseBase";
             btnBrowseBase.Size = new System.Drawing.Size(75, 26);
@@ -165,25 +337,29 @@ namespace GifProcessorApp
             btnBrowseBase.Text = "Browse...";
             btnBrowseBase.UseVisualStyleBackColor = true;
             btnBrowseBase.Click += BtnBrowseBase_Click;
-            // 
+
+            // lblBaseInfo
+            lblBaseInfo.AutoSize = true;
+            lblBaseInfo.Location = new System.Drawing.Point(96, 37);
+            lblBaseInfo.Name = "lblBaseInfo";
+            lblBaseInfo.Size = new System.Drawing.Size(0, 15);
+            lblBaseInfo.TabIndex = 3;
+
             // lblOverlay
-            // 
             lblOverlay.AutoSize = true;
             lblOverlay.Location = new System.Drawing.Point(12, 65);
             lblOverlay.Name = "lblOverlay";
             lblOverlay.Size = new System.Drawing.Size(74, 15);
-            lblOverlay.TabIndex = 3;
+            lblOverlay.TabIndex = 4;
             lblOverlay.Text = "Overlay GIF:";
-            // 
+
             // txtOverlayGif
-            // 
             txtOverlayGif.Location = new System.Drawing.Point(96, 62);
             txtOverlayGif.Name = "txtOverlayGif";
             txtOverlayGif.Size = new System.Drawing.Size(260, 23);
             txtOverlayGif.TabIndex = 5;
-            // 
+
             // btnBrowseOverlay
-            // 
             btnBrowseOverlay.Location = new System.Drawing.Point(362, 62);
             btnBrowseOverlay.Name = "btnBrowseOverlay";
             btnBrowseOverlay.Size = new System.Drawing.Size(75, 26);
@@ -191,102 +367,202 @@ namespace GifProcessorApp
             btnBrowseOverlay.Text = "Browse...";
             btnBrowseOverlay.UseVisualStyleBackColor = true;
             btnBrowseOverlay.Click += BtnBrowseOverlay_Click;
-            // 
-            // lblBaseInfo
-            // 
-            lblBaseInfo.AutoSize = true;
-            lblBaseInfo.Location = new System.Drawing.Point(96, 37);
-            lblBaseInfo.Name = "lblBaseInfo";
-            lblBaseInfo.Size = new System.Drawing.Size(0, 15);
-            lblBaseInfo.TabIndex = 4;
-            // 
+
             // lblOverlayInfo
-            // 
             lblOverlayInfo.AutoSize = true;
-            lblOverlayInfo.Location = new System.Drawing.Point(96, 92);
+            lblOverlayInfo.Location = new System.Drawing.Point(96, 87);
             lblOverlayInfo.Name = "lblOverlayInfo";
             lblOverlayInfo.Size = new System.Drawing.Size(0, 15);
             lblOverlayInfo.TabIndex = 7;
-            // 
+
+            // lblOutput
+            lblOutput.AutoSize = true;
+            lblOutput.Location = new System.Drawing.Point(12, 115);
+            lblOutput.Name = "lblOutput";
+            lblOutput.Size = new System.Drawing.Size(67, 15);
+            lblOutput.TabIndex = 8;
+            lblOutput.Text = "Output GIF:";
+
+            // txtOutputGif
+            txtOutputGif.Location = new System.Drawing.Point(96, 112);
+            txtOutputGif.Name = "txtOutputGif";
+            txtOutputGif.Size = new System.Drawing.Size(260, 23);
+            txtOutputGif.TabIndex = 9;
+
+            // btnBrowseOutput
+            btnBrowseOutput.Location = new System.Drawing.Point(362, 112);
+            btnBrowseOutput.Name = "btnBrowseOutput";
+            btnBrowseOutput.Size = new System.Drawing.Size(75, 26);
+            btnBrowseOutput.TabIndex = 10;
+            btnBrowseOutput.Text = "Browse...";
+            btnBrowseOutput.UseVisualStyleBackColor = true;
+            btnBrowseOutput.Click += BtnBrowseOutput_Click;
+
             // chkResampleBase
-            // 
             chkResampleBase.Checked = true;
             chkResampleBase.CheckState = CheckState.Checked;
-            chkResampleBase.Location = new System.Drawing.Point(94, 116);
+            chkResampleBase.Location = new System.Drawing.Point(96, 145);
             chkResampleBase.Name = "chkResampleBase";
             chkResampleBase.Size = new System.Drawing.Size(260, 19);
-            chkResampleBase.TabIndex = 8;
+            chkResampleBase.TabIndex = 11;
             chkResampleBase.Text = "Resample base GIF to overlay FPS";
             chkResampleBase.UseVisualStyleBackColor = true;
-            // 
-            // lblX
-            // 
-            lblX.AutoSize = true;
-            lblX.Location = new System.Drawing.Point(51, 144);
-            lblX.Name = "lblX";
-            lblX.Size = new System.Drawing.Size(18, 15);
-            lblX.TabIndex = 9;
-            lblX.Text = "X:";
-            // 
-            // numX
-            // 
-            numX.Location = new System.Drawing.Point(94, 142);
-            numX.Maximum = new decimal(new int[] { int.MaxValue, 0, 0, 0 });
-            numX.Name = "numX";
-            numX.Size = new System.Drawing.Size(120, 23);
-            numX.TabIndex = 10;
-            // 
-            // lblY
-            // 
-            lblY.AutoSize = true;
-            lblY.Location = new System.Drawing.Point(228, 144);
-            lblY.Name = "lblY";
-            lblY.Size = new System.Drawing.Size(17, 15);
-            lblY.TabIndex = 11;
-            lblY.Text = "Y:";
-            // 
-            // numY
-            // 
-            numY.Location = new System.Drawing.Point(262, 142);
-            numY.Maximum = new decimal(new int[] { int.MaxValue, 0, 0, 0 });
-            numY.Name = "numY";
-            numY.Size = new System.Drawing.Size(120, 23);
-            numY.TabIndex = 12;
-            // 
+
+            // grpStaticOverlay
+            grpStaticOverlay.Controls.Add(lblStaticX);
+            grpStaticOverlay.Controls.Add(numStaticX);
+            grpStaticOverlay.Controls.Add(lblStaticY);
+            grpStaticOverlay.Controls.Add(numStaticY);
+            grpStaticOverlay.Location = new System.Drawing.Point(12, 175);
+            grpStaticOverlay.Name = "grpStaticOverlay";
+            grpStaticOverlay.Size = new System.Drawing.Size(425, 55);
+            grpStaticOverlay.TabIndex = 12;
+            grpStaticOverlay.TabStop = false;
+            grpStaticOverlay.Text = "Overlay starting position";
+
+            // lblStaticX
+            lblStaticX.AutoSize = true;
+            lblStaticX.Location = new System.Drawing.Point(15, 25);
+            lblStaticX.Name = "lblStaticX";
+            lblStaticX.Size = new System.Drawing.Size(18, 15);
+            lblStaticX.TabIndex = 0;
+            lblStaticX.Text = "X:";
+
+            // numStaticX
+            numStaticX.Location = new System.Drawing.Point(45, 22);
+            numStaticX.Maximum = new decimal(new int[] { int.MaxValue, 0, 0, 0 });
+            numStaticX.Name = "numStaticX";
+            numStaticX.Size = new System.Drawing.Size(120, 23);
+            numStaticX.TabIndex = 1;
+
+            // lblStaticY
+            lblStaticY.AutoSize = true;
+            lblStaticY.Location = new System.Drawing.Point(180, 25);
+            lblStaticY.Name = "lblStaticY";
+            lblStaticY.Size = new System.Drawing.Size(17, 15);
+            lblStaticY.TabIndex = 2;
+            lblStaticY.Text = "Y:";
+
+            // numStaticY
+            numStaticY.Location = new System.Drawing.Point(210, 22);
+            numStaticY.Maximum = new decimal(new int[] { int.MaxValue, 0, 0, 0 });
+            numStaticY.Name = "numStaticY";
+            numStaticY.Size = new System.Drawing.Size(120, 23);
+            numStaticY.TabIndex = 3;
+
+            // chkEnableMovement
+            chkEnableMovement.AutoSize = true;
+            chkEnableMovement.Location = new System.Drawing.Point(12, 245);
+            chkEnableMovement.Name = "chkEnableMovement";
+            chkEnableMovement.Size = new System.Drawing.Size(154, 19);
+            chkEnableMovement.TabIndex = 13;
+            chkEnableMovement.Text = "Enable overlay movement";
+            chkEnableMovement.UseVisualStyleBackColor = true;
+
+            // grpMovement
+            grpMovement.Controls.Add(lblDirection);
+            grpMovement.Controls.Add(cmbDirection);
+            grpMovement.Controls.Add(lblStepPixels);
+            grpMovement.Controls.Add(numStepPixels);
+            grpMovement.Controls.Add(lblMoveCount);
+            grpMovement.Controls.Add(numMoveCount);
+            grpMovement.Controls.Add(chkInfiniteMovement);
+            grpMovement.Location = new System.Drawing.Point(12, 270);
+            grpMovement.Name = "grpMovement";
+            grpMovement.Size = new System.Drawing.Size(425, 110);
+            grpMovement.TabIndex = 14;
+            grpMovement.TabStop = false;
+            grpMovement.Text = "Movement Settings";
+
+            // lblDirection
+            lblDirection.AutoSize = true;
+            lblDirection.Location = new System.Drawing.Point(15, 25);
+            lblDirection.Name = "lblDirection";
+            lblDirection.Size = new System.Drawing.Size(58, 15);
+            lblDirection.TabIndex = 0;
+            lblDirection.Text = "Direction:";
+
+            // cmbDirection
+            cmbDirection.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbDirection.Location = new System.Drawing.Point(85, 22);
+            cmbDirection.Name = "cmbDirection";
+            cmbDirection.Size = new System.Drawing.Size(120, 23);
+            cmbDirection.TabIndex = 1;
+
+            // lblStepPixels
+            lblStepPixels.AutoSize = true;
+            lblStepPixels.Location = new System.Drawing.Point(220, 25);
+            lblStepPixels.Name = "lblStepPixels";
+            lblStepPixels.Size = new System.Drawing.Size(87, 15);
+            lblStepPixels.TabIndex = 2;
+            lblStepPixels.Text = "Pixels per step:";
+
+            // numStepPixels
+            numStepPixels.Location = new System.Drawing.Point(315, 22);
+            numStepPixels.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numStepPixels.Name = "numStepPixels";
+            numStepPixels.Size = new System.Drawing.Size(80, 23);
+            numStepPixels.TabIndex = 3;
+            numStepPixels.Value = new decimal(new int[] { 1, 0, 0, 0 });
+
+            // lblMoveCount
+            lblMoveCount.AutoSize = true;
+            lblMoveCount.Location = new System.Drawing.Point(15, 55);
+            lblMoveCount.Name = "lblMoveCount";
+            lblMoveCount.Size = new System.Drawing.Size(73, 15);
+            lblMoveCount.TabIndex = 4;
+            lblMoveCount.Text = "Move count:";
+
+            // numMoveCount
+            numMoveCount.Location = new System.Drawing.Point(95, 52);
+            numMoveCount.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numMoveCount.Name = "numMoveCount";
+            numMoveCount.Size = new System.Drawing.Size(120, 23);
+            numMoveCount.TabIndex = 5;
+            numMoveCount.Value = new decimal(new int[] { 1, 0, 0, 0 });
+
+            // chkInfiniteMovement
+            chkInfiniteMovement.AutoSize = true;
+            chkInfiniteMovement.Location = new System.Drawing.Point(15, 80);
+            chkInfiniteMovement.Name = "chkInfiniteMovement";
+            chkInfiniteMovement.Size = new System.Drawing.Size(253, 19);
+            chkInfiniteMovement.TabIndex = 6;
+            chkInfiniteMovement.Text = "Infinite movement (match base GIF duration)";
+            chkInfiniteMovement.UseVisualStyleBackColor = true;
+
             // btnOK
-            // 
             btnOK.DialogResult = DialogResult.OK;
-            btnOK.Location = new System.Drawing.Point(281, 172);
+            btnOK.Location = new System.Drawing.Point(281, 395);
             btnOK.Name = "btnOK";
             btnOK.Size = new System.Drawing.Size(75, 26);
-            btnOK.TabIndex = 13;
+            btnOK.TabIndex = 15;
             btnOK.Text = "OK";
             btnOK.UseVisualStyleBackColor = true;
-            // 
+
             // btnCancel
-            // 
             btnCancel.DialogResult = DialogResult.Cancel;
-            btnCancel.Location = new System.Drawing.Point(362, 172);
+            btnCancel.Location = new System.Drawing.Point(362, 395);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new System.Drawing.Size(75, 26);
-            btnCancel.TabIndex = 14;
+            btnCancel.TabIndex = 16;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
-            // 
+
             // OverlayGifDialog
-            // 
             AcceptButton = btnOK;
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new System.Drawing.Size(450, 210);
+            ClientSize = new System.Drawing.Size(450, 435);
             Controls.Add(btnCancel);
             Controls.Add(btnOK);
-            Controls.Add(numY);
-            Controls.Add(lblY);
-            Controls.Add(numX);
-            Controls.Add(lblX);
+            Controls.Add(grpMovement);
+            Controls.Add(chkEnableMovement);
+            Controls.Add(grpStaticOverlay);
             Controls.Add(chkResampleBase);
+            Controls.Add(btnBrowseOutput);
+            Controls.Add(txtOutputGif);
+            Controls.Add(lblOutput);
             Controls.Add(lblOverlayInfo);
             Controls.Add(btnBrowseOverlay);
             Controls.Add(txtOverlayGif);
@@ -296,14 +572,21 @@ namespace GifProcessorApp
             Controls.Add(txtBaseGif);
             Controls.Add(lblBase);
             FormBorderStyle = FormBorderStyle.FixedDialog;
-            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            Icon = (System.Drawing.Icon?)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "OverlayGifDialog";
             StartPosition = FormStartPosition.CenterParent;
-            Text = "Overlay GIF";
-            ((ISupportInitialize)numX).EndInit();
-            ((ISupportInitialize)numY).EndInit();
+            Text = "Overlay GIF with Movement";
+
+            ((ISupportInitialize)numStaticX).EndInit();
+            ((ISupportInitialize)numStaticY).EndInit();
+            ((ISupportInitialize)numStepPixels).EndInit();
+            ((ISupportInitialize)numMoveCount).EndInit();
+            grpStaticOverlay.ResumeLayout(false);
+            grpStaticOverlay.PerformLayout();
+            grpMovement.ResumeLayout(false);
+            grpMovement.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }

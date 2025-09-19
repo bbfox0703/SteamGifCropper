@@ -1027,4 +1027,37 @@ Saved as: {0}</value>
   <data name="ConcatenateDialog_OutputFileLabel" xml:space="preserve">
     <value>Output GIF file:</value>
   </data>
+  <data name="OverlayDialog_SelectBaseGif" xml:space="preserve">
+    <value>Please select a base GIF file.</value>
+  </data>
+  <data name="OverlayDialog_SelectOverlayGif" xml:space="preserve">
+    <value>Please select an overlay GIF file.</value>
+  </data>
+  <data name="OverlayDialog_SelectOutputGif" xml:space="preserve">
+    <value>Please specify an output GIF file.</value>
+  </data>
+  <data name="OverlayDialog_SaveOutputGif" xml:space="preserve">
+    <value>Save overlay GIF as...</value>
+  </data>
+  <data name="grpStaticOverlay.Text" xml:space="preserve">
+    <value>Overlay starting position</value>
+  </data>
+  <data name="chkEnableMovement.Text" xml:space="preserve">
+    <value>Enable overlay movement</value>
+  </data>
+  <data name="grpMovement.Text" xml:space="preserve">
+    <value>Movement Settings</value>
+  </data>
+  <data name="lblDirection.Text" xml:space="preserve">
+    <value>Direction:</value>
+  </data>
+  <data name="lblStepPixels.Text" xml:space="preserve">
+    <value>Pixels per step:</value>
+  </data>
+  <data name="lblMoveCount.Text" xml:space="preserve">
+    <value>Move count:</value>
+  </data>
+  <data name="chkInfiniteMovement.Text" xml:space="preserve">
+    <value>Infinite movement (match base GIF duration)</value>
+  </data>
 </root>
