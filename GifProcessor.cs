@@ -2867,10 +2867,20 @@ namespace GifProcessorApp
             MagickImageCollection overlayCollection, MagickImageCollection resultCollection,
             int offsetX, int offsetY, bool resampleBase, int baseWidth, int baseHeight)
         {
+            // Initialize progress bar
+            if (mainForm != null)
+            {
+                mainForm.pBarTaskStatus.Minimum = 0;
+                mainForm.pBarTaskStatus.Maximum = 100;
+                SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+            }
+
             if (resampleBase)
             {
                 var resampledBaseFrames = ResampleBaseFrames(baseCollection, overlayCollection);
                 int overlayCount = overlayCollection.Count;
+
+                SetStatusText(mainForm, $"Processing static overlay (resampled): 0/{overlayCount} frames");
 
                 for (int i = 0; i < overlayCount; i++)
                 {
@@ -2909,6 +2919,8 @@ namespace GifProcessorApp
             {
                 int baseCount = baseCollection.Count;
                 var overlayDelays = overlayCollection.Select(f => (int)f.AnimationDelay).ToArray();
+
+                SetStatusText(mainForm, $"Processing static overlay: 0/{baseCount} frames");
                 int overlayTotalDelay = overlayDelays.Sum();
                 int baseElapsed = 0;
 
@@ -3003,7 +3015,15 @@ namespace GifProcessorApp
             // Starting position is provided from Static Overlay Position coordinates
             // Movement will begin from these coordinates and proceed in the specified direction
 
-            SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Overlaying);
+            // Initialize progress bar
+            if (mainForm != null)
+            {
+                mainForm.pBarTaskStatus.Minimum = 0;
+                mainForm.pBarTaskStatus.Maximum = 100;
+                SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+            }
+
+            SetStatusText(mainForm, $"Processing moving overlay: 0/{totalFrames} frames");
 
             for (int frame = 0; frame < totalFrames; frame++)
             {

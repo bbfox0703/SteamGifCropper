@@ -67,9 +67,23 @@ namespace GifProcessorApp
         public OverlayGifDialog()
         {
             InitializeComponent();
-            UpdateUIText();
-            SetupEventHandlers();
-            WindowsThemeManager.ApplyThemeToControl(this, WindowsThemeManager.IsDarkModeEnabled());
+
+            if (!DesignMode)
+            {
+                UpdateUIText();
+                SetupEventHandlers();
+                WindowsThemeManager.ApplyThemeToControl(this, WindowsThemeManager.IsDarkModeEnabled());
+            }
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            // Ensure UI text is updated when form loads (in case DesignMode blocked it in constructor)
+            if (!DesignMode)
+            {
+                UpdateUIText();
+            }
         }
 
         private void SetupEventHandlers()
@@ -118,7 +132,7 @@ namespace GifProcessorApp
             // Capture movement settings
             if (chkEnableMovement.Checked)
             {
-                MovementDirection = (ScrollDirection)cmbDirection.SelectedItem!;
+                MovementDirection = ((DirectionItem)cmbDirection.SelectedItem!).Value;
                 StepPixels = (int)numStepPixels.Value;
                 MoveCount = (int)numMoveCount.Value;
                 InfiniteMovement = chkInfiniteMovement.Checked;
@@ -132,6 +146,7 @@ namespace GifProcessorApp
         /// </summary>
         public void UpdateUIText()
         {
+            if (DesignMode) return;
             // File selection
             lblBase.Text = _resources.GetString("lblBase.Text") ?? "Base GIF:";
             btnBrowseBase.Text = _resources.GetString("btnBrowseBase.Text") ?? "Browse...";
@@ -161,17 +176,17 @@ namespace GifProcessorApp
             btnCancel.Text = _resources.GetString("btnCancel.Text") ?? "Cancel";
             Text = _resources.GetString("$this.Text") ?? "Overlay GIF with Movement";
 
-            // Populate direction combo box
+            // Populate direction combo box with localized text
             if (cmbDirection.Items.Count == 0)
             {
-                cmbDirection.Items.Add(ScrollDirection.Right);
-                cmbDirection.Items.Add(ScrollDirection.Left);
-                cmbDirection.Items.Add(ScrollDirection.Down);
-                cmbDirection.Items.Add(ScrollDirection.Up);
-                cmbDirection.Items.Add(ScrollDirection.LeftUp);
-                cmbDirection.Items.Add(ScrollDirection.LeftDown);
-                cmbDirection.Items.Add(ScrollDirection.RightUp);
-                cmbDirection.Items.Add(ScrollDirection.RightDown);
+                cmbDirection.Items.Add(new DirectionItem(ScrollDirection.Right, _resources.GetString("Direction_Right") ?? "Right"));
+                cmbDirection.Items.Add(new DirectionItem(ScrollDirection.Left, _resources.GetString("Direction_Left") ?? "Left"));
+                cmbDirection.Items.Add(new DirectionItem(ScrollDirection.Down, _resources.GetString("Direction_Down") ?? "Down"));
+                cmbDirection.Items.Add(new DirectionItem(ScrollDirection.Up, _resources.GetString("Direction_Up") ?? "Up"));
+                cmbDirection.Items.Add(new DirectionItem(ScrollDirection.LeftUp, _resources.GetString("Direction_LeftUp") ?? "Left Up"));
+                cmbDirection.Items.Add(new DirectionItem(ScrollDirection.LeftDown, _resources.GetString("Direction_LeftDown") ?? "Left Down"));
+                cmbDirection.Items.Add(new DirectionItem(ScrollDirection.RightUp, _resources.GetString("Direction_RightUp") ?? "Right Up"));
+                cmbDirection.Items.Add(new DirectionItem(ScrollDirection.RightDown, _resources.GetString("Direction_RightDown") ?? "Right Down"));
                 cmbDirection.SelectedIndex = 0; // Default to Right
             }
         }
@@ -590,5 +605,19 @@ namespace GifProcessorApp
             ResumeLayout(false);
             PerformLayout();
         }
+    }
+
+    public class DirectionItem
+    {
+        public ScrollDirection Value { get; }
+        public string DisplayText { get; }
+
+        public DirectionItem(ScrollDirection value, string displayText)
+        {
+            Value = value;
+            DisplayText = displayText;
+        }
+
+        public override string ToString() => DisplayText;
     }
 }

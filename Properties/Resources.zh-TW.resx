@@ -984,11 +984,6 @@ FFmpeg 輸出 (部分)：
   <data name="TransitionDialog_Cancel" xml:space="preserve">
     <value>取消</value>
   </data>
-  <data name="Mp4ToGif_Error_GPUFailed" xml:space="preserve">
-    <value>GPU 加速失敗。轉換將自動改用 CPU 處理。
-
-若 GPU 驅動程式過舊或未正確安裝 CUDA，這是正常情況。</value>
-  </data>
   <data name="ConcatenateDialog_OutputFile" xml:space="preserve">
     <value>輸出 GIF 檔案：</value>
   </data>
@@ -1072,5 +1067,100 @@ FFmpeg 輸出 (部分)：
   </data>
   <data name="chkInfiniteMovement.Text" xml:space="preserve">
     <value>無限移動（配合底圖播放時間）</value>
+  </data>
+  <data name="lblBase.Text" xml:space="preserve">
+    <value>底圖GIF：</value>
+  </data>
+  <data name="btnBrowseBase.Text" xml:space="preserve">
+    <value>瀏覽...</value>
+  </data>
+  <data name="lblOverlay.Text" xml:space="preserve">
+    <value>疊加圖GIF：</value>
+  </data>
+  <data name="btnBrowseOverlay.Text" xml:space="preserve">
+    <value>瀏覽...</value>
+  </data>
+  <data name="lblOutput.Text" xml:space="preserve">
+    <value>輸出GIF：</value>
+  </data>
+  <data name="btnBrowseOutput.Text" xml:space="preserve">
+    <value>瀏覽...</value>
+  </data>
+  <data name="chkResampleBase.Text" xml:space="preserve">
+    <value>將底圖重新取樣至疊加圖FPS</value>
+  </data>
+  <data name="lblStaticX.Text" xml:space="preserve">
+    <value>X：</value>
+  </data>
+  <data name="lblStaticY.Text" xml:space="preserve">
+    <value>Y：</value>
+  </data>
+  <data name="btnOK.Text" xml:space="preserve">
+    <value>確定</value>
+  </data>
+  <data name="btnCancel.Text" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>疊加圖GIF與移動</value>
+  </data>
+  <data name="GifInfoFormat" xml:space="preserve">
+    <value>{0}×{1}，{2} fps，{3} 幀</value>
+  </data>
+  <data name="Direction_Right" xml:space="preserve">
+    <value>右</value>
+  </data>
+  <data name="Direction_Left" xml:space="preserve">
+    <value>左</value>
+  </data>
+  <data name="Direction_Down" xml:space="preserve">
+    <value>下</value>
+  </data>
+  <data name="Direction_Up" xml:space="preserve">
+    <value>上</value>
+  </data>
+  <data name="Direction_LeftUp" xml:space="preserve">
+    <value>左上</value>
+  </data>
+  <data name="Direction_LeftDown" xml:space="preserve">
+    <value>左下</value>
+  </data>
+  <data name="Direction_RightUp" xml:space="preserve">
+    <value>右上</value>
+  </data>
+  <data name="Direction_RightDown" xml:space="preserve">
+    <value>右下</value>
+  </data>
+  <data name="TransitionDialog_Cancelling" xml:space="preserve">
+    <value>取消中...</value>
+  </data>
+  <data name="TransitionDialog_SelectTransitionType" xml:space="preserve">
+    <value>選擇轉場效果類型</value>
+  </data>
+  <data name="ConcatenateDialog_Preview" xml:space="preserve">
+    <value>預覽</value>
+  </data>
+  <data name="ConcatenateDialog_AutoUpdatePreview" xml:space="preserve">
+    <value>自動更新預覽</value>
+  </data>
+  <data name="ConcatenateDialog_NoPreviewAvailable" xml:space="preserve">
+    <value>沒有可用的預覽</value>
+  </data>
+  <data name="ConcatenateDialog_GeneratingPreview" xml:space="preserve">
+    <value>正在產生預覽...</value>
+  </data>
+  <data name="ConcatenateDialog_FrameInfo" xml:space="preserve">
+    <value>影格：{0}，總計：{1}</value>
+  </data>
+  <data name="ConcatenateDialog_PreviewError" xml:space="preserve">
+    <value>預覽錯誤：{0}</value>
+  </data>
+  <data name="ConcatenateDialog_FailedToGeneratePreview" xml:space="preserve">
+    <value>更新預覽失敗</value>
+  </data>
+  <data name="Mp4ToGif_Error_GPUFailed" xml:space="preserve">
+    <value>GPU 加速失敗。轉換將自動改用 CPU 處理。
+
+若 GPU 驅動程式過舊或未正確安裝 CUDA，這是正常情況。</value>
   </data>
 </root>
