@@ -24,25 +24,24 @@ Due to loading time differences, the five GIF animations might appear slightly o
 
 ## Features
 
-- **Check GIF width**: Best to use GIF files with **766px** width as source (also accepts **774px**).
-- **Automatic cropping**: Splits GIF animations into five parts based on preset X coordinate ranges.
-- **Height extension**: Each cropped part has its height increased by **100px**, with the added area set to transparent background.
-- **Transparent color setting**: Sets the bottom pixels of the added area as transparent color to ensure consistent transparency effects.
-- **Preserve animation playback speed**: Maintains GIF frame delay values to ensure output animation speed matches the original file.
-- **Automatic GIF data modification**: Changes the last byte to 0x21, and bytes 08 & 09 to the height value before adding 100px.
-- **Scale GIF files to 766px width**: Provides GIF width scaling functionality.
-- **Change GIF file last byte from 0x3B to 0x21**: Only processes if original is 0x3B.
-- **Change GIF file last byte from 0x21 to 0x3B**: Only processes if original is 0x21.
-- **Merge five GIFs into 766px width GIF**: Scales to approximately 153px equal width, then merges.
-- **Merge 2~5 GIFs into single GIF**: No width scaling, merged width equals sum of video widths. Note: Slow conversion speed.
-- **Reverse GIF playback**: Converts selected GIF animation to reverse time playback.
-- **Simple MP4 to GIF conversion**: Specify source file, start time and length, then convert. No options available.
-- **GIF overlay function**: Overlay one GIF onto another, merge and output to new GIF.
-- **Static image to scrolling GIF**: Convert static images like PNG files into scrolling GIFs.
-- **Adjust GIF size and FPS**: Specify new width, height and frames per second, re-output GIF.
-- **gifsicle post-processing support**: Program directly calls gifsicle.exe to optimize the split GIF files.
-- **Multi-language support**: Traditional Chinese, English, Japanese.
-- **Windows light/dark theme support**: Applied to most windows.
+
+- **Check GIF width** – accepts source GIFs with a width of **766px** (preferred) or **774px**.
+- **Automatic slicing** – splits a GIF into five parts and extends each slice with **100px** of transparent space while keeping frame delays intact.
+- **Transparent adjustments** – sets the added strip to the same transparent color and restores the original height bytes.
+- **Scale to 766px width** – resize any GIF to 766px wide with progress feedback.
+- **Tail byte utilities** – batch toggle the final byte between `0x3B`/`0x21` for multiple GIF files.
+- **Merge & split five GIFs** – resize inputs (~153px each), sync durations, build a shared palette, merge to 766px, then reslice into five showcase-ready parts.
+- **Merge 2–5 GIFs side by side** – compose inputs without resizing, with shared palette options and FPS mismatch warnings.
+- **Concatenate GIFs with transitions** – combine multiple GIFs into a single animation, unify FPS/dimensions/palette, and add optional fade/slide/zoom/dissolve transitions.
+- **Reverse playback** – generate a reversed copy of a GIF.
+- **MP4 → GIF conversion** – uses FFmpeg to convert a segment (custom start time and duration) into GIF format.
+- **Overlay GIFs** – position one GIF atop another to create composite animations.
+- **Scrolling animations** – create scrolling GIFs from still images or existing GIFs with direction, step size, auto-duration and loop options.
+- **Resize & change frame rate** – adjust width, height and FPS (FFmpeg-based when available) with optional aspect ratio lock.
+- **gifsicle support** – call `gifsicle.exe` for palette optimization, lossy compression and dithering.
+- **Resource limit awareness** – enforces Magick.NET memory/disk limits to avoid exhausting system resources.
+- **Multi-language & theming** – Traditional Chinese, English and Japanese UI with automatic light/dark theme support.
+
 
 ---
 
@@ -55,19 +54,34 @@ Due to loading time differences, the five GIF animations might appear slightly o
 - **gifsicle.exe external program**: Search for and download using keywords like "gifsicle for Windows" and configure; gifsicle.exe location must be included in the OS system environment variable **PATH**, otherwise it cannot be called.
 ---
 
-## Resource Limit Settings
 
-By default, the program limits ImageMagick resource usage to avoid excessive system resource consumption:
+## Resource Limits & FFmpeg Configuration
 
-- Memory limit: **4096 MB**
-- Disk temporary limit: **8192 MB**
+To avoid exhausting system resources the app applies conservative Magick.NET limits by default:
 
-These values can be overridden through the following methods:
+- Memory: **1024 MB**
+- Disk cache: **4096 MB**
 
-1. **Modify `SteamGifCropper.dll.config`, `App.config` (during development)**: Set `ResourceLimits.MemoryMB` and `ResourceLimits.DiskMB` in `<appSettings>`.
-2. **Command line arguments**: Add `--memory-limit=<MB>` or `--disk-limit=<MB>` when starting the program.
+You can override these values in two ways:
 
-For example:
+1. **Edit `App.config`** – set `ResourceLimits.MemoryMB` and `ResourceLimits.DiskMB` under `<appSettings>`.
+2. **Command-line arguments** – launch with `--memory-limit=<MB>` and/or `--disk-limit=<MB>`.
+
+Example:
+
+```
+SteamGifCropper.exe --memory-limit=2048 --disk-limit=8192
+```
+
+Additional FFmpeg behaviour can also be tuned via `App.config`:
+
+- `FFmpeg.TimeoutSeconds` – per-run timeout in seconds (default: 300).
+- `FFmpeg.Threads` – force a thread count (`0` = FFmpeg default).
+
+---
+
+## Installation & Usage
+
 
 ```
 SteamGifCropper.exe --memory-limit=2048 --disk-limit=8192
@@ -93,12 +107,28 @@ You can also adjust FFmpeg behavior through `SteamGifCropper.dll.config`, `App.c
   ```
 Single files must not exceed 5MB, otherwise they cannot be uploaded to Steam. If a single file exceeds 5MB, you can adjust the source GIF or use other tools like EZGif to individually adjust that split file, but remember to modify the file tail byte at the end.
 
-### GIF Overlay Function
-1. Click the **Overlay GIF** button and select the base GIF to process.
-2. Select the GIF file to overlay and set the X/Y position.
-3. Confirm to merge both into a new GIF.
 
-> Note: Overlaying high-resolution or large GIFs may consume significant memory depending on settings.
+### Merging 2–5 GIFs
+A basic merging function that keeps the original width. It builds a shared palette (with an optional faster mode) and warns when FPS differs noticeably between sources.
+
+### Merging five GIFs into one 766px GIF
+Resizes each GIF to ~153px, synchronizes duration, merges to a 766px preview GIF, and splits the result back into five showcase-ready slices in the source folder.
+
+### Concatenating GIFs with transitions
+1. Click **Concatenate GIFs** and pick at least two GIF files.
+2. Choose how to unify FPS, dimensions and palette (auto, reference GIF, or custom options).
+3. Select a transition style (none, fade, slide, zoom or dissolve), direction/type, and duration.
+4. Decide whether to use the faster palette builder or run gifsicle optimization after export.
+
+The tool creates a single GIF stitched in sequence and honours the configured resource limits.
+
+---
+
+### Scrolling GIFs
+- **Scroll static image** – turn a still image (PNG, JPG, etc.) into a scrolling animation with custom direction, step size, loop count and optional full-cycle padding.
+- **Scroll animated GIF** – reuse the same options, allow GIF inputs, and automatically estimate a full-cycle duration when enabled.
+
+Both options can run gifsicle optimization when the main window checkbox is enabled.
 
 ---
 

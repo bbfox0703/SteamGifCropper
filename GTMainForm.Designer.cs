@@ -398,7 +398,7 @@
             // 
             // btnReverseGIF
             // 
-            btnReverseGIF.Location = new System.Drawing.Point(312, 126);
+            btnReverseGIF.Location = new System.Drawing.Point(313, 95);
             btnReverseGIF.Name = "btnReverseGIF";
             btnReverseGIF.Size = new System.Drawing.Size(300, 26);
             btnReverseGIF.TabIndex = 7;
@@ -445,7 +445,7 @@
             // 
             // btnScrollStaticImage
             // 
-            btnScrollStaticImage.Location = new System.Drawing.Point(313, 95);
+            btnScrollStaticImage.Location = new System.Drawing.Point(312, 126);
             btnScrollStaticImage.Name = "btnScrollStaticImage";
             btnScrollStaticImage.Size = new System.Drawing.Size(300, 26);
             btnScrollStaticImage.TabIndex = 5;
