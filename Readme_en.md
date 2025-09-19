@@ -9,23 +9,21 @@ SteamGifCropper is a small tool made for the **Steam Workshop showcase**. It cro
 ## Features
 
 - **Check GIF width** – accepts source GIFs with a width of **766px** (preferred) or **774px**.
-- **Automatic slicing** – splits a GIF into five parts based on preset X ranges.
-- **Height extension** – adds **100px** transparent space to the bottom of each slice.
-- **Transparent color** – uses the bottom pixel as the transparent color for the added area.
-- **Preserve frame delay** – keeps the original animation speed.
-- **Modify GIF bytes** – adjusts the last byte and restores original height values.
-- **Scale to 766px width** – optional resizing utility.
-- **Toggle last byte 0x3B / 0x21** – quick byte modification helpers.
-- **Merge five GIFs into one** – scales to ~153px width and stitches them together.
-- **Merge 2–5 GIFs into one** – merges without scaling; width equals the sum of inputs. Slow for large files.
-- **Reverse playback** – creates a reversed version of a GIF.
-- **Simple MP4 → GIF** – specify source file, start time and duration.
-- **Overlay GIFs** – stack one GIF on top of another at a chosen position.
-- **Scrolling GIF from a static image** – turn a still image (e.g., PNG) into a scrolling GIF.
-- **Resize & change frame rate** – set a new width, height and FPS for a GIF.
-- **gifsicle support** – calls `gifsicle.exe` for post processing/optimization.
-- **Multi-language support** – Traditional Chinese, English, Japanese.
-- **Windows light/dark theme** – most dialogs follow the system theme.
+- **Automatic slicing** – splits a GIF into five parts and extends each slice with **100px** of transparent space while keeping frame delays intact.
+- **Transparent adjustments** – sets the added strip to the same transparent color and restores the original height bytes.
+- **Scale to 766px width** – resize any GIF to 766px wide with progress feedback.
+- **Tail byte utilities** – batch toggle the final byte between `0x3B`/`0x21` for multiple GIF files.
+- **Merge & split five GIFs** – resize inputs (~153px each), sync durations, build a shared palette, merge to 766px, then reslice into five showcase-ready parts.
+- **Merge 2–5 GIFs side by side** – compose inputs without resizing, with shared palette options and FPS mismatch warnings.
+- **Concatenate GIFs with transitions** – combine multiple GIFs into a single animation, unify FPS/dimensions/palette, and add optional fade/slide/zoom/dissolve transitions.
+- **Reverse playback** – generate a reversed copy of a GIF.
+- **MP4 → GIF conversion** – uses FFmpeg to convert a segment (custom start time and duration) into GIF format.
+- **Overlay GIFs** – position one GIF atop another to create composite animations.
+- **Scrolling animations** – create scrolling GIFs from still images or existing GIFs with direction, step size, auto-duration and loop options.
+- **Resize & change frame rate** – adjust width, height and FPS (FFmpeg-based when available) with optional aspect ratio lock.
+- **gifsicle support** – call `gifsicle.exe` for palette optimization, lossy compression and dithering.
+- **Resource limit awareness** – enforces Magick.NET memory/disk limits to avoid exhausting system resources.
+- **Multi-language & theming** – Traditional Chinese, English and Japanese UI with automatic light/dark theme support.
 
 ---
 
@@ -36,6 +34,31 @@ SteamGifCropper is a small tool made for the **Steam Workshop showcase**. It cro
 - **Library**: Magick.NET (included with the zip)
 - **FFMPEG**: must be installed and on the `PATH` when using MP4 features.
 - **gifsicle.exe**: download separately and ensure it is on the `PATH`.
+
+---
+
+## Resource Limits & FFmpeg Configuration
+
+To avoid exhausting system resources the app applies conservative Magick.NET limits by default:
+
+- Memory: **1024 MB**
+- Disk cache: **4096 MB**
+
+You can override these values in two ways:
+
+1. **Edit `App.config`** – set `ResourceLimits.MemoryMB` and `ResourceLimits.DiskMB` under `<appSettings>`.
+2. **Command-line arguments** – launch with `--memory-limit=<MB>` and/or `--disk-limit=<MB>`.
+
+Example:
+
+```
+SteamGifCropper.exe --memory-limit=2048 --disk-limit=8192
+```
+
+Additional FFmpeg behaviour can also be tuned via `App.config`:
+
+- `FFmpeg.TimeoutSeconds` – per-run timeout in seconds (default: 300).
+- `FFmpeg.Threads` – force a thread count (`0` = FFmpeg default).
 
 ---
 
@@ -64,10 +87,26 @@ The dialog is localized (English, Traditional Chinese, Japanese) and works with 
 **Note:** Overlaying large or high-resolution GIFs can consume a lot of memory.
 
 ### Merging 2–5 GIFs
-A basic merging function that keeps the original width. It is not memory efficient and may be slow.
+A basic merging function that keeps the original width. It builds a shared palette (with an optional faster mode) and warns when FPS differs noticeably between sources.
 
 ### Merging five GIFs into one 766px GIF
-Scales each GIF to ~153px width before merging. Intended for preview purposes.
+Resizes each GIF to ~153px, synchronizes duration, merges to a 766px preview GIF, and splits the result back into five showcase-ready slices in the source folder.
+
+### Concatenating GIFs with transitions
+1. Click **Concatenate GIFs** and pick at least two GIF files.
+2. Choose how to unify FPS, dimensions and palette (auto, reference GIF, or custom options).
+3. Select a transition style (none, fade, slide, zoom or dissolve), direction/type, and duration.
+4. Decide whether to use the faster palette builder or run gifsicle optimization after export.
+
+The tool creates a single GIF stitched in sequence and honours the configured resource limits.
+
+---
+
+### Scrolling GIFs
+- **Scroll static image** – turn a still image (PNG, JPG, etc.) into a scrolling animation with custom direction, step size, loop count and optional full-cycle padding.
+- **Scroll animated GIF** – reuse the same options, allow GIF inputs, and automatically estimate a full-cycle duration when enabled.
+
+Both options can run gifsicle optimization when the main window checkbox is enabled.
 
 ---
 
