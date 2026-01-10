@@ -51,9 +51,10 @@ namespace GifProcessorApp
                     return result;
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // Ignore and use default
+                // Log configuration read error but use default value
+                System.Diagnostics.Debug.WriteLine($"Failed to read app setting '{key}': {ex.Message}");
             }
             return defaultValue;
         }
@@ -260,21 +261,31 @@ namespace GifProcessorApp
                             SetStatusText(mainForm, string.Format("Splitting part {0}/5 - Frame {1}/{2}", i + 1, (currentFrame % collection.Count) + 1, collection.Count));
                         }
 
-                        var newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight);
-
-                        var cropGeometry = new MagickGeometry(ranges[i].Start, 0, (uint)copyWidth, (uint)canvasHeight);
-                        using (var croppedFrame = frame.Clone())
+                        MagickImage? newImage = null;
+                        try
                         {
-                            croppedFrame.Crop(cropGeometry);
-                            croppedFrame.ResetPage();
-                            newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
+                            newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight);
+
+                            var cropGeometry = new MagickGeometry(ranges[i].Start, 0, (uint)copyWidth, (uint)canvasHeight);
+                            using (var croppedFrame = frame.Clone())
+                            {
+                                croppedFrame.Crop(cropGeometry);
+                                croppedFrame.ResetPage();
+                                newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
+                            }
+
+                            newImage.AnimationDelay = (uint)recalculatedDelays[frameIndex];
+                            newImage.AnimationTicksPerSecond = ticksPerSecond;
+                            newImage.GifDisposeMethod = GifDisposeMethod.Background;
+
+                            partCollection.Add(newImage);
+                            newImage = null; // Ownership transferred to collection
                         }
-
-                        newImage.AnimationDelay = (uint)recalculatedDelays[frameIndex];
-                        newImage.AnimationTicksPerSecond = ticksPerSecond;
-                        newImage.GifDisposeMethod = GifDisposeMethod.Background;
-
-                        partCollection.Add(newImage);
+                        finally
+                        {
+                            // Dispose only if not added to collection
+                            newImage?.Dispose();
+                        }
 
                         currentFrame++;
                         UpdateFrameProgress(mainForm, currentFrame, totalFrames);
@@ -376,6 +387,10 @@ namespace GifProcessorApp
                 }
             }
 
+            MagickImageCollection[]? collections = null;
+            MagickImageCollection[]? resizedCollections = null;
+            MagickImageCollection[]? syncedCollections = null;
+
             try
             {
                 mainForm.pBarTaskStatus.Minimum = 0;
@@ -384,17 +399,17 @@ namespace GifProcessorApp
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_ValidatingProcessing);
 
                 // Step 2: Load and validate all GIF files
-                var collections = LoadAndValidateGifs(gifFiles.ToArray(), mainForm);
+                collections = LoadAndValidateGifs(gifFiles.ToArray(), mainForm);
                 if (collections == null) return;
 
                 SetProgressBar(mainForm.pBarTaskStatus, 20, 100);
 
                 // Step 3: Resize GIFs to specific widths (153, 153, 154, 153, 153)
-                var resizedCollections = ResizeGifsToSpecificWidths(collections, mainForm);
+                resizedCollections = ResizeGifsToSpecificWidths(collections, mainForm);
                 SetProgressBar(mainForm.pBarTaskStatus, 40, 100);
 
                 // Step 4: Synchronize to shortest duration
-                var syncedCollections = SynchronizeToShortestDuration(resizedCollections, mainForm);
+                syncedCollections = SynchronizeToShortestDuration(resizedCollections, mainForm);
                 SetProgressBar(mainForm.pBarTaskStatus, 60, 100);
 
                 // Step 5: Merge horizontally to create 766px wide GIF
@@ -420,12 +435,6 @@ namespace GifProcessorApp
                     SteamGifCropper.Properties.Resources.Message_FiveGifMergeComplete,
                     SteamGifCropper.Properties.Resources.Title_Success,
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                // Dispose collections
-                foreach (var collection in syncedCollections)
-                {
-                    collection.Dispose();
-                }
             }
             catch (Exception ex)
             {
@@ -433,6 +442,37 @@ namespace GifProcessorApp
                 WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
                     string.Format(SteamGifCropper.Properties.Resources.Error_Processing, ex.Message),
                     SteamGifCropper.Properties.Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                // Dispose all collections to prevent memory leaks
+                // Note: collections, resizedCollections, and syncedCollections are different objects
+                if (collections != null)
+                {
+                    foreach (var collection in collections)
+                    {
+                        try { collection?.Dispose(); }
+                        catch { /* Log disposal error */ }
+                    }
+                }
+
+                if (resizedCollections != null)
+                {
+                    foreach (var collection in resizedCollections)
+                    {
+                        try { collection?.Dispose(); }
+                        catch { /* Log disposal error */ }
+                    }
+                }
+
+                if (syncedCollections != null)
+                {
+                    foreach (var collection in syncedCollections)
+                    {
+                        try { collection?.Dispose(); }
+                        catch { /* Log disposal error */ }
+                    }
+                }
             }
         }
 
@@ -1765,28 +1805,27 @@ namespace GifProcessorApp
         private static async Task ProcessWithOptimizedCpu(string inputPath, string outputPath, TimeSpan startTime, TimeSpan duration, int targetFramerate = 25)
         {
             // Use direct file input/output instead of pipes for better compatibility
-            var token = CreateFfmpegCancellationToken();
-            
             try
             {
+                var token = CreateFfmpegCancellationToken();
                 await FFMpegArguments
                     .FromFileInput(inputPath)
                     .OutputToFile(outputPath, true, options =>
                     {
                         options.ForceFormat("gif");
-                        
+
                         // Only apply seek if startTime is greater than 0
                         if (startTime > TimeSpan.Zero)
                         {
                             options.Seek(startTime);
                         }
-                        
+
                         // Only apply duration if it's reasonable (not too short)
                         if (duration > TimeSpan.FromSeconds(0.1))
                         {
                             options.WithDuration(duration);
                         }
-                        
+
                         options.WithFramerate(targetFramerate)
                                .WithCustomArgument("-pix_fmt rgb8")
                                .WithCustomArgument("-an");
@@ -1795,12 +1834,14 @@ namespace GifProcessorApp
                     .CancellableThrough(token)
                     .ProcessAsynchronously();
             }
-            catch (FFMpegException ex) when (ex.FFMpegErrorOutput?.Contains("partial file") == true || 
+            catch (FFMpegException ex) when (ex.FFMpegErrorOutput?.Contains("partial file") == true ||
                                            ex.FFMpegErrorOutput?.Contains("Invalid argument") == true ||
                                            ex.FFMpegErrorOutput?.Contains("Error during demuxing") == true)
             {
                 // Retry without seek and duration parameters if file reading fails
                 // This handles cases where the video file format or codec has issues with seeking
+                // Create a new CancellationToken for the retry attempt
+                var retryToken = CreateFfmpegCancellationToken();
                 await FFMpegArguments
                     .FromFileInput(inputPath)
                     .OutputToFile(outputPath, true, options =>
@@ -1812,7 +1853,7 @@ namespace GifProcessorApp
                                .WithCustomArgument("-avoid_negative_ts make_zero"); // Handle timing issues
                         ApplyThreadLimit(options);
                     })
-                    .CancellableThrough(token)
+                    .CancellableThrough(retryToken)
                     .ProcessAsynchronously();
             }
         }
@@ -1823,8 +1864,8 @@ namespace GifProcessorApp
             {
                 // First, try to find FFmpeg in PATH
                 string ffmpegPath = "ffmpeg"; // Will use PATH lookup
-                
-                var process = new Process
+
+                using var process = new Process
                 {
                     StartInfo = new ProcessStartInfo
                     {
@@ -1836,19 +1877,27 @@ namespace GifProcessorApp
                         CreateNoWindow = true
                     }
                 };
-                
+
                 process.Start();
                 string output = process.StandardOutput.ReadToEnd();
                 string error = process.StandardError.ReadToEnd();
-                
+
                 bool finished = process.WaitForExit(5000); // Wait max 5 seconds
-                
+
                 if (!finished)
                 {
-                    try { process.Kill(); } catch { }
+                    try
+                    {
+                        process.Kill();
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log process kill failure but don't throw
+                        System.Diagnostics.Debug.WriteLine($"Failed to kill FFmpeg process: {ex.Message}");
+                    }
                     return (false, ffmpegPath, null, "FFmpeg process timed out");
                 }
-                
+
                 if (process.ExitCode == 0 && (output.Contains("ffmpeg version") || output.Contains("configuration:")))
                 {
                     // Extract version from output
@@ -1858,7 +1907,7 @@ namespace GifProcessorApp
                     {
                         version = lines[0].Trim();
                     }
-                    
+
                     return (true, ffmpegPath, version, null);
                 }
                 else
@@ -3223,6 +3272,9 @@ namespace GifProcessorApp
                 }
             }
 
+            var gifCollections = new List<MagickImageCollection>();
+            MagickImageCollection? result = null;
+
             try
             {
                 mainForm.pBarTaskStatus.Minimum = 0;
@@ -3231,13 +3283,22 @@ namespace GifProcessorApp
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Loading);
 
                 // Step 1: Load all GIF files
-                var gifCollections = new List<MagickImageCollection>();
                 for (int i = 0; i < settings.GifFilePaths.Count; i++)
                 {
-                    var collection = new MagickImageCollection(settings.GifFilePaths[i]);
-                    collection.Coalesce();
-                    gifCollections.Add(collection);
-                    
+                    MagickImageCollection? collection = null;
+                    try
+                    {
+                        collection = new MagickImageCollection(settings.GifFilePaths[i]);
+                        collection.Coalesce();
+                        gifCollections.Add(collection);
+                        collection = null; // Ownership transferred to list
+                    }
+                    finally
+                    {
+                        // Dispose only if not added to list
+                        collection?.Dispose();
+                    }
+
                     SetProgressBar(mainForm.pBarTaskStatus, (i + 1) * 10 / settings.GifFilePaths.Count, 100);
                 }
 
@@ -3281,7 +3342,7 @@ namespace GifProcessorApp
                     SetStatusText(mainForm, report.status);
                 });
                 
-                var result = await ConcatenateGifCollectionsWithTransitions(gifCollections, settings, analysis.MaxFps, transitionProgress);
+                result = await ConcatenateGifCollectionsWithTransitions(gifCollections, settings, analysis.MaxFps, transitionProgress);
                 SetProgressBar(mainForm.pBarTaskStatus, 90, 100);
 
                 // Step 8: Save result
@@ -3310,21 +3371,26 @@ namespace GifProcessorApp
                     string.Format("GIF concatenation completed successfully!\nSaved as: {0}", settings.OutputFilePath),
                     SteamGifCropper.Properties.Resources.Title_Success,
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                // Cleanup
-                foreach (var collection in gifCollections)
-                {
-                    collection.Dispose();
-                }
-                result.Dispose();
             }
             catch (Exception ex)
             {
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Error);
                 WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
                     string.Format(SteamGifCropper.Properties.Resources.Error_Processing, ex.Message),
-                    SteamGifCropper.Properties.Resources.Title_Error, 
+                    SteamGifCropper.Properties.Resources.Title_Error,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                // Cleanup all collections and result to prevent memory leaks
+                foreach (var collection in gifCollections)
+                {
+                    try { collection?.Dispose(); }
+                    catch { /* Log disposal error */ }
+                }
+
+                try { result?.Dispose(); }
+                catch { /* Log disposal error */ }
             }
         }
 

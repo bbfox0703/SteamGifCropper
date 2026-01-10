@@ -125,11 +125,24 @@ namespace GifProcessorApp
                     }
                 };
                 process.Start();
-                process.WaitForExit(1000);
+                bool finished = process.WaitForExit(1000);
+                if (!finished)
+                {
+                    try
+                    {
+                        process.Kill();
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Failed to kill FFmpeg check process: {ex.Message}");
+                    }
+                    return false;
+                }
                 return process.ExitCode == 0;
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"FFmpeg availability check failed: {ex.Message}");
                 return false;
             }
         }

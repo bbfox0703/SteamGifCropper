@@ -40,7 +40,11 @@ public class GifsicleWrapper
             {
                 gifsicleProcess.Kill(entireProcessTree: true);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                // Log process kill failure but continue with timeout exception
+                System.Diagnostics.Debug.WriteLine($"Failed to kill gifsicle process: {ex.Message}");
+            }
             throw new TimeoutException($"The process did not exit within {ProcessTimeout.TotalSeconds} seconds. Command: {startInfo.FileName} {startInfo.Arguments}");
         }
 
