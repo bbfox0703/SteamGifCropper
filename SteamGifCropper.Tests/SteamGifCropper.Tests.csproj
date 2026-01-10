@@ -23,7 +23,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.10.0" />
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.10.1" />
   </ItemGroup>
 
   <ItemGroup>
