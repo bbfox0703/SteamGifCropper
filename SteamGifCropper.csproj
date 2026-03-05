@@ -38,7 +38,7 @@
     <PackageReference Include="FFMpegCore" Version="5.4.0" />
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.10.3" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.3" />
-    <PackageReference Include="System.IO.Pipelines" Version="9.0.13" />
+    <PackageReference Include="System.IO.Pipelines" Version="10.0.3" />
     <PackageReference Include="System.Text.Encodings.Web" Version="10.0.3" />
   </ItemGroup>
 
