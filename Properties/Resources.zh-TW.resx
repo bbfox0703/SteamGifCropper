@@ -1163,4 +1163,13 @@ FFmpeg 輸出 (部分)：
 
 若 GPU 驅動程式過舊或未正確安裝 CUDA，這是正常情況。</value>
   </data>
+  <data name="Error_InvalidFileFormat" xml:space="preserve">
+    <value>檔案 "{0}" 不是有效的圖片檔案。預期格式：{1}</value>
+  </data>
+  <data name="Error_FileNotFound" xml:space="preserve">
+    <value>找不到檔案：{0}</value>
+  </data>
+  <data name="Error_FileTooLarge" xml:space="preserve">
+    <value>檔案 "{0}" 超過允許的最大檔案大小 {1} MB。</value>
+  </data>
 </root>
