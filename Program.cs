@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Threading;
 using System.Windows.Forms;
 using ImageMagick;
+using ImageMagick.Configuration;
 
 namespace GifProcessorApp
 {
@@ -15,6 +16,9 @@ namespace GifProcessorApp
         {
             try
             {
+                // Initialize ImageMagick with security policy (must be called before any other Magick.NET usage)
+                ConfigureImageMagickPolicy();
+
                 // Configure ImageMagick resource limits, allowing overrides via config or command line
                 ConfigureResourceLimits(args);
 
@@ -52,6 +56,22 @@ namespace GifProcessorApp
                                MessageBoxButtons.OK,
                                MessageBoxIcon.Error);
             }
+        }
+
+        /// <summary>
+        /// Configure ImageMagick security policy to only allow required image format coders.
+        /// This drastically reduces the attack surface by disabling 100+ unused format parsers
+        /// (SVG, PDF, PostScript, TIFF, EPS, etc.) that are the source of most ImageMagick CVEs.
+        /// </summary>
+        private static void ConfigureImageMagickPolicy()
+        {
+            var configFiles = ConfigurationFiles.Default;
+            configFiles.Policy.Data = @"<policymap>
+  <policy domain=""delegate"" rights=""none"" pattern=""*"" />
+  <policy domain=""coder"" rights=""none"" pattern=""*"" />
+  <policy domain=""coder"" rights=""read|write"" pattern=""{GIF,PNG,JPEG,BMP}"" />
+</policymap>";
+            MagickNET.Initialize(configFiles);
         }
 
         /// <summary>

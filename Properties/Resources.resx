@@ -1150,4 +1150,13 @@ Saved as: {0}</value>
   <data name="ConcatenateDialog_FailedToGeneratePreview" xml:space="preserve">
     <value>Preview update failed</value>
   </data>
+  <data name="Error_InvalidFileFormat" xml:space="preserve">
+    <value>The file "{0}" is not a valid image file. Expected format: {1}</value>
+  </data>
+  <data name="Error_FileNotFound" xml:space="preserve">
+    <value>File not found: {0}</value>
+  </data>
+  <data name="Error_FileTooLarge" xml:space="preserve">
+    <value>The file "{0}" exceeds the maximum allowed size of {1} MB.</value>
+  </data>
 </root>

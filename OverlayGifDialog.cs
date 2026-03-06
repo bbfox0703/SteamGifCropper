@@ -7,6 +7,7 @@ using System.Linq;
 using System.Resources;
 using System.Windows.Forms;
 using ImageMagick;
+using SteamGifCropper;
 using SteamGifCropper.Properties;
 
 namespace GifProcessorApp
@@ -213,6 +214,7 @@ namespace GifProcessorApp
                 txtBaseGif.Text = dialog.FileName;
                 try
                 {
+                    ImageInputValidator.ValidateGif(dialog.FileName);
                     using var collection = new MagickImageCollection(dialog.FileName);
                     int width = (int)collection[0].Width;
                     int height = (int)collection[0].Height;
@@ -250,6 +252,7 @@ namespace GifProcessorApp
                 txtOverlayGif.Text = dialog.FileName;
                 try
                 {
+                    ImageInputValidator.ValidateGif(dialog.FileName);
                     using var collection = new MagickImageCollection(dialog.FileName);
                     int width = (int)collection[0].Width;
                     int height = (int)collection[0].Height;

@@ -3,6 +3,7 @@ using FFMpegCore.Exceptions;
 using FFMpegCore.Pipes;
 using ImageMagick;
 using ImageMagick.Drawing;
+using SteamGifCropper;
 using SteamGifCropper.Properties;
 using System;
 using System.Collections.Generic;
@@ -173,6 +174,7 @@ namespace GifProcessorApp
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 string inputFilePath = openFileDialog.FileName;
+                ImageInputValidator.ValidateGif(inputFilePath);
                 SetStatusText(mainForm, "Split GIF...");
                 try
                 {
@@ -372,6 +374,8 @@ namespace GifProcessorApp
             {
                 return; // Invalid input
             }
+
+            ImageInputValidator.ValidateGifs(gifFiles);
 
             // Validate all source files exist
             foreach (string gifPath in gifFiles)
@@ -881,6 +885,7 @@ namespace GifProcessorApp
 
         public static void SplitGif(string inputFilePath, string outputDirectory)
         {
+            ImageInputValidator.ValidateGif(inputFilePath);
             using var collection = new MagickImageCollection(inputFilePath);
             collection.Coalesce();
             Application.DoEvents(); // Allow UI to respond after coalesce operation
@@ -953,6 +958,7 @@ namespace GifProcessorApp
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 string inputFilePath = openFileDialog.FileName;
+                ImageInputValidator.ValidateGif(inputFilePath);
 
                 try
                 {
@@ -1144,6 +1150,7 @@ namespace GifProcessorApp
         }
         public static void ResizeGifTo766(string inputFilePath, string outputFilePath, GifToolMainForm mainForm = null)
         {
+            ImageInputValidator.ValidateGif(inputFilePath);
             try
             {
                 using (var collection = new MagickImageCollection(inputFilePath))
@@ -1203,6 +1210,7 @@ namespace GifProcessorApp
                 if (openFileDialog.ShowDialog() != DialogResult.OK) return;
 
                 string inputFilePath = openFileDialog.FileName;
+                ImageInputValidator.ValidateGif(inputFilePath);
                 string outputFilePath = GenerateOutputPath(inputFilePath, "_766px");
 
                 mainForm.Enabled = false;
@@ -1254,6 +1262,7 @@ namespace GifProcessorApp
                 if (openFileDialog.ShowDialog() != DialogResult.OK) return;
 
                 string[] selectedFiles = openFileDialog.FileNames;
+                ImageInputValidator.ValidateGifs(selectedFiles);
                 int processedCount = 0;
                 int skippedCount = 0;
 
@@ -1367,6 +1376,7 @@ namespace GifProcessorApp
                 if (openFileDialog.ShowDialog() != DialogResult.OK) return;
 
                 string[] filePaths = openFileDialog.FileNames;
+                ImageInputValidator.ValidateGifs(filePaths);
                 int processedFiles = 0;
 
                 mainForm.Enabled = false;
@@ -1451,6 +1461,7 @@ namespace GifProcessorApp
 
             // Validate source files and destination path
             SetStatusText(mainForm, "Validate file paths...");
+            ImageInputValidator.ValidateGifs(gifPaths);
             foreach (string gifPath in gifPaths)
             {
                 if (!File.Exists(gifPath))
@@ -1932,6 +1943,7 @@ namespace GifProcessorApp
                 if (openFileDialog.ShowDialog() != DialogResult.OK) return;
 
                 string inputFilePath = openFileDialog.FileName;
+                ImageInputValidator.ValidateGif(inputFilePath);
                 string inputFileName = Path.GetFileNameWithoutExtension(inputFilePath);
                 string inputDirectory = Path.GetDirectoryName(inputFilePath);
                 string outputFilePath = Path.Combine(inputDirectory, $"{inputFileName}_reversed.gif");
@@ -2072,6 +2084,7 @@ namespace GifProcessorApp
         public static void ScrollStaticImage(string inputFilePath, string outputFilePath,
             ScrollDirection direction, int stepPixels, int durationSeconds, bool fullCycle, int moveCount, int targetFramerate = 15)
         {
+            ImageInputValidator.ValidateImage(inputFilePath);
             using var baseImage = new MagickImage(inputFilePath);
             int width = (int)baseImage.Width;
             int height = (int)baseImage.Height;
@@ -2178,6 +2191,7 @@ namespace GifProcessorApp
             ScrollDirection direction, int stepPixels, int durationSeconds, bool fullCycle, int moveCount, int targetFramerate,
             GifToolMainForm mainForm)
         {
+            ImageInputValidator.ValidateImage(inputFilePath);
             using var baseImage = new MagickImage(inputFilePath);
             int width = (int)baseImage.Width;
             int height = (int)baseImage.Height;
@@ -2313,6 +2327,7 @@ namespace GifProcessorApp
                 return;
 
             string inputPath = dialog.InputFilePath;
+            ImageInputValidator.ValidateImage(inputPath);
             string outputPath = dialog.OutputFilePath;
             ScrollDirection direction = dialog.Direction;
             int step = dialog.StepPixels;
@@ -2418,6 +2433,7 @@ namespace GifProcessorApp
                 return;
 
             string inputPath = dialog.InputFilePath;
+            ImageInputValidator.ValidateImage(inputPath);
             string outputPath = dialog.OutputFilePath;
             ScrollDirection direction = dialog.Direction;
             int step = dialog.StepPixels;
@@ -2516,6 +2532,7 @@ namespace GifProcessorApp
         public static void ScrollAnimatedGif(string inputFilePath, string outputFilePath,
             ScrollDirection direction, int stepPixels, int durationSeconds, bool fullCycle, int moveCount, int targetFramerate, GifToolMainForm mainForm, bool autoDuration = false)
         {
+            ImageInputValidator.ValidateGif(inputFilePath);
             // Memory usage estimation and validation
             var fileInfo = new FileInfo(inputFilePath);
             long fileSizeMB = fileInfo.Length / (1024 * 1024);
@@ -3167,6 +3184,8 @@ namespace GifProcessorApp
             string basePath = dialog.BaseGifPath;
             string overlayPath = dialog.OverlayGifPath;
             string outputPath = dialog.OutputGifPath;
+            ImageInputValidator.ValidateGif(basePath);
+            ImageInputValidator.ValidateGif(overlayPath);
             bool resampleBase = dialog.ResampleBaseFrames;
 
             try
@@ -3257,6 +3276,9 @@ namespace GifProcessorApp
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
+            // Validate all files are genuine GIFs
+            ImageInputValidator.ValidateGifs(settings.GifFilePaths);
 
             // Validate all files exist
             foreach (string filePath in settings.GifFilePaths)
