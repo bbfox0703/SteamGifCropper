@@ -2315,5 +2315,23 @@ namespace SteamGifCropper.Properties {
             }
         }
 
+        internal static string Error_InvalidFileFormat {
+            get {
+                return ResourceManager.GetString("Error_InvalidFileFormat", resourceCulture);
+            }
+        }
+
+        internal static string Error_FileNotFound {
+            get {
+                return ResourceManager.GetString("Error_FileNotFound", resourceCulture);
+            }
+        }
+
+        internal static string Error_FileTooLarge {
+            get {
+                return ResourceManager.GetString("Error_FileTooLarge", resourceCulture);
+            }
+        }
+
     }
 }

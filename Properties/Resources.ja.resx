@@ -1182,4 +1182,13 @@ FFmpeg 出力（切り捨て）:
   <data name="ConcatenateDialog_FailedToGeneratePreview" xml:space="preserve">
     <value>プレビューの生成に失敗しました。</value>
   </data>
+  <data name="Error_InvalidFileFormat" xml:space="preserve">
+    <value>ファイル "{0}" は有効な画像ファイルではありません。対応形式：{1}</value>
+  </data>
+  <data name="Error_FileNotFound" xml:space="preserve">
+    <value>ファイルが見つかりません：{0}</value>
+  </data>
+  <data name="Error_FileTooLarge" xml:space="preserve">
+    <value>ファイル "{0}" は最大許容サイズ {1} MB を超えています。</value>
+  </data>
 </root>

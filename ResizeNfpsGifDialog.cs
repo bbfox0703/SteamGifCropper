@@ -5,6 +5,7 @@ using System.Resources;
 using FFMpegCore;
 using FFMpegCore.Pipes;
 using ImageMagick;
+using SteamGifCropper;
 
 namespace GifProcessorApp
 {
@@ -70,6 +71,7 @@ namespace GifProcessorApp
                 txtGifPath.Text = dialog.FileName;
                 try
                 {
+                    ImageInputValidator.ValidateGif(dialog.FileName);
                     using var collection = new MagickImageCollection(dialog.FileName);
                     int width = (int)collection[0].Width;
                     int height = (int)collection[0].Height;
@@ -184,6 +186,7 @@ namespace GifProcessorApp
 
         private static void ConvertWithMagick(string input, string output, int width, int height, int fps)
         {
+            ImageInputValidator.ValidateGif(input);
             using var collection = new MagickImageCollection(input);
             foreach (var frame in collection)
             {
