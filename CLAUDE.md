@@ -4,10 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-SteamGifCropper is a .NET 8 Windows Forms application designed to process GIF files for Steam Workshop Personal Showcase. It provides extensive GIF manipulation capabilities including cropping, resizing, merging, concatenating, and applying effects.
+SteamGifCropper is a .NET 10 Windows Forms application designed to process GIF files for Steam Workshop Personal Showcase. It provides extensive GIF manipulation capabilities including cropping, resizing, merging, concatenating, and applying effects.
 
-**Target Platform:** Windows 10 1904+ with .NET 8 runtime
+**Target Platform:** Windows 10 1904+ with .NET 10 runtime (x64)
 **Primary Language:** C# (ImplicitUsings disabled, Nullable disabled)
+**Root Namespace:** `GifProcessorApp` (legacy — the assembly name is `SteamGifCropper` but all source files declare `namespace GifProcessorApp`; `ImageInputValidator.cs` is the lone exception, declaring `namespace SteamGifCropper`)
 **Main Dependencies:** Magick.NET-Q8 (ImageMagick), FFMpegCore
 **External Tools:** FFmpeg (optional, must be in PATH), gifsicle (optional, must be in PATH)
 
@@ -36,26 +37,30 @@ dotnet run --project SteamGifCropper.csproj -- --memory-limit=2048 --disk-limit=
 ```
 
 ### Testing
-```bash
-# Run all tests
-dotnet test SteamGifCropper.Tests/SteamGifCropper.Tests.csproj
+```powershell
+# Build the test project
+dotnet build SteamGifCropper.Tests/SteamGifCropper.Tests.csproj
 
-# Run tests with detailed output
-dotnet test SteamGifCropper.Tests/SteamGifCropper.Tests.csproj -v n
+# Run all tests via the xUnit v3 embedded runner
+& .\SteamGifCropper.Tests\bin\Debug\net10.0-windows\SteamGifCropper.Tests.exe
 
-# Run a specific test class
-dotnet test --filter FullyQualifiedName~GifProcessorTests
+# Filter by class or method (xUnit v3 runner syntax)
+& .\SteamGifCropper.Tests\bin\Debug\net10.0-windows\SteamGifCropper.Tests.exe -class GifProcessorTests
 
-# Run tests with coverage
-dotnet test /p:CollectCoverage=true
+# Machine-readable output (useful from scripts/CI)
+& .\SteamGifCropper.Tests\bin\Debug\net10.0-windows\SteamGifCropper.Tests.exe -automated
 ```
 
-**Test Framework:** xUnit
-**Test Project:** `SteamGifCropper.Tests/` uses file linking to include classes under test
+> **Note:** `dotnet test` against this project on the .NET 10 SDK currently emits
+> `Testing with VSTest target is no longer supported by Microsoft.Testing.Platform on .NET 10 SDK and later`.
+> Invoking the produced `.exe` directly is the supported path until the test runner config is migrated.
+
+**Test Framework:** xUnit v3 on Microsoft.Testing.Platform
+**Test Project:** `SteamGifCropper.Tests/` uses file linking (`<Compile Include="..\src\Core\*.cs">`) to include classes under test
 
 ## Architecture Overview
 
-### Entry Point and Initialization (`Program.cs`)
+### Entry Point and Initialization (`src/Program.cs`)
 
 The application follows a specific initialization sequence:
 
@@ -70,14 +75,14 @@ The application follows a specific initialization sequence:
 3. **Localization** - Auto-detects OS language and sets `CultureInfo`
    - Supported: English (default), Traditional Chinese (zh-TW), Japanese (ja)
 
-4. **Modern UI Setup** - Configures .NET 8 Windows Forms high DPI support and theming
+4. **Modern UI Setup** - Configures .NET 10 Windows Forms high DPI support and theming (DPI mode set via `<ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>` in the csproj, not in `app.manifest`)
 
 5. **Launch Main Form** - `GifToolMainForm` is the central UI hub
 
 ### Core Components
 
 #### GifProcessor (Static Processing Engine)
-- **Location:** `GifProcessor.cs` (~3200+ lines)
+- **Location:** `src/Core/GifProcessor.cs` (~3200+ lines)
 - **Pattern:** Static class - all methods accept `GifToolMainForm` parameter for UI updates
 - **Responsibilities:**
   - All GIF manipulation operations (crop, resize, merge, concatenate, overlay, scroll, etc.)
@@ -91,7 +96,7 @@ The application follows a specific initialization sequence:
   - Palette optimization and quantization
 
 #### GifToolMainForm (Main UI)
-- **Location:** `GTMainForm.cs`
+- **Location:** `src/Forms/GTMainForm.cs`
 - **Responsibilities:**
   - Central hub for all GIF processing operations
   - Manages UI state, progress bars, status text
@@ -148,7 +153,7 @@ GifProcessor → MagickImageCollection → MagickImage (per frame)
 
 ### Gifsicle Integration
 
-**Wrapper:** `GifsicleWrapper.cs` - Clean, testable wrapper with dependency injection
+**Wrapper:** `src/Core/GifsicleWrapper.cs` - Clean, testable wrapper with dependency injection
 
 **Features:**
 - Colors: 1-256 palette reduction
@@ -177,7 +182,7 @@ GifProcessor → MagickImageCollection → MagickImage (per frame)
 
 **Access Pattern:** Uses `ConfigurationManager.AppSettings[key]` with safe parsing and fallback defaults
 
-**DPI Settings:** Configured in `System.Windows.Forms.ApplicationConfigurationSection` for PerMonitorV2 support
+**DPI Settings:** Set via `<ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>` in `SteamGifCropper.csproj`. Do NOT add `<dpiAware>`/`<dpiAwareness>` back into `app.manifest` — duplicating DPI settings triggers warning `WFO0003`.
 
 ### Multi-Language Support
 
@@ -199,7 +204,7 @@ GifProcessor → MagickImageCollection → MagickImage (per frame)
 
 ### Theme Support
 
-**Implementation:** `WindowsThemeManager.cs`
+**Implementation:** `src/Platform/WindowsThemeManager.cs`
 
 **Features:**
 - Registry-based detection of Windows dark mode preference
@@ -277,24 +282,49 @@ IProgress<(int current, int total, string status)>
 
 ```
 SteamGifCropper/
-├── Program.cs                     # Entry point & initialization
-├── GTMainForm.cs                  # Main UI form
-├── GifProcessor.cs                # Core processing engine (3200+ lines)
-├── GifsicleWrapper.cs            # Gifsicle integration
-├── TransitionGenerator.cs         # Transition effects
-├── WindowsThemeManager.cs         # Theme support
-├── GifWriteDefines.cs            # Custom GIF write settings
-├── [7 Dialog Files]              # Specialized operation dialogs
-├── App.config                     # Application configuration
-├── Properties/                    # Resources and settings
-│   ├── Resources.resx            # English strings
-│   ├── Resources.zh-TW.resx      # Traditional Chinese
-│   └── Resources.ja.resx         # Japanese
-└── SteamGifCropper.Tests/        # xUnit test project
+├── src/
+│   ├── Program.cs                          # Entry point & initialization
+│   ├── Core/                               # Processing engine & settings types
+│   │   ├── GifProcessor.cs                 # Core processing engine (3200+ lines)
+│   │   ├── GifsicleWrapper.cs              # Gifsicle integration
+│   │   ├── GifWriteDefines.cs              # Custom GIF write settings
+│   │   ├── GifConcatenationSettings.cs
+│   │   ├── TransitionGenerator.cs          # Transition effects
+│   │   ├── ImageInputValidator.cs
+│   │   └── ScrollDirection.cs
+│   ├── Forms/
+│   │   ├── GTMainForm.cs                   # Main UI form
+│   │   ├── GTMainForm.Designer.cs
+│   │   └── GTMainForm.resx
+│   ├── Dialogs/                            # 7 operation dialogs (.cs / .Designer.cs / .resx)
+│   │   ├── ConcatenateGifsDialog.*
+│   │   ├── MergeGifsDialog.*
+│   │   ├── MergeFiveGifsDialog.*
+│   │   ├── Mp4ToGifDialog.*
+│   │   ├── OverlayGifDialog.*              # has .ja.resx and .zh-TW.resx
+│   │   ├── ResizeNfpsGifDialog.*
+│   │   └── ScrollStaticImageDialog.*
+│   └── Platform/                           # Windows integration
+│       ├── WindowsThemeManager.cs
+│       └── RegistryProvider.cs
+├── Properties/                             # Default-culture resources
+│   ├── Resources.resx                      # English strings
+│   ├── Resources.zh-TW.resx                # Traditional Chinese
+│   └── Resources.ja.resx                   # Japanese
+├── Resources/                              # ResizeNfpsGifDialog localization resx
+├── docs/                                   # Internal docs (e.g. LargeGifMemoryUsage.md)
+├── res/                                    # Sample/screenshot assets for README
+├── App.config                              # Application configuration
+├── app.manifest                            # Win32 manifest (no DPI here — see csproj)
+├── SteamGifCropper.csproj
+├── SteamGifCropper.sln
+└── SteamGifCropper.Tests/                  # xUnit v3 test project
     ├── GifProcessorTests.cs
     ├── GifsicleWrapperTests.cs
-    └── TestData/                 # Test GIF files
+    └── TestData/                           # Test GIF files
 ```
+
+**Note on resource manifest names:** because most form .cs files still declare `namespace GifProcessorApp`, MSBuild's default resource-name computation produces names like `GifProcessorApp.MergeGifsDialog.resources` (it reads the namespace from the `DependentUpon` .cs file). The orphan `src/Dialogs/OverlayPositionDialog.resx` has no companion .cs, so the csproj pins its manifest name explicitly via a `<LogicalName>` override to preserve the pre-reorg name (`SteamGifCropper.OverlayPositionDialog.resources`). Don't rename or delete that file without also removing the override.
 
 ## Development Notes
 
@@ -306,15 +336,17 @@ SteamGifCropper/
 
 ### Code Style
 - Static `GifProcessor` class for all processing operations
-- Flat namespace structure (all classes in `SteamGifCropper` namespace)
+- Flat namespace structure: virtually every file declares `namespace GifProcessorApp` (legacy — the assembly is named `SteamGifCropper`, and `Properties/Resources.Designer.cs` lives in `namespace SteamGifCropper.Properties`, which is why resource access uses `SteamGifCropper.Properties.Resources.{Name}`)
 - Extensive use of `async`/`await` for UI responsiveness
 - Resource strings for all user-facing text (localization)
+- `<Nullable>` is **disabled** in the csproj — do not introduce `T?` nullable reference annotations; they trigger CS8632
 
 ### Testing Approach
-- xUnit framework
+- xUnit v3 framework, running on Microsoft.Testing.Platform (`xunit.v3` package)
 - Test data in `SteamGifCropper.Tests/TestData/`
 - Stubs for main components (`GifProcessor.Stub.cs`, `GifToolMainForm.Stub.cs`)
-- File linking from main project to avoid duplication
+- File linking from main project to avoid duplication — `<Compile Include="..\src\Core\*.cs">` etc. If you move a source file, update the test csproj include paths to match.
+- `dotnet test` against this project on .NET 10 SDK fails with the legacy VSTest target. Build the test assembly with `dotnet build` and invoke the produced `SteamGifCropper.Tests.exe` directly (it embeds an xUnit v3 runner — pass `-automated` for machine-readable output).
 
 ### External Dependencies
 - **Required:** Magick.NET-Q8 (included in release)

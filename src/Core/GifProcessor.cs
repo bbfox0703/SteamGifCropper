@@ -263,7 +263,7 @@ namespace GifProcessorApp
                             SetStatusText(mainForm, string.Format("Splitting part {0}/5 - Frame {1}/{2}", i + 1, (currentFrame % collection.Count) + 1, collection.Count));
                         }
 
-                        MagickImage? newImage = null;
+                        MagickImage newImage = null;
                         try
                         {
                             newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight);
@@ -391,9 +391,9 @@ namespace GifProcessorApp
                 }
             }
 
-            MagickImageCollection[]? collections = null;
-            MagickImageCollection[]? resizedCollections = null;
-            MagickImageCollection[]? syncedCollections = null;
+            MagickImageCollection[] collections = null;
+            MagickImageCollection[] resizedCollections = null;
+            MagickImageCollection[] syncedCollections = null;
 
             try
             {
@@ -3295,7 +3295,7 @@ namespace GifProcessorApp
             }
 
             var gifCollections = new List<MagickImageCollection>();
-            MagickImageCollection? result = null;
+            MagickImageCollection result = null;
 
             try
             {
@@ -3307,7 +3307,7 @@ namespace GifProcessorApp
                 // Step 1: Load all GIF files
                 for (int i = 0; i < settings.GifFilePaths.Count; i++)
                 {
-                    MagickImageCollection? collection = null;
+                    MagickImageCollection collection = null;
                     try
                     {
                         collection = new MagickImageCollection(settings.GifFilePaths[i]);
