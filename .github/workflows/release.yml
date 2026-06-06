@@ -1,0 +1,45 @@
+name: Release
+
+# 只要推送符合 v* 的 Tag(例如 v1.0.0、v2.3),就會自動建置、打包並把 zip 附到該 Release。
+on:
+  push:
+    tags:
+      - 'v*'
+
+# action-gh-release 需要寫入 Release 的權限
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore SteamGifCropper.csproj
+
+      # Self-contained 發佈:打包 .NET 10 runtime,使用者免裝 runtime 直接執行
+      - name: Publish (self-contained, win-x64)
+        run: dotnet publish SteamGifCropper.csproj -c Release -r win-x64 --self-contained true -o publish
+
+      - name: Package zip
+        shell: pwsh
+        run: |
+          $zip = "SteamGifCropper-${{ github.ref_name }}-win-x64-self-contained.zip"
+          Compress-Archive -Path publish\* -DestinationPath $zip -Force
+          "ASSET=$zip" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Create / update GitHub Release and upload asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.ASSET }}
+          fail_on_unmatched_files: true
+          generate_release_notes: true
