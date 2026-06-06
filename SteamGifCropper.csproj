@@ -77,6 +77,9 @@
     <EmbeddedResource Update="Resources\ResizeNfpsGifDialog.ja.resx">
       <Generator></Generator>
     </EmbeddedResource>
+    <EmbeddedResource Update="src\Dialogs\OverlayPositionDialog.resx">
+      <LogicalName>SteamGifCropper.OverlayPositionDialog.resources</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
