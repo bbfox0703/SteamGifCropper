@@ -19,9 +19,9 @@ public class GifsicleWrapper
 
     public static TimeSpan ProcessTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
-    public static Func<ProcessStartInfo, Task<(string Output, string Error)>> ProcessRunner = DefaultProcessRunner;
+    public static Func<ProcessStartInfo, Task<(int ExitCode, string Output, string Error)>> ProcessRunner = DefaultProcessRunner;
 
-    private static async Task<(string Output, string Error)> DefaultProcessRunner(ProcessStartInfo startInfo)
+    private static async Task<(int ExitCode, string Output, string Error)> DefaultProcessRunner(ProcessStartInfo startInfo)
     {
         using Process gifsicleProcess = new Process { StartInfo = startInfo };
         gifsicleProcess.Start();
@@ -49,7 +49,7 @@ public class GifsicleWrapper
         }
 
         await Task.WhenAll(outputTask, errorTask);
-        return (await outputTask, await errorTask);
+        return (gifsicleProcess.ExitCode, await outputTask, await errorTask);
     }
 
     public static async Task OptimizeGif(string inputPath, string outputPath, GifsicleOptions? options = null, IProgress<int>? progress = null)
@@ -101,13 +101,17 @@ public class GifsicleWrapper
 
         progress?.Report(50);
 
-        var (output, error) = await processTask;
+        var (exitCode, output, error) = await processTask;
 
         progress?.Report(100);
 
-        if (!string.IsNullOrEmpty(error))
+        // gifsicle writes warnings (e.g. about lossy compression or trailing bytes after the
+        // GIF trailer) to stderr even on success, so stderr presence alone is not a failure.
+        // Only a non-zero exit code indicates the optimization actually failed.
+        if (exitCode != 0)
         {
-            throw new Exception($"Gifsicle Error: {error}");
+            string detail = string.IsNullOrWhiteSpace(error) ? output : error;
+            throw new Exception($"Gifsicle failed (exit code {exitCode}): {detail}");
         }
     }
 }

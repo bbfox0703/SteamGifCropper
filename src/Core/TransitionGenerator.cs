@@ -150,11 +150,11 @@ namespace GifProcessorApp
             IProgress<(int current, int total, string status)> progress = null,
             CancellationToken cancellationToken = default)
         {
-            uint frameDelay = (uint)(100 / fps); // Delay in 1/100ths of a second
+            uint frameDelay = (uint)Math.Max(1, 100 / Math.Max(1, fps)); // Delay in 1/100ths of a second
 
             for (int i = 0; i < frames; i++)
             {
-                double fadeProgress = (double)i / (frames - 1);
+                double fadeProgress = frames == 1 ? 1.0 : (double)i / (frames - 1);
                 double fromOpacity = 1.0 - fadeProgress;
                 double toOpacity = fadeProgress;
                 
@@ -201,13 +201,13 @@ namespace GifProcessorApp
             IProgress<(int current, int total, string status)> progress = null,
             CancellationToken cancellationToken = default)
         {
-            uint frameDelay = (uint)(100 / fps);
+            uint frameDelay = (uint)Math.Max(1, 100 / Math.Max(1, fps));
             int width = (int)fromFrame.Width;
             int height = (int)fromFrame.Height;
 
             for (int i = 0; i < frames; i++)
             {
-                double slideProgress = (double)i / (frames - 1);
+                double slideProgress = frames == 1 ? 1.0 : (double)i / (frames - 1);
                 
                 progress?.Report((i + 1, frames, $"Generating slide {direction.ToString().ToLower()} frame {i + 1}/{frames}"));
                 
@@ -268,11 +268,11 @@ namespace GifProcessorApp
             IProgress<(int current, int total, string status)> progress = null,
             CancellationToken cancellationToken = default)
         {
-            uint frameDelay = (uint)(100 / fps);
+            uint frameDelay = (uint)Math.Max(1, 100 / Math.Max(1, fps));
 
             for (int i = 0; i < frames; i++)
             {
-                double zoomProgress = (double)i / (frames - 1);
+                double zoomProgress = frames == 1 ? 1.0 : (double)i / (frames - 1);
                 
                 progress?.Report((i + 1, frames, $"Generating zoom {(zoomIn ? "in" : "out")} frame {i + 1}/{frames}"));
                 
@@ -324,29 +324,35 @@ namespace GifProcessorApp
             IProgress<(int current, int total, string status)> progress = null,
             CancellationToken cancellationToken = default)
         {
-            uint frameDelay = (uint)(100 / fps);
-            var random = new Random();
+            uint frameDelay = (uint)Math.Max(1, 100 / Math.Max(1, fps));
 
-            // Create a dissolve pattern - use more memory-efficient approach for large images
-            var width = (int)fromFrame.Width;
-            var height = (int)fromFrame.Height;
-            var totalPixels = width * height;
-            
+            int width = (int)fromFrame.Width;
+            int height = (int)fromFrame.Height;
+            int totalPixels = width * height;
+
             // For large images, limit dissolve complexity to preserve memory
             if (totalPixels > 500000) // If image is larger than ~700x700
             {
                 frames = Math.Min(frames, 10); // Limit frames to reduce memory usage
             }
-            
-            var dissolvePattern = new bool[width, height];
+
+            // Assign every pixel a stable random threshold once. A pixel is revealed on frame f
+            // as soon as its threshold <= cutoff(f). Because the threshold is fixed across frames,
+            // the reveal is monotonic with no per-frame accumulation. The previous implementation
+            // re-counted "revealed" pixels from zero each frame while sharing a cumulative pattern,
+            // so once that pattern filled up the inner loop could spin forever (app hang). It also
+            // composited a 1x1 image per pixel; this builds the whole mask with one SetPixels call.
+            var random = new Random();
+            var thresholds = new byte[totalPixels];
+            random.NextBytes(thresholds);
 
             for (int i = 0; i < frames; i++)
             {
-                double dissolveProgress = (double)i / (frames - 1);
-                int pixelsToReveal = (int)(dissolveProgress * totalPixels);
-                
+                double dissolveProgress = frames == 1 ? 1.0 : (double)i / (frames - 1);
+                int cutoff = (int)Math.Round(dissolveProgress * 255.0);
+
                 progress?.Report((i + 1, frames, $"Generating dissolve frame {i + 1}/{frames}"));
-                
+
                 // Allow UI to update periodically and check for cancellation
                 if (i % 3 == 0)
                 {
@@ -355,27 +361,28 @@ namespace GifProcessorApp
                 }
 
                 using var transitionFrame = fromFrame.Clone();
+                using var maskedToFrame = toFrame.Clone();
 
-                // Create a mask for the dissolve effect
-                using var mask = new MagickImage(MagickColors.Black, fromFrame.Width, fromFrame.Height);
-                
-                var revealedPixels = 0;
-                while (revealedPixels < pixelsToReveal)
+                // Build a grayscale reveal mask: white (255) = revealed, black (0) = hidden.
+                using var mask = new MagickImage(MagickColors.Black, (uint)width, (uint)height);
+                int channels = (int)mask.ChannelCount;
+                var maskPixels = new byte[totalPixels * channels];
+                for (int p = 0; p < totalPixels; p++)
                 {
-                    int x = random.Next((int)fromFrame.Width);
-                    int y = random.Next((int)fromFrame.Height);
-                    
-                    if (!dissolvePattern[x, y])
+                    byte value = thresholds[p] <= cutoff ? (byte)255 : (byte)0;
+                    int baseIndex = p * channels;
+                    for (int c = 0; c < channels; c++)
                     {
-                        dissolvePattern[x, y] = true;
-                        using var pixel = new MagickImage(MagickColors.White, 1, 1);
-                        mask.Composite(pixel, x, y, CompositeOperator.Over);
-                        revealedPixels++;
+                        maskPixels[baseIndex + c] = value;
                     }
                 }
 
-                // Apply mask to reveal parts of the target frame
-                using var maskedToFrame = toFrame.Clone();
+                using (var pixels = mask.GetPixels())
+                {
+                    pixels.SetPixels(maskPixels);
+                }
+
+                // Copy the mask intensity into the target frame's alpha, then lay it over the source.
                 maskedToFrame.Composite(mask, CompositeOperator.CopyAlpha);
                 transitionFrame.Composite(maskedToFrame, CompositeOperator.Over);
 
@@ -399,11 +406,11 @@ namespace GifProcessorApp
             CancellationToken cancellationToken = default)
         {
             // Cross fade is similar to fade but with more sophisticated blending
-            uint frameDelay = (uint)(100 / fps);
+            uint frameDelay = (uint)Math.Max(1, 100 / Math.Max(1, fps));
 
             for (int i = 0; i < frames; i++)
             {
-                double crossFadeProgress = (double)i / (frames - 1);
+                double crossFadeProgress = frames == 1 ? 1.0 : (double)i / (frames - 1);
                 
                 progress?.Report((i + 1, frames, $"Generating crossfade frame {i + 1}/{frames}"));
                 

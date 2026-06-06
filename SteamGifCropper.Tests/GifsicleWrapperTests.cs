@@ -28,7 +28,7 @@ public class GifsicleWrapperTests
             GifsicleWrapper.ProcessRunner = psi =>
             {
                 captured = psi;
-                return Task.FromResult((Output: "", Error: ""));
+                return Task.FromResult((ExitCode: 0, Output: "", Error: ""));
             };
 
             var options = new GifsicleWrapper.GifsicleOptions

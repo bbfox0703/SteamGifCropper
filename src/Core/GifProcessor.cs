@@ -119,6 +119,15 @@ namespace GifProcessorApp
         {
             if (totalFrames <= 0) return;
 
+            // _lastProgressFrame is static and otherwise retains the previous operation's last
+            // value. When the next operation has fewer frames, every update would be throttled
+            // away until the final frame (progress bar appears frozen). Reset when a new
+            // operation starts (frame count restarts at 1 or runs backwards).
+            if (currentFrame <= 1 || currentFrame < _lastProgressFrame)
+            {
+                _lastProgressFrame = -ProgressUpdateInterval;
+            }
+
             if (currentFrame - _lastProgressFrame < ProgressUpdateInterval && currentFrame != totalFrames)
             {
                 return;
