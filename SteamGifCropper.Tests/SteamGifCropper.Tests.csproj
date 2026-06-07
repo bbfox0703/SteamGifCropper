@@ -40,6 +40,9 @@
     <Compile Include="..\src\Platform\RegistryProvider.cs" Link="RegistryProvider.cs" />
     <Compile Include="..\src\Core\ScrollDirection.cs" Link="ScrollDirection.cs" />
     <Compile Include="..\src\Core\GifWriteDefines.cs" Link="GifWriteDefines.cs" />
+    <Compile Include="..\src\Core\GridMosaicGeometry.cs" Link="GridMosaicGeometry.cs" />
+    <Compile Include="..\src\Core\GridMosaicSettings.cs" Link="GridMosaicSettings.cs" />
+    <Compile Include="..\src\Core\GridMosaicRenderer.cs" Link="GridMosaicRenderer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -71,6 +71,7 @@
             lblResourceLimitDesc = new System.Windows.Forms.Label();
             numUpDownFramerate = new System.Windows.Forms.NumericUpDown();
             btnConcatenateGifs = new System.Windows.Forms.Button();
+            btnGridMosaic = new System.Windows.Forms.Button();
             panelGifsicle.SuspendLayout();
             groupDither.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).BeginInit();
@@ -512,9 +513,19 @@
             btnConcatenateGifs.Text = SteamGifCropper.Properties.Resources.GTMainForm_ConcatenateGifs;
             btnConcatenateGifs.UseVisualStyleBackColor = true;
             btnConcatenateGifs.Click += btnConcatenateGifs_Click;
-            // 
+            //
+            // btnGridMosaic
+            //
+            btnGridMosaic.Location = new System.Drawing.Point(313, 219);
+            btnGridMosaic.Name = "btnGridMosaic";
+            btnGridMosaic.Size = new System.Drawing.Size(300, 26);
+            btnGridMosaic.TabIndex = 18;
+            btnGridMosaic.Text = SteamGifCropper.Properties.Resources.Button_GridMosaic;
+            btnGridMosaic.UseVisualStyleBackColor = true;
+            btnGridMosaic.Click += btnGridMosaic_Click;
+            //
             // GifToolMainForm
-            // 
+            //
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
@@ -541,6 +552,7 @@
             Controls.Add(btnSplitGif);
             Controls.Add(btnMerge2to5GifToOne);
             Controls.Add(btnConcatenateGifs);
+            Controls.Add(btnGridMosaic);
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new System.Windows.Forms.Padding(2);
             Name = "GifToolMainForm";
@@ -604,5 +616,6 @@
         private System.Windows.Forms.Label lblResourceLimitDesc;
         public System.Windows.Forms.NumericUpDown numUpDownFramerate;
         private System.Windows.Forms.Button btnConcatenateGifs;
+        private System.Windows.Forms.Button btnGridMosaic;
     }
 }

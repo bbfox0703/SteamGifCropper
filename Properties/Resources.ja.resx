@@ -430,6 +430,57 @@
   <data name="Button_ScrollAnimatedGif" xml:space="preserve">
     <value>アニメーションGIFをスクロール</value>
   </data>
+  <data name="Button_GridMosaic" xml:space="preserve">
+    <value>グリッドモザイク</value>
+  </data>
+  <data name="GridDialog_Title" xml:space="preserve">
+    <value>グリッドモザイク分割</value>
+  </data>
+  <data name="GridDialog_InputLabel" xml:space="preserve">
+    <value>入力 GIF（766 / 774）</value>
+  </data>
+  <data name="GridDialog_Browse" xml:space="preserve">
+    <value>参照</value>
+  </data>
+  <data name="GridDialog_ColumnsPerSlot" xml:space="preserve">
+    <value>スロットごとの列数</value>
+  </data>
+  <data name="GridDialog_Rows" xml:space="preserve">
+    <value>行数</value>
+  </data>
+  <data name="GridDialog_LineWidth" xml:space="preserve">
+    <value>線幅（px）</value>
+  </data>
+  <data name="GridDialog_Style" xml:space="preserve">
+    <value>線のスタイル</value>
+  </data>
+  <data name="GridDialog_StyleTransparent" xml:space="preserve">
+    <value>透明</value>
+  </data>
+  <data name="GridDialog_StyleSolid" xml:space="preserve">
+    <value>塗りつぶし色</value>
+  </data>
+  <data name="GridDialog_PickColor" xml:space="preserve">
+    <value>色を選択…</value>
+  </data>
+  <data name="GridDialog_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="GridDialog_Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="GridDialog_Detected" xml:space="preserve">
+    <value>検出：{0} × {1} px ✓</value>
+  </data>
+  <data name="GridDialog_DetectedInvalid" xml:space="preserve">
+    <value>幅 {0}px はサポートされていません（766 または 774 が必要）。</value>
+  </data>
+  <data name="GridDialog_InputRequired" xml:space="preserve">
+    <value>有効な入力 GIF を選択してください。</value>
+  </data>
+  <data name="GridDialog_LineTooWide" xml:space="preserve">
+    <value>グリッド線が収まりません。線幅を小さくするか、列／行数を減らしてください。</value>
+  </data>
   <data name="ScrollDialog_AutoDuration" xml:space="preserve">
     <value>GIFサイクル期間を自動計算</value>
   </data>

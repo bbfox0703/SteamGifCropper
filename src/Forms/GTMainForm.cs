@@ -231,6 +231,11 @@ namespace GifProcessorApp
             }, "GIF concatenation");
         }
 
+        private async void btnGridMosaic_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(async () => await GifProcessor.GridMosaic(this), "grid mosaic");
+        }
+
         private async void btnReverseGIF_Click(object sender, EventArgs e)
         {
             await ExecuteWithErrorHandling(async () => await GifProcessor.ReverseGif(this), "GIF reversal");
@@ -342,6 +347,7 @@ namespace GifProcessorApp
                     btnResizeNfpsGIF.Text = "FFMPEG: " + btnResizeNfpsGIF.Text;
                 }
                 btnConcatenateGifs.Text = SteamGifCropper.Properties.Resources.GTMainForm_ConcatenateGifs;
+                btnGridMosaic.Text = SteamGifCropper.Properties.Resources.Button_GridMosaic;
                 btnScrollAnimatedGif.Text = SteamGifCropper.Properties.Resources.Button_ScrollAnimatedGif;
                 label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
                 lblFramerate.Text = SteamGifCropper.Properties.Resources.Label_Framerate;

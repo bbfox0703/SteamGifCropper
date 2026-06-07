@@ -230,6 +230,74 @@ namespace GifProcessorApp
             }
         }
 
+        // Splits a 766/774 GIF into 5 parts while drawing a grid/lattice aligned to the
+        // Steam showcase slots, turning the forced 4px/6px slot gaps into a deliberate mosaic.
+        public static async Task GridMosaic(GifToolMainForm mainForm)
+        {
+            using (var dialog = new GridMosaicDialog())
+            {
+                if (dialog.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+
+                string inputFilePath = dialog.InputFilePath;
+                ImageInputValidator.ValidateGif(inputFilePath);
+                SetStatusText(mainForm, "Grid mosaic...");
+                try
+                {
+                    using (var collection = new MagickImageCollection(inputFilePath))
+                    {
+                        uint canvasWidth = collection[0].Page.Width;
+                        uint canvasHeight = collection[0].Page.Height;
+
+                        if (!IsValidCanvasWidth(canvasWidth))
+                        {
+                            ShowUnsupportedWidthError(canvasWidth);
+                            return;
+                        }
+
+                        var grid = new GridMosaicSettings
+                        {
+                            InputFilePath = inputFilePath,
+                            ColumnsPerSlot = dialog.ColumnsPerSlot,
+                            Rows = dialog.Rows,
+                            LineWidth = dialog.LineWidth,
+                            Style = dialog.Style,
+                            LineColor = dialog.LineColor
+                        };
+
+                        mainForm.Enabled = false;
+                        mainForm.pBarTaskStatus.Minimum = 0;
+                        mainForm.pBarTaskStatus.Maximum = 100;
+                        SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+                        SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Processing);
+
+                        var ranges = GetCropRanges(canvasWidth);
+                        await SplitGif(inputFilePath, mainForm, ranges, (int)canvasHeight, grid);
+
+                        SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
+                        WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                                        SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
+                                        SteamGifCropper.Properties.Resources.Title_Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Error);
+                    WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                                    string.Format(SteamGifCropper.Properties.Resources.Error_Occurred, ex.Message),
+                                    SteamGifCropper.Properties.Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    mainForm.Enabled = true;
+                    SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Idle);
+                }
+            }
+        }
+
 
         private static (int[] delays, int ticksPerSecond) RecalculateGifDelays(MagickImageCollection collection)
         {
@@ -244,7 +312,7 @@ namespace GifProcessorApp
             return (originalDelays, sourceTicks);
         }
 
-        private static async Task SplitGif(string inputFilePath, GifToolMainForm mainForm, (int Start, int End)[] ranges, int canvasHeight)
+        private static async Task SplitGif(string inputFilePath, GifToolMainForm mainForm, (int Start, int End)[] ranges, int canvasHeight, GridMosaicSettings grid = null)
         {
             SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_CoalescingFrames);
             using var collection = new MagickImageCollection(inputFilePath);
@@ -260,6 +328,12 @@ namespace GifProcessorApp
 
             for (int i = 0; i < ranges.Length; i++)
             {
+                int partWidth = ranges[i].End - ranges[i].Start + 1;
+                MagickImage gridLayer = grid != null
+                    ? GridMosaicRenderer.BuildGridLayer((uint)partWidth, (uint)newHeight, canvasHeight, grid)
+                    : null;
+                try
+                {
                 using (var partCollection = new MagickImageCollection())
                 {
                     for (int frameIndex = 0; frameIndex < collection.Count; frameIndex++)
@@ -283,6 +357,11 @@ namespace GifProcessorApp
                                 croppedFrame.Crop(cropGeometry);
                                 croppedFrame.ResetPage();
                                 newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
+                            }
+
+                            if (gridLayer != null)
+                            {
+                                GridMosaicRenderer.ApplyGridLayer(newImage, gridLayer, grid.Style);
                             }
 
                             newImage.AnimationDelay = (uint)recalculatedDelays[frameIndex];
@@ -356,6 +435,11 @@ namespace GifProcessorApp
                         }
 
                         ModifyGifFile(outputPath, canvasHeight);
+                }
+                }
+                finally
+                {
+                    gridLayer?.Dispose();
                 }
             }
         }

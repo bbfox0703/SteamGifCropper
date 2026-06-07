@@ -430,6 +430,57 @@
   <data name="Button_ScrollAnimatedGif" xml:space="preserve">
     <value>捲動動畫GIF</value>
   </data>
+  <data name="Button_GridMosaic" xml:space="preserve">
+    <value>格網馬賽克</value>
+  </data>
+  <data name="GridDialog_Title" xml:space="preserve">
+    <value>格網馬賽克切割</value>
+  </data>
+  <data name="GridDialog_InputLabel" xml:space="preserve">
+    <value>輸入 GIF（766 / 774）</value>
+  </data>
+  <data name="GridDialog_Browse" xml:space="preserve">
+    <value>瀏覽</value>
+  </data>
+  <data name="GridDialog_ColumnsPerSlot" xml:space="preserve">
+    <value>每槽欄數</value>
+  </data>
+  <data name="GridDialog_Rows" xml:space="preserve">
+    <value>列數</value>
+  </data>
+  <data name="GridDialog_LineWidth" xml:space="preserve">
+    <value>格線寬度（px）</value>
+  </data>
+  <data name="GridDialog_Style" xml:space="preserve">
+    <value>格線樣式</value>
+  </data>
+  <data name="GridDialog_StyleTransparent" xml:space="preserve">
+    <value>透明</value>
+  </data>
+  <data name="GridDialog_StyleSolid" xml:space="preserve">
+    <value>實心色</value>
+  </data>
+  <data name="GridDialog_PickColor" xml:space="preserve">
+    <value>選擇顏色…</value>
+  </data>
+  <data name="GridDialog_OK" xml:space="preserve">
+    <value>確定</value>
+  </data>
+  <data name="GridDialog_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="GridDialog_Detected" xml:space="preserve">
+    <value>偵測到：{0} × {1} px ✓</value>
+  </data>
+  <data name="GridDialog_DetectedInvalid" xml:space="preserve">
+    <value>寬度 {0}px 不支援（需 766 或 774）。</value>
+  </data>
+  <data name="GridDialog_InputRequired" xml:space="preserve">
+    <value>請選擇有效的輸入 GIF。</value>
+  </data>
+  <data name="GridDialog_LineTooWide" xml:space="preserve">
+    <value>格線放不下，請縮小線寬或減少欄／列數。</value>
+  </data>
   <data name="ScrollDialog_AutoDuration" xml:space="preserve">
     <value>自動計算GIF週期時間</value>
   </data>

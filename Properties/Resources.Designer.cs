@@ -2285,6 +2285,108 @@ namespace SteamGifCropper.Properties {
             }
         }
 
+        internal static string Button_GridMosaic {
+            get {
+                return ResourceManager.GetString("Button_GridMosaic", resourceCulture);
+            }
+        }
+
+        internal static string GridDialog_Title {
+            get {
+                return ResourceManager.GetString("GridDialog_Title", resourceCulture);
+            }
+        }
+
+        internal static string GridDialog_InputLabel {
+            get {
+                return ResourceManager.GetString("GridDialog_InputLabel", resourceCulture);
+            }
+        }
+
+        internal static string GridDialog_Browse {
+            get {
+                return ResourceManager.GetString("GridDialog_Browse", resourceCulture);
+            }
+        }
+
+        internal static string GridDialog_ColumnsPerSlot {
+            get {
+                return ResourceManager.GetString("GridDialog_ColumnsPerSlot", resourceCulture);
+            }
+        }
+
+        internal static string GridDialog_Rows {
+            get {
+                return ResourceManager.GetString("GridDialog_Rows", resourceCulture);
+            }
+        }
+
+        internal static string GridDialog_LineWidth {
+            get {
+                return ResourceManager.GetString("GridDialog_LineWidth", resourceCulture);
+            }
+        }
+
+        internal static string GridDialog_Style {
+            get {
+                return ResourceManager.GetString("GridDialog_Style", resourceCulture);
+            }
+        }
+
+        internal static string GridDialog_StyleTransparent {
+            get {
+                return ResourceManager.GetString("GridDialog_StyleTransparent", resourceCulture);
+            }
+        }
+
+        internal static string GridDialog_StyleSolid {
+            get {
+                return ResourceManager.GetString("GridDialog_StyleSolid", resourceCulture);
+            }
+        }
+
+        internal static string GridDialog_PickColor {
+            get {
+                return ResourceManager.GetString("GridDialog_PickColor", resourceCulture);
+            }
+        }
+
+        internal static string GridDialog_OK {
+            get {
+                return ResourceManager.GetString("GridDialog_OK", resourceCulture);
+            }
+        }
+
+        internal static string GridDialog_Cancel {
+            get {
+                return ResourceManager.GetString("GridDialog_Cancel", resourceCulture);
+            }
+        }
+
+        internal static string GridDialog_Detected {
+            get {
+                return ResourceManager.GetString("GridDialog_Detected", resourceCulture);
+            }
+        }
+
+        internal static string GridDialog_DetectedInvalid {
+            get {
+                return ResourceManager.GetString("GridDialog_DetectedInvalid", resourceCulture);
+            }
+        }
+
+        internal static string GridDialog_InputRequired {
+            get {
+                return ResourceManager.GetString("GridDialog_InputRequired", resourceCulture);
+            }
+        }
+
+        internal static string GridDialog_LineTooWide {
+            get {
+                return ResourceManager.GetString("GridDialog_LineTooWide", resourceCulture);
+            }
+        }
+
         internal static string ScrollDialog_AutoDuration {
             get {
                 return ResourceManager.GetString("ScrollDialog_AutoDuration", resourceCulture);
