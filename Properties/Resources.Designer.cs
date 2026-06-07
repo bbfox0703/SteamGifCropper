@@ -367,15 +367,6 @@ namespace SteamGifCropper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Faster palette reduction (quality down).
-        /// </summary>
-        internal static string CheckBox_FasterPalette {
-            get {
-                return ResourceManager.GetString("CheckBox_FasterPalette", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to FFMPEG: Reverse animated GIF.
         /// </summary>
         internal static string Button_ReverseGif {
@@ -678,6 +669,24 @@ namespace SteamGifCropper.Properties {
         internal static string Status_GifsicleOptimizing {
             get {
                 return ResourceManager.GetString("Status_GifsicleOptimizing", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Min size (KB):.
+        /// </summary>
+        internal static string Label_GifsicleMinKB {
+            get {
+                return ResourceManager.GetString("Label_GifsicleMinKB", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Skipped gifsicle (below {0} KB).
+        /// </summary>
+        internal static string Status_GifsicleSkippedBelowThreshold {
+            get {
+                return ResourceManager.GetString("Status_GifsicleSkippedBelowThreshold", resourceCulture);
             }
         }
         
@@ -2237,12 +2246,6 @@ namespace SteamGifCropper.Properties {
             }
         }
 
-        internal static string ConcatenateDialog_UseFasterPalette {
-            get {
-                return ResourceManager.GetString("ConcatenateDialog_UseFasterPalette", resourceCulture);
-            }
-        }
-
         internal static string ConcatenateDialog_UseGifsicleOptimization {
             get {
                 return ResourceManager.GetString("ConcatenateDialog_UseGifsicleOptimization", resourceCulture);
@@ -2288,6 +2291,114 @@ namespace SteamGifCropper.Properties {
         internal static string Button_GridMosaic {
             get {
                 return ResourceManager.GetString("Button_GridMosaic", resourceCulture);
+            }
+        }
+
+        internal static string Button_SlotMachineStatic {
+            get {
+                return ResourceManager.GetString("Button_SlotMachineStatic", resourceCulture);
+            }
+        }
+
+        internal static string Button_SlotMachineGif {
+            get {
+                return ResourceManager.GetString("Button_SlotMachineGif", resourceCulture);
+            }
+        }
+
+        internal static string Status_SlotMachineBuilding {
+            get {
+                return ResourceManager.GetString("Status_SlotMachineBuilding", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_Title {
+            get {
+                return ResourceManager.GetString("SlotDialog_Title", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_InputLabel {
+            get {
+                return ResourceManager.GetString("SlotDialog_InputLabel", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_OutputLabel {
+            get {
+                return ResourceManager.GetString("SlotDialog_OutputLabel", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_Duration {
+            get {
+                return ResourceManager.GetString("SlotDialog_Duration", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_Fps {
+            get {
+                return ResourceManager.GetString("SlotDialog_Fps", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_Spins {
+            get {
+                return ResourceManager.GetString("SlotDialog_Spins", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_Variance {
+            get {
+                return ResourceManager.GetString("SlotDialog_Variance", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_Direction {
+            get {
+                return ResourceManager.GetString("SlotDialog_Direction", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_DirTopDown {
+            get {
+                return ResourceManager.GetString("SlotDialog_DirTopDown", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_DirBottomUp {
+            get {
+                return ResourceManager.GetString("SlotDialog_DirBottomUp", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_Bounce {
+            get {
+                return ResourceManager.GetString("SlotDialog_Bounce", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_GifPlayMode {
+            get {
+                return ResourceManager.GetString("SlotDialog_GifPlayMode", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_GifPlayDuringSpin {
+            get {
+                return ResourceManager.GetString("SlotDialog_GifPlayDuringSpin", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_GifSpinThenPlay {
+            get {
+                return ResourceManager.GetString("SlotDialog_GifSpinThenPlay", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_Hold {
+            get {
+                return ResourceManager.GetString("SlotDialog_Hold", resourceCulture);
             }
         }
 

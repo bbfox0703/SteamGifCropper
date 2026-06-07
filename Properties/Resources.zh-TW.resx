@@ -418,9 +418,6 @@
   <data name="Tooltip_Framerate" xml:space="preserve">
     <value>幀率設定僅適用於：MP4 轉 GIF、滾動動畫、調整大小/FPS 工具。分割和合併 GIF 會保留原始時間。</value>
   </data>
-  <data name="CheckBox_FasterPalette" xml:space="preserve">
-    <value>使用較快的調色盤處理(品質較低)</value>
-  </data>
   <data name="Button_ReverseGif" xml:space="preserve">
     <value>FFMPEG：反轉動畫GIF</value>
   </data>
@@ -431,7 +428,61 @@
     <value>捲動動畫GIF</value>
   </data>
   <data name="Button_GridMosaic" xml:space="preserve">
-    <value>格網馬賽克</value>
+    <value>766px 分割用格網馬賽克</value>
+  </data>
+  <data name="Button_SlotMachineStatic" xml:space="preserve">
+    <value>766px 拉霸動畫（靜態圖）</value>
+  </data>
+  <data name="Button_SlotMachineGif" xml:space="preserve">
+    <value>766px 拉霸動畫（GIF）</value>
+  </data>
+  <data name="Status_SlotMachineBuilding" xml:space="preserve">
+    <value>建立拉霸轉輪中...</value>
+  </data>
+  <data name="SlotDialog_Title" xml:space="preserve">
+    <value>拉霸動畫（766px）</value>
+  </data>
+  <data name="SlotDialog_InputLabel" xml:space="preserve">
+    <value>輸入圖片或 GIF</value>
+  </data>
+  <data name="SlotDialog_OutputLabel" xml:space="preserve">
+    <value>輸出 GIF</value>
+  </data>
+  <data name="SlotDialog_Duration" xml:space="preserve">
+    <value>旋轉時間（秒）</value>
+  </data>
+  <data name="SlotDialog_Fps" xml:space="preserve">
+    <value>FPS</value>
+  </data>
+  <data name="SlotDialog_Spins" xml:space="preserve">
+    <value>每輪旋轉圈數</value>
+  </data>
+  <data name="SlotDialog_Variance" xml:space="preserve">
+    <value>波動（%）</value>
+  </data>
+  <data name="SlotDialog_Direction" xml:space="preserve">
+    <value>方向</value>
+  </data>
+  <data name="SlotDialog_DirTopDown" xml:space="preserve">
+    <value>由上向下</value>
+  </data>
+  <data name="SlotDialog_DirBottomUp" xml:space="preserve">
+    <value>由下向上</value>
+  </data>
+  <data name="SlotDialog_Bounce" xml:space="preserve">
+    <value>回彈（秒）</value>
+  </data>
+  <data name="SlotDialog_GifPlayMode" xml:space="preserve">
+    <value>GIF 播放方式</value>
+  </data>
+  <data name="SlotDialog_GifPlayDuringSpin" xml:space="preserve">
+    <value>旋轉時同步播放</value>
+  </data>
+  <data name="SlotDialog_GifSpinThenPlay" xml:space="preserve">
+    <value>先轉再播放</value>
+  </data>
+  <data name="SlotDialog_Hold" xml:space="preserve">
+    <value>結果停留（秒）</value>
   </data>
   <data name="GridDialog_Title" xml:space="preserve">
     <value>格網馬賽克切割</value>
@@ -600,6 +651,12 @@
   </data>
   <data name="Label_GifsicleNotice" xml:space="preserve">
     <value>注意：gifsicle.exe 必須位於「系統 PATH」中</value>
+  </data>
+  <data name="Label_GifsicleMinKB" xml:space="preserve">
+    <value>最小檔案 (KB)：</value>
+  </data>
+  <data name="Status_GifsicleSkippedBelowThreshold" xml:space="preserve">
+    <value>已略過 gifsicle（小於 {0} KB）</value>
   </data>
   <data name="Label_ResourceLimitDesc" xml:space="preserve">
     <value>資源限制：記憶體 {0} MB / 磁碟 {1} MB</value>
@@ -942,9 +999,6 @@ FFmpeg 輸出 (部分)：
   </data>
   <data name="ConcatenateDialog_UnifyDimensions" xml:space="preserve">
     <value>統一尺寸（調整為最大）</value>
-  </data>
-  <data name="ConcatenateDialog_UseFasterPalette" xml:space="preserve">
-    <value>快速調色盤（較低品質）</value>
   </data>
   <data name="ConcatenateDialog_UseGifsicleOptimization" xml:space="preserve">
     <value>使用 gifsicle 最佳化</value>

@@ -99,6 +99,45 @@ namespace GifProcessorApp
             }
         }
 
+        // Marshaled setters for the progress bar range/visibility. The heavy operations now run on a
+        // background thread (Task.Run), so direct writes to pBarTaskStatus.Minimum/Maximum/Visible would
+        // be cross-thread violations; these route through BeginInvoke just like SetProgressBar.
+        public static void SetProgressRange(GifToolMainForm mainForm, int minimum, int maximum)
+        {
+            if (mainForm == null) return;
+
+            void UpdateUI()
+            {
+                mainForm.pBarTaskStatus.Minimum = minimum;
+                mainForm.pBarTaskStatus.Maximum = Math.Max(minimum + 1, maximum);
+            }
+
+            if (mainForm.InvokeRequired)
+            {
+                mainForm.BeginInvoke((Action)UpdateUI);
+            }
+            else
+            {
+                UpdateUI();
+            }
+        }
+
+        public static void SetProgressVisible(GifToolMainForm mainForm, bool visible)
+        {
+            if (mainForm == null) return;
+
+            void UpdateUI() => mainForm.pBarTaskStatus.Visible = visible;
+
+            if (mainForm.InvokeRequired)
+            {
+                mainForm.BeginInvoke((Action)UpdateUI);
+            }
+            else
+            {
+                UpdateUI();
+            }
+        }
+
         public static void SetStatusText(GifToolMainForm mainForm, string text)
         {
             if (mainForm == null) return;
@@ -113,6 +152,63 @@ namespace GifProcessorApp
             {
                 UpdateUI();
             }
+        }
+
+        // Immutable snapshot of the gifsicle UI settings. Captured ONCE on the UI thread before any
+        // Task.Run, so the background worker never touches the controls (which would throw cross-thread).
+        private struct GifsicleSnapshot
+        {
+            public bool Enabled;
+            public int Colors;
+            public int Lossy;
+            public int OptimizeLevel;
+            public int Dither;
+            public int ThresholdKB;
+            public long ThresholdBytes;
+        }
+
+        // MUST be called on the UI thread. useOverride=true takes Enabled from enabledOverride instead
+        // of chkGifsicle (used by ConcatenateGifs, which gates on its own settings flag).
+        private static GifsicleSnapshot CaptureGifsicleSnapshot(GifToolMainForm mainForm, bool enabledOverride, bool useOverride)
+        {
+            int kb = (int)mainForm.numUpDownGifsicleMinKB.Value;
+            return new GifsicleSnapshot
+            {
+                Enabled = useOverride ? enabledOverride : mainForm.chkGifsicle.Checked,
+                Colors = (int)mainForm.numUpDownPaletteSicle.Value,
+                Lossy = (int)mainForm.numUpDownLossy.Value,
+                OptimizeLevel = (int)mainForm.numUpDownOptimize.Value,
+                Dither = mainForm.DitherMethod,
+                ThresholdKB = kb,
+                ThresholdBytes = (long)kb * 1024L
+            };
+        }
+
+        private static GifsicleSnapshot CaptureGifsicleSnapshot(GifToolMainForm mainForm)
+            => CaptureGifsicleSnapshot(mainForm, false, false);
+
+        // Background-safe: reads no controls. Runs gifsicle only when enabled AND the file is strictly
+        // larger than the configured KB threshold; otherwise reports a "skipped" status and returns.
+        private static async Task OptimizeWithGifsicleIfEnabled(GifToolMainForm mainForm, GifsicleSnapshot snapshot, string path, IProgress<int> progress = null)
+        {
+            if (!snapshot.Enabled) return;
+
+            long size = new FileInfo(path).Length;
+            if (size <= snapshot.ThresholdBytes)
+            {
+                SetStatusText(mainForm, string.Format(Resources.Status_GifsicleSkippedBelowThreshold, snapshot.ThresholdKB));
+                return;
+            }
+
+            SetStatusText(mainForm, Resources.Status_GifsicleOptimizing);
+            var options = new GifsicleWrapper.GifsicleOptions
+            {
+                Colors = snapshot.Colors,
+                Lossy = snapshot.Lossy,
+                OptimizeLevel = snapshot.OptimizeLevel,
+                Dither = snapshot.Dither
+            };
+            await GifsicleWrapper.OptimizeGif(path, path, options, progress);
         }
 
         private static void UpdateFrameProgress(GifToolMainForm mainForm, int currentFrame, int totalFrames)
@@ -198,15 +294,15 @@ namespace GifProcessorApp
                             return;
                         }
 
+                        var gifsicle = CaptureGifsicleSnapshot(mainForm);
                         mainForm.Enabled = false;
-                        mainForm.pBarTaskStatus.Minimum = 0;
-                        mainForm.pBarTaskStatus.Maximum = 100;
+                        SetProgressRange(mainForm, 0, 100);
                         SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
                         SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Processing);
 
                         var ranges = GetCropRanges(canvasWidth);
-                        
-                        await SplitGif(inputFilePath, mainForm, ranges, (int)canvasHeight);
+
+                        await SplitGif(inputFilePath, mainForm, ranges, (int)canvasHeight, gifsicle);
                         SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
                         WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
                                         SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
@@ -230,8 +326,9 @@ namespace GifProcessorApp
             }
         }
 
-        // Splits a 766/774 GIF into 5 parts while drawing a grid/lattice aligned to the
-        // Steam showcase slots, turning the forced 4px/6px slot gaps into a deliberate mosaic.
+        // Draws a grid/lattice aligned to the Steam showcase slots over a 766/774 GIF, turning the
+        // forced 4px/6px slot gaps into a deliberate mosaic. Outputs a single full-width GIF (no split)
+        // so it can be chained; split later with the main "Split GIF" button.
         public static async Task GridMosaic(GifToolMainForm mainForm)
         {
             using (var dialog = new GridMosaicDialog())
@@ -243,44 +340,43 @@ namespace GifProcessorApp
 
                 string inputFilePath = dialog.InputFilePath;
                 ImageInputValidator.ValidateGif(inputFilePath);
-                SetStatusText(mainForm, "Grid mosaic...");
+
+                uint canvasWidth;
+                using (var probe = new MagickImageCollection(inputFilePath))
+                {
+                    canvasWidth = probe[0].Page.Width;
+                }
+                if (!IsValidCanvasWidth(canvasWidth))
+                {
+                    ShowUnsupportedWidthError(canvasWidth);
+                    return;
+                }
+
+                var grid = new GridMosaicSettings
+                {
+                    InputFilePath = inputFilePath,
+                    ColumnsPerSlot = dialog.ColumnsPerSlot,
+                    Rows = dialog.Rows,
+                    LineWidth = dialog.LineWidth,
+                    Style = dialog.Style,
+                    LineColor = dialog.LineColor
+                };
+                string outputFilePath = GenerateOutputPath(inputFilePath, "_grid");
+                var gifsicle = CaptureGifsicleSnapshot(mainForm);
+
+                mainForm.Enabled = false;
+                SetProgressRange(mainForm, 0, 100);
+                SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Processing);
                 try
                 {
-                    using (var collection = new MagickImageCollection(inputFilePath))
-                    {
-                        uint canvasWidth = collection[0].Page.Width;
-                        uint canvasHeight = collection[0].Page.Height;
+                    await ApplyGridMosaic(mainForm, inputFilePath, outputFilePath, grid, gifsicle);
 
-                        if (!IsValidCanvasWidth(canvasWidth))
-                        {
-                            ShowUnsupportedWidthError(canvasWidth);
-                            return;
-                        }
-
-                        var grid = new GridMosaicSettings
-                        {
-                            InputFilePath = inputFilePath,
-                            ColumnsPerSlot = dialog.ColumnsPerSlot,
-                            Rows = dialog.Rows,
-                            LineWidth = dialog.LineWidth,
-                            Style = dialog.Style,
-                            LineColor = dialog.LineColor
-                        };
-
-                        mainForm.Enabled = false;
-                        mainForm.pBarTaskStatus.Minimum = 0;
-                        mainForm.pBarTaskStatus.Maximum = 100;
-                        SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
-                        SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Processing);
-
-                        var ranges = GetCropRanges(canvasWidth);
-                        await SplitGif(inputFilePath, mainForm, ranges, (int)canvasHeight, grid);
-
-                        SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
-                        WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
-                                        SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
-                                        SteamGifCropper.Properties.Resources.Title_Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
+                    SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
+                    WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                                    SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
+                                    SteamGifCropper.Properties.Resources.Title_Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
@@ -292,10 +388,71 @@ namespace GifProcessorApp
                 finally
                 {
                     mainForm.Enabled = true;
-                    SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
+                    SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
                     SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Idle);
                 }
             }
+        }
+
+        // Overlays the slot-aligned grid onto every frame of the full-width GIF (no split). The grid is
+        // built once per slot and composited at each slot's x-offset, so the result matches the old
+        // per-part appearance (gaps stay grid-free). Runs on a background thread.
+        private static async Task ApplyGridMosaic(GifToolMainForm mainForm, string inputFilePath,
+            string outputFilePath, GridMosaicSettings grid, GifsicleSnapshot gifsicle)
+        {
+            await Task.Run(() =>
+            {
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_CoalescingFrames);
+                using var collection = new MagickImageCollection(inputFilePath);
+                collection.Coalesce();
+
+                uint canvasWidth = collection[0].Width;
+                int canvasHeight = (int)collection[0].Height;
+                var ranges = GetCropRanges(canvasWidth);
+
+                var gridLayers = new MagickImage[ranges.Length];
+                try
+                {
+                    for (int c = 0; c < ranges.Length; c++)
+                    {
+                        int partWidth = ranges[c].End - ranges[c].Start + 1;
+                        gridLayers[c] = GridMosaicRenderer.BuildGridLayer((uint)partWidth, (uint)canvasHeight, canvasHeight, grid);
+                    }
+
+                    var op = grid.Style == GridLineStyle.Transparent ? CompositeOperator.DstOut : CompositeOperator.Over;
+                    int total = collection.Count;
+                    int idx = 0;
+                    foreach (var frame in collection)
+                    {
+                        for (int c = 0; c < ranges.Length; c++)
+                        {
+                            frame.Composite(gridLayers[c], ranges[c].Start, 0, op);
+                        }
+                        frame.Settings.SetDefine("compress", "LZW");
+
+                        idx++;
+                        if (idx % 10 == 0 || idx == total)
+                        {
+                            SetProgressBar(mainForm.pBarTaskStatus, idx * 90 / total, 100);
+                            SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Processing);
+                        }
+                    }
+
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Optimizing);
+                    collection.Optimize();
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
+                    collection.Write(outputFilePath);
+                }
+                finally
+                {
+                    foreach (var layer in gridLayers)
+                    {
+                        layer?.Dispose();
+                    }
+                }
+            });
+
+            await OptimizeWithGifsicleIfEnabled(mainForm, gifsicle, outputFilePath);
         }
 
 
@@ -312,81 +469,84 @@ namespace GifProcessorApp
             return (originalDelays, sourceTicks);
         }
 
-        private static async Task SplitGif(string inputFilePath, GifToolMainForm mainForm, (int Start, int End)[] ranges, int canvasHeight, GridMosaicSettings grid = null)
+        private static async Task SplitGif(string inputFilePath, GifToolMainForm mainForm, (int Start, int End)[] ranges, int canvasHeight, GifsicleSnapshot gifsicle, GridMosaicSettings grid = null)
         {
-            SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_CoalescingFrames);
-            using var collection = new MagickImageCollection(inputFilePath);
-            collection.Coalesce();
-            Application.DoEvents(); // Allow UI to respond after coalesce operation
-            int newHeight = canvasHeight + HeightExtension;
-
-            var (recalculatedDelays, ticksPerSecond) = RecalculateGifDelays(collection);
-            collection[0].AnimationTicksPerSecond = ticksPerSecond;
-
-            int totalFrames = collection.Count * ranges.Length;
-            int currentFrame = 0;
-
-            for (int i = 0; i < ranges.Length; i++)
+            // All heavy ImageMagick work runs on a background thread so the UI stays responsive.
+            // UI updates go exclusively through the marshaled SetProgressBar/SetStatusText/SetProgress*
+            // helpers; no direct control access happens inside this lambda.
+            await Task.Run(async () =>
             {
-                int partWidth = ranges[i].End - ranges[i].Start + 1;
-                MagickImage gridLayer = grid != null
-                    ? GridMosaicRenderer.BuildGridLayer((uint)partWidth, (uint)newHeight, canvasHeight, grid)
-                    : null;
-                try
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_CoalescingFrames);
+                using var collection = new MagickImageCollection(inputFilePath);
+                collection.Coalesce();
+                int newHeight = canvasHeight + HeightExtension;
+
+                var (recalculatedDelays, ticksPerSecond) = RecalculateGifDelays(collection);
+                collection[0].AnimationTicksPerSecond = ticksPerSecond;
+
+                int totalFrames = collection.Count * ranges.Length;
+                int currentFrame = 0;
+
+                for (int i = 0; i < ranges.Length; i++)
                 {
-                using (var partCollection = new MagickImageCollection())
-                {
-                    for (int frameIndex = 0; frameIndex < collection.Count; frameIndex++)
+                    int partWidth = ranges[i].End - ranges[i].Start + 1;
+                    MagickImage gridLayer = grid != null
+                        ? GridMosaicRenderer.BuildGridLayer((uint)partWidth, (uint)newHeight, canvasHeight, grid)
+                        : null;
+                    try
                     {
-                        var frame = collection[frameIndex];
-                        int copyWidth = ranges[i].End - ranges[i].Start + 1;
-
-                        if (currentFrame % ProgressUpdateInterval == 0)
+                    using (var partCollection = new MagickImageCollection())
+                    {
+                        for (int frameIndex = 0; frameIndex < collection.Count; frameIndex++)
                         {
-                            SetStatusText(mainForm, string.Format("Splitting part {0}/5 - Frame {1}/{2}", i + 1, (currentFrame % collection.Count) + 1, collection.Count));
-                        }
+                            var frame = collection[frameIndex];
+                            int copyWidth = ranges[i].End - ranges[i].Start + 1;
 
-                        MagickImage newImage = null;
-                        try
-                        {
-                            newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight);
-
-                            var cropGeometry = new MagickGeometry(ranges[i].Start, 0, (uint)copyWidth, (uint)canvasHeight);
-                            using (var croppedFrame = frame.Clone())
+                            if (currentFrame % ProgressUpdateInterval == 0)
                             {
-                                croppedFrame.Crop(cropGeometry);
-                                croppedFrame.ResetPage();
-                                newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
+                                SetStatusText(mainForm, string.Format("Splitting part {0}/5 - Frame {1}/{2}", i + 1, (currentFrame % collection.Count) + 1, collection.Count));
                             }
 
-                            if (gridLayer != null)
+                            MagickImage newImage = null;
+                            try
                             {
-                                GridMosaicRenderer.ApplyGridLayer(newImage, gridLayer, grid.Style);
+                                newImage = new MagickImage(MagickColors.Transparent, (uint)copyWidth, (uint)newHeight);
+
+                                var cropGeometry = new MagickGeometry(ranges[i].Start, 0, (uint)copyWidth, (uint)canvasHeight);
+                                using (var croppedFrame = frame.Clone())
+                                {
+                                    croppedFrame.Crop(cropGeometry);
+                                    croppedFrame.ResetPage();
+                                    newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
+                                }
+
+                                if (gridLayer != null)
+                                {
+                                    GridMosaicRenderer.ApplyGridLayer(newImage, gridLayer, grid.Style);
+                                }
+
+                                newImage.AnimationDelay = (uint)recalculatedDelays[frameIndex];
+                                newImage.AnimationTicksPerSecond = ticksPerSecond;
+                                newImage.GifDisposeMethod = GifDisposeMethod.Background;
+
+                                partCollection.Add(newImage);
+                                newImage = null; // Ownership transferred to collection
+                            }
+                            finally
+                            {
+                                // Dispose only if not added to collection
+                                newImage?.Dispose();
                             }
 
-                            newImage.AnimationDelay = (uint)recalculatedDelays[frameIndex];
-                            newImage.AnimationTicksPerSecond = ticksPerSecond;
-                            newImage.GifDisposeMethod = GifDisposeMethod.Background;
-
-                            partCollection.Add(newImage);
-                            newImage = null; // Ownership transferred to collection
-                        }
-                        finally
-                        {
-                            // Dispose only if not added to collection
-                            newImage?.Dispose();
+                            currentFrame++;
+                            UpdateFrameProgress(mainForm, currentFrame, totalFrames);
                         }
 
-                        currentFrame++;
-                        UpdateFrameProgress(mainForm, currentFrame, totalFrames);
-                    }
-
-                    string outputFile = $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}.gif";
-                    string outputDir = Path.GetDirectoryName(inputFilePath);
-                    string outputPath = Path.Combine(outputDir, outputFile);
+                        string outputFile = $"{Path.GetFileNameWithoutExtension(inputFilePath)}_Part{i + 1}.gif";
+                        string outputDir = Path.GetDirectoryName(inputFilePath);
+                        string outputPath = Path.Combine(outputDir, outputFile);
 
                         partCollection.Optimize();
-                        Application.DoEvents(); // Allow UI to respond after optimize operation
                         partCollection[0].AnimationTicksPerSecond = ticksPerSecond;
                         SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Compressing);
                         int compressFrameCount = 0;
@@ -403,11 +563,9 @@ namespace GifProcessorApp
 
                         SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
 
-                        mainForm.pBarTaskStatus.Visible = true;
-                        //mainForm.pBarTaskStatus.Value = 0;
+                        SetProgressVisible(mainForm, true);
 
                         partCollection.Write(outputPath);
-                        Application.DoEvents(); // Allow UI to respond after write operation
 
                         // Keep the overall progress monotonic: each part owns one band of the bar
                         // (e.g. 0-20-40-60-80-100 for 5 parts) instead of spiking to 100% per part,
@@ -415,40 +573,366 @@ namespace GifProcessorApp
                         int partSpan = 100 / ranges.Length;
                         int partBase = i * partSpan;
 
-                        if (mainForm.chkGifsicle.Checked)
+                        var progress = new Progress<int>(p =>
                         {
-                            SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing);
-                            var options = new GifsicleWrapper.GifsicleOptions
-                            {
-                                Colors = (int)mainForm.numUpDownPaletteSicle.Value,
-                                Lossy = (int)mainForm.numUpDownLossy.Value,
-                                OptimizeLevel = (int)mainForm.numUpDownOptimize.Value,
-                                Dither = mainForm.DitherMethod
-                            };
+                            SetProgressBar(mainForm.pBarTaskStatus, partBase + p * partSpan / 100, 100);
+                            SetStatusText(mainForm, $"{SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing} ({p}%)");
+                        });
 
-                            var progress = new Progress<int>(p =>
-                            {
-                                SetProgressBar(mainForm.pBarTaskStatus, partBase + p * partSpan / 100, 100);
-                                SetStatusText(mainForm, $"{SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing} ({p}%)");
-                            });
+                        await OptimizeWithGifsicleIfEnabled(mainForm, gifsicle, outputPath, progress);
 
-                            await GifsicleWrapper.OptimizeGif(outputPath, outputPath, options, progress);
-                        }
-                        else
-                        {
-                            SetProgressBar(mainForm.pBarTaskStatus, partBase + partSpan, 100);
-                            SetStatusText(mainForm, $"Saving part {i + 1} complete");
-                        }
+                        // Finalize this part's band regardless of whether gifsicle ran, was skipped by
+                        // the size threshold, or was disabled — keeps the bar monotonic.
+                        SetProgressBar(mainForm.pBarTaskStatus, partBase + partSpan, 100);
+                        SetStatusText(mainForm, $"Saving part {i + 1} complete");
 
                         ModifyGifFile(outputPath, canvasHeight);
+                    }
+                    }
+                    finally
+                    {
+                        gridLayer?.Dispose();
+                    }
                 }
-                }
-                finally
+            });
+        }
+
+        #region Slot Machine (拉霸) Methods
+
+        // 766px slot-machine reveal for a STATIC image: each of the 5 Steam columns becomes a vertical
+        // reel that wrap-scrolls its own slice, decelerates and locks left-to-right onto the image,
+        // then the result is split into the 5 Steam parts.
+        public static async Task SlotMachineStaticImage(GifToolMainForm mainForm)
+        {
+            using var dialog = new SlotMachineDialog(false);
+            if (dialog.ShowDialog(mainForm) != DialogResult.OK)
+                return;
+
+            ImageInputValidator.ValidateImage(dialog.InputFilePath);
+            await RunSlotMachine(mainForm, BuildSettings(dialog, false));
+        }
+
+        // Same slot-machine reveal but for an animated GIF: after the reels lock, the GIF plays through.
+        public static async Task SlotMachineGif(GifToolMainForm mainForm)
+        {
+            using var dialog = new SlotMachineDialog(true);
+            if (dialog.ShowDialog(mainForm) != DialogResult.OK)
+                return;
+
+            ImageInputValidator.ValidateGif(dialog.InputFilePath);
+            await RunSlotMachine(mainForm, BuildSettings(dialog, true));
+        }
+
+        private static SlotMachineSettings BuildSettings(SlotMachineDialog dialog, bool isGif)
+        {
+            return new SlotMachineSettings
+            {
+                InputFilePath = dialog.InputFilePath,
+                OutputFilePath = dialog.OutputFilePath,
+                IsGif = isGif,
+                DurationSeconds = dialog.DurationSeconds,
+                DurationVariancePercent = dialog.DurationVariancePercent,
+                Fps = dialog.Fps,
+                Spins = dialog.Spins,
+                SpinsVariancePercent = dialog.SpinsVariancePercent,
+                BounceSeconds = dialog.BounceSeconds,
+                TopToBottom = dialog.TopToBottom,
+                HoldSeconds = dialog.HoldSeconds,
+                PlayGifDuringSpin = dialog.PlayGifDuringSpin
+            };
+        }
+
+        private static async Task RunSlotMachine(GifToolMainForm mainForm, SlotMachineSettings settings)
+        {
+            // Capture gifsicle settings on the UI thread before any background work.
+            var gifsicle = CaptureGifsicleSnapshot(mainForm);
+            mainForm.Enabled = false;
+            SetProgressRange(mainForm, 0, 100);
+            SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+            SetProgressVisible(mainForm, true);
+
+            try
+            {
+                // Build the full-width 766px slot-machine animation (heavy → background thread).
+                // No auto-split: the output is a single 766px GIF so it can be chained with other
+                // effects (grid mosaic, scroll, ...) and split with the main "Split GIF" button when
+                // ready (that applies the 100px extension + 0x21 tail byte per part).
+                await Task.Run(() =>
                 {
-                    gridLayer?.Dispose();
-                }
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_SlotMachineBuilding);
+                    using var source = new MagickImageCollection(settings.InputFilePath);
+                    source.Coalesce();
+
+                    // Auto-resize to 766px wide when the input isn't already a supported width.
+                    uint width = source[0].Width;
+                    if (!IsValidCanvasWidth(width))
+                    {
+                        foreach (var frame in source)
+                        {
+                            frame.ResetPage();
+                            frame.Resize(SupportedWidth1, 0);
+                        }
+                        width = source[0].Width;
+                    }
+
+                    var ranges = GetCropRanges(width);
+                    int canvasHeight = (int)source[0].Height;
+
+                    using var animation = BuildSlotMachineAnimation(mainForm, source, settings, ranges, (int)width, canvasHeight);
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
+                    animation.Optimize();
+                    animation.Write(settings.OutputFilePath);
+                });
+
+                // Optional gifsicle on the whole 766px file (size threshold still applies).
+                await OptimizeWithGifsicleIfEnabled(mainForm, gifsicle, settings.OutputFilePath);
+
+                SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                    SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
+                    SteamGifCropper.Properties.Resources.Title_Success,
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Error);
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                    string.Format(SteamGifCropper.Properties.Resources.Error_Occurred, ex.Message),
+                    SteamGifCropper.Properties.Resources.Title_Error,
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                mainForm.Enabled = true;
+                SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Idle);
             }
         }
+
+        // Builds the full-width (canvasWidth × canvasHeight) spinning animation. Runs on a background
+        // thread; all UI updates go through the marshaled SetProgressBar/SetStatusText helpers.
+        private static MagickImageCollection BuildSlotMachineAnimation(GifToolMainForm mainForm,
+            MagickImageCollection source, SlotMachineSettings settings,
+            (int Start, int End)[] ranges, int canvasWidth, int canvasHeight)
+        {
+            int reelCount = ranges.Length;
+            int spins = Math.Max(1, settings.Spins);
+
+            int srcTicks = (int)source[0].AnimationTicksPerSecond;
+            if (srcTicks <= 0) srcTicks = 100;
+
+            // GIF length in seconds (caps spin time and drives the play-during-spin model).
+            double gifSeconds = 0.0;
+            if (settings.IsGif)
+            {
+                foreach (var frame in source)
+                {
+                    gifSeconds += (double)frame.AnimationDelay / srcTicks;
+                }
+            }
+            double maxSpinSeconds = (settings.IsGif && gifSeconds > 0.0) ? gifSeconds : double.MaxValue;
+
+            // Randomize each reel's stop time (seconds) and revolution count so which reel stops first
+            // (and which spins longest) is non-deterministic.
+            var rng = new Random();
+            double[] reelStopSec = new double[reelCount];
+            int[] reelSpins = new int[reelCount];
+            for (int c = 0; c < reelCount; c++)
+            {
+                double durSec = SlotMachineGeometry.ApplyVariance(settings.DurationSeconds, settings.DurationVariancePercent, rng.NextDouble());
+                if (durSec > maxSpinSeconds) durSec = maxSpinSeconds;
+                if (durSec < 0.1) durSec = 0.1;
+                reelStopSec[c] = durSec;
+
+                double spinVal = SlotMachineGeometry.ApplyVariance(spins, settings.SpinsVariancePercent, rng.NextDouble());
+                reelSpins[c] = Math.Max(1, (int)Math.Round(spinVal));
+            }
+
+            if (settings.IsGif && settings.PlayGifDuringSpin)
+            {
+                return BuildSlotMachinePlayDuringSpin(mainForm, source, settings, ranges, canvasWidth, canvasHeight, reelStopSec, reelSpins, srcTicks, gifSeconds);
+            }
+
+            return BuildSlotMachineSpinThenLock(mainForm, source, settings, ranges, canvasWidth, canvasHeight, reelStopSec, reelSpins, srcTicks);
+        }
+
+        // Reels spin over a frozen first frame (or the static image) and lock at their randomized times,
+        // then either hold the result (static) or play the full GIF (gif "spin, then play").
+        private static MagickImageCollection BuildSlotMachineSpinThenLock(GifToolMainForm mainForm,
+            MagickImageCollection source, SlotMachineSettings settings,
+            (int Start, int End)[] ranges, int canvasWidth, int canvasHeight,
+            double[] reelStopSec, int[] reelSpins, int srcTicks)
+        {
+            int reelCount = ranges.Length;
+            int fps = Math.Max(1, settings.Fps);
+            int delay = Math.Max(1, (int)Math.Round(100.0 / fps)); // GIF delay in 1/100 s
+            int overshootFrames = Math.Max(0, (int)Math.Round(settings.BounceSeconds * fps));
+
+            int[] reelStop = new int[reelCount];
+            int maxStop = 1;
+            for (int c = 0; c < reelCount; c++)
+            {
+                reelStop[c] = Math.Max(1, (int)Math.Round(reelStopSec[c] * fps));
+                if (reelStop[c] > maxStop) maxStop = reelStop[c];
+            }
+
+            int totalSpinFrames = maxStop + overshootFrames;
+            int endFrames = settings.IsGif ? source.Count : Math.Max(1, settings.HoldSeconds * fps);
+            int totalFrames = totalSpinFrames + endFrames;
+            int built = 0;
+
+            var result = new MagickImageCollection();
+            var slices = new MagickImage[reelCount];
+            try
+            {
+                // Pre-crop each column slice from the first (locked/"prize") frame.
+                for (int c = 0; c < reelCount; c++)
+                {
+                    int w = ranges[c].End - ranges[c].Start + 1;
+                    var slice = (MagickImage)source[0].Clone();
+                    slice.Crop(new MagickGeometry(ranges[c].Start, 0, (uint)w, (uint)canvasHeight));
+                    slice.ResetPage();
+                    slices[c] = slice;
+                }
+
+                // Spin phase: each reel wrap-scrolls, decelerates to its own randomized lock, then bounces.
+                for (int t = 0; t < totalSpinFrames; t++)
+                {
+                    var canvas = new MagickImage(MagickColors.Transparent, (uint)canvasWidth, (uint)canvasHeight);
+                    for (int c = 0; c < reelCount; c++)
+                    {
+                        int off = SlotMachineGeometry.ReelOffsetY(t, reelStop[c], reelSpins[c], canvasHeight, settings.TopToBottom, overshootFrames);
+                        using var tmp = (MagickImage)slices[c].Clone();
+                        if (off != 0)
+                        {
+                            tmp.Roll(0, off);
+                        }
+                        canvas.Composite(tmp, ranges[c].Start, 0, CompositeOperator.Over);
+                    }
+                    canvas.AnimationDelay = (uint)delay;
+                    canvas.AnimationTicksPerSecond = 100;
+                    canvas.GifDisposeMethod = GifDisposeMethod.Background;
+                    result.Add(canvas);
+
+                    if (++built % 5 == 0 || built == totalFrames)
+                    {
+                        SetProgressBar(mainForm.pBarTaskStatus, built * 100 / totalFrames, 100);
+                        SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_SlotMachineBuilding);
+                    }
+                }
+
+                // End phase.
+                if (settings.IsGif)
+                {
+                    // Play the original GIF through once after the reels lock.
+                    foreach (var frame in source)
+                    {
+                        var play = (MagickImage)frame.Clone();
+                        play.AnimationTicksPerSecond = srcTicks;
+                        play.GifDisposeMethod = GifDisposeMethod.Background;
+                        result.Add(play);
+                        if (++built % 5 == 0 || built == totalFrames)
+                        {
+                            SetProgressBar(mainForm.pBarTaskStatus, built * 100 / totalFrames, 100);
+                        }
+                    }
+                }
+                else
+                {
+                    // Hold the locked image for a moment before the loop restarts.
+                    for (int h = 0; h < endFrames; h++)
+                    {
+                        var hold = (MagickImage)source[0].Clone();
+                        hold.AnimationDelay = (uint)delay;
+                        hold.AnimationTicksPerSecond = 100;
+                        hold.GifDisposeMethod = GifDisposeMethod.Background;
+                        result.Add(hold);
+                        if (++built % 5 == 0 || built == totalFrames)
+                        {
+                            SetProgressBar(mainForm.pBarTaskStatus, built * 100 / totalFrames, 100);
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                foreach (var slice in slices)
+                {
+                    slice?.Dispose();
+                }
+            }
+
+            return result;
+        }
+
+        // GIF plays on its own timeline; the reels spin over the LIVE frames for the first part, then
+        // lock and the GIF keeps playing. Output length == GIF length (the spin consumes its first part).
+        private static MagickImageCollection BuildSlotMachinePlayDuringSpin(GifToolMainForm mainForm,
+            MagickImageCollection source, SlotMachineSettings settings,
+            (int Start, int End)[] ranges, int canvasWidth, int canvasHeight,
+            double[] reelStopSec, int[] reelSpins, int srcTicks, double gifSeconds)
+        {
+            int reelCount = ranges.Length;
+            int n = source.Count;
+
+            // Cumulative start time (seconds) of each GIF frame.
+            double[] startSec = new double[n];
+            double acc = 0.0;
+            for (int i = 0; i < n; i++)
+            {
+                startSec[i] = acc;
+                acc += (double)source[i].AnimationDelay / srcTicks;
+            }
+            double gifFps = (gifSeconds > 0.0) ? n / gifSeconds : n;
+            int overshootGif = Math.Max(0, (int)Math.Round(settings.BounceSeconds * gifFps));
+
+            // Convert each reel's stop time (seconds) to a GIF-frame index.
+            int[] reelStopFrame = new int[reelCount];
+            for (int c = 0; c < reelCount; c++)
+            {
+                int idx = n;
+                for (int i = 0; i < n; i++)
+                {
+                    if (startSec[i] >= reelStopSec[c]) { idx = i; break; }
+                }
+                reelStopFrame[c] = Math.Max(1, idx);
+            }
+
+            var result = new MagickImageCollection();
+            int built = 0;
+            for (int i = 0; i < n; i++)
+            {
+                var canvas = new MagickImage(MagickColors.Transparent, (uint)canvasWidth, (uint)canvasHeight);
+                for (int c = 0; c < reelCount; c++)
+                {
+                    int w = ranges[c].End - ranges[c].Start + 1;
+                    using var col = (MagickImage)source[i].Clone();
+                    col.Crop(new MagickGeometry(ranges[c].Start, 0, (uint)w, (uint)canvasHeight));
+                    col.ResetPage();
+                    int off = SlotMachineGeometry.ReelOffsetY(i, reelStopFrame[c], reelSpins[c], canvasHeight, settings.TopToBottom, overshootGif);
+                    if (off != 0)
+                    {
+                        col.Roll(0, off);
+                    }
+                    canvas.Composite(col, ranges[c].Start, 0, CompositeOperator.Over);
+                }
+                canvas.AnimationDelay = source[i].AnimationDelay;
+                canvas.AnimationTicksPerSecond = srcTicks;
+                canvas.GifDisposeMethod = GifDisposeMethod.Background;
+                result.Add(canvas);
+
+                if (++built % 5 == 0 || built == n)
+                {
+                    SetProgressBar(mainForm.pBarTaskStatus, built * 100 / n, 100);
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_SlotMachineBuilding);
+                }
+            }
+
+            return result;
+        }
+
+        #endregion
 
         public static async Task MergeAndSplitFiveGifs(GifToolMainForm mainForm)
         {
@@ -462,7 +946,7 @@ namespace GifProcessorApp
                 await MergeAndSplitFiveGifs(
                     mainForm,
                     dialog.SelectedFilePaths,
-                    dialog.chkGIFMergeFasterPaletteProcess.Checked,
+                    false,
                     dialog.PaletteSourceIndex);
             }
         }
@@ -494,41 +978,45 @@ namespace GifProcessorApp
             MagickImageCollection[] resizedCollections = null;
             MagickImageCollection[] syncedCollections = null;
 
+            var gifsicle = CaptureGifsicleSnapshot(mainForm);
+            mainForm.Enabled = false;
             try
             {
-                mainForm.pBarTaskStatus.Minimum = 0;
-                mainForm.pBarTaskStatus.Maximum = 100;
+                SetProgressRange(mainForm, 0, 100);
                 SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_ValidatingProcessing);
 
-                // Step 2: Load and validate all GIF files
+                // Step 2: Load and validate all GIF files (kept on the UI thread: it may pop a
+                // color-type error MessageBox which must run on the UI thread).
                 collections = LoadAndValidateGifs(gifFiles.ToArray(), mainForm);
                 if (collections == null) return;
 
                 SetProgressBar(mainForm.pBarTaskStatus, 20, 100);
 
-                // Step 3: Resize GIFs to specific widths (153, 153, 154, 153, 153)
-                resizedCollections = ResizeGifsToSpecificWidths(collections, mainForm);
-                SetProgressBar(mainForm.pBarTaskStatus, 40, 100);
-
-                // Step 4: Synchronize to shortest duration
-                syncedCollections = SynchronizeToShortestDuration(resizedCollections, mainForm);
-                SetProgressBar(mainForm.pBarTaskStatus, 60, 100);
-
-                // Step 5: Merge horizontally to create 766px wide GIF
                 string firstGifPath = gifFiles[0];
                 string mergedFileName = $"{Path.GetFileNameWithoutExtension(firstGifPath)}_merged.gif";
                 string outputDir = Path.GetDirectoryName(firstGifPath);
                 string mergedFilePath = Path.Combine(outputDir, mergedFileName);
 
-                MergeGifsHorizontally(syncedCollections, mergedFilePath, mainForm, useFasterPalette,
-                    ResourceLimits.Memory, ResourceLimits.Disk, paletteSourceIndex);
-                SetProgressBar(mainForm.pBarTaskStatus, 80, 100);
+                var loadedCollections = collections;
+                // Steps 3-5 (resize / synchronize / horizontal merge) are CPU-heavy → background thread.
+                await Task.Run(() =>
+                {
+                    resizedCollections = ResizeGifsToSpecificWidths(loadedCollections, mainForm);
+                    SetProgressBar(mainForm.pBarTaskStatus, 40, 100);
 
-                // Step 6: Apply existing split functionality
+                    syncedCollections = SynchronizeToShortestDuration(resizedCollections, mainForm);
+                    SetProgressBar(mainForm.pBarTaskStatus, 60, 100);
+
+                    MergeGifsHorizontally(syncedCollections, mergedFilePath, mainForm, useFasterPalette,
+                        ResourceLimits.Memory, ResourceLimits.Disk, paletteSourceIndex);
+                    SetProgressBar(mainForm.pBarTaskStatus, 80, 100);
+                });
+
+                // Step 6: Apply existing split functionality (SplitGif wraps its own Task.Run)
                 var ranges = GetCropRanges(SupportedWidth1); // Use 766px ranges
                 int adjustedHeight = (int)syncedCollections[0][0].Height + HeightExtension;
-                await SplitGif(mergedFilePath, mainForm, ranges, adjustedHeight);
+                await SplitGif(mergedFilePath, mainForm, ranges, adjustedHeight, gifsicle);
 
                 // Note: mergedFilePath is kept as the intermediate merged file
 
@@ -548,6 +1036,8 @@ namespace GifProcessorApp
             }
             finally
             {
+                mainForm.Enabled = true;
+
                 // Dispose all collections to prevent memory leaks
                 // Note: collections, resizedCollections, and syncedCollections are different objects
                 if (collections != null)
@@ -911,9 +1401,7 @@ namespace GifProcessorApp
             int maxFrames = collections.Max(c => c.Count);
 
             // Configure progress bar for frame-by-frame updates
-            mainForm.pBarTaskStatus.Minimum = 0;
-            mainForm.pBarTaskStatus.Maximum = maxFrames;
-            SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
+            SetProgressBar(mainForm.pBarTaskStatus, 0, maxFrames);
 
             // Create enumerators for each collection to fetch frames on demand
             var enumerators = collections.Select(c => c.GetEnumerator()).ToArray();
@@ -985,8 +1473,7 @@ namespace GifProcessorApp
                 palette.Dispose();
 
                 // Reset progress bar after merging completes
-                SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
-                mainForm.pBarTaskStatus.Maximum = 100;
+                SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
             }
         }
 
@@ -995,7 +1482,6 @@ namespace GifProcessorApp
             ImageInputValidator.ValidateGif(inputFilePath);
             using var collection = new MagickImageCollection(inputFilePath);
             collection.Coalesce();
-            Application.DoEvents(); // Allow UI to respond after coalesce operation
 
             uint canvasWidth = collection[0].Width;
             if (!IsValidCanvasWidth(canvasWidth))
@@ -1032,7 +1518,6 @@ namespace GifProcessorApp
                 }
 
                 partCollection.Optimize();
-                Application.DoEvents(); // Allow UI to respond after optimize operation
                 partCollection[0].AnimationTicksPerSecond = ticksPerSecond;
                 foreach (var frame in partCollection)
                 {
@@ -1260,19 +1745,18 @@ namespace GifProcessorApp
             ImageInputValidator.ValidateGif(inputFilePath);
             try
             {
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_CoalescingFrames);
                 using (var collection = new MagickImageCollection(inputFilePath))
                 {
                     collection.Coalesce();
-                Application.DoEvents(); // Allow UI to respond after coalesce operation
 
                     int totalFrames = collection.Count;
                     int currentFrame = 0;
 
                     if (mainForm != null)
                     {
-                        mainForm.pBarTaskStatus.Minimum = 0;
-                        mainForm.pBarTaskStatus.Maximum = totalFrames;
-                        SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
+                        SetProgressRange(mainForm, 0, totalFrames);
+                        SetProgressBar(mainForm.pBarTaskStatus, 0, totalFrames);
                         UpdateFrameProgressByFrame(mainForm, 0, totalFrames);
                     }
 
@@ -1289,24 +1773,26 @@ namespace GifProcessorApp
                         }
                     }
 
+                    // These two steps are a single long blocking call each with no sub-progress; after
+                    // "N/N" the bar would otherwise sit still, so surface the phase in the status text.
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Optimizing);
                     collection.Optimize();
-                    Application.DoEvents(); // Allow UI to respond after optimize operation
+
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
                     collection.Write(outputFilePath);
-                    Application.DoEvents(); // Allow UI to respond after write operation
                 }
             }
             finally
             {
                 if (mainForm != null)
                 {
-                    SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
-                    mainForm.pBarTaskStatus.Maximum = 100;
+                    SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
                     SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Idle);
                 }
             }
         }
 
-        public static void ResizeGifTo766(GifToolMainForm mainForm)
+        public static async Task ResizeGifTo766(GifToolMainForm mainForm)
         {
             using (var openFileDialog = new OpenFileDialog
             {
@@ -1323,12 +1809,12 @@ namespace GifProcessorApp
                 mainForm.Enabled = false;
                 try
                 {
-                    SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
-                    mainForm.pBarTaskStatus.Maximum = 100;
-                    mainForm.pBarTaskStatus.Visible = true;
+                    SetProgressRange(mainForm, 0, 100);
+                    SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+                    SetProgressVisible(mainForm, true);
                     SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Loading);
 
-                    ResizeGifTo766(inputFilePath, outputFilePath, mainForm);
+                    await Task.Run(() => ResizeGifTo766(inputFilePath, outputFilePath, mainForm));
 
                     WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
                                     string.Format(SteamGifCropper.Properties.Resources.Message_ResizeComplete,
@@ -1344,7 +1830,7 @@ namespace GifProcessorApp
                 finally
                 {
                     mainForm.Enabled = true;
-                    SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
+                    SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
                     SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Idle);
                 }
             }
@@ -1593,34 +2079,25 @@ namespace GifProcessorApp
             var collections = new List<MagickImageCollection>();
             try
             {
+                mainForm.Enabled = false;
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Message_AnalyzingGifs);
-                await Task.Delay(1); // Allow UI update
                 var widths = new List<int>();
                 int minFrameCount = int.MaxValue;
-                double shortestDuration = double.MaxValue;
 
-                // Load all GIFs and analyze properties
-                foreach (string gifPath in gifPaths)
+                // Load all GIFs (heavy: decode + coalesce) on a background thread.
+                await Task.Run(() =>
                 {
-                    SetStatusText(mainForm, gifPath);
-                    await Task.Delay(1); // Allow UI update
-                    var collection = new MagickImageCollection(gifPath);
-                    collection.Coalesce();
-                    Application.DoEvents(); // Allow UI to respond after coalesce operation
-                    collections.Add(collection);
-
-                    int width = (int)collection[0].Width;
-                    widths.Add(width);
-
-                    // Calculate total duration in seconds accounting for ticks-per-second
-                    double totalDuration = collection.Sum(frame => (double)frame.AnimationDelay / frame.AnimationTicksPerSecond);
-                    if (totalDuration < shortestDuration)
+                    foreach (string gifPath in gifPaths)
                     {
-                        shortestDuration = totalDuration;
-                    }
+                        SetStatusText(mainForm, gifPath);
+                        var collection = new MagickImageCollection(gifPath);
+                        collection.Coalesce();
+                        collections.Add(collection);
 
-                    minFrameCount = Math.Min(minFrameCount, collection.Count);
-                }
+                        widths.Add((int)collection[0].Width);
+                        minFrameCount = Math.Min(minFrameCount, collection.Count);
+                    }
+                });
 
                 // Check for FPS mismatches and warn user
                 var fpsValues = new List<double>();
@@ -1652,103 +2129,103 @@ namespace GifProcessorApp
                 int totalWidth = widths.Sum();
                 int maxHeight = collections.Max(c => (int)c[0].Height);
 
-                mainForm.Enabled = false;
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Message_MergingGifs);
-                await Task.Delay(1); // Allow UI update
-                // Build shared palette from first frames
-                var palette = BuildSharedPalette(collections, useFastPalette, primaryGifIndex);
-                Application.DoEvents(); // Allow UI to respond after palette building
 
                 var mergedCollection = new MagickImageCollection();
 
                 try
                 {
-                    for (int frameIndex = 0; frameIndex < targetFrameCount; frameIndex++)
+                    // All compositing / palette remap / LZW / write is CPU-heavy → background thread.
+                    await Task.Run(() =>
                     {
-                        // Update progress more frequently for better user feedback
-                        if (frameIndex % 2 == 0 || frameIndex == targetFrameCount - 1)
+                        // Build shared palette from first frames
+                        var palette = BuildSharedPalette(collections, useFastPalette, primaryGifIndex);
+                        try
                         {
-                            SetStatusText(mainForm, $"{SteamGifCropper.Properties.Resources.Message_MergingGifs} ({frameIndex + 1}/{targetFrameCount})");
-                            await Task.Delay(1); // Allow UI update
+                            for (int frameIndex = 0; frameIndex < targetFrameCount; frameIndex++)
+                            {
+                                // Update progress more frequently for better user feedback
+                                if (frameIndex % 2 == 0 || frameIndex == targetFrameCount - 1)
+                                {
+                                    SetStatusText(mainForm, $"{SteamGifCropper.Properties.Resources.Message_MergingGifs} ({frameIndex + 1}/{targetFrameCount})");
+                                }
+
+                                // Create canvas with total width
+                                var canvas = new MagickImage(MagickColors.Transparent, (uint)totalWidth, (uint)maxHeight);
+
+                                int currentX = 0;
+
+                                for (int gifIndex = 0; gifIndex < collections.Count; gifIndex++)
+                                {
+                                    var collection = collections[gifIndex];
+
+                                    // Calculate which frame to use based on shortest duration
+                                    double frameProgress = (double)frameIndex / targetFrameCount;
+                                    int sourceFrameIndex = Math.Min((int)(frameProgress * collection.Count), collection.Count - 1);
+
+                                    var frame = collection[sourceFrameIndex];
+
+                                    // Composite frame onto canvas at current X position
+                                    canvas.Composite(frame, currentX, 0, CompositeOperator.Over);
+
+                                    currentX += widths[gifIndex];
+                                }
+
+                                // Set animation delay and timing from the reference frame
+                                var sourceFrame = collections[0][Math.Min(frameIndex, collections[0].Count - 1)];
+                                canvas.AnimationDelay = sourceFrame.AnimationDelay;
+                                canvas.AnimationTicksPerSecond = ticksPerSecond;
+                                canvas.GifDisposeMethod = GifDisposeMethod.Background;
+
+                                mergedCollection.Add(canvas);
+                            }
+
+                            // Remap frames to shared palette
+                            SetStatusText(mainForm, useFastPalette ?
+                                SteamGifCropper.Properties.Resources.Status_MappingFastPalette :
+                                SteamGifCropper.Properties.Resources.Status_MappingSharedPalette);
+                            var mapSettings = new QuantizeSettings
+                            {
+                                Colors = 256,
+                                ColorSpace = ColorSpace.RGB,
+                                DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+                            };
+
+                            int totalFrames = mergedCollection.Count;
+                            int currentFrame = 0;
+                            foreach (MagickImage frame in mergedCollection)
+                            {
+                                currentFrame++;
+                                frame.Remap(palette, mapSettings);
+
+                                // Update progress every frame or every 5 frames for better responsiveness
+                                if (currentFrame % Math.Max(1, totalFrames / 20) == 0 || currentFrame == totalFrames)
+                                {
+                                    int progress = (int)((double)currentFrame / totalFrames * 100);
+                                    SetProgressBar(mainForm.pBarTaskStatus, progress, 100);
+                                    SetStatusText(mainForm, string.Format(
+                                        useFastPalette ? "Fast palette mapping: {0}/{1} ({2}%)" : "Quality palette mapping: {0}/{1} ({2}%)",
+                                        currentFrame, totalFrames, progress));
+                                }
+                            }
+
+                            // Apply LZW compression
+                            SetStatusText(mainForm, "Processing LZW compression...");
+                            foreach (var frame in mergedCollection)
+                            {
+                                frame.Format = MagickFormat.Gif;
+                                frame.Settings.SetDefine(MagickFormat.Gif, "optimize-transparency", "true");
+                            }
+
+                            // Save the merged GIF
+                            SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
+                            mergedCollection.Write(outputPath);
                         }
-
-                        // Create canvas with total width
-                        var canvas = new MagickImage(MagickColors.Transparent, (uint)totalWidth, (uint)maxHeight);
-
-                        int currentX = 0;
-                        
-                        for (int gifIndex = 0; gifIndex < collections.Count; gifIndex++)
+                        finally
                         {
-                            var collection = collections[gifIndex];
-                            
-                            // Calculate which frame to use based on shortest duration
-                            double frameProgress = (double)frameIndex / targetFrameCount;
-                            int sourceFrameIndex = Math.Min((int)(frameProgress * collection.Count), collection.Count - 1);
-                            
-                            var frame = collection[sourceFrameIndex];
-                            
-                            // Composite frame onto canvas at current X position
-                            canvas.Composite(frame, currentX, 0, CompositeOperator.Over);
-                            
-                            currentX += widths[gifIndex];
+                            palette.Dispose();
                         }
-
-                        // Set animation delay and timing from the reference frame
-                        var sourceFrame = collections[0][Math.Min(frameIndex, collections[0].Count - 1)];
-                        canvas.AnimationDelay = sourceFrame.AnimationDelay;
-                        canvas.AnimationTicksPerSecond = ticksPerSecond;
-                        canvas.GifDisposeMethod = GifDisposeMethod.Background;
-                        
-                        mergedCollection.Add(canvas);
-                    }
-
-                    // Remap frames to shared palette
-                    SetStatusText(mainForm, useFastPalette ?
-                        SteamGifCropper.Properties.Resources.Status_MappingFastPalette :
-                        SteamGifCropper.Properties.Resources.Status_MappingSharedPalette);
-                    await Task.Delay(1); // Allow UI update
-                    var mapSettings = new QuantizeSettings
-                    {
-                        Colors = 256,
-                        ColorSpace = ColorSpace.RGB,
-                        DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
-                    };
-
-                    //mergedCollection.Count;
-                    int totalFrames = mergedCollection.Count;
-                    int currentFrame = 0;
-                    foreach (MagickImage frame in mergedCollection)
-                    {
-                        currentFrame++;
-                        frame.Remap(palette, mapSettings);
-                        
-                        // Update progress every frame or every 5 frames for better responsiveness
-                        if (currentFrame % Math.Max(1, totalFrames / 20) == 0 || currentFrame == totalFrames)
-                        {
-                            int progress = (int)((double)currentFrame / totalFrames * 100);
-                            SetProgressBar(mainForm.pBarTaskStatus, progress, 100);
-                            SetStatusText(mainForm, string.Format(
-                                useFastPalette ? "Fast palette mapping: {0}/{1} ({2}%)" : "Quality palette mapping: {0}/{1} ({2}%)",
-                                currentFrame, totalFrames, progress));
-                            await Task.Delay(1); // Allow UI update
-                            Application.DoEvents(); // Allow UI to respond during palette mapping
-                        }
-                    }
-
-                    // Apply LZW compression
-                    SetStatusText(mainForm, "Processing LZW compression...");
-                    await Task.Delay(1); // Allow UI update
-                    foreach (var frame in mergedCollection)
-                    {
-                        frame.Format = MagickFormat.Gif;
-                        frame.Settings.SetDefine(MagickFormat.Gif, "optimize-transparency", "true");
-                    }
-
-                    // Save the merged GIF
-                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
-                    await Task.Delay(1); // Allow UI update                    
-                    mergedCollection.Write(outputPath);
-                    Application.DoEvents(); // Allow UI to respond after write operation
+                    });
 
                     string successMessage = string.Format(SteamGifCropper.Properties.Resources.Message_GifMergeComplete, outputPath);
                     WindowsThemeManager.ShowThemeAwareMessageBox(mainForm, successMessage, SteamGifCropper.Properties.Resources.Title_Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1757,7 +2234,6 @@ namespace GifProcessorApp
                 }
                 finally
                 {
-                    palette.Dispose();
                     mergedCollection?.Dispose();
                 }
             }
@@ -2128,44 +2604,44 @@ namespace GifProcessorApp
                     try
                     {
                         SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_FFmpegFallback);
-                        SetProgressBar(mainForm.pBarTaskStatus, 25, mainForm.pBarTaskStatus.Maximum);
-                        
-                        // Get target framerate from main form
+                        SetProgressBar(mainForm.pBarTaskStatus, 25, 100);
+
+                        // Get target framerate from main form (UI thread, before Task.Run)
                         int fallbackFramerate = (int)mainForm.numUpDownFramerate.Value;
-                        
-                        using (var collection = new MagickImageCollection(inputFilePath))
+
+                        await Task.Run(() =>
                         {
-                            SetProgressBar(mainForm.pBarTaskStatus, 50, mainForm.pBarTaskStatus.Maximum);
-                            await Task.Delay(1);
-                            
-                            // Reverse the frame order
-                            collection.Reverse();
-                            
-                            SetProgressBar(mainForm.pBarTaskStatus, 75, mainForm.pBarTaskStatus.Maximum);
-                            await Task.Delay(1);
-                            
-                            // Apply framerate setting to all frames
-                            uint frameDelay = (uint)(100.0 / fallbackFramerate); // Convert fps to delay (in 1/100th seconds)
-                            foreach (var frame in collection)
+                            using (var collection = new MagickImageCollection(inputFilePath))
                             {
-                                frame.AnimationDelay = frameDelay;
+                                SetProgressBar(mainForm.pBarTaskStatus, 50, 100);
+
+                                // Reverse the frame order
+                                collection.Reverse();
+
+                                SetProgressBar(mainForm.pBarTaskStatus, 75, 100);
+
+                                // Apply framerate setting to all frames
+                                uint frameDelay = (uint)(100.0 / fallbackFramerate); // Convert fps to delay (in 1/100th seconds)
+                                foreach (var frame in collection)
+                                {
+                                    frame.AnimationDelay = frameDelay;
+                                }
+
+                                SetProgressBar(mainForm.pBarTaskStatus, 90, 100);
+
+                                collection.Write(outputFilePath);
+
+                                SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
                             }
-                            
-                            SetProgressBar(mainForm.pBarTaskStatus, 90, mainForm.pBarTaskStatus.Maximum);
-                            await Task.Delay(1);
-                            
-                            collection.Write(outputFilePath);
-                            Application.DoEvents(); // Allow UI to respond after write operation
-                            
-                            SetProgressBar(mainForm.pBarTaskStatus, 100, mainForm.pBarTaskStatus.Maximum);
-                            SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifReversed ?? "GIF reversed successfully!");
-                            WindowsThemeManager.ShowThemeAwareMessageBox(
-                                mainForm,
-                                (SteamGifCropper.Properties.Resources.Message_GifReversedSuccess ?? "GIF reversed successfully!") + $"\n{outputFilePath}",
-                                SteamGifCropper.Properties.Resources.Title_Success ?? "Success",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Information);
-                        }
+                        });
+
+                        SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifReversed ?? "GIF reversed successfully!");
+                        WindowsThemeManager.ShowThemeAwareMessageBox(
+                            mainForm,
+                            (SteamGifCropper.Properties.Resources.Message_GifReversedSuccess ?? "GIF reversed successfully!") + $"\n{outputFilePath}",
+                            SteamGifCropper.Properties.Resources.Title_Success ?? "Success",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
                     }
                     catch (Exception fallbackEx)
                     {
@@ -2417,7 +2893,6 @@ namespace GifProcessorApp
             }
 
             collection.Write(outputFilePath, defines);
-            Application.DoEvents(); // Allow UI to respond after write operation
 
             if (mainForm != null)
             {
@@ -2443,6 +2918,7 @@ namespace GifProcessorApp
             bool fullCycle = dialog.FullCycle;
             bool autoDuration = dialog.AutoDuration;
             int targetFramerate = (int)mainForm.numUpDownFramerate.Value;
+            var gifsicle = CaptureGifsicleSnapshot(mainForm);
 
             // Auto-calculate duration if requested and input is GIF
             if (autoDuration && Path.GetExtension(inputPath).ToLowerInvariant() == ".gif")
@@ -2488,18 +2964,7 @@ namespace GifProcessorApp
                     }
                 });
 
-                if (mainForm.chkGifsicle.Checked)
-                {
-                    var options = new GifsicleWrapper.GifsicleOptions
-                    {
-                        Colors = (int)mainForm.numUpDownPaletteSicle.Value,
-                        Lossy = (int)mainForm.numUpDownLossy.Value,
-                        OptimizeLevel = (int)mainForm.numUpDownOptimize.Value,
-                        Dither = mainForm.DitherMethod
-                    };
-                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing);
-                    await GifsicleWrapper.OptimizeGif(outputPath, outputPath, options);
-                }
+                await OptimizeWithGifsicleIfEnabled(mainForm, gifsicle, outputPath);
 
                 SetProgressBar(mainForm.pBarTaskStatus, mainForm.pBarTaskStatus.Maximum, mainForm.pBarTaskStatus.Maximum);
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
@@ -2549,6 +3014,7 @@ namespace GifProcessorApp
             bool fullCycle = dialog.FullCycle;
             bool autoDuration = dialog.AutoDuration;
             int targetFramerate = (int)mainForm.numUpDownFramerate.Value;
+            var gifsicle = CaptureGifsicleSnapshot(mainForm);
 
             // Auto-calculate duration for GIF cycle
             if (autoDuration)
@@ -2594,18 +3060,7 @@ namespace GifProcessorApp
                     }
                 });
 
-                if (mainForm.chkGifsicle.Checked)
-                {
-                    var options = new GifsicleWrapper.GifsicleOptions
-                    {
-                        Colors = (int)mainForm.numUpDownPaletteSicle.Value,
-                        Lossy = (int)mainForm.numUpDownLossy.Value,
-                        OptimizeLevel = (int)mainForm.numUpDownOptimize.Value,
-                        Dither = mainForm.DitherMethod
-                    };
-                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing);
-                    await GifsicleWrapper.OptimizeGif(outputPath, outputPath, options);
-                }
+                await OptimizeWithGifsicleIfEnabled(mainForm, gifsicle, outputPath);
 
                 WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
                                 SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
@@ -3043,8 +3498,7 @@ namespace GifProcessorApp
             // Initialize progress bar
             if (mainForm != null)
             {
-                mainForm.pBarTaskStatus.Minimum = 0;
-                mainForm.pBarTaskStatus.Maximum = 100;
+                SetProgressRange(mainForm, 0, 100);
                 SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
             }
 
@@ -3191,8 +3645,7 @@ namespace GifProcessorApp
             // Initialize progress bar
             if (mainForm != null)
             {
-                mainForm.pBarTaskStatus.Minimum = 0;
-                mainForm.pBarTaskStatus.Maximum = 100;
+                SetProgressRange(mainForm, 0, 100);
                 SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
             }
 
@@ -3295,45 +3748,67 @@ namespace GifProcessorApp
             ImageInputValidator.ValidateGif(overlayPath);
             bool resampleBase = dialog.ResampleBaseFrames;
 
+            // Capture every dialog value on the UI thread; the dialog is a control and must not be
+            // touched from the background worker.
+            bool useStaticOverlay = dialog.UseStaticOverlay;
+            int staticOverlayX = dialog.StaticOverlayX;
+            int staticOverlayY = dialog.StaticOverlayY;
+            var movementDirection = dialog.MovementDirection;
+            int stepPixels = dialog.StepPixels;
+            int moveCount = dialog.MoveCount;
+            bool infiniteMovement = dialog.InfiniteMovement;
+            var gifsicle = CaptureGifsicleSnapshot(mainForm);
+
+            mainForm.Enabled = false;
+            SetProgressRange(mainForm, 0, 100);
+            SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
             try
             {
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Loading);
-                mainForm.pBarTaskStatus.Minimum = 0;
-                mainForm.pBarTaskStatus.Maximum = 100;
-                SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
 
-                using var baseCollection = new MagickImageCollection(basePath);
-                using var overlayCollection = new MagickImageCollection(overlayPath);
-                using var resultCollection = new MagickImageCollection();
-
-                int baseWidth = (int)baseCollection[0].Width;
-                int baseHeight = (int)baseCollection[0].Height;
-                int overlayWidth = (int)overlayCollection[0].Width;
-                int overlayHeight = (int)overlayCollection[0].Height;
-
-                baseCollection.Coalesce();
-                overlayCollection.Coalesce();
-
-                if (dialog.UseStaticOverlay)
+                await Task.Run(async () =>
                 {
-                    // Static overlay - use original logic with fixed position
-                    await ProcessStaticOverlay(mainForm, baseCollection, overlayCollection, resultCollection,
-                        dialog.StaticOverlayX, dialog.StaticOverlayY, resampleBase, baseWidth, baseHeight);
-                }
-                else
-                {
-                    // Moving overlay - new logic starting from static overlay position
-                    await ProcessMovingOverlay(mainForm, baseCollection, overlayCollection, resultCollection,
-                        dialog.MovementDirection, dialog.StepPixels, dialog.MoveCount, dialog.InfiniteMovement,
-                        resampleBase, baseWidth, baseHeight, overlayWidth, overlayHeight,
-                        dialog.StaticOverlayX, dialog.StaticOverlayY);
-                }
+                    using var baseCollection = new MagickImageCollection(basePath);
+                    using var overlayCollection = new MagickImageCollection(overlayPath);
+                    using var resultCollection = new MagickImageCollection();
 
-                resultCollection.Quantize();
-                resultCollection.Optimize();
+                    int baseWidth = (int)baseCollection[0].Width;
+                    int baseHeight = (int)baseCollection[0].Height;
+                    int overlayWidth = (int)overlayCollection[0].Width;
+                    int overlayHeight = (int)overlayCollection[0].Height;
 
-                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
-                resultCollection.Write(outputPath);
+                    baseCollection.Coalesce();
+                    overlayCollection.Coalesce();
+
+                    if (useStaticOverlay)
+                    {
+                        // Static overlay - use original logic with fixed position
+                        await ProcessStaticOverlay(mainForm, baseCollection, overlayCollection, resultCollection,
+                            staticOverlayX, staticOverlayY, resampleBase, baseWidth, baseHeight);
+                    }
+                    else
+                    {
+                        // Moving overlay - new logic starting from static overlay position
+                        await ProcessMovingOverlay(mainForm, baseCollection, overlayCollection, resultCollection,
+                            movementDirection, stepPixels, moveCount, infiniteMovement,
+                            resampleBase, baseWidth, baseHeight, overlayWidth, overlayHeight,
+                            staticOverlayX, staticOverlayY);
+                    }
+
+                    resultCollection.Quantize();
+                    resultCollection.Optimize();
+
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
+                    resultCollection.Write(outputPath);
+                });
+
+                await OptimizeWithGifsicleIfEnabled(mainForm, gifsicle, outputPath);
+
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                    SteamGifCropper.Properties.Resources.Message_OverlayComplete,
+                    SteamGifCropper.Properties.Resources.Title_Success,
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
@@ -3342,33 +3817,13 @@ namespace GifProcessorApp
                     $"Error: {ex.Message}",
                     SteamGifCropper.Properties.Resources.Title_Error,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
             }
             finally
             {
-                SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
+                mainForm.Enabled = true;
+                SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Idle);
             }
-
-            if (mainForm.chkGifsicle.Checked)
-            {
-                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing);
-                var options = new GifsicleWrapper.GifsicleOptions
-                {
-                    Colors = (int)mainForm.numUpDownPaletteSicle.Value,
-                    Lossy = (int)mainForm.numUpDownLossy.Value,
-                    OptimizeLevel = (int)mainForm.numUpDownOptimize.Value,
-                    Dither = mainForm.DitherMethod,
-                };
-
-                await GifsicleWrapper.OptimizeGif(outputPath, outputPath, options);
-            }
-
-            SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
-            WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
-                SteamGifCropper.Properties.Resources.Message_OverlayComplete,
-                SteamGifCropper.Properties.Resources.Title_Success,
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         #region GIF Concatenation Methods
@@ -3404,96 +3859,94 @@ namespace GifProcessorApp
             var gifCollections = new List<MagickImageCollection>();
             MagickImageCollection result = null;
 
+            // gifsicle gates on the dialog's own flag, not chkGifsicle, but still honors the shared
+            // size threshold + lossy/palette/optimize/dither controls.
+            var gifsicle = CaptureGifsicleSnapshot(mainForm, settings.UseGifsicleOptimization, true);
+            mainForm.Enabled = false;
             try
             {
-                mainForm.pBarTaskStatus.Minimum = 0;
-                mainForm.pBarTaskStatus.Maximum = 100;
+                SetProgressRange(mainForm, 0, 100);
                 SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Loading);
 
-                // Step 1: Load all GIF files
-                for (int i = 0; i < settings.GifFilePaths.Count; i++)
+                // Steps 1-9 are CPU/IO-heavy → run on a background thread. All progress updates use the
+                // marshaled SetProgressBar/SetStatusText helpers; none of the called methods touch controls.
+                await Task.Run(async () =>
                 {
-                    MagickImageCollection collection = null;
-                    try
+                    // Step 1: Load all GIF files
+                    for (int i = 0; i < settings.GifFilePaths.Count; i++)
                     {
-                        collection = new MagickImageCollection(settings.GifFilePaths[i]);
-                        collection.Coalesce();
-                        gifCollections.Add(collection);
-                        collection = null; // Ownership transferred to list
+                        MagickImageCollection collection = null;
+                        try
+                        {
+                            collection = new MagickImageCollection(settings.GifFilePaths[i]);
+                            collection.Coalesce();
+                            gifCollections.Add(collection);
+                            collection = null; // Ownership transferred to list
+                        }
+                        finally
+                        {
+                            // Dispose only if not added to list
+                            collection?.Dispose();
+                        }
+
+                        SetProgressBar(mainForm.pBarTaskStatus, (i + 1) * 10 / settings.GifFilePaths.Count, 100);
                     }
-                    finally
+
+                    SetProgressBar(mainForm.pBarTaskStatus, 15, 100);
+                    SetStatusText(mainForm, "Analyzing GIF properties...");
+
+                    // Step 2: Analyze GIF properties
+                    var analysis = AnalyzeGifProperties(gifCollections);
+                    SetProgressBar(mainForm.pBarTaskStatus, 25, 100);
+
+                    // Step 3: Unify FPS
+                    SetStatusText(mainForm, "Unifying frame rates...");
+                    await UnifyFrameRates(gifCollections, settings, analysis);
+                    SetProgressBar(mainForm.pBarTaskStatus, 40, 100);
+
+                    // Step 4: Unify dimensions if requested
+                    if (settings.UnifyDimensions)
                     {
-                        // Dispose only if not added to list
-                        collection?.Dispose();
+                        SetStatusText(mainForm, "Unifying dimensions...");
+                        UnifyDimensions(gifCollections, analysis);
+                        SetProgressBar(mainForm.pBarTaskStatus, 55, 100);
                     }
 
-                    SetProgressBar(mainForm.pBarTaskStatus, (i + 1) * 10 / settings.GifFilePaths.Count, 100);
-                }
+                    // Step 5: Build unified palette
+                    SetStatusText(mainForm, "Building unified palette...");
+                    var unifiedPalette = BuildUnifiedPalette(gifCollections, settings);
+                    SetProgressBar(mainForm.pBarTaskStatus, 65, 100);
 
-                SetProgressBar(mainForm.pBarTaskStatus, 15, 100);
-                SetStatusText(mainForm, "Analyzing GIF properties...");
+                    // Step 6: Apply unified palette
+                    SetStatusText(mainForm, "Applying unified palette...");
+                    await ApplyUnifiedPalette(gifCollections, unifiedPalette, settings.UseFasterPalette);
+                    SetProgressBar(mainForm.pBarTaskStatus, 80, 100);
 
-                // Step 2: Analyze GIF properties
-                var analysis = AnalyzeGifProperties(gifCollections);
-                SetProgressBar(mainForm.pBarTaskStatus, 25, 100);
+                    // Step 7: Generate transitions and concatenate GIFs
+                    SetStatusText(mainForm, "Generating transitions and concatenating GIF files...");
+                    var transitionProgress = new Progress<(int current, int total, string status)>(report =>
+                    {
+                        // Map transition progress to overall progress (80-90%)
+                        int overallProgress = 80 + (report.current * 10 / report.total);
+                        SetProgressBar(mainForm.pBarTaskStatus, overallProgress, 100);
+                        SetStatusText(mainForm, report.status);
+                    });
 
-                // Step 3: Unify FPS
-                SetStatusText(mainForm, "Unifying frame rates...");
-                await UnifyFrameRates(gifCollections, settings, analysis);
-                SetProgressBar(mainForm.pBarTaskStatus, 40, 100);
+                    result = await ConcatenateGifCollectionsWithTransitions(gifCollections, settings, analysis.MaxFps, transitionProgress);
+                    SetProgressBar(mainForm.pBarTaskStatus, 90, 100);
 
-                // Step 4: Unify dimensions if requested
-                if (settings.UnifyDimensions)
-                {
-                    SetStatusText(mainForm, "Unifying dimensions...");
-                    UnifyDimensions(gifCollections, analysis);
-                    SetProgressBar(mainForm.pBarTaskStatus, 55, 100);
-                }
+                    // Step 8: Save result
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
+                    result.Write(settings.OutputFilePath);
+                    SetProgressBar(mainForm.pBarTaskStatus, 95, 100);
 
-                // Step 5: Build unified palette
-                SetStatusText(mainForm, "Building unified palette...");
-                var unifiedPalette = BuildUnifiedPalette(gifCollections, settings);
-                SetProgressBar(mainForm.pBarTaskStatus, 65, 100);
+                    // Step 9: Optional gifsicle optimization (gated + size-thresholded)
+                    await OptimizeWithGifsicleIfEnabled(mainForm, gifsicle, settings.OutputFilePath);
 
-                // Step 6: Apply unified palette
-                SetStatusText(mainForm, "Applying unified palette...");
-                await ApplyUnifiedPalette(gifCollections, unifiedPalette, settings.UseFasterPalette);
-                SetProgressBar(mainForm.pBarTaskStatus, 80, 100);
-
-                // Step 7: Generate transitions and concatenate GIFs
-                SetStatusText(mainForm, "Generating transitions and concatenating GIF files...");
-                var transitionProgress = new Progress<(int current, int total, string status)>(report =>
-                {
-                    // Map transition progress to overall progress (80-90%)
-                    int overallProgress = 80 + (report.current * 10 / report.total);
-                    SetProgressBar(mainForm.pBarTaskStatus, overallProgress, 100);
-                    SetStatusText(mainForm, report.status);
+                    SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
                 });
-                
-                result = await ConcatenateGifCollectionsWithTransitions(gifCollections, settings, analysis.MaxFps, transitionProgress);
-                SetProgressBar(mainForm.pBarTaskStatus, 90, 100);
 
-                // Step 8: Save result
-                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
-                result.Write(settings.OutputFilePath);
-                SetProgressBar(mainForm.pBarTaskStatus, 95, 100);
-
-                // Step 9: Optional gifsicle optimization
-                if (settings.UseGifsicleOptimization)
-                {
-                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing);
-                    var options = new GifsicleWrapper.GifsicleOptions
-                    {
-                        Colors = (int)mainForm.numUpDownPaletteSicle.Value,
-                        Lossy = (int)mainForm.numUpDownLossy.Value,
-                        OptimizeLevel = (int)mainForm.numUpDownOptimize.Value,
-                        Dither = mainForm.DitherMethod
-                    };
-                    await GifsicleWrapper.OptimizeGif(settings.OutputFilePath, settings.OutputFilePath, options);
-                }
-
-                SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
 
                 WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
@@ -3511,6 +3964,8 @@ namespace GifProcessorApp
             }
             finally
             {
+                mainForm.Enabled = true;
+
                 // Cleanup all collections and result to prevent memory leaks
                 foreach (var collection in gifCollections)
                 {

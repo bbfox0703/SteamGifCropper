@@ -19,7 +19,6 @@ namespace GifProcessorApp
         private Button btnOK;
         private Button btnCancel;
         private Label lblGifFiles;
-        public CheckBox chkGIFMergeFasterPaletteProcess;
         private Label lblInstructions;
         private Label lblPaletteSource;
         public ComboBox comboBoxPaletteSource;
@@ -145,7 +144,6 @@ namespace GifProcessorApp
             btnMoveDown = new Button();
             btnOK = new Button();
             btnCancel = new Button();
-            chkGIFMergeFasterPaletteProcess = new CheckBox();
             lblPaletteSource = new Label();
             comboBoxPaletteSource = new ComboBox();
             SuspendLayout();
@@ -242,17 +240,7 @@ namespace GifProcessorApp
             btnCancel.TabIndex = 12;
             btnCancel.Text = SteamGifCropper.Properties.Resources.MergeDialog_Cancel;
             btnCancel.UseVisualStyleBackColor = true;
-            // 
-            // chkGIFMergeFasterPaletteProcess
-            // 
-            chkGIFMergeFasterPaletteProcess.AutoSize = true;
-            chkGIFMergeFasterPaletteProcess.Location = new System.Drawing.Point(14, 234);
-            chkGIFMergeFasterPaletteProcess.Name = "chkGIFMergeFasterPaletteProcess";
-            chkGIFMergeFasterPaletteProcess.Size = new System.Drawing.Size(243, 19);
-            chkGIFMergeFasterPaletteProcess.TabIndex = 7;
-            chkGIFMergeFasterPaletteProcess.Text = SteamGifCropper.Properties.Resources.CheckBox_FasterPalette;
-            chkGIFMergeFasterPaletteProcess.UseVisualStyleBackColor = true;
-            // 
+            //
             // lblPaletteSource
             // 
             lblPaletteSource.AutoSize = true;
@@ -280,7 +268,6 @@ namespace GifProcessorApp
             ClientSize = new System.Drawing.Size(556, 360);
             Controls.Add(comboBoxPaletteSource);
             Controls.Add(lblPaletteSource);
-            Controls.Add(chkGIFMergeFasterPaletteProcess);
             Controls.Add(lstGifFiles);
             Controls.Add(lblInstructions);
             Controls.Add(lblGifFiles);

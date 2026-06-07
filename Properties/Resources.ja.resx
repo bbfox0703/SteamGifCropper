@@ -418,9 +418,6 @@
   <data name="Tooltip_Framerate" xml:space="preserve">
     <value>フレームレート設定はMP4変換、スクロールアニメーション、リサイズ/FPSツールのみに適用。分割・結合は元のタイミングを保持。</value>
   </data>
-  <data name="CheckBox_FasterPalette" xml:space="preserve">
-    <value>高速パレット処理を使用（品質低下）</value>
-  </data>
   <data name="Button_ReverseGif" xml:space="preserve">
     <value>FFMPEG：アニメーションGIFを反転</value>
   </data>
@@ -431,7 +428,61 @@
     <value>アニメーションGIFをスクロール</value>
   </data>
   <data name="Button_GridMosaic" xml:space="preserve">
-    <value>グリッドモザイク</value>
+    <value>766px 分割用グリッドモザイク</value>
+  </data>
+  <data name="Button_SlotMachineStatic" xml:space="preserve">
+    <value>766px スロット（画像）</value>
+  </data>
+  <data name="Button_SlotMachineGif" xml:space="preserve">
+    <value>766px スロット（GIF）</value>
+  </data>
+  <data name="Status_SlotMachineBuilding" xml:space="preserve">
+    <value>スロットリールを生成中...</value>
+  </data>
+  <data name="SlotDialog_Title" xml:space="preserve">
+    <value>スロットマシン（766px）</value>
+  </data>
+  <data name="SlotDialog_InputLabel" xml:space="preserve">
+    <value>入力画像または GIF</value>
+  </data>
+  <data name="SlotDialog_OutputLabel" xml:space="preserve">
+    <value>出力 GIF</value>
+  </data>
+  <data name="SlotDialog_Duration" xml:space="preserve">
+    <value>回転時間（秒）</value>
+  </data>
+  <data name="SlotDialog_Fps" xml:space="preserve">
+    <value>FPS</value>
+  </data>
+  <data name="SlotDialog_Spins" xml:space="preserve">
+    <value>リールごとの回転数</value>
+  </data>
+  <data name="SlotDialog_Variance" xml:space="preserve">
+    <value>ばらつき（%）</value>
+  </data>
+  <data name="SlotDialog_Direction" xml:space="preserve">
+    <value>方向</value>
+  </data>
+  <data name="SlotDialog_DirTopDown" xml:space="preserve">
+    <value>上 → 下</value>
+  </data>
+  <data name="SlotDialog_DirBottomUp" xml:space="preserve">
+    <value>下 → 上</value>
+  </data>
+  <data name="SlotDialog_Bounce" xml:space="preserve">
+    <value>バウンド（秒）</value>
+  </data>
+  <data name="SlotDialog_GifPlayMode" xml:space="preserve">
+    <value>GIF 再生方式</value>
+  </data>
+  <data name="SlotDialog_GifPlayDuringSpin" xml:space="preserve">
+    <value>回転中に再生</value>
+  </data>
+  <data name="SlotDialog_GifSpinThenPlay" xml:space="preserve">
+    <value>回転後に再生</value>
+  </data>
+  <data name="SlotDialog_Hold" xml:space="preserve">
+    <value>結果の保持（秒）</value>
   </data>
   <data name="GridDialog_Title" xml:space="preserve">
     <value>グリッドモザイク分割</value>
@@ -600,6 +651,12 @@
   </data>
   <data name="Label_GifsicleNotice" xml:space="preserve">
     <value>注意：gifsicle.exe は「システム PATH」に存在する必要があります</value>
+  </data>
+  <data name="Label_GifsicleMinKB" xml:space="preserve">
+    <value>最小サイズ (KB)：</value>
+  </data>
+  <data name="Status_GifsicleSkippedBelowThreshold" xml:space="preserve">
+    <value>gifsicle をスキップ（{0} KB 未満）</value>
   </data>
   <data name="Label_ResourceLimitDesc" xml:space="preserve">
     <value>リソース制限: メモリ {0} MB / ディスク {1} MB</value>
@@ -942,9 +999,6 @@ FFmpeg 出力（切り捨て）:
   </data>
   <data name="ConcatenateDialog_UnifyDimensions" xml:space="preserve">
     <value>寸法を統一（最大にリサイズ）</value>
-  </data>
-  <data name="ConcatenateDialog_UseFasterPalette" xml:space="preserve">
-    <value>高速パレット（低品質）</value>
   </data>
   <data name="ConcatenateDialog_UseGifsicleOptimization" xml:space="preserve">
     <value>gifsicle最適化を使用</value>
