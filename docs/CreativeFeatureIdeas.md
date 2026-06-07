@@ -1,0 +1,75 @@
+# Creative GIF Feature Ideas & Roadmap
+
+本文件記錄針對 Steam 個人展示櫃所發想的創意 GIF 功能組合，以及已實作的成果，供後續 session 接手。
+
+核心思路：以既有的處理積木（split、merge、concatenate、overlay、scroll、reverse、transition、palette、tail byte）為基礎，組合出有趣的新效果。**最有特色的方向是把 Steam 展示櫃那 5 個並排槽位當成一整塊寬螢幕來玩**——因為只有本工具知道 766/774 的精確切割座標，能自動對齊、消除使用者手做時的 try-and-error。
+
+---
+
+## 已實作（this round）
+
+### ✅ 格網馬賽克切割（Grid Mosaic Split）
+把每張切割圖內部再加上同寬、等距、與槽位邊界對齊的格線（透明或實心可選），讓整片 5 槽展示櫃讀成一個刻意的格網／馬賽克。
+
+- **關鍵洞見**：Steam 強制的 4px(766)/5px(774) 槽位間隙拿不掉、本來像「被迫的接縫」；加上對齊的內部格線後，那些間隙融入格網、從 bug 變 feature。
+- **預設值對應使用者原始構想**：每槽 4 欄 → 5 槽共 20 欄（19 條垂直線 = 4 條 Steam 間隙 + 15 條內部線）、5 列 → 4 條水平線。
+- **透明格線**透出個人檔案背景、與 Steam 間隙完全融合；**實心色格線**像窗櫺/像素牆（但不會跟間隙同色）。
+- **檔案**：`src/Core/GridMosaicSettings.cs`、`GridMosaicGeometry.cs`（純函式，可單測）、`GridMosaicRenderer.cs`（Magick 繪製，像素寫入）、`src/Dialogs/GridMosaicDialog.cs`、`GifProcessor.GridMosaic()` 入口、`SplitGif` 多一個選用 `GridMosaicSettings grid = null` 參數、`FlatProgressBar`、三語 resx、`SteamGifCropper.Tests/GridMosaicTests.cs`。
+- **Commits**：`fe2548a`（feature）、`f730b0a`（XC policy 修正）、`a69d096`（進度條修正）。
+
+### ✅ 連帶修正
+- **XC coder 政策**（`f730b0a`）：`Program.cs` 的安全政策原本只允許 GIF/PNG/JPEG/BMP，誤擋了內部純色畫布產生器 `XC`，導致所有 `new MagickImage(color, w, h)`（split/merge/overlay/scroll/Coalesce 都用）失敗。XC 不是檔案解析器、無攻擊面，已加回白名單。
+- **進度條**（`a69d096`）：改用自繪 `FlatProgressBar`（`UserPaint` 純色填滿），繞過原生 comctl32 的 chunk/動畫繪製（深色主題下會在填滿邊緣留下兩條移動的黑線）；並把 `SplitGif` 進度改為單調遞增（每個 part 一個 20% 區段，不再每 part 跳到 100%）。
+
+---
+
+## 點子庫（尚未實作）
+
+> 難度標示：★ = 省力（多為既有積木的一鍵組合）。
+
+### A. 跨槽位「整片化」效果（最有 Steam 特色）
+精神：使用者看到 5 個獨立 GIF，但讓它們在時間與空間上協調，視覺上變成一整塊會動的畫面。關鍵是把槽位間 4px/6px 間隙算進去（座標見 `Ranges766`/`Ranges774`）。
+
+- **跨槽位捲動橫幅 / 跑馬燈**（Scroll + Split）：輸入超寬圖或文字，產生 5 個同步 GIF，內容像在一整塊螢幕上連續滑過全部 5 格。做個人檔案的捲動標語/Logo 橫幅。實作：在「766 + 間隙」虛擬寬畫布上 roll，再切 5 份。
+  - 註：與既有「單張圖→平移」相近，新意只在自動算間隙，屬增量。
+- **角色穿越展示櫃**（Overlay + Split）：一個物件/角色/太空船從第 1 格走到第 5 格。把 OverlayGif 的「移動 overlay」邏輯放到全寬畫布再切割。
+- **骨牌式 / 波浪式揭曉轉場**（Transition + Split + 每槽時間偏移）：切換到新圖時第 1 格先變、依序掃過 5 格。重用 `TransitionGenerator`，每格給一個 delay offset。
+- **回音 / 殘影播放**（Split + 每槽相位偏移）：5 格同一段動畫但各錯開幾幀，產生波浪/殘響感。切完後對每份做 frame rotate，實作很輕。
+
+### B. 拉霸 / 777 五轉輪（★ 很吸睛，5 槽 = 5 reel 完美對應）
+Steam 展示櫃是 5 個垂直欄位，拉霸機剛好是 5 個垂直轉輪，一對一對上。
+- 每欄 = 一個 reel，內容是一條垂直符號帶在快速捲動（重用垂直 scroll）。
+- 加緩動：快→慢→停（`TransitionGenerator` 的 cubic easing 可直接用）。
+- 5 個轉輪由左到右錯開停止時間，最後鎖定固定結果（777、STEAM 五字、任意組合）。
+- 雖不能真隨機，但「永遠中頭獎」照樣很動感、超適合個人檔案。實作 = 5 條 staggered 減速垂直捲動。
+
+### C. 通用有趣組合
+- **乒乓 / 迴力鏢無縫循環**（Reverse + Concatenate）★最省力：原片 + 反轉接後面（正放→倒放），任何 GIF 變永不跳格的順滑循環。`ReverseGif` + `ConcatenateGifs` 幾乎免費。
+- **無縫循環縫合**（CrossFade 首尾）：自動把首尾幀做 crossfade，讓會「跳一下」的 GIF 變無縫。
+- **2×2 / 九宮格拼貼**（Merge 延伸）：現有是橫向併排；加縱向就能格狀拼貼（contact sheet）。
+- **視差多層捲動**（Scroll + Overlay 疊加）：前/中/背景以不同速度捲動，做出景深。
+
+### D. 視覺特效
+- **調色盤循環 / 彩虹流動**：固定畫面靠每幀旋轉 palette 製造流光，檔案極小（用既有 Quantize/Remap）。
+- **形狀遮罩裁切**：圓形/圓角 + 透明，圓形大頭貼風 GIF。
+- **鏡像 / 萬花筒**：對半鏡射做對稱動畫。
+- **速度漸變（time remap）**：時間軸上慢→快變速，做戲劇性開場。
+
+### 建議優先序
+1. **乒乓循環**（C）— 幾乎零成本的新按鈕。
+2. **拉霸 777**（B）— 最吸睛的展示型功能、與 5 槽天生契合。
+3. **跨槽位捲動橫幅 / 角色穿越**（A）— 凸顯工具獨家的 Steam 定位。
+
+---
+
+## 實作要點 / 踩雷紀錄（接手前必讀）
+
+1. **ImageMagick 安全政策**（`Program.cs` `ConfigureImageMagickPolicy`）：只允許 `GIF/PNG/JPEG/BMP/XC` coder。
+   - 不要用清單外的格式 coder（SVG/PDF/TIFF… 全被擋，是刻意的）。
+   - `new MagickImage(color, w, h)` 內部走 `xc:` pseudo-coder（已允許）。**向量 `Drawables` 繪製也會經過 XC** —— 本專案測試行程「不」套用此政策，所以用到 XC 的程式碼在測試會過、在 app 卻可能炸；新功能若用 Drawables 要記得這點，或改用像素寫入（見 `GridMosaicRenderer`）。
+2. **新 dialog 樣式**：鏡射 `ScrollStaticImageDialog`（inline `InitializeComponent`、無 `.Designer.cs`、`namespace GifProcessorApp : Form`、含 `UpdateUIText()` + `ApplyTheme()` + 複製 `ApplyDark/LightThemeToControls`）。流程：dialog 開在 `GifProcessor.<Op>()` 裡，`ShowDialog()==OK` 後讀公開屬性再呼叫處理方法。
+3. **單元測試**：測試專案用 **stub**（`GifProcessor.Stub.cs`），並非編譯真正的 `GifProcessor.cs`，而是逐檔 `<Compile Include>` 連結無重依賴的小檔。要單測新邏輯，**把純函式抽到無依賴的獨立檔**（如 `GridMosaicGeometry.cs`），並在 `SteamGifCropper.Tests.csproj` 加一行 `<Compile Include>` 連結它。
+4. **進度條**：一律用 `FlatProgressBar`（`src/Forms/FlatProgressBar.cs`），別用原生 `ProgressBar`（深色主題下填滿邊緣會有黑線/動畫殘影）。全 app 只有主視窗一條 `pBarTaskStatus`，進度都呼叫 `GifProcessor.SetProgressBar(...)`。
+5. **Steam 切割座標**：`Ranges766`/`Ranges774` + `GetCropRanges()` + `SplitGif()` 都在 `GifProcessor.cs`；新「切成 5 份」類功能直接重用（`SplitGif` 已支援選用 `GridMosaicSettings grid` 參數的擴充模式，可比照加其他選用參數）。
+6. **在地化**：新字串要同時加到 `Properties/Resources.resx`、`Resources.zh-TW.resx`、`Resources.ja.resx`，並在 `Resources.Designer.cs` 補強型別屬性才能編譯。
+7. **建置 / 測試**：`dotnet build SteamGifCropper.sln`；測試用 `dotnet build` 後直接跑 `SteamGifCropper.Tests/bin/Debug/net10.0-windows/SteamGifCropper.Tests.exe`（`-class <Name>` 過濾）。`dotnet test` 在 .NET 10 SDK 不支援。
