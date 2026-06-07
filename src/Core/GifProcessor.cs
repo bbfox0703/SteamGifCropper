@@ -830,15 +830,20 @@ namespace GifProcessorApp
 
             try
             {
-                using var stream = File.Open(outputPath, FileMode.Create);
-                var defines = new GifWriteDefines { RepeatCount = 0, WriteMode = GifWriteMode.Gif };
+                // Accumulate frames into a single collection and write the animation in
+                // one pass. Writing frames individually to a shared stream produced N
+                // concatenated single-frame GIFs (the gif:write-mode "frame" define is not
+                // honored by Magick.NET), so readers only ever saw the first frame.
+                // ImageMagick pages pixel data to disk via the temp directory / disk limit
+                // configured above, so peak managed memory stays bounded.
+                using var output = new MagickImageCollection();
+
+                // X positions for each GIF: 0, 153, 306, 460, 613
+                int[] xPositions = { 0, 153, 306, 460, 613 };
 
                 for (int frameIndex = 0; frameIndex < maxFrames; frameIndex++)
                 {
-                    using var canvas = new MagickImage(MagickColors.Transparent, 766, (uint)maxHeight);
-
-                    // X positions for each GIF: 0, 153, 306, 460, 613
-                    int[] xPositions = { 0, 153, 306, 460, 613 };
+                    var canvas = new MagickImage(MagickColors.Transparent, 766, (uint)maxHeight);
 
                     for (int gifIndex = 0; gifIndex < 5; gifIndex++)
                     {
@@ -864,19 +869,22 @@ namespace GifProcessorApp
 
                     canvas.GifDisposeMethod = GifDisposeMethod.Background;
 
-                    // Update status with detailed merging progress  
+                    // Update status with detailed merging progress
                     if (frameIndex % 10 == 0 || frameIndex == maxFrames - 1)
                     {
                         SetStatusText(mainForm, string.Format("Merging 5 GIFs - Mapping palette for frame {0}/{1}", frameIndex + 1, maxFrames));
                     }
-                    
+
                     // Remap frame to shared palette before writing
                     canvas.Remap(palette, mapSettings);
 
-                    canvas.Write(stream, defines);
-                    defines.WriteMode = GifWriteMode.Frame;
+                    // Collection takes ownership of the canvas; disposed with `output`.
+                    output.Add(canvas);
                     UpdateFrameProgressByFrame(mainForm, frameIndex + 1, maxFrames);
                 }
+
+                var defines = new GifWriteDefines { RepeatCount = 0 };
+                output.Write(outputPath, defines);
             }
             finally
             {

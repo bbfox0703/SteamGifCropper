@@ -221,8 +221,10 @@ namespace GifProcessorApp
             int[] xPositions = { 0, 153, 306, 460, 613 };
             var enumerators = collections.Select(c => c.GetEnumerator()).ToArray();
 
-            using var stream = File.Open(outputPath, FileMode.Create);
-            var defines = new GifWriteDefines { RepeatCount = 0, WriteMode = GifWriteMode.Gif };
+            // Mirror production: accumulate frames into one collection and write once.
+            // Per-frame stream writes produced concatenated single-frame GIFs because
+            // the gif:write-mode "frame" define is not honored by Magick.NET.
+            using var output = new MagickImageCollection();
 
             for (int frameIndex = 0; frameIndex < maxFrames; frameIndex++)
             {
@@ -245,10 +247,11 @@ namespace GifProcessorApp
                 canvas.AnimationTicksPerSecond = reference.AnimationTicksPerSecond;
                 canvas.GifDisposeMethod = GifDisposeMethod.Background;
                 canvas.Remap(palette, mapSettings);
-                canvas.Write(stream, defines);
-                defines.WriteMode = GifWriteMode.Frame;
-                canvas.Dispose();
+                output.Add(canvas);
             }
+
+            var defines = new GifWriteDefines { RepeatCount = 0 };
+            output.Write(outputPath, defines);
 
             foreach (var e in enumerators)
             {

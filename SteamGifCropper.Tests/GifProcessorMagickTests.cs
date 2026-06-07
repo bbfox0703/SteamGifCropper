@@ -52,14 +52,19 @@ public class GifProcessorMagickTests
         }
     }
 
+    // SplitGif preserves the source frame delays/ticks unchanged. The earlier
+    // "recalculate to a target framerate" logic this test was originally written
+    // against was removed in commit dab2d14 ("fix FPS") and the targetFramerate
+    // parameter dropped in 3aba7e7 ("fix error"); RecalculateGifDelays now returns
+    // the original delays verbatim. CreateGradientGif bakes delay=10 at 100
+    // ticks/sec, so every part frame stays 10/100 = 0.1s and cumulative = (i+1)/10.
     [Fact]
-    public void SplitGif_RecalculatesAnimationTiming()
+    public void SplitGif_PreservesAnimationTiming()
     {
         string tempDir = Directory.CreateTempSubdirectory().FullName;
         string input = GifTestHelper.CreateGradientGif(tempDir, 766, 100, 2, "red", "black");
         try
         {
-            using var original = new MagickImageCollection(input);
             GifProcessor.SplitGif(input, tempDir);
             string partPath = Path.Combine(tempDir, $"{Path.GetFileNameWithoutExtension(input)}_Part1.gif");
             using var part = new MagickImageCollection(partPath);
@@ -68,7 +73,8 @@ public class GifProcessorMagickTests
             {
                 partSum += (double)part[i].AnimationDelay / part[i].AnimationTicksPerSecond;
                 Assert.Equal(100, (int)part[i].AnimationTicksPerSecond);
-                double expected = (i + 1) / 15.0;
+                Assert.Equal(10U, part[i].AnimationDelay);
+                double expected = (i + 1) / 10.0;
                 Assert.True(Math.Abs(partSum - expected) < 1.0 / 100);
             }
         }
@@ -78,8 +84,13 @@ public class GifProcessorMagickTests
         }
     }
 
+    // Same preserved-timing contract as above, exercised over more frames. This was
+    // originally SplitGif_HighFramerateUsesRoundedDelay, which called the now-removed
+    // SplitGif(input, tempDir, 100) overload and expected delay==1 (recalculated to
+    // 100 fps). With recalculation gone, a 4-frame source at delay=10/100 ticks keeps
+    // delay=10 per frame, so cumulative = (i+1)/10.
     [Fact]
-    public void SplitGif_HighFramerateUsesRoundedDelay()
+    public void SplitGif_PreservesDelayAcrossFrames()
     {
         string tempDir = Directory.CreateTempSubdirectory().FullName;
         string input = GifTestHelper.CreateGradientGif(tempDir, 766, 100, 4, "red", "black");
@@ -93,8 +104,8 @@ public class GifProcessorMagickTests
             {
                 partSum += (double)part[i].AnimationDelay / part[i].AnimationTicksPerSecond;
                 Assert.Equal(100, (int)part[i].AnimationTicksPerSecond);
-                Assert.Equal(1U, part[i].AnimationDelay);
-                double expected = (i + 1) / 100.0;
+                Assert.Equal(10U, part[i].AnimationDelay);
+                double expected = (i + 1) / 10.0;
                 Assert.True(Math.Abs(partSum - expected) < 1.0 / 100);
             }
         }
