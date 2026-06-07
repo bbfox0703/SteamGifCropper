@@ -34,7 +34,7 @@
             btnResizeGif766 = new System.Windows.Forms.Button();
             btnWriteTailByte = new System.Windows.Forms.Button();
             btnRestoreTailByte = new System.Windows.Forms.Button();
-            pBarTaskStatus = new System.Windows.Forms.ProgressBar();
+            pBarTaskStatus = new GifProcessorApp.FlatProgressBar();
             lblStatus = new System.Windows.Forms.Label();
             btnMergeAndSplit = new System.Windows.Forms.Button();
             btnMp4ToGif = new System.Windows.Forms.Button();
@@ -577,7 +577,7 @@
 
         private System.Windows.Forms.Button btnSplitGif;
         private System.Windows.Forms.Button btnResizeGif766;
-        public System.Windows.Forms.ProgressBar pBarTaskStatus;
+        public GifProcessorApp.FlatProgressBar pBarTaskStatus;
         private System.Windows.Forms.Button btnWriteTailByte;
         private System.Windows.Forms.Button btnRestoreTailByte;
         public System.Windows.Forms.Label lblStatus;

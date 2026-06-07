@@ -409,6 +409,12 @@ namespace GifProcessorApp
                         partCollection.Write(outputPath);
                         Application.DoEvents(); // Allow UI to respond after write operation
 
+                        // Keep the overall progress monotonic: each part owns one band of the bar
+                        // (e.g. 0-20-40-60-80-100 for 5 parts) instead of spiking to 100% per part,
+                        // which made the themed progress bar sweep to the far right on every part.
+                        int partSpan = 100 / ranges.Length;
+                        int partBase = i * partSpan;
+
                         if (mainForm.chkGifsicle.Checked)
                         {
                             SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing);
@@ -422,7 +428,7 @@ namespace GifProcessorApp
 
                             var progress = new Progress<int>(p =>
                             {
-                                SetProgressBar(mainForm.pBarTaskStatus, p, 100);
+                                SetProgressBar(mainForm.pBarTaskStatus, partBase + p * partSpan / 100, 100);
                                 SetStatusText(mainForm, $"{SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing} ({p}%)");
                             });
 
@@ -430,7 +436,7 @@ namespace GifProcessorApp
                         }
                         else
                         {
-                            SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
+                            SetProgressBar(mainForm.pBarTaskStatus, partBase + partSpan, 100);
                             SetStatusText(mainForm, $"Saving part {i + 1} complete");
                         }
 
