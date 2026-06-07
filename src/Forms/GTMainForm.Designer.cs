@@ -47,6 +47,8 @@
             numUpDownOptimize = new System.Windows.Forms.NumericUpDown();
             numUpDownPaletteSicle = new System.Windows.Forms.NumericUpDown();
             numUpDownLossy = new System.Windows.Forms.NumericUpDown();
+            numUpDownGifsicleMinKB = new System.Windows.Forms.NumericUpDown();
+            lblGifsicleMinKB = new System.Windows.Forms.Label();
             label4 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
@@ -77,6 +79,7 @@
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPaletteSicle).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownLossy).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numUpDownGifsicleMinKB).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPalette).BeginInit();
             conMenuLangSwitch.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numUpDownFramerate).BeginInit();
@@ -170,6 +173,8 @@
             // panelGifsicle
             // 
             panelGifsicle.Controls.Add(groupDither);
+            panelGifsicle.Controls.Add(numUpDownGifsicleMinKB);
+            panelGifsicle.Controls.Add(lblGifsicleMinKB);
             panelGifsicle.Controls.Add(numUpDownOptimize);
             panelGifsicle.Controls.Add(numUpDownPaletteSicle);
             panelGifsicle.Controls.Add(numUpDownLossy);
@@ -263,7 +268,28 @@
             numUpDownOptimize.Size = new System.Drawing.Size(35, 23);
             numUpDownOptimize.TabIndex = 7;
             numUpDownOptimize.Value = new decimal(new int[] { 3, 0, 0, 0 });
-            // 
+            //
+            // lblGifsicleMinKB
+            //
+            lblGifsicleMinKB.AutoSize = true;
+            lblGifsicleMinKB.Location = new System.Drawing.Point(360, 28);
+            lblGifsicleMinKB.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            lblGifsicleMinKB.Name = "lblGifsicleMinKB";
+            lblGifsicleMinKB.Size = new System.Drawing.Size(80, 15);
+            lblGifsicleMinKB.TabIndex = 11;
+            lblGifsicleMinKB.Text = SteamGifCropper.Properties.Resources.Label_GifsicleMinKB;
+            //
+            // numUpDownGifsicleMinKB
+            //
+            numUpDownGifsicleMinKB.Increment = new decimal(new int[] { 100, 0, 0, 0 });
+            numUpDownGifsicleMinKB.Location = new System.Drawing.Point(490, 26);
+            numUpDownGifsicleMinKB.Margin = new System.Windows.Forms.Padding(2);
+            numUpDownGifsicleMinKB.Maximum = new decimal(new int[] { 1000000, 0, 0, 0 });
+            numUpDownGifsicleMinKB.Name = "numUpDownGifsicleMinKB";
+            numUpDownGifsicleMinKB.Size = new System.Drawing.Size(70, 23);
+            numUpDownGifsicleMinKB.TabIndex = 8;
+            numUpDownGifsicleMinKB.Value = new decimal(new int[] { 5000, 0, 0, 0 });
+            //
             // numUpDownPaletteSicle
             // 
             numUpDownPaletteSicle.Location = new System.Drawing.Point(175, 26);
@@ -565,6 +591,7 @@
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPaletteSicle).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownLossy).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numUpDownGifsicleMinKB).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPalette).EndInit();
             conMenuLangSwitch.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)numUpDownFramerate).EndInit();
@@ -588,6 +615,8 @@
         public System.Windows.Forms.CheckBox chkGifsicle;
         private System.Windows.Forms.Label label2;
         public System.Windows.Forms.NumericUpDown numUpDownOptimize;
+        public System.Windows.Forms.NumericUpDown numUpDownGifsicleMinKB;
+        private System.Windows.Forms.Label lblGifsicleMinKB;
         public System.Windows.Forms.NumericUpDown numUpDownPaletteSicle;
         public System.Windows.Forms.NumericUpDown numUpDownLossy;
         private System.Windows.Forms.Label label4;

@@ -680,6 +680,24 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Status_GifsicleOptimizing", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Min size (KB):.
+        /// </summary>
+        internal static string Label_GifsicleMinKB {
+            get {
+                return ResourceManager.GetString("Label_GifsicleMinKB", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Skipped gifsicle (below {0} KB).
+        /// </summary>
+        internal static string Status_GifsicleSkippedBelowThreshold {
+            get {
+                return ResourceManager.GetString("Status_GifsicleSkippedBelowThreshold", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Idle..

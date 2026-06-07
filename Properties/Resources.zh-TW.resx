@@ -601,6 +601,12 @@
   <data name="Label_GifsicleNotice" xml:space="preserve">
     <value>注意：gifsicle.exe 必須位於「系統 PATH」中</value>
   </data>
+  <data name="Label_GifsicleMinKB" xml:space="preserve">
+    <value>最小檔案 (KB)：</value>
+  </data>
+  <data name="Status_GifsicleSkippedBelowThreshold" xml:space="preserve">
+    <value>已略過 gifsicle（小於 {0} KB）</value>
+  </data>
   <data name="Label_ResourceLimitDesc" xml:space="preserve">
     <value>資源限制：記憶體 {0} MB / 磁碟 {1} MB</value>
   </data>

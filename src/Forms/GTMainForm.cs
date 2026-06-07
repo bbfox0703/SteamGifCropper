@@ -154,11 +154,7 @@ namespace GifProcessorApp
 
         private async void btnResizeGif766_Click(object sender, EventArgs e)
         {
-            await ExecuteWithErrorHandling(() =>
-            {
-                GifProcessor.ResizeGifTo766(this);
-                return Task.CompletedTask;
-            }, "GIF resizing");
+            await ExecuteWithErrorHandling(() => GifProcessor.ResizeGifTo766(this), "GIF resizing");
         }
 
         private async void btnWriteTailByte_Click(object sender, EventArgs e)
@@ -336,6 +332,7 @@ namespace GifProcessorApp
                 radioBtnDro64.Text = SteamGifCropper.Properties.Resources.Radio_ro64;
                 radioBtnDNone.Text = SteamGifCropper.Properties.Resources.Radio_None;
                 chkGifsicle.Text = SteamGifCropper.Properties.Resources.CheckBox_GifsicleOptimization;
+                lblGifsicleMinKB.Text = SteamGifCropper.Properties.Resources.Label_GifsicleMinKB;
                 btnMerge2to5GifToOne.Text = SteamGifCropper.Properties.Resources.Button_MergeGifs;
                 chk5GIFMergeFasterPaletteProcess.Text = SteamGifCropper.Properties.Resources.CheckBox_FasterPalette;
                 btnReverseGIF.Text = SteamGifCropper.Properties.Resources.Button_ReverseGif;

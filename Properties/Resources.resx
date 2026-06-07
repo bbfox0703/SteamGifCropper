@@ -593,6 +593,12 @@ Files skipped (not 0x21): {1}</value>
   <data name="Label_GifsicleNotice" xml:space="preserve">
     <value>Notice: gifsicle.exe must be in the "System PATH"</value>
   </data>
+  <data name="Label_GifsicleMinKB" xml:space="preserve">
+    <value>Min size (KB):</value>
+  </data>
+  <data name="Status_GifsicleSkippedBelowThreshold" xml:space="preserve">
+    <value>Skipped gifsicle (below {0} KB)</value>
+  </data>
   <data name="Label_ResourceLimitDesc" xml:space="preserve">
     <value>Resource limit: mem: {0} MB / disk: {1} MB</value>
   </data>
