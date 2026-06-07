@@ -165,6 +165,7 @@ namespace GifProcessorApp
             public int Dither;
             public int ThresholdKB;
             public long ThresholdBytes;
+            public int TimeoutSeconds;
         }
 
         // MUST be called on the UI thread. useOverride=true takes Enabled from enabledOverride instead
@@ -180,7 +181,8 @@ namespace GifProcessorApp
                 OptimizeLevel = (int)mainForm.numUpDownOptimize.Value,
                 Dither = mainForm.DitherMethod,
                 ThresholdKB = kb,
-                ThresholdBytes = (long)kb * 1024L
+                ThresholdBytes = (long)kb * 1024L,
+                TimeoutSeconds = (int)mainForm.numUpDownGifsicleTimeout.Value
             };
         }
 
@@ -201,6 +203,10 @@ namespace GifProcessorApp
             }
 
             SetStatusText(mainForm, Resources.Status_GifsicleOptimizing);
+            if (snapshot.TimeoutSeconds > 0)
+            {
+                GifsicleWrapper.ProcessTimeout = TimeSpan.FromSeconds(snapshot.TimeoutSeconds);
+            }
             var options = new GifsicleWrapper.GifsicleOptions
             {
                 Colors = snapshot.Colors,
@@ -209,6 +215,72 @@ namespace GifProcessorApp
                 Dither = snapshot.Dither
             };
             await GifsicleWrapper.OptimizeGif(path, path, options, progress);
+        }
+
+        // Standalone gifsicle: optimize a single user-chosen GIF using the panel settings
+        // (Lossy/Palette/Optimize/Dither/timeout). Unlike the auto path it ignores the chkGifsicle
+        // gate and the size threshold — running it is an explicit user action. Writes a *_gifsicle.gif.
+        public static async Task OptimizeSingleGif(GifToolMainForm mainForm)
+        {
+            using var openFileDialog = new OpenFileDialog
+            {
+                Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
+                Title = SteamGifCropper.Properties.Resources.FileDialog_SelectGif
+            };
+            if (openFileDialog.ShowDialog() != DialogResult.OK) return;
+
+            string inputPath = openFileDialog.FileName;
+            ImageInputValidator.ValidateGif(inputPath);
+            string outputPath = GenerateOutputPath(inputPath, "_gifsicle");
+
+            // Read panel settings on the UI thread.
+            var options = new GifsicleWrapper.GifsicleOptions
+            {
+                Colors = (int)mainForm.numUpDownPaletteSicle.Value,
+                Lossy = (int)mainForm.numUpDownLossy.Value,
+                OptimizeLevel = (int)mainForm.numUpDownOptimize.Value,
+                Dither = mainForm.DitherMethod
+            };
+            int timeout = (int)mainForm.numUpDownGifsicleTimeout.Value;
+
+            mainForm.Enabled = false;
+            SetProgressVisible(mainForm, true);
+            SetProgressRange(mainForm, 0, 100);
+            SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+            try
+            {
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing);
+                if (timeout > 0)
+                {
+                    GifsicleWrapper.ProcessTimeout = TimeSpan.FromSeconds(timeout);
+                }
+
+                var progress = new Progress<int>(p =>
+                {
+                    SetProgressBar(mainForm.pBarTaskStatus, p, 100);
+                    SetStatusText(mainForm, $"{SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing} ({p}%)");
+                });
+                await GifsicleWrapper.OptimizeGif(inputPath, outputPath, options, progress);
+
+                SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                    SteamGifCropper.Properties.Resources.Message_ProcessingComplete + "\n" + Path.GetFileName(outputPath),
+                    SteamGifCropper.Properties.Resources.Title_Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Error);
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                    string.Format(SteamGifCropper.Properties.Resources.Error_Occurred, ex.Message),
+                    SteamGifCropper.Properties.Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                mainForm.Enabled = true;
+                SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Idle);
+            }
         }
 
         private static void UpdateFrameProgress(GifToolMainForm mainForm, int currentFrame, int totalFrames)
@@ -362,7 +434,6 @@ namespace GifProcessorApp
                     LineColor = dialog.LineColor
                 };
                 string outputFilePath = GenerateOutputPath(inputFilePath, "_grid");
-                var gifsicle = CaptureGifsicleSnapshot(mainForm);
 
                 mainForm.Enabled = false;
                 SetProgressRange(mainForm, 0, 100);
@@ -370,7 +441,7 @@ namespace GifProcessorApp
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Processing);
                 try
                 {
-                    await ApplyGridMosaic(mainForm, inputFilePath, outputFilePath, grid, gifsicle);
+                    await ApplyGridMosaic(mainForm, inputFilePath, outputFilePath, grid);
 
                     SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
                     SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
@@ -398,7 +469,7 @@ namespace GifProcessorApp
         // built once per slot and composited at each slot's x-offset, so the result matches the old
         // per-part appearance (gaps stay grid-free). Runs on a background thread.
         private static async Task ApplyGridMosaic(GifToolMainForm mainForm, string inputFilePath,
-            string outputFilePath, GridMosaicSettings grid, GifsicleSnapshot gifsicle)
+            string outputFilePath, GridMosaicSettings grid)
         {
             await Task.Run(() =>
             {
@@ -451,8 +522,6 @@ namespace GifProcessorApp
                     }
                 }
             });
-
-            await OptimizeWithGifsicleIfEnabled(mainForm, gifsicle, outputFilePath);
         }
 
 
@@ -644,8 +713,6 @@ namespace GifProcessorApp
 
         private static async Task RunSlotMachine(GifToolMainForm mainForm, SlotMachineSettings settings)
         {
-            // Capture gifsicle settings on the UI thread before any background work.
-            var gifsicle = CaptureGifsicleSnapshot(mainForm);
             mainForm.Enabled = false;
             SetProgressRange(mainForm, 0, 100);
             SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
@@ -683,9 +750,6 @@ namespace GifProcessorApp
                     animation.Optimize();
                     animation.Write(settings.OutputFilePath);
                 });
-
-                // Optional gifsicle on the whole 766px file (size threshold still applies).
-                await OptimizeWithGifsicleIfEnabled(mainForm, gifsicle, settings.OutputFilePath);
 
                 SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
@@ -2918,7 +2982,6 @@ namespace GifProcessorApp
             bool fullCycle = dialog.FullCycle;
             bool autoDuration = dialog.AutoDuration;
             int targetFramerate = (int)mainForm.numUpDownFramerate.Value;
-            var gifsicle = CaptureGifsicleSnapshot(mainForm);
 
             // Auto-calculate duration if requested and input is GIF
             if (autoDuration && Path.GetExtension(inputPath).ToLowerInvariant() == ".gif")
@@ -2963,8 +3026,6 @@ namespace GifProcessorApp
                         ScrollStaticImage(inputPath, outputPath, direction, step, duration, fullCycle, moveCount, targetFramerate, mainForm);
                     }
                 });
-
-                await OptimizeWithGifsicleIfEnabled(mainForm, gifsicle, outputPath);
 
                 SetProgressBar(mainForm.pBarTaskStatus, mainForm.pBarTaskStatus.Maximum, mainForm.pBarTaskStatus.Maximum);
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
@@ -3014,7 +3075,6 @@ namespace GifProcessorApp
             bool fullCycle = dialog.FullCycle;
             bool autoDuration = dialog.AutoDuration;
             int targetFramerate = (int)mainForm.numUpDownFramerate.Value;
-            var gifsicle = CaptureGifsicleSnapshot(mainForm);
 
             // Auto-calculate duration for GIF cycle
             if (autoDuration)
@@ -3059,8 +3119,6 @@ namespace GifProcessorApp
                         ScrollStaticImage(inputPath, outputPath, direction, step, duration, fullCycle, moveCount, targetFramerate, mainForm);
                     }
                 });
-
-                await OptimizeWithGifsicleIfEnabled(mainForm, gifsicle, outputPath);
 
                 WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
                                 SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
@@ -3757,7 +3815,6 @@ namespace GifProcessorApp
             int stepPixels = dialog.StepPixels;
             int moveCount = dialog.MoveCount;
             bool infiniteMovement = dialog.InfiniteMovement;
-            var gifsicle = CaptureGifsicleSnapshot(mainForm);
 
             mainForm.Enabled = false;
             SetProgressRange(mainForm, 0, 100);
@@ -3801,8 +3858,6 @@ namespace GifProcessorApp
                     SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
                     resultCollection.Write(outputPath);
                 });
-
-                await OptimizeWithGifsicleIfEnabled(mainForm, gifsicle, outputPath);
 
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
                 WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,

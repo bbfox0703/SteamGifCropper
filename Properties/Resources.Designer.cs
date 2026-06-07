@@ -681,6 +681,18 @@ namespace SteamGifCropper.Properties {
             }
         }
 
+        internal static string Label_GifsicleTimeout {
+            get {
+                return ResourceManager.GetString("Label_GifsicleTimeout", resourceCulture);
+            }
+        }
+
+        internal static string Button_GifsicleSingle {
+            get {
+                return ResourceManager.GetString("Button_GifsicleSingle", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Skipped gifsicle (below {0} KB).
         /// </summary>

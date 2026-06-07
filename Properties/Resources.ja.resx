@@ -655,6 +655,12 @@
   <data name="Label_GifsicleMinKB" xml:space="preserve">
     <value>最小サイズ (KB)：</value>
   </data>
+  <data name="Label_GifsicleTimeout" xml:space="preserve">
+    <value>タイムアウト（秒）：</value>
+  </data>
+  <data name="Button_GifsicleSingle" xml:space="preserve">
+    <value>単一 GIF に gifsicle 実行</value>
+  </data>
   <data name="Status_GifsicleSkippedBelowThreshold" xml:space="preserve">
     <value>gifsicle をスキップ（{0} KB 未満）</value>
   </data>
