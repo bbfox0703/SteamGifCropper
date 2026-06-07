@@ -1347,6 +1347,7 @@ namespace GifProcessorApp
             ImageInputValidator.ValidateGif(inputFilePath);
             try
             {
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_CoalescingFrames);
                 using (var collection = new MagickImageCollection(inputFilePath))
                 {
                     collection.Coalesce();
@@ -1374,7 +1375,12 @@ namespace GifProcessorApp
                         }
                     }
 
+                    // These two steps are a single long blocking call each with no sub-progress; after
+                    // "N/N" the bar would otherwise sit still, so surface the phase in the status text.
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Optimizing);
                     collection.Optimize();
+
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
                     collection.Write(outputFilePath);
                 }
             }
