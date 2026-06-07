@@ -2363,9 +2363,33 @@ namespace SteamGifCropper.Properties {
             }
         }
 
-        internal static string SlotDialog_Stagger {
+        internal static string SlotDialog_Variance {
             get {
-                return ResourceManager.GetString("SlotDialog_Stagger", resourceCulture);
+                return ResourceManager.GetString("SlotDialog_Variance", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_Direction {
+            get {
+                return ResourceManager.GetString("SlotDialog_Direction", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_DirTopDown {
+            get {
+                return ResourceManager.GetString("SlotDialog_DirTopDown", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_DirBottomUp {
+            get {
+                return ResourceManager.GetString("SlotDialog_DirBottomUp", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_Bounce {
+            get {
+                return ResourceManager.GetString("SlotDialog_Bounce", resourceCulture);
             }
         }
 

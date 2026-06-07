@@ -460,8 +460,20 @@
   <data name="SlotDialog_Spins" xml:space="preserve">
     <value>リールごとの回転数</value>
   </data>
-  <data name="SlotDialog_Stagger" xml:space="preserve">
-    <value>リールのずれ（秒）</value>
+  <data name="SlotDialog_Variance" xml:space="preserve">
+    <value>ばらつき（%）</value>
+  </data>
+  <data name="SlotDialog_Direction" xml:space="preserve">
+    <value>方向</value>
+  </data>
+  <data name="SlotDialog_DirTopDown" xml:space="preserve">
+    <value>上 → 下</value>
+  </data>
+  <data name="SlotDialog_DirBottomUp" xml:space="preserve">
+    <value>下 → 上</value>
+  </data>
+  <data name="SlotDialog_Bounce" xml:space="preserve">
+    <value>バウンド（秒）</value>
   </data>
   <data name="SlotDialog_Hold" xml:space="preserve">
     <value>結果の保持（秒）</value>

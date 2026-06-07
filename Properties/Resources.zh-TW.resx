@@ -460,8 +460,20 @@
   <data name="SlotDialog_Spins" xml:space="preserve">
     <value>每輪旋轉圈數</value>
   </data>
-  <data name="SlotDialog_Stagger" xml:space="preserve">
-    <value>轉輪錯開（秒）</value>
+  <data name="SlotDialog_Variance" xml:space="preserve">
+    <value>波動（%）</value>
+  </data>
+  <data name="SlotDialog_Direction" xml:space="preserve">
+    <value>方向</value>
+  </data>
+  <data name="SlotDialog_DirTopDown" xml:space="preserve">
+    <value>由上向下</value>
+  </data>
+  <data name="SlotDialog_DirBottomUp" xml:space="preserve">
+    <value>由下向上</value>
+  </data>
+  <data name="SlotDialog_Bounce" xml:space="preserve">
+    <value>回彈（秒）</value>
   </data>
   <data name="SlotDialog_Hold" xml:space="preserve">
     <value>結果停留（秒）</value>

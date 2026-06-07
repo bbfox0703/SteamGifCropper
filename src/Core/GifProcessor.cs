@@ -570,9 +570,12 @@ namespace GifProcessorApp
                 OutputFilePath = dialog.OutputFilePath,
                 IsGif = isGif,
                 DurationSeconds = dialog.DurationSeconds,
+                DurationVariancePercent = dialog.DurationVariancePercent,
                 Fps = dialog.Fps,
                 Spins = dialog.Spins,
-                StaggerSeconds = dialog.StaggerSeconds,
+                SpinsVariancePercent = dialog.SpinsVariancePercent,
+                BounceSeconds = dialog.BounceSeconds,
+                TopToBottom = dialog.TopToBottom,
                 HoldSeconds = dialog.HoldSeconds
             };
         }
@@ -655,10 +658,43 @@ namespace GifProcessorApp
         {
             int reelCount = ranges.Length;
             int fps = Math.Max(1, settings.Fps);
-            int totalSpinFrames = Math.Max(reelCount, settings.DurationSeconds * fps);
-            int staggerFrames = Math.Max(0, (int)Math.Round(settings.StaggerSeconds * fps));
             int spins = Math.Max(1, settings.Spins);
             int delay = Math.Max(1, (int)Math.Round(100.0 / fps)); // GIF delay in 1/100 s
+            int overshootFrames = Math.Max(0, (int)Math.Round(settings.BounceSeconds * fps));
+
+            // GIF variant: don't let a reel spin longer than the GIF itself plays.
+            double maxSpinSeconds = double.MaxValue;
+            if (settings.IsGif)
+            {
+                int srcTicks = (int)source[0].AnimationTicksPerSecond;
+                if (srcTicks <= 0) srcTicks = 100;
+                double gifSeconds = 0.0;
+                foreach (var frame in source)
+                {
+                    gifSeconds += (double)frame.AnimationDelay / srcTicks;
+                }
+                if (gifSeconds > 0.0) maxSpinSeconds = gifSeconds;
+            }
+
+            // Randomize each reel's stop time and revolution count so which reel stops first (and which
+            // spins longest) is non-deterministic — this replaces the old fixed "stagger" setting.
+            var rng = new Random();
+            int[] reelStop = new int[reelCount];
+            int[] reelSpins = new int[reelCount];
+            int maxStop = 1;
+            for (int c = 0; c < reelCount; c++)
+            {
+                double durSec = SlotMachineGeometry.ApplyVariance(settings.DurationSeconds, settings.DurationVariancePercent, rng.NextDouble());
+                if (durSec > maxSpinSeconds) durSec = maxSpinSeconds;
+                if (durSec < 0.1) durSec = 0.1;
+                reelStop[c] = Math.Max(1, (int)Math.Round(durSec * fps));
+                if (reelStop[c] > maxStop) maxStop = reelStop[c];
+
+                double spinVal = SlotMachineGeometry.ApplyVariance(spins, settings.SpinsVariancePercent, rng.NextDouble());
+                reelSpins[c] = Math.Max(1, (int)Math.Round(spinVal));
+            }
+
+            int totalSpinFrames = maxStop + overshootFrames;
 
             int endFrames = settings.IsGif ? source.Count : Math.Max(1, settings.HoldSeconds * fps);
             int totalFrames = totalSpinFrames + endFrames;
@@ -678,13 +714,13 @@ namespace GifProcessorApp
                     slices[c] = slice;
                 }
 
-                // Spin phase: each reel wrap-scrolls and decelerates to its staggered lock.
+                // Spin phase: each reel wrap-scrolls, decelerates to its own randomized lock, then bounces.
                 for (int t = 0; t < totalSpinFrames; t++)
                 {
                     var canvas = new MagickImage(MagickColors.Transparent, (uint)canvasWidth, (uint)canvasHeight);
                     for (int c = 0; c < reelCount; c++)
                     {
-                        int off = SlotMachineGeometry.ReelOffsetY(t, c, reelCount, totalSpinFrames, staggerFrames, canvasHeight, spins);
+                        int off = SlotMachineGeometry.ReelOffsetY(t, reelStop[c], reelSpins[c], canvasHeight, settings.TopToBottom, overshootFrames);
                         using var tmp = (MagickImage)slices[c].Clone();
                         if (off != 0)
                         {

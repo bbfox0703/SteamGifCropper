@@ -24,6 +24,11 @@
 - **兩個變體**：靜態圖（鎖定後 hold 數秒）、動態 GIF（鎖定後播放整圈 GIF）。
 - **前置**：非 766/774 寬會自動 `Resize(766,0)`；切割一律走 `SplitGif`，所以每份都有 100px 高度延伸 + 檔尾 0x21（在 gifsicle 之後）。
 - **轉輪內容**：選定為「該欄自己的內容上下捲動」（最穩、任何寬度適用），非 5 欄輪播。
+- **隨機化（取代固定 stagger）**：每輪的停止秒數＝旋轉時間 ± 波動%（預設 ±20%、上限 30%）、旋轉圈數＝設定值 ± 波動%（預設 ±25%、上限 50%），用 `System.Random` 計算 → 哪輪先停、哪輪轉最久都隨機，不再有「轉輪錯開」設定。
+- **減速 + 回彈**：ease-out cubic 由快而慢（非急停）；停止後有 overshoot 阻尼擺動（`Bounce` 秒數，預設 0.5s）模擬實體拉霸彈跳。固定式減速，未做減速時點/幅度的設定。
+- **方向**：可選由上向下（預設）/ 由下向上。
+- **安全限制**：GIF 變體每輪旋轉秒數會被夾到 ≤ 來源 GIF 全長，避免旋轉比 GIF 本身還長。
+- **預設**：FPS 15、Duration 3s、Spins 4。
 - **檔案**：`src/Core/SlotMachineGeometry.cs`（純函式 ease/stop/offset，可單測）、`SlotMachineSettings.cs`、`src/Dialogs/SlotMachineDialog.cs`、`GifProcessor.SlotMachineStaticImage()`/`SlotMachineGif()`/`RunSlotMachine()`/`BuildSlotMachineAnimation()`、主視窗兩顆按鈕（表單加高至 524）、三語 resx、`SteamGifCropper.Tests/SlotMachineGeometryTests.cs`。
 
 ### ✅ 連帶修正

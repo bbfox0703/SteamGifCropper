@@ -452,8 +452,20 @@ Files skipped (not 0x21): {1}</value>
   <data name="SlotDialog_Spins" xml:space="preserve">
     <value>Spins per reel</value>
   </data>
-  <data name="SlotDialog_Stagger" xml:space="preserve">
-    <value>Reel stagger (s)</value>
+  <data name="SlotDialog_Variance" xml:space="preserve">
+    <value>Variance (%)</value>
+  </data>
+  <data name="SlotDialog_Direction" xml:space="preserve">
+    <value>Direction</value>
+  </data>
+  <data name="SlotDialog_DirTopDown" xml:space="preserve">
+    <value>Top → Bottom</value>
+  </data>
+  <data name="SlotDialog_DirBottomUp" xml:space="preserve">
+    <value>Bottom → Top</value>
+  </data>
+  <data name="SlotDialog_Bounce" xml:space="preserve">
+    <value>Bounce (s)</value>
   </data>
   <data name="SlotDialog_Hold" xml:space="preserve">
     <value>Hold result (s)</value>
