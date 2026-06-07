@@ -53,6 +53,18 @@
     </Content>
   </ItemGroup>
 
+  <!-- Bundled gifsicle (GPL). Copied next to the app so it works without a PATH install;
+       GifsicleWrapper prefers this binary and falls back to PATH. COPYING ships alongside
+       to satisfy the GPL. Source: https://github.com/bbfox0703/gifsicle (fork). -->
+  <ItemGroup>
+    <None Include="tools\gifsicle\gifsicle.exe" Link="gifsicle.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="tools\gifsicle\COPYING" Link="gifsicle-COPYING.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
   <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

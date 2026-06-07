@@ -65,7 +65,7 @@ Scroll
 - **Runtime**: .NET 8 runtime
 - **Dependencies**: Magick.NET (based on ImageMagick) -- already included in zip file
 - **FFMPEG**: For features using FFMPEG functionality, the system must have FFMPEG installed and set in the OS system environment variable **PATH**, otherwise it cannot be called. You can directly install using PowerShell 7 command: `winget install ffmpeg`.
-- **gifsicle.exe external program**: Search for and download using keywords like "gifsicle for Windows" and configure; gifsicle.exe location must be included in the OS system environment variable **PATH**, otherwise it cannot be called.
+- **gifsicle.exe external program**: `gifsicle.exe` now ships bundled with the app (next to the executable), so no install is required. If the bundled copy is missing, the OS **PATH** copy is used as a fallback.
 ---
 
 
@@ -132,7 +132,7 @@ Resizes each GIF to ~153px, synchronizes duration, merges to a 766px preview GIF
 1. Click **Concatenate GIFs** and pick at least two GIF files.
 2. Choose how to unify FPS, dimensions and palette (auto, reference GIF, or custom options).
 3. Select a transition style (none, fade, slide, zoom or dissolve), direction/type, and duration.
-4. Decide whether to use the faster palette builder or run gifsicle optimization after export.
+4. Optionally run gifsicle optimization after export.
 
 The tool creates a single GIF stitched in sequence and honours the configured resource limits.
 

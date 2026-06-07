@@ -166,6 +166,12 @@ namespace GifProcessorApp
             public int ThresholdKB;
             public long ThresholdBytes;
             public int TimeoutSeconds;
+            // Auto-fit (split-flow): when AutoFit is set, each part is shrunk to <= TargetBytes via
+            // GifSizeFitter instead of a single gifsicle pass.
+            public bool AutoFit;
+            public int TargetKB;
+            public long TargetBytes;
+            public int FitMaxAttempts;
         }
 
         // MUST be called on the UI thread. useOverride=true takes Enabled from enabledOverride instead
@@ -173,6 +179,7 @@ namespace GifProcessorApp
         private static GifsicleSnapshot CaptureGifsicleSnapshot(GifToolMainForm mainForm, bool enabledOverride, bool useOverride)
         {
             int kb = (int)mainForm.numUpDownGifsicleMinKB.Value;
+            int targetKb = (int)mainForm.numUpDownTargetKB.Value;
             return new GifsicleSnapshot
             {
                 Enabled = useOverride ? enabledOverride : mainForm.chkGifsicle.Checked,
@@ -182,7 +189,11 @@ namespace GifProcessorApp
                 Dither = mainForm.DitherMethod,
                 ThresholdKB = kb,
                 ThresholdBytes = (long)kb * 1024L,
-                TimeoutSeconds = (int)mainForm.numUpDownGifsicleTimeout.Value
+                TimeoutSeconds = (int)mainForm.numUpDownGifsicleTimeout.Value,
+                AutoFit = mainForm.chkAutoFitSplit.Checked,
+                TargetKB = targetKb,
+                TargetBytes = (long)targetKb * 1024L,
+                FitMaxAttempts = (int)mainForm.numUpDownFitAttempts.Value
             };
         }
 
@@ -280,6 +291,158 @@ namespace GifProcessorApp
                 mainForm.Enabled = true;
                 SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Idle);
+            }
+        }
+
+        // ── Auto-fit to target size ──────────────────────────────────────────────────────────
+        // A single gifsicle pass often can't get a Steam part under the ~5 MB limit, so these
+        // search the (colors, lossy) space with GifSizeFitter, running gifsicle entirely in memory
+        // (stdin/stdout, no temp files) against the source bytes. See GifSizeFitter for the
+        // quality-first strategy (max colors, then min lossy under the size budget).
+
+        // Engine glue: in-memory gifsicle as the fit runner; maps per-attempt progress to 0-100.
+        private static Task<GifSizeFitter.FitResult> AutoFitBytes(
+            byte[] source, long targetBytes, int maxAttempts, int optimizeLevel, int dither,
+            IProgress<int> progress = null)
+        {
+            var fitOptions = new GifSizeFitter.FitOptions
+            {
+                TargetBytes = targetBytes,
+                MaxAttempts = maxAttempts,
+                OptimizeLevel = optimizeLevel,
+                Dither = dither
+            };
+            IProgress<(int attempt, int maxAttempts, long bytes, string status)> fitProgress = progress == null
+                ? null
+                : new Progress<(int attempt, int maxAttempts, long bytes, string status)>(p =>
+                    progress.Report(Math.Min(100, p.attempt * 100 / Math.Max(1, p.maxAttempts))));
+
+            return GifSizeFitter.FitAsync(source, fitOptions,
+                (bytes, opts) => GifsicleWrapper.OptimizeGifInMemory(bytes, opts), fitProgress);
+        }
+
+        // Split-flow integration: auto-fit one freshly-written part in place to the snapshot target.
+        // Parts already at/under target are left untouched. Runs before ModifyGifFile, which then
+        // re-applies the Steam header/tail exactly as in the single-pass path.
+        private static async Task AutoFitFileInPlace(GifToolMainForm mainForm, GifsicleSnapshot gifsicle, string path, IProgress<int> progress = null)
+        {
+            byte[] source = File.ReadAllBytes(path);
+            if (source.LongLength <= gifsicle.TargetBytes)
+            {
+                SetStatusText(mainForm, string.Format(Resources.Status_AutoFitAlreadyUnder, gifsicle.TargetKB));
+                return;
+            }
+
+            if (gifsicle.TimeoutSeconds > 0)
+            {
+                GifsicleWrapper.ProcessTimeout = TimeSpan.FromSeconds(gifsicle.TimeoutSeconds);
+            }
+
+            var result = await AutoFitBytes(source, gifsicle.TargetBytes, gifsicle.FitMaxAttempts,
+                gifsicle.OptimizeLevel, gifsicle.Dither, progress);
+
+            if (result.Data != null && result.Bytes < source.LongLength)
+            {
+                File.WriteAllBytes(path, result.Data);
+            }
+
+            SetStatusText(mainForm, string.Format(
+                result.TargetMet ? Resources.Status_AutoFitDone : Resources.Status_AutoFitOverTarget,
+                result.Bytes / 1024, result.Colors, result.Lossy));
+        }
+
+        // Standalone batch: pick one or more GIFs and shrink each to <= the panel target, writing
+        // *_fit.gif (non-destructive). If a source carried the Steam tail byte (0x21), the fitted
+        // output keeps it — gifsicle preserves the faked header height and only normalizes the tail
+        // to 0x3B, which we flip back so already-split parts stay Steam-ready.
+        public static async Task AutoFitGifsToSize(GifToolMainForm mainForm)
+        {
+            using var openFileDialog = new OpenFileDialog
+            {
+                Filter = Resources.FileDialog_GifFilter,
+                Title = Resources.Button_AutoFitSize,
+                Multiselect = true
+            };
+            if (openFileDialog.ShowDialog() != DialogResult.OK) return;
+
+            string[] files = openFileDialog.FileNames;
+
+            // Read panel settings on the UI thread.
+            int targetKB = (int)mainForm.numUpDownTargetKB.Value;
+            long targetBytes = (long)targetKB * 1024L;
+            int maxAttempts = (int)mainForm.numUpDownFitAttempts.Value;
+            int optimize = (int)mainForm.numUpDownOptimize.Value;
+            int dither = mainForm.DitherMethod;
+            int timeout = (int)mainForm.numUpDownGifsicleTimeout.Value;
+
+            mainForm.Enabled = false;
+            SetProgressVisible(mainForm, true);
+            SetProgressRange(mainForm, 0, 100);
+            SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+
+            var report = new System.Text.StringBuilder();
+            try
+            {
+                if (timeout > 0)
+                {
+                    GifsicleWrapper.ProcessTimeout = TimeSpan.FromSeconds(timeout);
+                }
+
+                for (int i = 0; i < files.Length; i++)
+                {
+                    string inputPath = files[i];
+                    ImageInputValidator.ValidateGif(inputPath);
+                    string outputPath = GenerateOutputPath(inputPath, "_fit");
+
+                    byte[] source = File.ReadAllBytes(inputPath);
+                    long origKB = source.LongLength / 1024;
+                    bool steamTail = source.Length > 0 && source[source.Length - 1] == 0x21;
+
+                    int fileIndex = i;
+                    int span = Math.Max(1, 100 / files.Length);
+                    int basePct = fileIndex * span;
+                    var progress = new Progress<int>(p =>
+                    {
+                        SetProgressBar(mainForm.pBarTaskStatus, Math.Min(100, basePct + p * span / 100), 100);
+                        SetStatusText(mainForm, string.Format(Resources.Status_AutoFitProgress, fileIndex + 1, files.Length, p));
+                    });
+
+                    if (source.LongLength <= targetBytes)
+                    {
+                        File.WriteAllBytes(outputPath, source);
+                        report.AppendLine($"{Path.GetFileName(inputPath)}: {origKB} KB (already <= {targetKB} KB)");
+                        continue;
+                    }
+
+                    var result = await AutoFitBytes(source, targetBytes, maxAttempts, optimize, dither, progress);
+                    byte[] outData = result.Data;
+                    if (steamTail && outData.Length > 0 && outData[outData.Length - 1] == 0x3B)
+                    {
+                        outData[outData.Length - 1] = 0x21; // preserve the Steam tail byte
+                    }
+                    File.WriteAllBytes(outputPath, outData);
+
+                    report.AppendLine($"{Path.GetFileName(inputPath)}: {origKB} -> {result.Bytes / 1024} KB " +
+                        $"(colors {result.Colors}, lossy {result.Lossy}){(result.TargetMet ? "" : "  ** still over target **")}");
+                }
+
+                SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
+                SetStatusText(mainForm, Resources.Status_Done);
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm, report.ToString(),
+                    Resources.Title_Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                SetStatusText(mainForm, Resources.Status_Error);
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                    string.Format(Resources.Error_Occurred, ex.Message),
+                    Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                mainForm.Enabled = true;
+                SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+                SetStatusText(mainForm, Resources.Status_Idle);
             }
         }
 
@@ -538,7 +701,7 @@ namespace GifProcessorApp
             return (originalDelays, sourceTicks);
         }
 
-        private static async Task SplitGif(string inputFilePath, GifToolMainForm mainForm, (int Start, int End)[] ranges, int canvasHeight, GifsicleSnapshot gifsicle, GridMosaicSettings grid = null)
+        private static async Task SplitGif(string inputFilePath, GifToolMainForm mainForm, (int Start, int End)[] ranges, int canvasHeight, GifsicleSnapshot gifsicle)
         {
             // All heavy ImageMagick work runs on a background thread so the UI stays responsive.
             // UI updates go exclusively through the marshaled SetProgressBar/SetStatusText/SetProgress*
@@ -558,12 +721,6 @@ namespace GifProcessorApp
 
                 for (int i = 0; i < ranges.Length; i++)
                 {
-                    int partWidth = ranges[i].End - ranges[i].Start + 1;
-                    MagickImage gridLayer = grid != null
-                        ? GridMosaicRenderer.BuildGridLayer((uint)partWidth, (uint)newHeight, canvasHeight, grid)
-                        : null;
-                    try
-                    {
                     using (var partCollection = new MagickImageCollection())
                     {
                         for (int frameIndex = 0; frameIndex < collection.Count; frameIndex++)
@@ -587,11 +744,6 @@ namespace GifProcessorApp
                                     croppedFrame.Crop(cropGeometry);
                                     croppedFrame.ResetPage();
                                     newImage.Composite(croppedFrame, 0, 0, CompositeOperator.Over);
-                                }
-
-                                if (gridLayer != null)
-                                {
-                                    GridMosaicRenderer.ApplyGridLayer(newImage, gridLayer, grid.Style);
                                 }
 
                                 newImage.AnimationDelay = (uint)recalculatedDelays[frameIndex];
@@ -648,7 +800,14 @@ namespace GifProcessorApp
                             SetStatusText(mainForm, $"{SteamGifCropper.Properties.Resources.Status_GifsicleOptimizing} ({p}%)");
                         });
 
-                        await OptimizeWithGifsicleIfEnabled(mainForm, gifsicle, outputPath, progress);
+                        if (gifsicle.AutoFit)
+                        {
+                            await AutoFitFileInPlace(mainForm, gifsicle, outputPath, progress);
+                        }
+                        else
+                        {
+                            await OptimizeWithGifsicleIfEnabled(mainForm, gifsicle, outputPath, progress);
+                        }
 
                         // Finalize this part's band regardless of whether gifsicle ran, was skipped by
                         // the size threshold, or was disabled — keeps the bar monotonic.
@@ -656,11 +815,6 @@ namespace GifProcessorApp
                         SetStatusText(mainForm, $"Saving part {i + 1} complete");
 
                         ModifyGifFile(outputPath, canvasHeight);
-                    }
-                    }
-                    finally
-                    {
-                        gridLayer?.Dispose();
                     }
                 }
             });
@@ -1010,12 +1164,11 @@ namespace GifProcessorApp
                 await MergeAndSplitFiveGifs(
                     mainForm,
                     dialog.SelectedFilePaths,
-                    false,
                     dialog.PaletteSourceIndex);
             }
         }
 
-        public static async Task MergeAndSplitFiveGifs(GifToolMainForm mainForm, List<string> gifFiles, bool useFasterPalette, int paletteSourceIndex)
+        public static async Task MergeAndSplitFiveGifs(GifToolMainForm mainForm, List<string> gifFiles, int paletteSourceIndex)
         {
             if (gifFiles == null || gifFiles.Count != 5)
             {
@@ -1072,7 +1225,7 @@ namespace GifProcessorApp
                     syncedCollections = SynchronizeToShortestDuration(resizedCollections, mainForm);
                     SetProgressBar(mainForm.pBarTaskStatus, 60, 100);
 
-                    MergeGifsHorizontally(syncedCollections, mergedFilePath, mainForm, useFasterPalette,
+                    MergeGifsHorizontally(syncedCollections, mergedFilePath, mainForm,
                         ResourceLimits.Memory, ResourceLimits.Disk, paletteSourceIndex);
                     SetProgressBar(mainForm.pBarTaskStatus, 80, 100);
                 });
@@ -1327,7 +1480,7 @@ namespace GifProcessorApp
             }
         }
 
-        private static MagickImage BuildSharedPalette(IEnumerable<MagickImageCollection> collections, bool useFastPalette, int primaryGifIndex = 0)
+        private static MagickImage BuildSharedPalette(IEnumerable<MagickImageCollection> collections, int primaryGifIndex = 0)
         {
             var collectionArray = collections.ToArray();
             
@@ -1364,13 +1517,8 @@ namespace GifProcessorApp
                     {
                         Colors = 256,
                         ColorSpace = ColorSpace.RGB,
-                        DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+                        DitherMethod = DitherMethod.FloydSteinberg
                     };
-
-                    if (useFastPalette)
-                    {
-                        settings.TreeDepth = 5; // Lower tree depth for performance
-                    }
 
                     paletteSamples.Quantize(settings);
 
@@ -1400,13 +1548,8 @@ namespace GifProcessorApp
                     {
                         Colors = 256,
                         ColorSpace = ColorSpace.RGB,
-                        DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+                        DitherMethod = DitherMethod.FloydSteinberg
                     };
-
-                    if (useFastPalette)
-                    {
-                        settings.TreeDepth = 5; // Lower tree depth for performance
-                    }
 
                     paletteSamples.Quantize(settings);
 
@@ -1426,14 +1569,12 @@ namespace GifProcessorApp
         /// <param name="collections">Input GIF collections to merge.</param>
         /// <param name="outputPath">Path where the merged GIF will be written.</param>
         /// <param name="mainForm">Main form for updating progress.</param>
-        /// <param name="useFastPalette">Whether to use the faster palette generation mode.</param>
         /// <param name="memoryLimitBytes">Maximum memory usage in <c>bytes</c>.</param>
         /// <param name="diskLimitBytes">Maximum temporary disk usage in <c>bytes</c>.</param>
         private static void MergeGifsHorizontally(
             MagickImageCollection[] collections,
             string outputPath,
             GifToolMainForm mainForm,
-            bool useFastPalette,
             ulong memoryLimitBytes,
             ulong diskLimitBytes,
             int paletteSourceIndex = 0)
@@ -1452,14 +1593,14 @@ namespace GifProcessorApp
             int maxHeight = collections.Max(c => (int)c[0].Height);
 
             // Build shared palette from first frames
-            var palette = BuildSharedPalette(collections, useFastPalette, paletteSourceIndex);
+            var palette = BuildSharedPalette(collections, paletteSourceIndex);
 
             // Prepare remap settings once
             var mapSettings = new QuantizeSettings
             {
                 Colors = 256,
                 ColorSpace = ColorSpace.RGB,
-                DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+                DitherMethod = DitherMethod.FloydSteinberg
             };
 
             int maxFrames = collections.Max(c => c.Count);
@@ -2109,7 +2250,7 @@ namespace GifProcessorApp
             return false;
         }
 
-        public static async Task MergeMultipleGifs(List<string> gifPaths, string outputPath, GifToolMainForm mainForm, bool useFastPalette = false, int primaryGifIndex = 0)
+        public static async Task MergeMultipleGifs(List<string> gifPaths, string outputPath, GifToolMainForm mainForm, int primaryGifIndex = 0)
         {
             if (gifPaths == null || gifPaths.Count < 2 || gifPaths.Count > 5)
             {
@@ -2203,7 +2344,7 @@ namespace GifProcessorApp
                     await Task.Run(() =>
                     {
                         // Build shared palette from first frames
-                        var palette = BuildSharedPalette(collections, useFastPalette, primaryGifIndex);
+                        var palette = BuildSharedPalette(collections, primaryGifIndex);
                         try
                         {
                             for (int frameIndex = 0; frameIndex < targetFrameCount; frameIndex++)
@@ -2245,14 +2386,12 @@ namespace GifProcessorApp
                             }
 
                             // Remap frames to shared palette
-                            SetStatusText(mainForm, useFastPalette ?
-                                SteamGifCropper.Properties.Resources.Status_MappingFastPalette :
-                                SteamGifCropper.Properties.Resources.Status_MappingSharedPalette);
+                            SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_MappingSharedPalette);
                             var mapSettings = new QuantizeSettings
                             {
                                 Colors = 256,
                                 ColorSpace = ColorSpace.RGB,
-                                DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+                                DitherMethod = DitherMethod.FloydSteinberg
                             };
 
                             int totalFrames = mergedCollection.Count;
@@ -2268,7 +2407,7 @@ namespace GifProcessorApp
                                     int progress = (int)((double)currentFrame / totalFrames * 100);
                                     SetProgressBar(mainForm.pBarTaskStatus, progress, 100);
                                     SetStatusText(mainForm, string.Format(
-                                        useFastPalette ? "Fast palette mapping: {0}/{1} ({2}%)" : "Quality palette mapping: {0}/{1} ({2}%)",
+                                        "Quality palette mapping: {0}/{1} ({2}%)",
                                         currentFrame, totalFrames, progress));
                                 }
                             }
@@ -3975,7 +4114,7 @@ namespace GifProcessorApp
 
                     // Step 6: Apply unified palette
                     SetStatusText(mainForm, "Applying unified palette...");
-                    await ApplyUnifiedPalette(gifCollections, unifiedPalette, settings.UseFasterPalette);
+                    await ApplyUnifiedPalette(gifCollections, unifiedPalette);
                     SetProgressBar(mainForm.pBarTaskStatus, 80, 100);
 
                     // Step 7: Generate transitions and concatenate GIFs
@@ -4145,27 +4284,25 @@ namespace GifProcessorApp
                     if (settings.ReferencePaletteGifIndex >= 0 && 
                         settings.ReferencePaletteGifIndex < gifCollections.Count)
                     {
-                        return BuildSharedPalette(gifCollections.ToArray(), 
-                                                settings.UseFasterPalette, 
+                        return BuildSharedPalette(gifCollections.ToArray(),
                                                 settings.ReferencePaletteGifIndex);
                     }
                     goto case PaletteUnificationMode.AutoMerge;
 
                 case PaletteUnificationMode.AutoMerge:
                 default:
-                    return BuildSharedPalette(gifCollections.ToArray(), settings.UseFasterPalette);
+                    return BuildSharedPalette(gifCollections.ToArray());
             }
         }
 
-        private static async Task ApplyUnifiedPalette(List<MagickImageCollection> gifCollections, 
-                                                     MagickImage palette, 
-                                                     bool useFastPalette)
+        private static async Task ApplyUnifiedPalette(List<MagickImageCollection> gifCollections,
+                                                     MagickImage palette)
         {
             var mapSettings = new QuantizeSettings
             {
                 Colors = 256,
                 ColorSpace = ColorSpace.RGB,
-                DitherMethod = useFastPalette ? DitherMethod.No : DitherMethod.FloydSteinberg
+                DitherMethod = DitherMethod.FloydSteinberg
             };
 
             foreach (var collection in gifCollections)

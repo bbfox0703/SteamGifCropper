@@ -204,9 +204,6 @@
   <data name="Status_SynchronizingGif" xml:space="preserve">
     <value>Synchronizing GIF #{0} duration...</value>
   </data>
-  <data name="Status_MappingFastPalette" xml:space="preserve">
-    <value>Mapping with fast palette...</value>
-  </data>
   <data name="Status_MappingSharedPalette" xml:space="preserve">
     <value>Mapping to shared palette...</value>
   </data>
@@ -642,7 +639,7 @@ Files skipped (not 0x21): {1}</value>
     <value>Enable gifsicle optimization</value>
   </data>
   <data name="Label_GifsicleNotice" xml:space="preserve">
-    <value>Notice: gifsicle.exe must be in the "System PATH"</value>
+    <value>Notice: gifsicle.exe is bundled (the System PATH copy is used as a fallback)</value>
   </data>
   <data name="Label_GifsicleMinKB" xml:space="preserve">
     <value>Min size (KB):</value>
@@ -652,6 +649,27 @@ Files skipped (not 0x21): {1}</value>
   </data>
   <data name="Button_GifsicleSingle" xml:space="preserve">
     <value>Run gifsicle on a GIF</value>
+  </data>
+  <data name="Button_AutoFitSize" xml:space="preserve">
+    <value>Auto-fit GIF(s) to target size</value>
+  </data>
+  <data name="CheckBox_AutoFitSplit" xml:space="preserve">
+    <value>Auto-fit parts ≤</value>
+  </data>
+  <data name="Label_AutoFitTries" xml:space="preserve">
+    <value>Max tries:</value>
+  </data>
+  <data name="Status_AutoFitProgress" xml:space="preserve">
+    <value>Auto-fitting {0}/{1} ({2}%)</value>
+  </data>
+  <data name="Status_AutoFitDone" xml:space="preserve">
+    <value>Auto-fit done: {0} KB (colors {1}, lossy {2})</value>
+  </data>
+  <data name="Status_AutoFitOverTarget" xml:space="preserve">
+    <value>Auto-fit: {0} KB — still over target (colors {1}, lossy {2})</value>
+  </data>
+  <data name="Status_AutoFitAlreadyUnder" xml:space="preserve">
+    <value>Already ≤ {0} KB, skipped</value>
   </data>
   <data name="Status_GifsicleSkippedBelowThreshold" xml:space="preserve">
     <value>Skipped gifsicle (below {0} KB)</value>

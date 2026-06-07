@@ -78,6 +78,11 @@
             btnGridMosaic = new System.Windows.Forms.Button();
             btnSlotMachineStatic = new System.Windows.Forms.Button();
             btnSlotMachineGif = new System.Windows.Forms.Button();
+            chkAutoFitSplit = new System.Windows.Forms.CheckBox();
+            numUpDownTargetKB = new System.Windows.Forms.NumericUpDown();
+            lblAutoFitTries = new System.Windows.Forms.Label();
+            numUpDownFitAttempts = new System.Windows.Forms.NumericUpDown();
+            btnAutoFitSize = new System.Windows.Forms.Button();
             panelGifsicle.SuspendLayout();
             groupDither.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).BeginInit();
@@ -86,6 +91,8 @@
             ((System.ComponentModel.ISupportInitialize)numUpDownGifsicleMinKB).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownGifsicleTimeout).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPalette).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numUpDownTargetKB).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numUpDownFitAttempts).BeginInit();
             conMenuLangSwitch.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numUpDownFramerate).BeginInit();
             SuspendLayout();
@@ -178,6 +185,11 @@
             // panelGifsicle
             // 
             panelGifsicle.Controls.Add(groupDither);
+            panelGifsicle.Controls.Add(chkAutoFitSplit);
+            panelGifsicle.Controls.Add(numUpDownTargetKB);
+            panelGifsicle.Controls.Add(lblAutoFitTries);
+            panelGifsicle.Controls.Add(numUpDownFitAttempts);
+            panelGifsicle.Controls.Add(btnAutoFitSize);
             panelGifsicle.Controls.Add(numUpDownGifsicleMinKB);
             panelGifsicle.Controls.Add(btnGifsicleSingle);
             panelGifsicle.Controls.Add(numUpDownGifsicleTimeout);
@@ -197,7 +209,7 @@
             panelGifsicle.Location = new System.Drawing.Point(0, 338);
             panelGifsicle.Margin = new System.Windows.Forms.Padding(2);
             panelGifsicle.Name = "panelGifsicle";
-            panelGifsicle.Size = new System.Drawing.Size(619, 145);
+            panelGifsicle.Size = new System.Drawing.Size(619, 175);
             panelGifsicle.TabIndex = 17;
             // 
             // groupDither
@@ -329,6 +341,60 @@
             btnGifsicleSingle.Text = SteamGifCropper.Properties.Resources.Button_GifsicleSingle;
             btnGifsicleSingle.UseVisualStyleBackColor = true;
             btnGifsicleSingle.Click += btnGifsicleSingle_Click;
+            //
+            // chkAutoFitSplit
+            //
+            chkAutoFitSplit.AutoSize = true;
+            chkAutoFitSplit.Location = new System.Drawing.Point(7, 94);
+            chkAutoFitSplit.Margin = new System.Windows.Forms.Padding(2);
+            chkAutoFitSplit.Name = "chkAutoFitSplit";
+            chkAutoFitSplit.Size = new System.Drawing.Size(120, 19);
+            chkAutoFitSplit.TabIndex = 22;
+            chkAutoFitSplit.Text = SteamGifCropper.Properties.Resources.CheckBox_AutoFitSplit;
+            chkAutoFitSplit.UseVisualStyleBackColor = true;
+            //
+            // numUpDownTargetKB
+            //
+            numUpDownTargetKB.Increment = new decimal(new int[] { 50, 0, 0, 0 });
+            numUpDownTargetKB.Location = new System.Drawing.Point(135, 92);
+            numUpDownTargetKB.Margin = new System.Windows.Forms.Padding(2);
+            numUpDownTargetKB.Maximum = new decimal(new int[] { 5120, 0, 0, 0 });
+            numUpDownTargetKB.Minimum = new decimal(new int[] { 500, 0, 0, 0 });
+            numUpDownTargetKB.Name = "numUpDownTargetKB";
+            numUpDownTargetKB.Size = new System.Drawing.Size(62, 23);
+            numUpDownTargetKB.TabIndex = 23;
+            numUpDownTargetKB.Value = new decimal(new int[] { 5100, 0, 0, 0 });
+            //
+            // lblAutoFitTries
+            //
+            lblAutoFitTries.AutoSize = true;
+            lblAutoFitTries.Location = new System.Drawing.Point(210, 94);
+            lblAutoFitTries.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            lblAutoFitTries.Name = "lblAutoFitTries";
+            lblAutoFitTries.Size = new System.Drawing.Size(64, 15);
+            lblAutoFitTries.TabIndex = 24;
+            lblAutoFitTries.Text = SteamGifCropper.Properties.Resources.Label_AutoFitTries;
+            //
+            // numUpDownFitAttempts
+            //
+            numUpDownFitAttempts.Location = new System.Drawing.Point(280, 92);
+            numUpDownFitAttempts.Margin = new System.Windows.Forms.Padding(2);
+            numUpDownFitAttempts.Maximum = new decimal(new int[] { 50, 0, 0, 0 });
+            numUpDownFitAttempts.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numUpDownFitAttempts.Name = "numUpDownFitAttempts";
+            numUpDownFitAttempts.Size = new System.Drawing.Size(48, 23);
+            numUpDownFitAttempts.TabIndex = 25;
+            numUpDownFitAttempts.Value = new decimal(new int[] { 14, 0, 0, 0 });
+            //
+            // btnAutoFitSize
+            //
+            btnAutoFitSize.Location = new System.Drawing.Point(360, 90);
+            btnAutoFitSize.Name = "btnAutoFitSize";
+            btnAutoFitSize.Size = new System.Drawing.Size(250, 26);
+            btnAutoFitSize.TabIndex = 26;
+            btnAutoFitSize.Text = SteamGifCropper.Properties.Resources.Button_AutoFitSize;
+            btnAutoFitSize.UseVisualStyleBackColor = true;
+            btnAutoFitSize.Click += btnAutoFitSize_Click;
             //
             // numUpDownPaletteSicle
             // 
@@ -605,7 +671,7 @@
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            ClientSize = new System.Drawing.Size(619, 495);
+            ClientSize = new System.Drawing.Size(619, 525);
             Controls.Add(lblResourceLimitDesc);
             Controls.Add(btnResizeNfpsGIF);
             Controls.Add(btnOverlayGIF);
@@ -645,6 +711,8 @@
             ((System.ComponentModel.ISupportInitialize)numUpDownGifsicleMinKB).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownGifsicleTimeout).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPalette).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numUpDownTargetKB).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numUpDownFitAttempts).EndInit();
             conMenuLangSwitch.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)numUpDownFramerate).EndInit();
             ResumeLayout(false);
@@ -702,5 +770,10 @@
         private System.Windows.Forms.Button btnGridMosaic;
         private System.Windows.Forms.Button btnSlotMachineStatic;
         private System.Windows.Forms.Button btnSlotMachineGif;
+        public System.Windows.Forms.CheckBox chkAutoFitSplit;
+        public System.Windows.Forms.NumericUpDown numUpDownTargetKB;
+        private System.Windows.Forms.Label lblAutoFitTries;
+        public System.Windows.Forms.NumericUpDown numUpDownFitAttempts;
+        private System.Windows.Forms.Button btnAutoFitSize;
     }
 }

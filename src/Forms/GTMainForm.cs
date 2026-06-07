@@ -186,7 +186,6 @@ namespace GifProcessorApp
                         await GifProcessor.MergeAndSplitFiveGifs(
                             this,
                             dialog.SelectedFilePaths,
-                            false,
                             dialog.PaletteSourceIndex);
                     }
                 }
@@ -206,7 +205,7 @@ namespace GifProcessorApp
                 {
                     if (dialog.ShowDialog() == DialogResult.OK)
                     {
-                        await GifProcessor.MergeMultipleGifs(dialog.SelectedFilePaths, dialog.OutputFilePath, this, false, dialog.PaletteSourceIndex);
+                        await GifProcessor.MergeMultipleGifs(dialog.SelectedFilePaths, dialog.OutputFilePath, this, dialog.PaletteSourceIndex);
                     }
                 }
             }, "GIF merge");
@@ -244,6 +243,11 @@ namespace GifProcessorApp
         private async void btnGifsicleSingle_Click(object sender, EventArgs e)
         {
             await ExecuteWithErrorHandling(async () => await GifProcessor.OptimizeSingleGif(this), "gifsicle optimization");
+        }
+
+        private async void btnAutoFitSize_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(async () => await GifProcessor.AutoFitGifsToSize(this), "auto-fit to size");
         }
 
         private async void btnReverseGIF_Click(object sender, EventArgs e)
@@ -349,6 +353,9 @@ namespace GifProcessorApp
                 lblGifsicleMinKB.Text = SteamGifCropper.Properties.Resources.Label_GifsicleMinKB;
                 lblGifsicleTimeout.Text = SteamGifCropper.Properties.Resources.Label_GifsicleTimeout;
                 btnGifsicleSingle.Text = SteamGifCropper.Properties.Resources.Button_GifsicleSingle;
+                chkAutoFitSplit.Text = SteamGifCropper.Properties.Resources.CheckBox_AutoFitSplit;
+                lblAutoFitTries.Text = SteamGifCropper.Properties.Resources.Label_AutoFitTries;
+                btnAutoFitSize.Text = SteamGifCropper.Properties.Resources.Button_AutoFitSize;
                 btnMerge2to5GifToOne.Text = SteamGifCropper.Properties.Resources.Button_MergeGifs;
                 btnReverseGIF.Text = SteamGifCropper.Properties.Resources.Button_ReverseGif;
                 btnScrollStaticImage.Text = SteamGifCropper.Properties.Resources.Button_ScrollStaticImage;
