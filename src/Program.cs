@@ -62,6 +62,11 @@ namespace GifProcessorApp
         /// Configure ImageMagick security policy to only allow required image format coders.
         /// This drastically reduces the attack surface by disabling 100+ unused format parsers
         /// (SVG, PDF, PostScript, TIFF, EPS, etc.) that are the source of most ImageMagick CVEs.
+        /// XC is the internal solid-colour canvas generator (not a file-format parser, so no
+        /// untrusted-input attack surface). It MUST stay allowed: every `new MagickImage(color,
+        /// width, height)` — used by split, merge, overlay, scroll, grid and Coalesce — creates
+        /// its canvas by reading the "xc:" pseudo-coder; blocking it raises
+        /// "operation not authorized by the security policy `XC'".
         /// </summary>
         private static void ConfigureImageMagickPolicy()
         {
@@ -69,7 +74,7 @@ namespace GifProcessorApp
             configFiles.Policy.Data = @"<policymap>
   <policy domain=""delegate"" rights=""none"" pattern=""*"" />
   <policy domain=""coder"" rights=""none"" pattern=""*"" />
-  <policy domain=""coder"" rights=""read|write"" pattern=""{GIF,PNG,JPEG,BMP}"" />
+  <policy domain=""coder"" rights=""read|write"" pattern=""{GIF,PNG,JPEG,BMP,XC}"" />
 </policymap>";
             MagickNET.Initialize(configFiles);
         }
