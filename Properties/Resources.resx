@@ -410,9 +410,6 @@ Files skipped (not 0x21): {1}</value>
   <data name="Tooltip_Framerate" xml:space="preserve">
     <value>Framerate setting only applies to: MP4 to GIF conversion, scroll animations, and resize/FPS tool. Split GIF and merge operations preserve original timing.</value>
   </data>
-  <data name="CheckBox_FasterPalette" xml:space="preserve">
-    <value>Faster palette reduction (quality down)</value>
-  </data>
   <data name="Button_ReverseGif" xml:space="preserve">
     <value>FFMPEG: Reverse animated GIF</value>
   </data>
@@ -423,13 +420,13 @@ Files skipped (not 0x21): {1}</value>
     <value>Scroll animated GIF</value>
   </data>
   <data name="Button_GridMosaic" xml:space="preserve">
-    <value>766px Grid Mosaic + Split</value>
+    <value>766px Grid Mosaic (for split)</value>
   </data>
   <data name="Button_SlotMachineStatic" xml:space="preserve">
-    <value>766px Slot Machine + Split (Image)</value>
+    <value>766px Slot Machine (Image)</value>
   </data>
   <data name="Button_SlotMachineGif" xml:space="preserve">
-    <value>766px Slot Machine + Split (GIF)</value>
+    <value>766px Slot Machine (GIF)</value>
   </data>
   <data name="Status_SlotMachineBuilding" xml:space="preserve">
     <value>Building slot-machine reels...</value>
@@ -994,9 +991,6 @@ Technical details: {5}</value>
   </data>
   <data name="ConcatenateDialog_UnifyDimensions" xml:space="preserve">
     <value>Unify dimensions (resize to largest)</value>
-  </data>
-  <data name="ConcatenateDialog_UseFasterPalette" xml:space="preserve">
-    <value>Faster palette (lower quality)</value>
   </data>
   <data name="ConcatenateDialog_UseGifsicleOptimization" xml:space="preserve">
     <value>Use gifsicle optimization</value>

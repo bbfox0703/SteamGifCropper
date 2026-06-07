@@ -16,14 +16,14 @@
 - **透明格線**透出個人檔案背景、與 Steam 間隙完全融合；**實心色格線**像窗櫺/像素牆（但不會跟間隙同色）。
 - **檔案**：`src/Core/GridMosaicSettings.cs`、`GridMosaicGeometry.cs`（純函式，可單測）、`GridMosaicRenderer.cs`（Magick 繪製，像素寫入）、`src/Dialogs/GridMosaicDialog.cs`、`GifProcessor.GridMosaic()` 入口、`SplitGif` 多一個選用 `GridMosaicSettings grid = null` 參數、`FlatProgressBar`、三語 resx、`SteamGifCropper.Tests/GridMosaicTests.cs`。
 - **Commits**：`fe2548a`（feature）、`f730b0a`（XC policy 修正）、`a69d096`（進度條修正）。
-- **後續**：按鈕已改名「766px Grid Mosaic + Split」，凸顯吃 766px、輸出 5 份；檔尾 0x21 在 gifsicle 之後套用（走 `SplitGif`）。
+- **後續（不分割化）**：原本走 `SplitGif` 直接輸出 5 份；後來改為**只輸出單一 766px 全寬 GIF（不分割）**，方便與其他效果串接（拉霸→格網→…），最後再用主頁「切割 GIF」切成 5 份（切割時才加 100px 延伸 + 檔尾 0x21）。`GifProcessor.GridMosaic()` 改呼叫新的 `ApplyGridMosaic()`（逐 frame 在各槽 x 位置疊格線，gap 不畫），不再走 `SplitGif`。按鈕改名「766px 分割用格網馬賽克」。
 
 ### ✅ 拉霸 / 777 五轉輪（Slot Machine，B 段）
-把 766px 圖片／GIF 做成 5 槽位拉霸：每個 Steam 欄＝一個垂直轉輪，wrap-scroll 自己那一欄的內容，套用 ease-out cubic 由快到慢、由左到右錯開停止，最後鎖定成原圖，再切成 5 份。
+把 766px 圖片／GIF 做成 5 槽位拉霸：每個 Steam 欄＝一個垂直轉輪，wrap-scroll 自己那一欄的內容，套用 ease-out cubic 由快到慢、各自隨機停止，最後鎖定成原圖。**輸出單一 766px 全寬 GIF（不分割）**，方便串接；要切成 5 份時用主頁「切割 GIF」。
 
 - **兩個變體**：靜態圖（鎖定後 hold 數秒）、動態 GIF。
 - **GIF 播放方式（可選）**：`旋轉時同步播放`（預設，輸出總長＝GIF 長度，轉動時 GIF 已照常播放、轉輪在 live frame 上捲動，鎖定後續播剩餘段）或 `先轉再播放`（轉動時定格第一幀、鎖定後再播整圈 GIF）。
-- **前置**：非 766/774 寬會自動 `Resize(766,0)`；切割一律走 `SplitGif`，所以每份都有 100px 高度延伸 + 檔尾 0x21（在 gifsicle 之後）。
+- **前置**：非 766/774 寬會自動 `Resize(766,0)`。**不自動分割**（見上）；可選 gifsicle 套用在整個 766px 檔（門檻仍有效）。後續用主頁「切割 GIF」切成 5 份時才加 100px 延伸 + 檔尾 0x21（在 gifsicle 之後）。
 - **轉輪內容**：選定為「該欄自己的內容上下捲動」（最穩、任何寬度適用），非 5 欄輪播。
 - **隨機化（取代固定 stagger）**：每輪的停止秒數＝旋轉時間 ± 波動%（預設 ±20%、上限 30%）、旋轉圈數＝設定值 ± 波動%（預設 ±25%、上限 50%），用 `System.Random` 計算 → 哪輪先停、哪輪轉最久都隨機，不再有「轉輪錯開」設定。
 - **減速 + 回彈**：ease-out cubic 由快而慢（非急停）；停止後有 overshoot 阻尼擺動（`Bounce` 秒數，預設 0.5s）模擬實體拉霸彈跳。固定式減速，未做減速時點/幅度的設定。
@@ -35,6 +35,8 @@
 ### ✅ 連帶修正
 - **XC coder 政策**（`f730b0a`）：`Program.cs` 的安全政策原本只允許 GIF/PNG/JPEG/BMP，誤擋了內部純色畫布產生器 `XC`，導致所有 `new MagickImage(color, w, h)`（split/merge/overlay/scroll/Coalesce 都用）失敗。XC 不是檔案解析器、無攻擊面，已加回白名單。
 - **進度條**（`a69d096`）：改用自繪 `FlatProgressBar`（`UserPaint` 純色填滿），繞過原生 comctl32 的 chunk/動畫繪製（深色主題下會在填滿邊緣留下兩條移動的黑線）；並把 `SplitGif` 進度改為單調遞增（每個 part 一個 20% 區段，不再每 part 跳到 100%）。
+- **移除「較快的調色盤處理」選項**：原本主視窗 + 合併/合併分割/串接 3 個對話框各有此勾選框（跳過 dithering、效益不明顯）。已全部移除 UI 與 resx，合併/串接一律用 FloydSteinberg 品質調色盤（呼叫端傳 `false`；內部 `useFastPalette` 參數仍在但恆為 false，屬休眠的死分支）。
+- **publish.cmd 修正**：原本只做增量 `dotnet publish`，會用到舊 obj 狀態 + 殘留舊本地化 DLL。改成先清 `publish\`、`dotnet clean`、再 `dotnet publish --no-incremental`，確保 build 到最新。CI（fresh runner）本就無此問題。
 
 ---
 

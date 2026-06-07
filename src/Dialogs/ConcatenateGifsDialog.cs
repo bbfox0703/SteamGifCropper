@@ -64,7 +64,6 @@ namespace GifProcessorApp
 
         // General Settings
         private CheckBox chkUnifyDimensions;
-        private CheckBox chkUseFasterPalette;
         private CheckBox chkUseGifsicleOptimization;
 
         // Action Buttons
@@ -245,7 +244,6 @@ namespace GifProcessorApp
             nudTransitionDuration = new NumericUpDown();
             lblSeconds = new Label();
             chkUnifyDimensions = new CheckBox();
-            chkUseFasterPalette = new CheckBox();
             chkUseGifsicleOptimization = new CheckBox();
             btnOK = new Button();
             btnCancel = new Button();
@@ -623,17 +621,7 @@ namespace GifProcessorApp
             chkUnifyDimensions.TabIndex = 21;
             chkUnifyDimensions.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_UnifyDimensions;
             chkUnifyDimensions.UseVisualStyleBackColor = true;
-            // 
-            // chkUseFasterPalette
-            // 
-            chkUseFasterPalette.AutoSize = true;
-            chkUseFasterPalette.Location = new Point(244, 530);
-            chkUseFasterPalette.Name = "chkUseFasterPalette";
-            chkUseFasterPalette.Size = new Size(185, 19);
-            chkUseFasterPalette.TabIndex = 22;
-            chkUseFasterPalette.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_UseFasterPalette;
-            chkUseFasterPalette.UseVisualStyleBackColor = true;
-            // 
+            //
             // chkUseGifsicleOptimization
             // 
             chkUseGifsicleOptimization.AutoSize = true;
@@ -685,7 +673,6 @@ namespace GifProcessorApp
             Controls.Add(txtOutputFile);
             Controls.Add(btnBrowseOutput);
             Controls.Add(chkUnifyDimensions);
-            Controls.Add(chkUseFasterPalette);
             Controls.Add(chkUseGifsicleOptimization);
             Controls.Add(btnOK);
             Controls.Add(btnCancel);
@@ -903,7 +890,6 @@ namespace GifProcessorApp
 
             Settings.UseStrongPaletteWeighting = chkStrongPaletteWeighting.Checked;
             Settings.UnifyDimensions = chkUnifyDimensions.Checked;
-            Settings.UseFasterPalette = chkUseFasterPalette.Checked;
             Settings.UseGifsicleOptimization = chkUseGifsicleOptimization.Checked;
 
             // Transition settings

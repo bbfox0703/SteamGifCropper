@@ -59,7 +59,6 @@
             lblFramerate = new System.Windows.Forms.Label();
             lblFPS = new System.Windows.Forms.Label();
             btnMerge2to5GifToOne = new System.Windows.Forms.Button();
-            chk5GIFMergeFasterPaletteProcess = new System.Windows.Forms.CheckBox();
             btnReverseGIF = new System.Windows.Forms.Button();
             btnLanguageChange = new System.Windows.Forms.Button();
             conMenuLangSwitch = new System.Windows.Forms.ContextMenuStrip(components);
@@ -414,17 +413,7 @@
             btnMerge2to5GifToOne.Text = SteamGifCropper.Properties.Resources.Button_MergeGifs;
             btnMerge2to5GifToOne.UseVisualStyleBackColor = true;
             btnMerge2to5GifToOne.Click += btnMerge2to5GifToOne_Click;
-            // 
-            // chk5GIFMergeFasterPaletteProcess
-            // 
-            chk5GIFMergeFasterPaletteProcess.AutoSize = true;
-            chk5GIFMergeFasterPaletteProcess.Location = new System.Drawing.Point(315, 56);
-            chk5GIFMergeFasterPaletteProcess.Name = "chk5GIFMergeFasterPaletteProcess";
-            chk5GIFMergeFasterPaletteProcess.Size = new System.Drawing.Size(243, 19);
-            chk5GIFMergeFasterPaletteProcess.TabIndex = 3;
-            chk5GIFMergeFasterPaletteProcess.Text = SteamGifCropper.Properties.Resources.CheckBox_FasterPalette;
-            chk5GIFMergeFasterPaletteProcess.UseVisualStyleBackColor = true;
-            // 
+            //
             // btnReverseGIF
             // 
             btnReverseGIF.Location = new System.Drawing.Point(313, 95);
@@ -585,7 +574,6 @@
             Controls.Add(btnScrollAnimatedGif);
             Controls.Add(btnLanguageChange);
             Controls.Add(btnReverseGIF);
-            Controls.Add(chk5GIFMergeFasterPaletteProcess);
             Controls.Add(panelGifsicle);
             Controls.Add(btnMp4ToGif);
             Controls.Add(lblFPS);
@@ -655,7 +643,6 @@
         private System.Windows.Forms.Label lblFramerate;
         private System.Windows.Forms.Label lblFPS;
         private System.Windows.Forms.Button btnMerge2to5GifToOne;
-        public System.Windows.Forms.CheckBox chk5GIFMergeFasterPaletteProcess;
         private System.Windows.Forms.Button btnReverseGIF;
         private System.Windows.Forms.Button btnLanguageChange;
         private System.Windows.Forms.ContextMenuStrip conMenuLangSwitch;

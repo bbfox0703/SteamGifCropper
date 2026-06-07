@@ -418,9 +418,6 @@
   <data name="Tooltip_Framerate" xml:space="preserve">
     <value>幀率設定僅適用於：MP4 轉 GIF、滾動動畫、調整大小/FPS 工具。分割和合併 GIF 會保留原始時間。</value>
   </data>
-  <data name="CheckBox_FasterPalette" xml:space="preserve">
-    <value>使用較快的調色盤處理(品質較低)</value>
-  </data>
   <data name="Button_ReverseGif" xml:space="preserve">
     <value>FFMPEG：反轉動畫GIF</value>
   </data>
@@ -431,13 +428,13 @@
     <value>捲動動畫GIF</value>
   </data>
   <data name="Button_GridMosaic" xml:space="preserve">
-    <value>766px 格網馬賽克 + 分割</value>
+    <value>766px 分割用格網馬賽克</value>
   </data>
   <data name="Button_SlotMachineStatic" xml:space="preserve">
-    <value>766px 拉霸動畫 + 分割（靜態圖）</value>
+    <value>766px 拉霸動畫（靜態圖）</value>
   </data>
   <data name="Button_SlotMachineGif" xml:space="preserve">
-    <value>766px 拉霸動畫 + 分割（GIF）</value>
+    <value>766px 拉霸動畫（GIF）</value>
   </data>
   <data name="Status_SlotMachineBuilding" xml:space="preserve">
     <value>建立拉霸轉輪中...</value>
@@ -1002,9 +999,6 @@ FFmpeg 輸出 (部分)：
   </data>
   <data name="ConcatenateDialog_UnifyDimensions" xml:space="preserve">
     <value>統一尺寸（調整為最大）</value>
-  </data>
-  <data name="ConcatenateDialog_UseFasterPalette" xml:space="preserve">
-    <value>快速調色盤（較低品質）</value>
   </data>
   <data name="ConcatenateDialog_UseGifsicleOptimization" xml:space="preserve">
     <value>使用 gifsicle 最佳化</value>

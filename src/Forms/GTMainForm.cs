@@ -186,7 +186,7 @@ namespace GifProcessorApp
                         await GifProcessor.MergeAndSplitFiveGifs(
                             this,
                             dialog.SelectedFilePaths,
-                            dialog.chkGIFMergeFasterPaletteProcess.Checked,
+                            false,
                             dialog.PaletteSourceIndex);
                     }
                 }
@@ -206,8 +206,7 @@ namespace GifProcessorApp
                 {
                     if (dialog.ShowDialog() == DialogResult.OK)
                     {
-                        bool useFastPalette = dialog.chkGIFMergeFasterPaletteProcess.Checked;
-                        await GifProcessor.MergeMultipleGifs(dialog.SelectedFilePaths, dialog.OutputFilePath, this, useFastPalette, dialog.PaletteSourceIndex);
+                        await GifProcessor.MergeMultipleGifs(dialog.SelectedFilePaths, dialog.OutputFilePath, this, false, dialog.PaletteSourceIndex);
                     }
                 }
             }, "GIF merge");
@@ -344,7 +343,6 @@ namespace GifProcessorApp
                 chkGifsicle.Text = SteamGifCropper.Properties.Resources.CheckBox_GifsicleOptimization;
                 lblGifsicleMinKB.Text = SteamGifCropper.Properties.Resources.Label_GifsicleMinKB;
                 btnMerge2to5GifToOne.Text = SteamGifCropper.Properties.Resources.Button_MergeGifs;
-                chk5GIFMergeFasterPaletteProcess.Text = SteamGifCropper.Properties.Resources.CheckBox_FasterPalette;
                 btnReverseGIF.Text = SteamGifCropper.Properties.Resources.Button_ReverseGif;
                 btnScrollStaticImage.Text = SteamGifCropper.Properties.Resources.Button_ScrollStaticImage;
                 btnOverlayGIF.Text = SteamGifCropper.Properties.Resources.Button_OverlayGif;

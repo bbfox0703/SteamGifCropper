@@ -418,9 +418,6 @@
   <data name="Tooltip_Framerate" xml:space="preserve">
     <value>フレームレート設定はMP4変換、スクロールアニメーション、リサイズ/FPSツールのみに適用。分割・結合は元のタイミングを保持。</value>
   </data>
-  <data name="CheckBox_FasterPalette" xml:space="preserve">
-    <value>高速パレット処理を使用（品質低下）</value>
-  </data>
   <data name="Button_ReverseGif" xml:space="preserve">
     <value>FFMPEG：アニメーションGIFを反転</value>
   </data>
@@ -431,13 +428,13 @@
     <value>アニメーションGIFをスクロール</value>
   </data>
   <data name="Button_GridMosaic" xml:space="preserve">
-    <value>766px グリッドモザイク + 分割</value>
+    <value>766px 分割用グリッドモザイク</value>
   </data>
   <data name="Button_SlotMachineStatic" xml:space="preserve">
-    <value>766px スロット + 分割（画像）</value>
+    <value>766px スロット（画像）</value>
   </data>
   <data name="Button_SlotMachineGif" xml:space="preserve">
-    <value>766px スロット + 分割（GIF）</value>
+    <value>766px スロット（GIF）</value>
   </data>
   <data name="Status_SlotMachineBuilding" xml:space="preserve">
     <value>スロットリールを生成中...</value>
@@ -1002,9 +999,6 @@ FFmpeg 出力（切り捨て）:
   </data>
   <data name="ConcatenateDialog_UnifyDimensions" xml:space="preserve">
     <value>寸法を統一（最大にリサイズ）</value>
-  </data>
-  <data name="ConcatenateDialog_UseFasterPalette" xml:space="preserve">
-    <value>高速パレット（低品質）</value>
   </data>
   <data name="ConcatenateDialog_UseGifsicleOptimization" xml:space="preserve">
     <value>gifsicle最適化を使用</value>

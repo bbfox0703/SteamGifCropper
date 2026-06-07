@@ -367,15 +367,6 @@ namespace SteamGifCropper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Faster palette reduction (quality down).
-        /// </summary>
-        internal static string CheckBox_FasterPalette {
-            get {
-                return ResourceManager.GetString("CheckBox_FasterPalette", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to FFMPEG: Reverse animated GIF.
         /// </summary>
         internal static string Button_ReverseGif {
@@ -2252,12 +2243,6 @@ namespace SteamGifCropper.Properties {
         internal static string ConcatenateDialog_UnifyDimensions {
             get {
                 return ResourceManager.GetString("ConcatenateDialog_UnifyDimensions", resourceCulture);
-            }
-        }
-
-        internal static string ConcatenateDialog_UseFasterPalette {
-            get {
-                return ResourceManager.GetString("ConcatenateDialog_UseFasterPalette", resourceCulture);
             }
         }
 

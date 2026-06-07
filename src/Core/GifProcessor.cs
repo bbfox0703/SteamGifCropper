@@ -326,8 +326,9 @@ namespace GifProcessorApp
             }
         }
 
-        // Splits a 766/774 GIF into 5 parts while drawing a grid/lattice aligned to the
-        // Steam showcase slots, turning the forced 4px/6px slot gaps into a deliberate mosaic.
+        // Draws a grid/lattice aligned to the Steam showcase slots over a 766/774 GIF, turning the
+        // forced 4px/6px slot gaps into a deliberate mosaic. Outputs a single full-width GIF (no split)
+        // so it can be chained; split later with the main "Split GIF" button.
         public static async Task GridMosaic(GifToolMainForm mainForm)
         {
             using (var dialog = new GridMosaicDialog())
@@ -339,44 +340,43 @@ namespace GifProcessorApp
 
                 string inputFilePath = dialog.InputFilePath;
                 ImageInputValidator.ValidateGif(inputFilePath);
-                SetStatusText(mainForm, "Grid mosaic...");
+
+                uint canvasWidth;
+                using (var probe = new MagickImageCollection(inputFilePath))
+                {
+                    canvasWidth = probe[0].Page.Width;
+                }
+                if (!IsValidCanvasWidth(canvasWidth))
+                {
+                    ShowUnsupportedWidthError(canvasWidth);
+                    return;
+                }
+
+                var grid = new GridMosaicSettings
+                {
+                    InputFilePath = inputFilePath,
+                    ColumnsPerSlot = dialog.ColumnsPerSlot,
+                    Rows = dialog.Rows,
+                    LineWidth = dialog.LineWidth,
+                    Style = dialog.Style,
+                    LineColor = dialog.LineColor
+                };
+                string outputFilePath = GenerateOutputPath(inputFilePath, "_grid");
+                var gifsicle = CaptureGifsicleSnapshot(mainForm);
+
+                mainForm.Enabled = false;
+                SetProgressRange(mainForm, 0, 100);
+                SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Processing);
                 try
                 {
-                    using (var collection = new MagickImageCollection(inputFilePath))
-                    {
-                        uint canvasWidth = collection[0].Page.Width;
-                        uint canvasHeight = collection[0].Page.Height;
+                    await ApplyGridMosaic(mainForm, inputFilePath, outputFilePath, grid, gifsicle);
 
-                        if (!IsValidCanvasWidth(canvasWidth))
-                        {
-                            ShowUnsupportedWidthError(canvasWidth);
-                            return;
-                        }
-
-                        var grid = new GridMosaicSettings
-                        {
-                            InputFilePath = inputFilePath,
-                            ColumnsPerSlot = dialog.ColumnsPerSlot,
-                            Rows = dialog.Rows,
-                            LineWidth = dialog.LineWidth,
-                            Style = dialog.Style,
-                            LineColor = dialog.LineColor
-                        };
-
-                        var gifsicle = CaptureGifsicleSnapshot(mainForm);
-                        mainForm.Enabled = false;
-                        SetProgressRange(mainForm, 0, 100);
-                        SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
-                        SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Processing);
-
-                        var ranges = GetCropRanges(canvasWidth);
-                        await SplitGif(inputFilePath, mainForm, ranges, (int)canvasHeight, gifsicle, grid);
-
-                        SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
-                        WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
-                                        SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
-                                        SteamGifCropper.Properties.Resources.Title_Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
+                    SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
+                    WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                                    SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
+                                    SteamGifCropper.Properties.Resources.Title_Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
@@ -388,10 +388,71 @@ namespace GifProcessorApp
                 finally
                 {
                     mainForm.Enabled = true;
-                    SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
+                    SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
                     SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Idle);
                 }
             }
+        }
+
+        // Overlays the slot-aligned grid onto every frame of the full-width GIF (no split). The grid is
+        // built once per slot and composited at each slot's x-offset, so the result matches the old
+        // per-part appearance (gaps stay grid-free). Runs on a background thread.
+        private static async Task ApplyGridMosaic(GifToolMainForm mainForm, string inputFilePath,
+            string outputFilePath, GridMosaicSettings grid, GifsicleSnapshot gifsicle)
+        {
+            await Task.Run(() =>
+            {
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_CoalescingFrames);
+                using var collection = new MagickImageCollection(inputFilePath);
+                collection.Coalesce();
+
+                uint canvasWidth = collection[0].Width;
+                int canvasHeight = (int)collection[0].Height;
+                var ranges = GetCropRanges(canvasWidth);
+
+                var gridLayers = new MagickImage[ranges.Length];
+                try
+                {
+                    for (int c = 0; c < ranges.Length; c++)
+                    {
+                        int partWidth = ranges[c].End - ranges[c].Start + 1;
+                        gridLayers[c] = GridMosaicRenderer.BuildGridLayer((uint)partWidth, (uint)canvasHeight, canvasHeight, grid);
+                    }
+
+                    var op = grid.Style == GridLineStyle.Transparent ? CompositeOperator.DstOut : CompositeOperator.Over;
+                    int total = collection.Count;
+                    int idx = 0;
+                    foreach (var frame in collection)
+                    {
+                        for (int c = 0; c < ranges.Length; c++)
+                        {
+                            frame.Composite(gridLayers[c], ranges[c].Start, 0, op);
+                        }
+                        frame.Settings.SetDefine("compress", "LZW");
+
+                        idx++;
+                        if (idx % 10 == 0 || idx == total)
+                        {
+                            SetProgressBar(mainForm.pBarTaskStatus, idx * 90 / total, 100);
+                            SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Processing);
+                        }
+                    }
+
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Optimizing);
+                    collection.Optimize();
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
+                    collection.Write(outputFilePath);
+                }
+                finally
+                {
+                    foreach (var layer in gridLayers)
+                    {
+                        layer?.Dispose();
+                    }
+                }
+            });
+
+            await OptimizeWithGifsicleIfEnabled(mainForm, gifsicle, outputFilePath);
         }
 
 
@@ -590,13 +651,12 @@ namespace GifProcessorApp
             SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
             SetProgressVisible(mainForm, true);
 
-            // Computed inside the background build, consumed by the SplitGif call afterwards.
-            (int Start, int End)[] ranges = null;
-            int canvasHeight = 0;
-
             try
             {
-                // Phase 1: build the full-width slot-machine animation (heavy → background thread).
+                // Build the full-width 766px slot-machine animation (heavy → background thread).
+                // No auto-split: the output is a single 766px GIF so it can be chained with other
+                // effects (grid mosaic, scroll, ...) and split with the main "Split GIF" button when
+                // ready (that applies the 100px extension + 0x21 tail byte per part).
                 await Task.Run(() =>
                 {
                     SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_SlotMachineBuilding);
@@ -615,8 +675,8 @@ namespace GifProcessorApp
                         width = source[0].Width;
                     }
 
-                    ranges = GetCropRanges(width);
-                    canvasHeight = (int)source[0].Height;
+                    var ranges = GetCropRanges(width);
+                    int canvasHeight = (int)source[0].Height;
 
                     using var animation = BuildSlotMachineAnimation(mainForm, source, settings, ranges, (int)width, canvasHeight);
                     SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
@@ -624,9 +684,8 @@ namespace GifProcessorApp
                     animation.Write(settings.OutputFilePath);
                 });
 
-                // Phase 2: split into the 5 Steam parts. SplitGif self-wraps in Task.Run and applies the
-                // tail byte 0x21 AFTER gifsicle (Write → gifsicle → ModifyGifFile), as required.
-                await SplitGif(settings.OutputFilePath, mainForm, ranges, canvasHeight, gifsicle);
+                // Optional gifsicle on the whole 766px file (size threshold still applies).
+                await OptimizeWithGifsicleIfEnabled(mainForm, gifsicle, settings.OutputFilePath);
 
                 SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
@@ -887,7 +946,7 @@ namespace GifProcessorApp
                 await MergeAndSplitFiveGifs(
                     mainForm,
                     dialog.SelectedFilePaths,
-                    dialog.chkGIFMergeFasterPaletteProcess.Checked,
+                    false,
                     dialog.PaletteSourceIndex);
             }
         }
