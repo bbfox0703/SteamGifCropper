@@ -32,6 +32,21 @@
 - **預設**：FPS 15、Duration 3s、Spins 4。
 - **檔案**：`src/Core/SlotMachineGeometry.cs`（純函式 ease/stop/offset，可單測）、`SlotMachineSettings.cs`、`src/Dialogs/SlotMachineDialog.cs`、`GifProcessor.SlotMachineStaticImage()`/`SlotMachineGif()`/`RunSlotMachine()`/`BuildSlotMachineAnimation()`、主視窗兩顆按鈕（表單加高至 524）、三語 resx、`SteamGifCropper.Tests/SlotMachineGeometryTests.cs`。
 
+### ✅ 流沙橫向流動（Quicksand Flow）
+把 766px 圖片／GIF 切成 N 條**水平層**，每層各自橫向 wrap-scroll，套用速度梯度（下／上／中最快），ease-in-out 加減速、整數圈數保證循環結束時每層回到原圖對齊位置 → **無縫循環**。本質是「拉霸」轉 90°（垂直欄→水平層、`Roll(0,off)`→`Roll(off,0)`、隨機減速→確定性梯度）。**輸出單一 766px 全寬 GIF（不分割）**，可串接；要切 5 份用主頁「切割 GIF」。
+
+- **黏性流體感**：愈下／上／中（可選 `FastBand`）流愈快、另一端最慢，中間層用 `Viscosity` gamma 曲線塑形（>1 = 慢層更黏）。每層圈數 = `MinRevolutions`..`MaxRevolutions` 依 `BandSpeed^viscosity` 內插後四捨五入成整數（整數圈才能精準回歸 → 無縫循環的關鍵）。
+- **回歸原座標**：位移 = 圈數 × 寬度 × easeInOut(t)；t=0 與 t=1 皆對齊原圖，且頭尾速度≈0 → 銜接無跳變。frame 0 即原圖。
+- **GIF 播放方式（對齊拉霸的兩種模式）**：`流動時同步播放`（流沙剪切混在 **live GIF** 上做前 `Duration` 秒、之後 GIF 繼續播完剩餘；**輸出長度＝GIF 長度**；flow window 夾到 ≤GIF 長度確保流動在片內回歸對齊→無縫，等同 `BuildSlotMachinePlayDuringSpin`）或 `先流動再播放`（凍結 frame 0 流動 `Duration` 秒、再從 frame 0 播放**完整** GIF；**輸出長度＝Duration＋GIF 長度**，等同 `BuildSlotMachineSpinThenLock`）。靜態圖只走流動路徑（輸出＝Duration、循環）。⚠️ 早期版本曾誤把同步模式做成「重取樣成 `Duration×fps` 幀、截斷 GIF」（檔案異常小），已修正為上述語意。
+- **方向**：向右／向左（`Roll` offset 正負）。
+- **前置**：非 766/774 寬自動 `Resize(766,0)`；不自動分割、不自動 gifsicle（同拉霸）。
+- **預設**：Layers 16、Duration 6s、FPS 15、Max 12 / Min 2 圈、FastBand 下方、Viscosity 1.0、向右、同步播放。
+- **未做（後續）**：縱向（上下流）版——幾何已是軸無關（`BandOffset` 回傳沿流軸的 offset），只差在 build loop 改成切直欄 + `Roll(0,off)`，可一個 axis 參數搞定。
+- **檔案**：`src/Core/QuicksandGeometry.cs`（純函式 ease/band-bounds/speed/revolutions/offset，可單測）、`QuicksandSettings.cs`、`src/Dialogs/QuicksandDialog.cs`、`GifProcessor.QuicksandStaticImage()`/`QuicksandGif()`/`RunQuicksand()`/`BuildQuicksandAnimation()`（分派器）/`BuildQuicksandPlayDuringFlow()`/`BuildQuicksandFlowThenPlay()`、主視窗兩顆按鈕（新增第 9 列 y=255、下方元件 +31px、表單加高至 556）、三語 resx、`SteamGifCropper.Tests/QuicksandGeometryTests.cs`（22 例）。
+
+### 🔭 水波紋 / 聲波（Water Ripple）— 評估完成、尚未實作
+逐像素徑向位移場（非切片，現有積木幫不上忙；參考 `GridMosaicRenderer` 的像素寫入）。建議在 C# 端自做雙線性重採樣（繞過 Magick.NET-Q8 的 `Displace` 整數量化）：每個輸出像素依阻尼徑向波公式 `A·exp(-衰減·r)·時間包絡·sin(k·r−ωt)` 算 (dx,dy)、到來源雙線性取樣。落點可在圖外；邊界回波用「鏡像法 (method of images)」加衰減次波源（建議 v2 再加）。難度 ★★★（物理是封閉解、不難；成本在新 render primitive + 參數調校）。GIF 定格/跟播沿用同一二分法。
+
 ### ✅ 連帶修正
 - **XC coder 政策**（`f730b0a`）：`Program.cs` 的安全政策原本只允許 GIF/PNG/JPEG/BMP，誤擋了內部純色畫布產生器 `XC`，導致所有 `new MagickImage(color, w, h)`（split/merge/overlay/scroll/Coalesce 都用）失敗。XC 不是檔案解析器、無攻擊面，已加回白名單。
 - **進度條**（`a69d096`）：改用自繪 `FlatProgressBar`（`UserPaint` 純色填滿），繞過原生 comctl32 的 chunk/動畫繪製（深色主題下會在填滿邊緣留下兩條移動的黑線）；並把 `SplitGif` 進度改為單調遞增（每個 part 一個 20% 區段，不再每 part 跳到 100%）。

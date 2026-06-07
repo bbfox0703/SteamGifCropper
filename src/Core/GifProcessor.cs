@@ -1152,6 +1152,303 @@ namespace GifProcessorApp
 
         #endregion
 
+        #region Quicksand (流沙) Methods
+
+        // Entry points: slice a 766px image / GIF into N horizontal bands, then wrap-scroll each band
+        // horizontally at its own speed (a viscous shear gradient — bottom/top/middle fastest), easing
+        // out to land back on the original image (seamless loop). Output is a single full-width 766px
+        // GIF (no auto-split), chainable with other effects; split with the main "Split GIF" button.
+        public static async Task QuicksandStaticImage(GifToolMainForm mainForm)
+        {
+            using var dialog = new QuicksandDialog(false);
+            if (dialog.ShowDialog(mainForm) != DialogResult.OK)
+            {
+                return;
+            }
+            await RunQuicksand(mainForm, BuildQuicksandSettings(dialog, false));
+        }
+
+        public static async Task QuicksandGif(GifToolMainForm mainForm)
+        {
+            using var dialog = new QuicksandDialog(true);
+            if (dialog.ShowDialog(mainForm) != DialogResult.OK)
+            {
+                return;
+            }
+            await RunQuicksand(mainForm, BuildQuicksandSettings(dialog, true));
+        }
+
+        private static QuicksandSettings BuildQuicksandSettings(QuicksandDialog dialog, bool isGif)
+        {
+            return new QuicksandSettings
+            {
+                InputFilePath = dialog.InputFilePath,
+                OutputFilePath = dialog.OutputFilePath,
+                IsGif = isGif,
+                Layers = dialog.Layers,
+                DurationSeconds = dialog.DurationSeconds,
+                Fps = dialog.Fps,
+                MaxRevolutions = dialog.MaxRevolutions,
+                MinRevolutions = dialog.MinRevolutions,
+                FastBand = dialog.FastBand,
+                Viscosity = dialog.Viscosity,
+                FlowRight = dialog.FlowRight,
+                PlayGifDuringFlow = dialog.PlayGifDuringFlow,
+            };
+        }
+
+        private static async Task RunQuicksand(GifToolMainForm mainForm, QuicksandSettings settings)
+        {
+            mainForm.Enabled = false;
+            SetProgressRange(mainForm, 0, 100);
+            SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+            SetProgressVisible(mainForm, true);
+
+            try
+            {
+                // Build the full-width 766px flow animation (heavy → background thread). No auto-split:
+                // the output is a single 766px GIF so it can be chained with other effects and split
+                // later with the main "Split GIF" button (which adds the 100px extension + 0x21 tail).
+                await Task.Run(() =>
+                {
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_QuicksandBuilding);
+                    using var source = new MagickImageCollection(settings.InputFilePath);
+                    source.Coalesce();
+
+                    // Auto-resize to 766px wide when the input isn't already a supported width.
+                    uint width = source[0].Width;
+                    if (!IsValidCanvasWidth(width))
+                    {
+                        foreach (var frame in source)
+                        {
+                            frame.ResetPage();
+                            frame.Resize(SupportedWidth1, 0);
+                        }
+                        width = source[0].Width;
+                    }
+
+                    int canvasHeight = (int)source[0].Height;
+
+                    using var animation = BuildQuicksandAnimation(mainForm, source, settings, (int)width, canvasHeight);
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
+                    animation.Optimize();
+                    animation.Write(settings.OutputFilePath);
+                });
+
+                SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                    SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
+                    SteamGifCropper.Properties.Resources.Title_Success,
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Error);
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                    string.Format(SteamGifCropper.Properties.Resources.Error_Occurred, ex.Message),
+                    SteamGifCropper.Properties.Resources.Title_Error,
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                mainForm.Enabled = true;
+                SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Idle);
+            }
+        }
+
+        // Builds the full-width (canvasWidth × canvasHeight) quicksand animation. Runs on a background
+        // thread; all UI updates go through the marshaled SetProgressBar/SetStatusText helpers. Mirrors
+        // the slot machine's two GIF playback models (see BuildSlotMachine*). Frame 0 is the original
+        // image (all bands aligned) and every path returns to it.
+        private static MagickImageCollection BuildQuicksandAnimation(GifToolMainForm mainForm,
+            MagickImageCollection source, QuicksandSettings settings, int canvasWidth, int canvasHeight)
+        {
+            int layers = Math.Max(1, settings.Layers);
+
+            int srcTicks = (int)source[0].AnimationTicksPerSecond;
+            if (srcTicks <= 0) srcTicks = 100;
+
+            // Per-band bounds + whole-number revolution counts (the viscous shear gradient). Shared by
+            // both playback models.
+            var bands = new (int Start, int Size)[layers];
+            int[] bandRevs = new int[layers];
+            for (int b = 0; b < layers; b++)
+            {
+                bands[b] = QuicksandGeometry.BandBounds(b, layers, canvasHeight);
+                bandRevs[b] = QuicksandGeometry.BandRevolutions(b, layers, settings.MinRevolutions,
+                    settings.MaxRevolutions, settings.FastBand, settings.Viscosity);
+            }
+
+            // GIF + "play during flow": the flow is mixed onto the LIVE frames for the first part, then
+            // settles and the GIF keeps playing. Output length == GIF length (like slot machine "play
+            // during spin").
+            if (settings.IsGif && settings.PlayGifDuringFlow)
+            {
+                return BuildQuicksandPlayDuringFlow(mainForm, source, settings, bands, bandRevs,
+                    canvasWidth, canvasHeight, srcTicks);
+            }
+
+            // Static image: flow over the single frame (loops, length == Duration). GIF + "flow, then
+            // play": flow over a frozen frame 0, THEN the full GIF plays from frame 0 (output length ==
+            // Duration + GIF length, like slot machine "spin, then play").
+            return BuildQuicksandFlowThenPlay(mainForm, source, settings, bands, bandRevs,
+                canvasWidth, canvasHeight, srcTicks);
+        }
+
+        // GIF plays on its own timeline; the quicksand flow is mixed onto the LIVE frames for the first
+        // `Duration` seconds, then settles (offset 0) and the GIF keeps playing untouched. Output length
+        // == GIF length. The flow window is capped to the GIF length so it always returns to aligned
+        // within the clip (seamless loop).
+        private static MagickImageCollection BuildQuicksandPlayDuringFlow(GifToolMainForm mainForm,
+            MagickImageCollection source, QuicksandSettings settings,
+            (int Start, int Size)[] bands, int[] bandRevs, int canvasWidth, int canvasHeight, int srcTicks)
+        {
+            int layers = bands.Length;
+            int n = source.Count;
+
+            // Cumulative start time (seconds) of each source frame.
+            double[] startSec = new double[n];
+            double acc = 0.0;
+            for (int i = 0; i < n; i++)
+            {
+                startSec[i] = acc;
+                acc += (double)source[i].AnimationDelay / srcTicks;
+            }
+            double gifSeconds = acc;
+
+            double flowDuration = settings.DurationSeconds;
+            if (gifSeconds > 0.0 && flowDuration > gifSeconds) flowDuration = gifSeconds;
+            if (flowDuration < 0.1) flowDuration = 0.1;
+
+            var result = new MagickImageCollection();
+            int built = 0;
+            for (int i = 0; i < n; i++)
+            {
+                // t in [0, 1] over the flow window; once the frame's time passes the window the flow is
+                // done (offset 0) and the frame passes through as the plain GIF.
+                double t = startSec[i] / flowDuration;
+                if (t > 1.0) t = 1.0;
+
+                var canvas = new MagickImage(MagickColors.Transparent, (uint)canvasWidth, (uint)canvasHeight);
+                for (int b = 0; b < layers; b++)
+                {
+                    var band = (MagickImage)source[i].Clone();
+                    band.Crop(new MagickGeometry(0, bands[b].Start, (uint)canvasWidth, (uint)bands[b].Size));
+                    band.ResetPage();
+                    int off = QuicksandGeometry.BandOffset(t, bandRevs[b], canvasWidth, settings.FlowRight);
+                    if (off != 0)
+                    {
+                        band.Roll(off, 0);
+                    }
+                    canvas.Composite(band, 0, bands[b].Start, CompositeOperator.Over);
+                    band.Dispose();
+                }
+
+                canvas.AnimationDelay = source[i].AnimationDelay;
+                canvas.AnimationTicksPerSecond = srcTicks;
+                canvas.GifDisposeMethod = GifDisposeMethod.Background;
+                result.Add(canvas);
+
+                if (++built % 5 == 0 || built == n)
+                {
+                    SetProgressBar(mainForm.pBarTaskStatus, built * 100 / n, 100);
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_QuicksandBuilding);
+                }
+            }
+
+            return result;
+        }
+
+        // Flow over a frozen first frame for `Duration` seconds at the chosen FPS. For a GIF this is
+        // followed by the full source GIF played from frame 0 (output length == Duration + GIF length).
+        // For a static image there is no play phase (output length == Duration; it just loops).
+        private static MagickImageCollection BuildQuicksandFlowThenPlay(GifToolMainForm mainForm,
+            MagickImageCollection source, QuicksandSettings settings,
+            (int Start, int Size)[] bands, int[] bandRevs, int canvasWidth, int canvasHeight, int srcTicks)
+        {
+            int layers = bands.Length;
+            int fps = Math.Max(1, settings.Fps);
+            int delay = Math.Max(1, (int)Math.Round(100.0 / fps)); // GIF delay in 1/100 s
+            int flowFrames = Math.Max(1, settings.DurationSeconds * fps);
+            int playFrames = settings.IsGif ? source.Count : 0;
+            int totalFrames = flowFrames + playFrames;
+
+            var result = new MagickImageCollection();
+            var frozenBands = new MagickImage[layers];
+            try
+            {
+                // Pre-crop each band from the frozen first frame once (they never change during the flow).
+                for (int b = 0; b < layers; b++)
+                {
+                    var slice = (MagickImage)source[0].Clone();
+                    slice.Crop(new MagickGeometry(0, bands[b].Start, (uint)canvasWidth, (uint)bands[b].Size));
+                    slice.ResetPage();
+                    frozenBands[b] = slice;
+                }
+
+                int built = 0;
+
+                // Phase 1: flow over the frozen frame 0.
+                for (int f = 0; f < flowFrames; f++)
+                {
+                    double t = flowFrames <= 1 ? 0.0 : (double)f / flowFrames;
+                    var canvas = new MagickImage(MagickColors.Transparent, (uint)canvasWidth, (uint)canvasHeight);
+                    for (int b = 0; b < layers; b++)
+                    {
+                        var band = (MagickImage)frozenBands[b].Clone();
+                        int off = QuicksandGeometry.BandOffset(t, bandRevs[b], canvasWidth, settings.FlowRight);
+                        if (off != 0)
+                        {
+                            band.Roll(off, 0);
+                        }
+                        canvas.Composite(band, 0, bands[b].Start, CompositeOperator.Over);
+                        band.Dispose();
+                    }
+                    canvas.AnimationDelay = (uint)delay;
+                    canvas.AnimationTicksPerSecond = 100;
+                    canvas.GifDisposeMethod = GifDisposeMethod.Background;
+                    result.Add(canvas);
+
+                    if (++built % 5 == 0 || built == totalFrames)
+                    {
+                        SetProgressBar(mainForm.pBarTaskStatus, built * 100 / totalFrames, 100);
+                        SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_QuicksandBuilding);
+                    }
+                }
+
+                // Phase 2 (GIF only): play the full source GIF from frame 0 after the flow settles.
+                if (settings.IsGif)
+                {
+                    foreach (var frame in source)
+                    {
+                        var play = (MagickImage)frame.Clone();
+                        play.AnimationTicksPerSecond = srcTicks;
+                        play.GifDisposeMethod = GifDisposeMethod.Background;
+                        result.Add(play);
+
+                        if (++built % 5 == 0 || built == totalFrames)
+                        {
+                            SetProgressBar(mainForm.pBarTaskStatus, built * 100 / totalFrames, 100);
+                            SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_QuicksandBuilding);
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                foreach (var fb in frozenBands)
+                {
+                    fb?.Dispose();
+                }
+            }
+
+            return result;
+        }
+
+        #endregion
+
         public static async Task MergeAndSplitFiveGifs(GifToolMainForm mainForm)
         {
             using (var dialog = new MergeFiveGifsDialog())

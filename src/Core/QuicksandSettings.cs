@@ -1,0 +1,25 @@
+namespace GifProcessorApp
+{
+    // Parameters captured from QuicksandDialog and consumed by the GifProcessor quicksand engine.
+    // Output is a single full-width 766px GIF (no auto-split) so it can be chained with other effects;
+    // split into 5 parts later with the main "Split GIF" button.
+    public class QuicksandSettings
+    {
+        public string InputFilePath { get; set; }
+        public string OutputFilePath { get; set; }
+        public bool IsGif { get; set; }
+
+        public int Layers { get; set; } = 16;            // horizontal bands the image is sliced into
+        public int DurationSeconds { get; set; } = 6;    // length of one full flow-and-return cycle
+        public int Fps { get; set; } = 15;
+        public int MaxRevolutions { get; set; } = 12;    // whole turns of the FAST band over the cycle
+        public int MinRevolutions { get; set; } = 2;     // whole turns of the SLOW band over the cycle
+        public QuicksandFastBand FastBand { get; set; } = QuicksandFastBand.Bottom; // where flow is fastest
+        public double Viscosity { get; set; } = 1.0;     // gradient gamma (>1 = stickier slow bands)
+        public bool FlowRight { get; set; } = true;      // scroll direction
+
+        // GIF variant only. true: the GIF plays while the bands flow (each output frame shears the live
+        // GIF frame at that time). false: the bands flow over a frozen first frame.
+        public bool PlayGifDuringFlow { get; set; } = true;
+    }
+}

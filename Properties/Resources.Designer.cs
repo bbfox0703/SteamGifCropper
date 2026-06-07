@@ -2447,6 +2447,120 @@ namespace SteamGifCropper.Properties {
             }
         }
 
+        internal static string Button_QuicksandStatic {
+            get {
+                return ResourceManager.GetString("Button_QuicksandStatic", resourceCulture);
+            }
+        }
+
+        internal static string Button_QuicksandGif {
+            get {
+                return ResourceManager.GetString("Button_QuicksandGif", resourceCulture);
+            }
+        }
+
+        internal static string Status_QuicksandBuilding {
+            get {
+                return ResourceManager.GetString("Status_QuicksandBuilding", resourceCulture);
+            }
+        }
+
+        internal static string QuickDialog_Title {
+            get {
+                return ResourceManager.GetString("QuickDialog_Title", resourceCulture);
+            }
+        }
+
+        internal static string QuickDialog_InputLabel {
+            get {
+                return ResourceManager.GetString("QuickDialog_InputLabel", resourceCulture);
+            }
+        }
+
+        internal static string QuickDialog_OutputLabel {
+            get {
+                return ResourceManager.GetString("QuickDialog_OutputLabel", resourceCulture);
+            }
+        }
+
+        internal static string QuickDialog_Layers {
+            get {
+                return ResourceManager.GetString("QuickDialog_Layers", resourceCulture);
+            }
+        }
+
+        internal static string QuickDialog_Duration {
+            get {
+                return ResourceManager.GetString("QuickDialog_Duration", resourceCulture);
+            }
+        }
+
+        internal static string QuickDialog_MaxRevs {
+            get {
+                return ResourceManager.GetString("QuickDialog_MaxRevs", resourceCulture);
+            }
+        }
+
+        internal static string QuickDialog_MinRevs {
+            get {
+                return ResourceManager.GetString("QuickDialog_MinRevs", resourceCulture);
+            }
+        }
+
+        internal static string QuickDialog_FastBand {
+            get {
+                return ResourceManager.GetString("QuickDialog_FastBand", resourceCulture);
+            }
+        }
+
+        internal static string QuickDialog_BandBottom {
+            get {
+                return ResourceManager.GetString("QuickDialog_BandBottom", resourceCulture);
+            }
+        }
+
+        internal static string QuickDialog_BandTop {
+            get {
+                return ResourceManager.GetString("QuickDialog_BandTop", resourceCulture);
+            }
+        }
+
+        internal static string QuickDialog_BandMiddle {
+            get {
+                return ResourceManager.GetString("QuickDialog_BandMiddle", resourceCulture);
+            }
+        }
+
+        internal static string QuickDialog_Viscosity {
+            get {
+                return ResourceManager.GetString("QuickDialog_Viscosity", resourceCulture);
+            }
+        }
+
+        internal static string QuickDialog_DirRight {
+            get {
+                return ResourceManager.GetString("QuickDialog_DirRight", resourceCulture);
+            }
+        }
+
+        internal static string QuickDialog_DirLeft {
+            get {
+                return ResourceManager.GetString("QuickDialog_DirLeft", resourceCulture);
+            }
+        }
+
+        internal static string QuickDialog_GifPlayDuringFlow {
+            get {
+                return ResourceManager.GetString("QuickDialog_GifPlayDuringFlow", resourceCulture);
+            }
+        }
+
+        internal static string QuickDialog_GifFreezeFrame0 {
+            get {
+                return ResourceManager.GetString("QuickDialog_GifFreezeFrame0", resourceCulture);
+            }
+        }
+
         internal static string GridDialog_Title {
             get {
                 return ResourceManager.GetString("GridDialog_Title", resourceCulture);

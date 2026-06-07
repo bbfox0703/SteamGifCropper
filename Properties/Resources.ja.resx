@@ -481,6 +481,63 @@
   <data name="SlotDialog_Hold" xml:space="preserve">
     <value>結果の保持（秒）</value>
   </data>
+  <data name="Button_QuicksandStatic" xml:space="preserve">
+    <value>766px 流砂（画像）</value>
+  </data>
+  <data name="Button_QuicksandGif" xml:space="preserve">
+    <value>766px 流砂（GIF）</value>
+  </data>
+  <data name="Status_QuicksandBuilding" xml:space="preserve">
+    <value>流砂アニメーションを生成中…</value>
+  </data>
+  <data name="QuickDialog_Title" xml:space="preserve">
+    <value>流砂フロー（766px）</value>
+  </data>
+  <data name="QuickDialog_InputLabel" xml:space="preserve">
+    <value>入力画像または GIF</value>
+  </data>
+  <data name="QuickDialog_OutputLabel" xml:space="preserve">
+    <value>出力 GIF</value>
+  </data>
+  <data name="QuickDialog_Layers" xml:space="preserve">
+    <value>レイヤー数</value>
+  </data>
+  <data name="QuickDialog_Duration" xml:space="preserve">
+    <value>長さ（秒）</value>
+  </data>
+  <data name="QuickDialog_MaxRevs" xml:space="preserve">
+    <value>最速の回転数</value>
+  </data>
+  <data name="QuickDialog_MinRevs" xml:space="preserve">
+    <value>最遅の回転数</value>
+  </data>
+  <data name="QuickDialog_FastBand" xml:space="preserve">
+    <value>最速の位置</value>
+  </data>
+  <data name="QuickDialog_BandBottom" xml:space="preserve">
+    <value>下</value>
+  </data>
+  <data name="QuickDialog_BandTop" xml:space="preserve">
+    <value>上</value>
+  </data>
+  <data name="QuickDialog_BandMiddle" xml:space="preserve">
+    <value>中央</value>
+  </data>
+  <data name="QuickDialog_Viscosity" xml:space="preserve">
+    <value>粘性</value>
+  </data>
+  <data name="QuickDialog_DirRight" xml:space="preserve">
+    <value>右へ流す →</value>
+  </data>
+  <data name="QuickDialog_DirLeft" xml:space="preserve">
+    <value>左へ流す ←</value>
+  </data>
+  <data name="QuickDialog_GifPlayDuringFlow" xml:space="preserve">
+    <value>流動中も再生</value>
+  </data>
+  <data name="QuickDialog_GifFreezeFrame0" xml:space="preserve">
+    <value>先に流動してから再生</value>
+  </data>
   <data name="GridDialog_Title" xml:space="preserve">
     <value>グリッドモザイク分割</value>
   </data>
