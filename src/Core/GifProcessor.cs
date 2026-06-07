@@ -576,7 +576,8 @@ namespace GifProcessorApp
                 SpinsVariancePercent = dialog.SpinsVariancePercent,
                 BounceSeconds = dialog.BounceSeconds,
                 TopToBottom = dialog.TopToBottom,
-                HoldSeconds = dialog.HoldSeconds
+                HoldSeconds = dialog.HoldSeconds,
+                PlayGifDuringSpin = dialog.PlayGifDuringSpin
             };
         }
 
@@ -657,45 +658,67 @@ namespace GifProcessorApp
             (int Start, int End)[] ranges, int canvasWidth, int canvasHeight)
         {
             int reelCount = ranges.Length;
-            int fps = Math.Max(1, settings.Fps);
             int spins = Math.Max(1, settings.Spins);
-            int delay = Math.Max(1, (int)Math.Round(100.0 / fps)); // GIF delay in 1/100 s
-            int overshootFrames = Math.Max(0, (int)Math.Round(settings.BounceSeconds * fps));
 
-            // GIF variant: don't let a reel spin longer than the GIF itself plays.
-            double maxSpinSeconds = double.MaxValue;
+            int srcTicks = (int)source[0].AnimationTicksPerSecond;
+            if (srcTicks <= 0) srcTicks = 100;
+
+            // GIF length in seconds (caps spin time and drives the play-during-spin model).
+            double gifSeconds = 0.0;
             if (settings.IsGif)
             {
-                int srcTicks = (int)source[0].AnimationTicksPerSecond;
-                if (srcTicks <= 0) srcTicks = 100;
-                double gifSeconds = 0.0;
                 foreach (var frame in source)
                 {
                     gifSeconds += (double)frame.AnimationDelay / srcTicks;
                 }
-                if (gifSeconds > 0.0) maxSpinSeconds = gifSeconds;
             }
+            double maxSpinSeconds = (settings.IsGif && gifSeconds > 0.0) ? gifSeconds : double.MaxValue;
 
-            // Randomize each reel's stop time and revolution count so which reel stops first (and which
-            // spins longest) is non-deterministic — this replaces the old fixed "stagger" setting.
+            // Randomize each reel's stop time (seconds) and revolution count so which reel stops first
+            // (and which spins longest) is non-deterministic.
             var rng = new Random();
-            int[] reelStop = new int[reelCount];
+            double[] reelStopSec = new double[reelCount];
             int[] reelSpins = new int[reelCount];
-            int maxStop = 1;
             for (int c = 0; c < reelCount; c++)
             {
                 double durSec = SlotMachineGeometry.ApplyVariance(settings.DurationSeconds, settings.DurationVariancePercent, rng.NextDouble());
                 if (durSec > maxSpinSeconds) durSec = maxSpinSeconds;
                 if (durSec < 0.1) durSec = 0.1;
-                reelStop[c] = Math.Max(1, (int)Math.Round(durSec * fps));
-                if (reelStop[c] > maxStop) maxStop = reelStop[c];
+                reelStopSec[c] = durSec;
 
                 double spinVal = SlotMachineGeometry.ApplyVariance(spins, settings.SpinsVariancePercent, rng.NextDouble());
                 reelSpins[c] = Math.Max(1, (int)Math.Round(spinVal));
             }
 
-            int totalSpinFrames = maxStop + overshootFrames;
+            if (settings.IsGif && settings.PlayGifDuringSpin)
+            {
+                return BuildSlotMachinePlayDuringSpin(mainForm, source, settings, ranges, canvasWidth, canvasHeight, reelStopSec, reelSpins, srcTicks, gifSeconds);
+            }
 
+            return BuildSlotMachineSpinThenLock(mainForm, source, settings, ranges, canvasWidth, canvasHeight, reelStopSec, reelSpins, srcTicks);
+        }
+
+        // Reels spin over a frozen first frame (or the static image) and lock at their randomized times,
+        // then either hold the result (static) or play the full GIF (gif "spin, then play").
+        private static MagickImageCollection BuildSlotMachineSpinThenLock(GifToolMainForm mainForm,
+            MagickImageCollection source, SlotMachineSettings settings,
+            (int Start, int End)[] ranges, int canvasWidth, int canvasHeight,
+            double[] reelStopSec, int[] reelSpins, int srcTicks)
+        {
+            int reelCount = ranges.Length;
+            int fps = Math.Max(1, settings.Fps);
+            int delay = Math.Max(1, (int)Math.Round(100.0 / fps)); // GIF delay in 1/100 s
+            int overshootFrames = Math.Max(0, (int)Math.Round(settings.BounceSeconds * fps));
+
+            int[] reelStop = new int[reelCount];
+            int maxStop = 1;
+            for (int c = 0; c < reelCount; c++)
+            {
+                reelStop[c] = Math.Max(1, (int)Math.Round(reelStopSec[c] * fps));
+                if (reelStop[c] > maxStop) maxStop = reelStop[c];
+            }
+
+            int totalSpinFrames = maxStop + overshootFrames;
             int endFrames = settings.IsGif ? source.Count : Math.Max(1, settings.HoldSeconds * fps);
             int totalFrames = totalSpinFrames + endFrames;
             int built = 0;
@@ -744,12 +767,10 @@ namespace GifProcessorApp
                 if (settings.IsGif)
                 {
                     // Play the original GIF through once after the reels lock.
-                    int sourceTicks = (int)source[0].AnimationTicksPerSecond;
-                    if (sourceTicks <= 0) sourceTicks = 100;
                     foreach (var frame in source)
                     {
                         var play = (MagickImage)frame.Clone();
-                        play.AnimationTicksPerSecond = sourceTicks;
+                        play.AnimationTicksPerSecond = srcTicks;
                         play.GifDisposeMethod = GifDisposeMethod.Background;
                         result.Add(play);
                         if (++built % 5 == 0 || built == totalFrames)
@@ -780,6 +801,72 @@ namespace GifProcessorApp
                 foreach (var slice in slices)
                 {
                     slice?.Dispose();
+                }
+            }
+
+            return result;
+        }
+
+        // GIF plays on its own timeline; the reels spin over the LIVE frames for the first part, then
+        // lock and the GIF keeps playing. Output length == GIF length (the spin consumes its first part).
+        private static MagickImageCollection BuildSlotMachinePlayDuringSpin(GifToolMainForm mainForm,
+            MagickImageCollection source, SlotMachineSettings settings,
+            (int Start, int End)[] ranges, int canvasWidth, int canvasHeight,
+            double[] reelStopSec, int[] reelSpins, int srcTicks, double gifSeconds)
+        {
+            int reelCount = ranges.Length;
+            int n = source.Count;
+
+            // Cumulative start time (seconds) of each GIF frame.
+            double[] startSec = new double[n];
+            double acc = 0.0;
+            for (int i = 0; i < n; i++)
+            {
+                startSec[i] = acc;
+                acc += (double)source[i].AnimationDelay / srcTicks;
+            }
+            double gifFps = (gifSeconds > 0.0) ? n / gifSeconds : n;
+            int overshootGif = Math.Max(0, (int)Math.Round(settings.BounceSeconds * gifFps));
+
+            // Convert each reel's stop time (seconds) to a GIF-frame index.
+            int[] reelStopFrame = new int[reelCount];
+            for (int c = 0; c < reelCount; c++)
+            {
+                int idx = n;
+                for (int i = 0; i < n; i++)
+                {
+                    if (startSec[i] >= reelStopSec[c]) { idx = i; break; }
+                }
+                reelStopFrame[c] = Math.Max(1, idx);
+            }
+
+            var result = new MagickImageCollection();
+            int built = 0;
+            for (int i = 0; i < n; i++)
+            {
+                var canvas = new MagickImage(MagickColors.Transparent, (uint)canvasWidth, (uint)canvasHeight);
+                for (int c = 0; c < reelCount; c++)
+                {
+                    int w = ranges[c].End - ranges[c].Start + 1;
+                    using var col = (MagickImage)source[i].Clone();
+                    col.Crop(new MagickGeometry(ranges[c].Start, 0, (uint)w, (uint)canvasHeight));
+                    col.ResetPage();
+                    int off = SlotMachineGeometry.ReelOffsetY(i, reelStopFrame[c], reelSpins[c], canvasHeight, settings.TopToBottom, overshootGif);
+                    if (off != 0)
+                    {
+                        col.Roll(0, off);
+                    }
+                    canvas.Composite(col, ranges[c].Start, 0, CompositeOperator.Over);
+                }
+                canvas.AnimationDelay = source[i].AnimationDelay;
+                canvas.AnimationTicksPerSecond = srcTicks;
+                canvas.GifDisposeMethod = GifDisposeMethod.Background;
+                result.Add(canvas);
+
+                if (++built % 5 == 0 || built == n)
+                {
+                    SetProgressBar(mainForm.pBarTaskStatus, built * 100 / n, 100);
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_SlotMachineBuilding);
                 }
             }
 

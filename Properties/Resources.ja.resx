@@ -475,6 +475,15 @@
   <data name="SlotDialog_Bounce" xml:space="preserve">
     <value>バウンド（秒）</value>
   </data>
+  <data name="SlotDialog_GifPlayMode" xml:space="preserve">
+    <value>GIF 再生方式</value>
+  </data>
+  <data name="SlotDialog_GifPlayDuringSpin" xml:space="preserve">
+    <value>回転中に再生</value>
+  </data>
+  <data name="SlotDialog_GifSpinThenPlay" xml:space="preserve">
+    <value>回転後に再生</value>
+  </data>
   <data name="SlotDialog_Hold" xml:space="preserve">
     <value>結果の保持（秒）</value>
   </data>

@@ -467,6 +467,15 @@ Files skipped (not 0x21): {1}</value>
   <data name="SlotDialog_Bounce" xml:space="preserve">
     <value>Bounce (s)</value>
   </data>
+  <data name="SlotDialog_GifPlayMode" xml:space="preserve">
+    <value>GIF playback</value>
+  </data>
+  <data name="SlotDialog_GifPlayDuringSpin" xml:space="preserve">
+    <value>Play during spin</value>
+  </data>
+  <data name="SlotDialog_GifSpinThenPlay" xml:space="preserve">
+    <value>Spin, then play</value>
+  </data>
   <data name="SlotDialog_Hold" xml:space="preserve">
     <value>Hold result (s)</value>
   </data>

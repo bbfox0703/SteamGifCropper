@@ -15,5 +15,10 @@ namespace GifProcessorApp
         public double BounceSeconds { get; set; } = 0.5;       // overshoot/wobble at each reel's stop
         public bool TopToBottom { get; set; } = true;          // scroll direction
         public int HoldSeconds { get; set; } = 1;              // static variant: hold the locked image
+
+        // GIF variant only. true: the GIF plays while the reels spin (output length == GIF length, the
+        // spin consumes the first part of the GIF then it keeps playing). false: reels spin over a frozen
+        // first frame, then the full GIF plays after they lock (output length == spin + GIF length).
+        public bool PlayGifDuringSpin { get; set; } = true;
     }
 }

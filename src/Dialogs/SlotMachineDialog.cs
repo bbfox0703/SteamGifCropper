@@ -26,6 +26,7 @@ namespace GifProcessorApp
         public double BounceSeconds { get; private set; } = 0.5;
         public bool TopToBottom { get; private set; } = true;
         public int HoldSeconds { get; private set; } = 1;
+        public bool PlayGifDuringSpin { get; private set; } = true;
 
         private TextBox txtInputPath = null!;
         private Button btnBrowseInput = null!;
@@ -39,6 +40,8 @@ namespace GifProcessorApp
         private ComboBox cmbDirection = null!;
         private NumericUpDown numBounce = null!;
         private NumericUpDown numHold = null!;
+        private Label lblGifPlayMode = null!;
+        private ComboBox cmbGifPlayMode = null!;
         private Button btnOK = null!;
         private Button btnCancel = null!;
         private Label lblInput = null!;
@@ -56,9 +59,11 @@ namespace GifProcessorApp
         {
             IsGif = gifMode;
             InitializeComponent();
-            // The GIF variant plays the animation after the reels lock, so a static "hold" makes no sense.
+            // Hold (static) and the GIF playback-mode picker share the same slot and are mutually exclusive.
             lblHold.Visible = !gifMode;
             numHold.Visible = !gifMode;
+            lblGifPlayMode.Visible = gifMode;
+            cmbGifPlayMode.Visible = gifMode;
             UpdateUIText();
             ApplyTheme();
         }
@@ -76,6 +81,7 @@ namespace GifProcessorApp
             lblDirection.Text = Resources.SlotDialog_Direction;
             lblBounce.Text = Resources.SlotDialog_Bounce;
             lblHold.Text = Resources.SlotDialog_Hold;
+            lblGifPlayMode.Text = Resources.SlotDialog_GifPlayMode;
             btnBrowseInput.Text = Resources.Button_Browse;
             btnBrowseOutput.Text = Resources.Button_Browse;
             btnOK.Text = Resources.ScrollDialog_OK;
@@ -86,6 +92,12 @@ namespace GifProcessorApp
             cmbDirection.Items.Add(Resources.SlotDialog_DirTopDown);
             cmbDirection.Items.Add(Resources.SlotDialog_DirBottomUp);
             cmbDirection.SelectedIndex = selected;
+
+            int gifModeSel = cmbGifPlayMode.SelectedIndex < 0 ? 0 : cmbGifPlayMode.SelectedIndex;
+            cmbGifPlayMode.Items.Clear();
+            cmbGifPlayMode.Items.Add(Resources.SlotDialog_GifPlayDuringSpin);
+            cmbGifPlayMode.Items.Add(Resources.SlotDialog_GifSpinThenPlay);
+            cmbGifPlayMode.SelectedIndex = gifModeSel;
         }
 
         private void ApplyTheme()
@@ -255,6 +267,7 @@ namespace GifProcessorApp
             BounceSeconds = (double)numBounce.Value;
             TopToBottom = cmbDirection.SelectedIndex == 0;
             HoldSeconds = (int)numHold.Value;
+            PlayGifDuringSpin = cmbGifPlayMode.SelectedIndex == 0;
             DialogResult = DialogResult.OK;
             Close();
         }
@@ -283,6 +296,8 @@ namespace GifProcessorApp
             numBounce = new NumericUpDown();
             lblHold = new Label();
             numHold = new NumericUpDown();
+            lblGifPlayMode = new Label();
+            cmbGifPlayMode = new ComboBox();
             btnOK = new Button();
             btnCancel = new Button();
             ((System.ComponentModel.ISupportInitialize)numDuration).BeginInit();
@@ -490,6 +505,22 @@ namespace GifProcessorApp
             numHold.TabIndex = 21;
             numHold.Value = new decimal(new int[] { 1, 0, 0, 0 });
             //
+            // lblGifPlayMode (shares the row-5 right slot with Hold; only one is visible)
+            //
+            lblGifPlayMode.Location = new System.Drawing.Point(168, 192);
+            lblGifPlayMode.Name = "lblGifPlayMode";
+            lblGifPlayMode.Size = new System.Drawing.Size(80, 20);
+            lblGifPlayMode.TabIndex = 24;
+            lblGifPlayMode.Text = "GIF playback";
+            //
+            // cmbGifPlayMode
+            //
+            cmbGifPlayMode.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbGifPlayMode.Location = new System.Drawing.Point(250, 190);
+            cmbGifPlayMode.Name = "cmbGifPlayMode";
+            cmbGifPlayMode.Size = new System.Drawing.Size(212, 23);
+            cmbGifPlayMode.TabIndex = 25;
+            //
             // btnOK
             //
             btnOK.Location = new System.Drawing.Point(303, 228);
@@ -518,6 +549,8 @@ namespace GifProcessorApp
             ClientSize = new System.Drawing.Size(480, 268);
             Controls.Add(btnCancel);
             Controls.Add(btnOK);
+            Controls.Add(cmbGifPlayMode);
+            Controls.Add(lblGifPlayMode);
             Controls.Add(numHold);
             Controls.Add(lblHold);
             Controls.Add(numBounce);

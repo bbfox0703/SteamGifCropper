@@ -2393,6 +2393,24 @@ namespace SteamGifCropper.Properties {
             }
         }
 
+        internal static string SlotDialog_GifPlayMode {
+            get {
+                return ResourceManager.GetString("SlotDialog_GifPlayMode", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_GifPlayDuringSpin {
+            get {
+                return ResourceManager.GetString("SlotDialog_GifPlayDuringSpin", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_GifSpinThenPlay {
+            get {
+                return ResourceManager.GetString("SlotDialog_GifSpinThenPlay", resourceCulture);
+            }
+        }
+
         internal static string SlotDialog_Hold {
             get {
                 return ResourceManager.GetString("SlotDialog_Hold", resourceCulture);
