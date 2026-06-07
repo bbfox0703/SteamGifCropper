@@ -204,9 +204,6 @@
   <data name="Status_SynchronizingGif" xml:space="preserve">
     <value>同步GIF #{0}持續時間...</value>
   </data>
-  <data name="Status_MappingFastPalette" xml:space="preserve">
-    <value>使用快速調色盤進行映射...</value>
-  </data>
   <data name="Status_MappingSharedPalette" xml:space="preserve">
     <value>映射到共用調色盤...</value>
   </data>
@@ -650,7 +647,7 @@
     <value>啟用gifsicle最佳化</value>
   </data>
   <data name="Label_GifsicleNotice" xml:space="preserve">
-    <value>注意：gifsicle.exe 必須位於「系統 PATH」中</value>
+    <value>注意：已內建 gifsicle.exe（找不到時改用「系統 PATH」）</value>
   </data>
   <data name="Label_GifsicleMinKB" xml:space="preserve">
     <value>最小檔案 (KB)：</value>
@@ -660,6 +657,27 @@
   </data>
   <data name="Button_GifsicleSingle" xml:space="preserve">
     <value>對單一 GIF 執行 gifsicle</value>
+  </data>
+  <data name="Button_AutoFitSize" xml:space="preserve">
+    <value>自動壓到目標大小</value>
+  </data>
+  <data name="CheckBox_AutoFitSplit" xml:space="preserve">
+    <value>自動壓縮各部分 ≤</value>
+  </data>
+  <data name="Label_AutoFitTries" xml:space="preserve">
+    <value>最多嘗試：</value>
+  </data>
+  <data name="Status_AutoFitProgress" xml:space="preserve">
+    <value>自動壓縮中 {0}/{1}（{2}%）</value>
+  </data>
+  <data name="Status_AutoFitDone" xml:space="preserve">
+    <value>自動壓縮完成：{0} KB（色彩 {1}、lossy {2}）</value>
+  </data>
+  <data name="Status_AutoFitOverTarget" xml:space="preserve">
+    <value>自動壓縮：{0} KB — 仍超過目標（色彩 {1}、lossy {2}）</value>
+  </data>
+  <data name="Status_AutoFitAlreadyUnder" xml:space="preserve">
+    <value>已 ≤ {0} KB，略過</value>
   </data>
   <data name="Status_GifsicleSkippedBelowThreshold" xml:space="preserve">
     <value>已略過 gifsicle（小於 {0} KB）</value>

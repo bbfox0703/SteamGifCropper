@@ -25,7 +25,6 @@ namespace GifProcessorApp
         // General settings
         public bool UnifyDimensions { get; set; }
         public bool UseGifsicleOptimization { get; set; }
-        public bool UseFasterPalette { get; set; }
 
         public GifConcatenationSettings()
         {
@@ -43,7 +42,6 @@ namespace GifProcessorApp
             
             UnifyDimensions = true;
             UseGifsicleOptimization = false;
-            UseFasterPalette = false;
         }
     }
 

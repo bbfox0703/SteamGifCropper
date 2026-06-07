@@ -35,6 +35,7 @@
 
   <ItemGroup>
     <Compile Include="..\src\Core\GifsicleWrapper.cs" Link="GifsicleWrapper.cs" />
+    <Compile Include="..\src\Core\GifSizeFitter.cs" Link="GifSizeFitter.cs" />
     <Compile Include="..\src\Core\ImageInputValidator.cs" Link="ImageInputValidator.cs" />
     <Compile Include="..\Properties\Resources.Designer.cs" Link="Properties\Resources.Designer.cs" />
     <Compile Include="..\src\Platform\RegistryProvider.cs" Link="RegistryProvider.cs" />
@@ -54,6 +55,10 @@
 
   <ItemGroup>
     <None Include="TestData/**/*" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Bundled gifsicle so GifsicleWrapper resolves the same binary the app ships. -->
+    <None Include="..\tools\gifsicle\gifsicle.exe" Link="gifsicle.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -62,4 +62,36 @@ public class GifsicleWrapperTests
         string input = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName(), "missing.gif");
         await Assert.ThrowsAsync<FileNotFoundException>(() => GifsicleWrapper.OptimizeGif(input, "out.gif"));
     }
+
+    [Fact]
+    public async Task OptimizeGifInMemory_PipesValidSmallerGif()
+    {
+        // Exercises the binary stdin/stdout pipe against the bundled gifsicle (copied to the test
+        // output dir). Aggressive colors/lossy on a 1920x1080 sample must yield a valid, smaller GIF.
+        byte[] input = await File.ReadAllBytesAsync(Path.Combine("TestData", "test4_1920x1080_10s.gif"));
+        var options = new GifsicleWrapper.GifsicleOptions
+        {
+            OptimizeLevel = 3,
+            Colors = 32,
+            Lossy = 120,
+            Dither = 0
+        };
+
+        byte[] output = await GifsicleWrapper.OptimizeGifInMemory(input, options);
+
+        Assert.NotNull(output);
+        Assert.True(output.Length > 6, "output should be a non-trivial GIF");
+        // GIF signature "GIF8"
+        Assert.Equal((byte)'G', output[0]);
+        Assert.Equal((byte)'I', output[1]);
+        Assert.Equal((byte)'F', output[2]);
+        Assert.Equal((byte)'8', output[3]);
+        Assert.True(output.Length < input.Length, "aggressive settings should shrink the GIF");
+    }
+
+    [Fact]
+    public async Task OptimizeGifInMemory_EmptyInput_Throws()
+    {
+        await Assert.ThrowsAsync<ArgumentException>(() => GifsicleWrapper.OptimizeGifInMemory(Array.Empty<byte>()));
+    }
 }

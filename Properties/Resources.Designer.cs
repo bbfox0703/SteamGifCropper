@@ -693,6 +693,48 @@ namespace SteamGifCropper.Properties {
             }
         }
 
+        internal static string Button_AutoFitSize {
+            get {
+                return ResourceManager.GetString("Button_AutoFitSize", resourceCulture);
+            }
+        }
+
+        internal static string CheckBox_AutoFitSplit {
+            get {
+                return ResourceManager.GetString("CheckBox_AutoFitSplit", resourceCulture);
+            }
+        }
+
+        internal static string Label_AutoFitTries {
+            get {
+                return ResourceManager.GetString("Label_AutoFitTries", resourceCulture);
+            }
+        }
+
+        internal static string Status_AutoFitProgress {
+            get {
+                return ResourceManager.GetString("Status_AutoFitProgress", resourceCulture);
+            }
+        }
+
+        internal static string Status_AutoFitDone {
+            get {
+                return ResourceManager.GetString("Status_AutoFitDone", resourceCulture);
+            }
+        }
+
+        internal static string Status_AutoFitOverTarget {
+            get {
+                return ResourceManager.GetString("Status_AutoFitOverTarget", resourceCulture);
+            }
+        }
+
+        internal static string Status_AutoFitAlreadyUnder {
+            get {
+                return ResourceManager.GetString("Status_AutoFitAlreadyUnder", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Skipped gifsicle (below {0} KB).
         /// </summary>
@@ -726,15 +768,6 @@ namespace SteamGifCropper.Properties {
         internal static string Status_Overlaying {
             get {
                 return ResourceManager.GetString("Status_Overlaying", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Mapping with fast palette....
-        /// </summary>
-        internal static string Status_MappingFastPalette {
-            get {
-                return ResourceManager.GetString("Status_MappingFastPalette", resourceCulture);
             }
         }
 

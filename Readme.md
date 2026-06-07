@@ -64,7 +64,7 @@ SteamGifCropper 是一個設計為 **Steam 工作坊個人展示櫃**的小工�
 - **Runtime**：.NET 8 runtime
 - **依賴函式庫**：Magick.NET（基於 ImageMagick）-- 已經內含於zip檔中
 - **FFMPEG**：使用FFMPEG功能的部份，系統要先裝好FFMPEG，並設定在OS系統環境變數 **PATH** 中，否則會無法呼叫。可以直接使用 Powershell 7 下指令：`winget install ffmpeg` 安裝。
-- **gifsicle.exe外部程式**：自行使用關鍵字例如「gifsicle for Windows」尋找、下載並設定；gifsicle.exe的位置必須包含在OS系統環境變數**PATH **中，否則會無法呼叫。
+- **gifsicle.exe外部程式**：`gifsicle.exe` 現已隨程式內建（放在執行檔旁），無需另行安裝；若內建檔案遺失，會改用 OS 系統環境變數 **PATH** 中的版本作為備援。
 ---
 
 ## 資源限制設定
@@ -113,7 +113,7 @@ SteamGifCropper.exe --memory-limit=2048 --disk-limit=8192
 > 注意：疊加高解析度或大型 GIF 時，視設定可能會佔用大量記憶體。
 
 ### 並排合併 2～5 個 GIF
-- 保留原始寬度直接拼接，支援建立共用調色盤（可選擇較快速模式）。
+- 保留原始寬度直接拼接，支援建立共用調色盤。
 - 偵測到來源 GIF 的 FPS 差異時會提出警示，便於事先調整。
 
 ### 合併並重新切割五個 GIF
@@ -125,7 +125,7 @@ SteamGifCropper.exe --memory-limit=2048 --disk-limit=8192
 1. 點選 **Concatenate GIFs** 並挑選至少兩個 GIF 檔案。
 2. 設定 FPS／尺寸／調色盤的統一方式（自動、參考特定檔案或自訂）。
 3. 選擇轉場效果（無、淡入淡出、滑動、縮放、溶解）及方向／時間。
-4. 可額外啟用快速調色盤模式或在輸出後執行 gifsicle 最佳化。
+4. 可在輸出後執行 gifsicle 最佳化。
 
 ### 捲動 GIF
 - **Scroll static image**：讓 PNG、JPG 等靜態圖片依自訂方向、步進與移動次數捲動，亦可加入完整循環的緩衝區。
