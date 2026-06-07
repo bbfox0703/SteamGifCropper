@@ -74,6 +74,8 @@
             numUpDownFramerate = new System.Windows.Forms.NumericUpDown();
             btnConcatenateGifs = new System.Windows.Forms.Button();
             btnGridMosaic = new System.Windows.Forms.Button();
+            btnSlotMachineStatic = new System.Windows.Forms.Button();
+            btnSlotMachineGif = new System.Windows.Forms.Button();
             panelGifsicle.SuspendLayout();
             groupDither.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numUpDownOptimize).BeginInit();
@@ -388,7 +390,7 @@
             // lblFramerate
             // 
             lblFramerate.AutoSize = true;
-            lblFramerate.Location = new System.Drawing.Point(11, 295);
+            lblFramerate.Location = new System.Drawing.Point(11, 327);
             lblFramerate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFramerate.Name = "lblFramerate";
             lblFramerate.Size = new System.Drawing.Size(0, 15);
@@ -397,7 +399,7 @@
             // lblFPS
             // 
             lblFPS.AutoSize = true;
-            lblFPS.Location = new System.Drawing.Point(310, 295);
+            lblFPS.Location = new System.Drawing.Point(310, 327);
             lblFPS.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFPS.Name = "lblFPS";
             lblFPS.Size = new System.Drawing.Size(0, 15);
@@ -435,7 +437,7 @@
             // 
             // btnLanguageChange
             // 
-            btnLanguageChange.Location = new System.Drawing.Point(548, 276);
+            btnLanguageChange.Location = new System.Drawing.Point(548, 308);
             btnLanguageChange.Name = "btnLanguageChange";
             btnLanguageChange.Size = new System.Drawing.Size(64, 26);
             btnLanguageChange.TabIndex = 16;
@@ -513,7 +515,7 @@
             // lblResourceLimitDesc
             // 
             lblResourceLimitDesc.AutoSize = true;
-            lblResourceLimitDesc.Location = new System.Drawing.Point(7, 269);
+            lblResourceLimitDesc.Location = new System.Drawing.Point(7, 301);
             lblResourceLimitDesc.Name = "lblResourceLimitDesc";
             lblResourceLimitDesc.Size = new System.Drawing.Size(234, 15);
             lblResourceLimitDesc.TabIndex = 15;
@@ -521,7 +523,7 @@
             // 
             // numUpDownFramerate
             // 
-            numUpDownFramerate.Location = new System.Drawing.Point(255, 293);
+            numUpDownFramerate.Location = new System.Drawing.Point(255, 325);
             numUpDownFramerate.Margin = new System.Windows.Forms.Padding(2);
             numUpDownFramerate.Maximum = new decimal(new int[] { 30, 0, 0, 0 });
             numUpDownFramerate.Minimum = new decimal(new int[] { 5, 0, 0, 0 });
@@ -550,12 +552,32 @@
             btnGridMosaic.UseVisualStyleBackColor = true;
             btnGridMosaic.Click += btnGridMosaic_Click;
             //
+            // btnSlotMachineStatic
+            //
+            btnSlotMachineStatic.Location = new System.Drawing.Point(7, 251);
+            btnSlotMachineStatic.Name = "btnSlotMachineStatic";
+            btnSlotMachineStatic.Size = new System.Drawing.Size(300, 26);
+            btnSlotMachineStatic.TabIndex = 19;
+            btnSlotMachineStatic.Text = SteamGifCropper.Properties.Resources.Button_SlotMachineStatic;
+            btnSlotMachineStatic.UseVisualStyleBackColor = true;
+            btnSlotMachineStatic.Click += btnSlotMachineStatic_Click;
+            //
+            // btnSlotMachineGif
+            //
+            btnSlotMachineGif.Location = new System.Drawing.Point(313, 251);
+            btnSlotMachineGif.Name = "btnSlotMachineGif";
+            btnSlotMachineGif.Size = new System.Drawing.Size(300, 26);
+            btnSlotMachineGif.TabIndex = 20;
+            btnSlotMachineGif.Text = SteamGifCropper.Properties.Resources.Button_SlotMachineGif;
+            btnSlotMachineGif.UseVisualStyleBackColor = true;
+            btnSlotMachineGif.Click += btnSlotMachineGif_Click;
+            //
             // GifToolMainForm
             //
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            ClientSize = new System.Drawing.Size(619, 492);
+            ClientSize = new System.Drawing.Size(619, 524);
             Controls.Add(lblResourceLimitDesc);
             Controls.Add(btnResizeNfpsGIF);
             Controls.Add(btnOverlayGIF);
@@ -579,6 +601,8 @@
             Controls.Add(btnMerge2to5GifToOne);
             Controls.Add(btnConcatenateGifs);
             Controls.Add(btnGridMosaic);
+            Controls.Add(btnSlotMachineStatic);
+            Controls.Add(btnSlotMachineGif);
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new System.Windows.Forms.Padding(2);
             Name = "GifToolMainForm";
@@ -646,5 +670,7 @@
         public System.Windows.Forms.NumericUpDown numUpDownFramerate;
         private System.Windows.Forms.Button btnConcatenateGifs;
         private System.Windows.Forms.Button btnGridMosaic;
+        private System.Windows.Forms.Button btnSlotMachineStatic;
+        private System.Windows.Forms.Button btnSlotMachineGif;
     }
 }

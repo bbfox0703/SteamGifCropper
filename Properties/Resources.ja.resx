@@ -431,7 +431,40 @@
     <value>アニメーションGIFをスクロール</value>
   </data>
   <data name="Button_GridMosaic" xml:space="preserve">
-    <value>グリッドモザイク</value>
+    <value>766px グリッドモザイク + 分割</value>
+  </data>
+  <data name="Button_SlotMachineStatic" xml:space="preserve">
+    <value>766px スロット + 分割（画像）</value>
+  </data>
+  <data name="Button_SlotMachineGif" xml:space="preserve">
+    <value>766px スロット + 分割（GIF）</value>
+  </data>
+  <data name="Status_SlotMachineBuilding" xml:space="preserve">
+    <value>スロットリールを生成中...</value>
+  </data>
+  <data name="SlotDialog_Title" xml:space="preserve">
+    <value>スロットマシン（766px）</value>
+  </data>
+  <data name="SlotDialog_InputLabel" xml:space="preserve">
+    <value>入力画像または GIF</value>
+  </data>
+  <data name="SlotDialog_OutputLabel" xml:space="preserve">
+    <value>出力 GIF</value>
+  </data>
+  <data name="SlotDialog_Duration" xml:space="preserve">
+    <value>回転時間（秒）</value>
+  </data>
+  <data name="SlotDialog_Fps" xml:space="preserve">
+    <value>FPS</value>
+  </data>
+  <data name="SlotDialog_Spins" xml:space="preserve">
+    <value>リールごとの回転数</value>
+  </data>
+  <data name="SlotDialog_Stagger" xml:space="preserve">
+    <value>リールのずれ（秒）</value>
+  </data>
+  <data name="SlotDialog_Hold" xml:space="preserve">
+    <value>結果の保持（秒）</value>
   </data>
   <data name="GridDialog_Title" xml:space="preserve">
     <value>グリッドモザイク分割</value>

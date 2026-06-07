@@ -536,6 +536,222 @@ namespace GifProcessorApp
             });
         }
 
+        #region Slot Machine (拉霸) Methods
+
+        // 766px slot-machine reveal for a STATIC image: each of the 5 Steam columns becomes a vertical
+        // reel that wrap-scrolls its own slice, decelerates and locks left-to-right onto the image,
+        // then the result is split into the 5 Steam parts.
+        public static async Task SlotMachineStaticImage(GifToolMainForm mainForm)
+        {
+            using var dialog = new SlotMachineDialog(false);
+            if (dialog.ShowDialog(mainForm) != DialogResult.OK)
+                return;
+
+            ImageInputValidator.ValidateImage(dialog.InputFilePath);
+            await RunSlotMachine(mainForm, BuildSettings(dialog, false));
+        }
+
+        // Same slot-machine reveal but for an animated GIF: after the reels lock, the GIF plays through.
+        public static async Task SlotMachineGif(GifToolMainForm mainForm)
+        {
+            using var dialog = new SlotMachineDialog(true);
+            if (dialog.ShowDialog(mainForm) != DialogResult.OK)
+                return;
+
+            ImageInputValidator.ValidateGif(dialog.InputFilePath);
+            await RunSlotMachine(mainForm, BuildSettings(dialog, true));
+        }
+
+        private static SlotMachineSettings BuildSettings(SlotMachineDialog dialog, bool isGif)
+        {
+            return new SlotMachineSettings
+            {
+                InputFilePath = dialog.InputFilePath,
+                OutputFilePath = dialog.OutputFilePath,
+                IsGif = isGif,
+                DurationSeconds = dialog.DurationSeconds,
+                Fps = dialog.Fps,
+                Spins = dialog.Spins,
+                StaggerSeconds = dialog.StaggerSeconds,
+                HoldSeconds = dialog.HoldSeconds
+            };
+        }
+
+        private static async Task RunSlotMachine(GifToolMainForm mainForm, SlotMachineSettings settings)
+        {
+            // Capture gifsicle settings on the UI thread before any background work.
+            var gifsicle = CaptureGifsicleSnapshot(mainForm);
+            mainForm.Enabled = false;
+            SetProgressRange(mainForm, 0, 100);
+            SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+            SetProgressVisible(mainForm, true);
+
+            // Computed inside the background build, consumed by the SplitGif call afterwards.
+            (int Start, int End)[] ranges = null;
+            int canvasHeight = 0;
+
+            try
+            {
+                // Phase 1: build the full-width slot-machine animation (heavy → background thread).
+                await Task.Run(() =>
+                {
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_SlotMachineBuilding);
+                    using var source = new MagickImageCollection(settings.InputFilePath);
+                    source.Coalesce();
+
+                    // Auto-resize to 766px wide when the input isn't already a supported width.
+                    uint width = source[0].Width;
+                    if (!IsValidCanvasWidth(width))
+                    {
+                        foreach (var frame in source)
+                        {
+                            frame.ResetPage();
+                            frame.Resize(SupportedWidth1, 0);
+                        }
+                        width = source[0].Width;
+                    }
+
+                    ranges = GetCropRanges(width);
+                    canvasHeight = (int)source[0].Height;
+
+                    using var animation = BuildSlotMachineAnimation(mainForm, source, settings, ranges, (int)width, canvasHeight);
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
+                    animation.Optimize();
+                    animation.Write(settings.OutputFilePath);
+                });
+
+                // Phase 2: split into the 5 Steam parts. SplitGif self-wraps in Task.Run and applies the
+                // tail byte 0x21 AFTER gifsicle (Write → gifsicle → ModifyGifFile), as required.
+                await SplitGif(settings.OutputFilePath, mainForm, ranges, canvasHeight, gifsicle);
+
+                SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                    SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
+                    SteamGifCropper.Properties.Resources.Title_Success,
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Error);
+                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                    string.Format(SteamGifCropper.Properties.Resources.Error_Occurred, ex.Message),
+                    SteamGifCropper.Properties.Resources.Title_Error,
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                mainForm.Enabled = true;
+                SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Idle);
+            }
+        }
+
+        // Builds the full-width (canvasWidth × canvasHeight) spinning animation. Runs on a background
+        // thread; all UI updates go through the marshaled SetProgressBar/SetStatusText helpers.
+        private static MagickImageCollection BuildSlotMachineAnimation(GifToolMainForm mainForm,
+            MagickImageCollection source, SlotMachineSettings settings,
+            (int Start, int End)[] ranges, int canvasWidth, int canvasHeight)
+        {
+            int reelCount = ranges.Length;
+            int fps = Math.Max(1, settings.Fps);
+            int totalSpinFrames = Math.Max(reelCount, settings.DurationSeconds * fps);
+            int staggerFrames = Math.Max(0, (int)Math.Round(settings.StaggerSeconds * fps));
+            int spins = Math.Max(1, settings.Spins);
+            int delay = Math.Max(1, (int)Math.Round(100.0 / fps)); // GIF delay in 1/100 s
+
+            int endFrames = settings.IsGif ? source.Count : Math.Max(1, settings.HoldSeconds * fps);
+            int totalFrames = totalSpinFrames + endFrames;
+            int built = 0;
+
+            var result = new MagickImageCollection();
+            var slices = new MagickImage[reelCount];
+            try
+            {
+                // Pre-crop each column slice from the first (locked/"prize") frame.
+                for (int c = 0; c < reelCount; c++)
+                {
+                    int w = ranges[c].End - ranges[c].Start + 1;
+                    var slice = (MagickImage)source[0].Clone();
+                    slice.Crop(new MagickGeometry(ranges[c].Start, 0, (uint)w, (uint)canvasHeight));
+                    slice.ResetPage();
+                    slices[c] = slice;
+                }
+
+                // Spin phase: each reel wrap-scrolls and decelerates to its staggered lock.
+                for (int t = 0; t < totalSpinFrames; t++)
+                {
+                    var canvas = new MagickImage(MagickColors.Transparent, (uint)canvasWidth, (uint)canvasHeight);
+                    for (int c = 0; c < reelCount; c++)
+                    {
+                        int off = SlotMachineGeometry.ReelOffsetY(t, c, reelCount, totalSpinFrames, staggerFrames, canvasHeight, spins);
+                        using var tmp = (MagickImage)slices[c].Clone();
+                        if (off != 0)
+                        {
+                            tmp.Roll(0, off);
+                        }
+                        canvas.Composite(tmp, ranges[c].Start, 0, CompositeOperator.Over);
+                    }
+                    canvas.AnimationDelay = (uint)delay;
+                    canvas.AnimationTicksPerSecond = 100;
+                    canvas.GifDisposeMethod = GifDisposeMethod.Background;
+                    result.Add(canvas);
+
+                    if (++built % 5 == 0 || built == totalFrames)
+                    {
+                        SetProgressBar(mainForm.pBarTaskStatus, built * 100 / totalFrames, 100);
+                        SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_SlotMachineBuilding);
+                    }
+                }
+
+                // End phase.
+                if (settings.IsGif)
+                {
+                    // Play the original GIF through once after the reels lock.
+                    int sourceTicks = (int)source[0].AnimationTicksPerSecond;
+                    if (sourceTicks <= 0) sourceTicks = 100;
+                    foreach (var frame in source)
+                    {
+                        var play = (MagickImage)frame.Clone();
+                        play.AnimationTicksPerSecond = sourceTicks;
+                        play.GifDisposeMethod = GifDisposeMethod.Background;
+                        result.Add(play);
+                        if (++built % 5 == 0 || built == totalFrames)
+                        {
+                            SetProgressBar(mainForm.pBarTaskStatus, built * 100 / totalFrames, 100);
+                        }
+                    }
+                }
+                else
+                {
+                    // Hold the locked image for a moment before the loop restarts.
+                    for (int h = 0; h < endFrames; h++)
+                    {
+                        var hold = (MagickImage)source[0].Clone();
+                        hold.AnimationDelay = (uint)delay;
+                        hold.AnimationTicksPerSecond = 100;
+                        hold.GifDisposeMethod = GifDisposeMethod.Background;
+                        result.Add(hold);
+                        if (++built % 5 == 0 || built == totalFrames)
+                        {
+                            SetProgressBar(mainForm.pBarTaskStatus, built * 100 / totalFrames, 100);
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                foreach (var slice in slices)
+                {
+                    slice?.Dispose();
+                }
+            }
+
+            return result;
+        }
+
+        #endregion
+
         public static async Task MergeAndSplitFiveGifs(GifToolMainForm mainForm)
         {
             using (var dialog = new MergeFiveGifsDialog())

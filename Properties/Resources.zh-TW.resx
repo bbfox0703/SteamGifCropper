@@ -431,7 +431,40 @@
     <value>捲動動畫GIF</value>
   </data>
   <data name="Button_GridMosaic" xml:space="preserve">
-    <value>格網馬賽克</value>
+    <value>766px 格網馬賽克 + 分割</value>
+  </data>
+  <data name="Button_SlotMachineStatic" xml:space="preserve">
+    <value>766px 拉霸動畫 + 分割（靜態圖）</value>
+  </data>
+  <data name="Button_SlotMachineGif" xml:space="preserve">
+    <value>766px 拉霸動畫 + 分割（GIF）</value>
+  </data>
+  <data name="Status_SlotMachineBuilding" xml:space="preserve">
+    <value>建立拉霸轉輪中...</value>
+  </data>
+  <data name="SlotDialog_Title" xml:space="preserve">
+    <value>拉霸動畫（766px）</value>
+  </data>
+  <data name="SlotDialog_InputLabel" xml:space="preserve">
+    <value>輸入圖片或 GIF</value>
+  </data>
+  <data name="SlotDialog_OutputLabel" xml:space="preserve">
+    <value>輸出 GIF</value>
+  </data>
+  <data name="SlotDialog_Duration" xml:space="preserve">
+    <value>旋轉時間（秒）</value>
+  </data>
+  <data name="SlotDialog_Fps" xml:space="preserve">
+    <value>FPS</value>
+  </data>
+  <data name="SlotDialog_Spins" xml:space="preserve">
+    <value>每輪旋轉圈數</value>
+  </data>
+  <data name="SlotDialog_Stagger" xml:space="preserve">
+    <value>轉輪錯開（秒）</value>
+  </data>
+  <data name="SlotDialog_Hold" xml:space="preserve">
+    <value>結果停留（秒）</value>
   </data>
   <data name="GridDialog_Title" xml:space="preserve">
     <value>格網馬賽克切割</value>

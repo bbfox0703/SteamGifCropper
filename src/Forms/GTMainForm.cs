@@ -232,6 +232,16 @@ namespace GifProcessorApp
             await ExecuteWithErrorHandling(async () => await GifProcessor.GridMosaic(this), "grid mosaic");
         }
 
+        private async void btnSlotMachineStatic_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(async () => await GifProcessor.SlotMachineStaticImage(this), "slot machine (image)");
+        }
+
+        private async void btnSlotMachineGif_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(async () => await GifProcessor.SlotMachineGif(this), "slot machine (GIF)");
+        }
+
         private async void btnReverseGIF_Click(object sender, EventArgs e)
         {
             await ExecuteWithErrorHandling(async () => await GifProcessor.ReverseGif(this), "GIF reversal");
@@ -345,6 +355,8 @@ namespace GifProcessorApp
                 }
                 btnConcatenateGifs.Text = SteamGifCropper.Properties.Resources.GTMainForm_ConcatenateGifs;
                 btnGridMosaic.Text = SteamGifCropper.Properties.Resources.Button_GridMosaic;
+                btnSlotMachineStatic.Text = SteamGifCropper.Properties.Resources.Button_SlotMachineStatic;
+                btnSlotMachineGif.Text = SteamGifCropper.Properties.Resources.Button_SlotMachineGif;
                 btnScrollAnimatedGif.Text = SteamGifCropper.Properties.Resources.Button_ScrollAnimatedGif;
                 label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
                 lblFramerate.Text = SteamGifCropper.Properties.Resources.Label_Framerate;

@@ -16,6 +16,15 @@
 - **透明格線**透出個人檔案背景、與 Steam 間隙完全融合；**實心色格線**像窗櫺/像素牆（但不會跟間隙同色）。
 - **檔案**：`src/Core/GridMosaicSettings.cs`、`GridMosaicGeometry.cs`（純函式，可單測）、`GridMosaicRenderer.cs`（Magick 繪製，像素寫入）、`src/Dialogs/GridMosaicDialog.cs`、`GifProcessor.GridMosaic()` 入口、`SplitGif` 多一個選用 `GridMosaicSettings grid = null` 參數、`FlatProgressBar`、三語 resx、`SteamGifCropper.Tests/GridMosaicTests.cs`。
 - **Commits**：`fe2548a`（feature）、`f730b0a`（XC policy 修正）、`a69d096`（進度條修正）。
+- **後續**：按鈕已改名「766px Grid Mosaic + Split」，凸顯吃 766px、輸出 5 份；檔尾 0x21 在 gifsicle 之後套用（走 `SplitGif`）。
+
+### ✅ 拉霸 / 777 五轉輪（Slot Machine，B 段）
+把 766px 圖片／GIF 做成 5 槽位拉霸：每個 Steam 欄＝一個垂直轉輪，wrap-scroll 自己那一欄的內容，套用 ease-out cubic 由快到慢、由左到右錯開停止，最後鎖定成原圖，再切成 5 份。
+
+- **兩個變體**：靜態圖（鎖定後 hold 數秒）、動態 GIF（鎖定後播放整圈 GIF）。
+- **前置**：非 766/774 寬會自動 `Resize(766,0)`；切割一律走 `SplitGif`，所以每份都有 100px 高度延伸 + 檔尾 0x21（在 gifsicle 之後）。
+- **轉輪內容**：選定為「該欄自己的內容上下捲動」（最穩、任何寬度適用），非 5 欄輪播。
+- **檔案**：`src/Core/SlotMachineGeometry.cs`（純函式 ease/stop/offset，可單測）、`SlotMachineSettings.cs`、`src/Dialogs/SlotMachineDialog.cs`、`GifProcessor.SlotMachineStaticImage()`/`SlotMachineGif()`/`RunSlotMachine()`/`BuildSlotMachineAnimation()`、主視窗兩顆按鈕（表單加高至 524）、三語 resx、`SteamGifCropper.Tests/SlotMachineGeometryTests.cs`。
 
 ### ✅ 連帶修正
 - **XC coder 政策**（`f730b0a`）：`Program.cs` 的安全政策原本只允許 GIF/PNG/JPEG/BMP，誤擋了內部純色畫布產生器 `XC`，導致所有 `new MagickImage(color, w, h)`（split/merge/overlay/scroll/Coalesce 都用）失敗。XC 不是檔案解析器、無攻擊面，已加回白名單。
@@ -36,7 +45,7 @@
 - **骨牌式 / 波浪式揭曉轉場**（Transition + Split + 每槽時間偏移）：切換到新圖時第 1 格先變、依序掃過 5 格。重用 `TransitionGenerator`，每格給一個 delay offset。
 - **回音 / 殘影播放**（Split + 每槽相位偏移）：5 格同一段動畫但各錯開幾幀，產生波浪/殘響感。切完後對每份做 frame rotate，實作很輕。
 
-### B. 拉霸 / 777 五轉輪（★ 很吸睛，5 槽 = 5 reel 完美對應）
+### B. 拉霸 / 777 五轉輪（★ 很吸睛，5 槽 = 5 reel 完美對應）— ✅ 已實作（見上方「已實作」）
 Steam 展示櫃是 5 個垂直欄位，拉霸機剛好是 5 個垂直轉輪，一對一對上。
 - 每欄 = 一個 reel，內容是一條垂直符號帶在快速捲動（重用垂直 scroll）。
 - 加緩動：快→慢→停（`TransitionGenerator` 的 cubic easing 可直接用）。
@@ -56,8 +65,8 @@ Steam 展示櫃是 5 個垂直欄位，拉霸機剛好是 5 個垂直轉輪，�
 - **速度漸變（time remap）**：時間軸上慢→快變速，做戲劇性開場。
 
 ### 建議優先序
-1. **乒乓循環**（C）— 幾乎零成本的新按鈕。
-2. **拉霸 777**（B）— 最吸睛的展示型功能、與 5 槽天生契合。
+1. ~~**拉霸 777**（B）~~ — ✅ 已實作。
+2. **乒乓循環**（C）— 幾乎零成本的新按鈕。
 3. **跨槽位捲動橫幅 / 角色穿越**（A）— 凸顯工具獨家的 Steam 定位。
 
 ---

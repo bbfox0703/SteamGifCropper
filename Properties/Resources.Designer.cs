@@ -2309,6 +2309,72 @@ namespace SteamGifCropper.Properties {
             }
         }
 
+        internal static string Button_SlotMachineStatic {
+            get {
+                return ResourceManager.GetString("Button_SlotMachineStatic", resourceCulture);
+            }
+        }
+
+        internal static string Button_SlotMachineGif {
+            get {
+                return ResourceManager.GetString("Button_SlotMachineGif", resourceCulture);
+            }
+        }
+
+        internal static string Status_SlotMachineBuilding {
+            get {
+                return ResourceManager.GetString("Status_SlotMachineBuilding", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_Title {
+            get {
+                return ResourceManager.GetString("SlotDialog_Title", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_InputLabel {
+            get {
+                return ResourceManager.GetString("SlotDialog_InputLabel", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_OutputLabel {
+            get {
+                return ResourceManager.GetString("SlotDialog_OutputLabel", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_Duration {
+            get {
+                return ResourceManager.GetString("SlotDialog_Duration", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_Fps {
+            get {
+                return ResourceManager.GetString("SlotDialog_Fps", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_Spins {
+            get {
+                return ResourceManager.GetString("SlotDialog_Spins", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_Stagger {
+            get {
+                return ResourceManager.GetString("SlotDialog_Stagger", resourceCulture);
+            }
+        }
+
+        internal static string SlotDialog_Hold {
+            get {
+                return ResourceManager.GetString("SlotDialog_Hold", resourceCulture);
+            }
+        }
+
         internal static string GridDialog_Title {
             get {
                 return ResourceManager.GetString("GridDialog_Title", resourceCulture);
