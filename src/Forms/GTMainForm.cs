@@ -241,6 +241,11 @@ namespace GifProcessorApp
             await ExecuteWithErrorHandling(async () => await GifProcessor.SlotMachineGif(this), "slot machine (GIF)");
         }
 
+        private async void btnGifsicleSingle_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(async () => await GifProcessor.OptimizeSingleGif(this), "gifsicle optimization");
+        }
+
         private async void btnReverseGIF_Click(object sender, EventArgs e)
         {
             await ExecuteWithErrorHandling(async () => await GifProcessor.ReverseGif(this), "GIF reversal");
@@ -342,6 +347,8 @@ namespace GifProcessorApp
                 radioBtnDNone.Text = SteamGifCropper.Properties.Resources.Radio_None;
                 chkGifsicle.Text = SteamGifCropper.Properties.Resources.CheckBox_GifsicleOptimization;
                 lblGifsicleMinKB.Text = SteamGifCropper.Properties.Resources.Label_GifsicleMinKB;
+                lblGifsicleTimeout.Text = SteamGifCropper.Properties.Resources.Label_GifsicleTimeout;
+                btnGifsicleSingle.Text = SteamGifCropper.Properties.Resources.Button_GifsicleSingle;
                 btnMerge2to5GifToOne.Text = SteamGifCropper.Properties.Resources.Button_MergeGifs;
                 btnReverseGIF.Text = SteamGifCropper.Properties.Resources.Button_ReverseGif;
                 btnScrollStaticImage.Text = SteamGifCropper.Properties.Resources.Button_ScrollStaticImage;

@@ -48,6 +48,9 @@
             numUpDownPaletteSicle = new System.Windows.Forms.NumericUpDown();
             numUpDownLossy = new System.Windows.Forms.NumericUpDown();
             numUpDownGifsicleMinKB = new System.Windows.Forms.NumericUpDown();
+            numUpDownGifsicleTimeout = new System.Windows.Forms.NumericUpDown();
+            lblGifsicleTimeout = new System.Windows.Forms.Label();
+            btnGifsicleSingle = new System.Windows.Forms.Button();
             lblGifsicleMinKB = new System.Windows.Forms.Label();
             label4 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -81,6 +84,7 @@
             ((System.ComponentModel.ISupportInitialize)numUpDownPaletteSicle).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownLossy).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownGifsicleMinKB).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numUpDownGifsicleTimeout).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPalette).BeginInit();
             conMenuLangSwitch.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numUpDownFramerate).BeginInit();
@@ -99,7 +103,7 @@
             // 
             // btnResizeGif766
             // 
-            btnResizeGif766.Location = new System.Drawing.Point(7, 95);
+            btnResizeGif766.Location = new System.Drawing.Point(7, 69);
             btnResizeGif766.Margin = new System.Windows.Forms.Padding(2);
             btnResizeGif766.Name = "btnResizeGif766";
             btnResizeGif766.Size = new System.Drawing.Size(300, 26);
@@ -110,7 +114,7 @@
             // 
             // btnWriteTailByte
             // 
-            btnWriteTailByte.Location = new System.Drawing.Point(7, 157);
+            btnWriteTailByte.Location = new System.Drawing.Point(7, 131);
             btnWriteTailByte.Margin = new System.Windows.Forms.Padding(2);
             btnWriteTailByte.Name = "btnWriteTailByte";
             btnWriteTailByte.Size = new System.Drawing.Size(300, 26);
@@ -121,7 +125,7 @@
             // 
             // btnRestoreTailByte
             // 
-            btnRestoreTailByte.Location = new System.Drawing.Point(312, 157);
+            btnRestoreTailByte.Location = new System.Drawing.Point(313, 131);
             btnRestoreTailByte.Margin = new System.Windows.Forms.Padding(2);
             btnRestoreTailByte.Name = "btnRestoreTailByte";
             btnRestoreTailByte.Size = new System.Drawing.Size(300, 26);
@@ -154,7 +158,7 @@
             btnMergeAndSplit.Location = new System.Drawing.Point(7, 38);
             btnMergeAndSplit.Margin = new System.Windows.Forms.Padding(2);
             btnMergeAndSplit.Name = "btnMergeAndSplit";
-            btnMergeAndSplit.Size = new System.Drawing.Size(300, 52);
+            btnMergeAndSplit.Size = new System.Drawing.Size(300, 26);
             btnMergeAndSplit.TabIndex = 2;
             btnMergeAndSplit.Text = SteamGifCropper.Properties.Resources.Button_MergeAndSplit;
             btnMergeAndSplit.UseVisualStyleBackColor = true;
@@ -162,7 +166,7 @@
             // 
             // btnMp4ToGif
             // 
-            btnMp4ToGif.Location = new System.Drawing.Point(7, 126);
+            btnMp4ToGif.Location = new System.Drawing.Point(313, 38);
             btnMp4ToGif.Margin = new System.Windows.Forms.Padding(2);
             btnMp4ToGif.Name = "btnMp4ToGif";
             btnMp4ToGif.Size = new System.Drawing.Size(300, 26);
@@ -175,6 +179,9 @@
             // 
             panelGifsicle.Controls.Add(groupDither);
             panelGifsicle.Controls.Add(numUpDownGifsicleMinKB);
+            panelGifsicle.Controls.Add(btnGifsicleSingle);
+            panelGifsicle.Controls.Add(numUpDownGifsicleTimeout);
+            panelGifsicle.Controls.Add(lblGifsicleTimeout);
             panelGifsicle.Controls.Add(lblGifsicleMinKB);
             panelGifsicle.Controls.Add(numUpDownOptimize);
             panelGifsicle.Controls.Add(numUpDownPaletteSicle);
@@ -190,7 +197,7 @@
             panelGifsicle.Location = new System.Drawing.Point(0, 338);
             panelGifsicle.Margin = new System.Windows.Forms.Padding(2);
             panelGifsicle.Name = "panelGifsicle";
-            panelGifsicle.Size = new System.Drawing.Size(619, 119);
+            panelGifsicle.Size = new System.Drawing.Size(619, 145);
             panelGifsicle.TabIndex = 17;
             // 
             // groupDither
@@ -291,6 +298,38 @@
             numUpDownGifsicleMinKB.TabIndex = 8;
             numUpDownGifsicleMinKB.Value = new decimal(new int[] { 5000, 0, 0, 0 });
             //
+            // lblGifsicleTimeout
+            //
+            lblGifsicleTimeout.AutoSize = true;
+            lblGifsicleTimeout.Location = new System.Drawing.Point(7, 54);
+            lblGifsicleTimeout.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            lblGifsicleTimeout.Name = "lblGifsicleTimeout";
+            lblGifsicleTimeout.Size = new System.Drawing.Size(70, 15);
+            lblGifsicleTimeout.TabIndex = 19;
+            lblGifsicleTimeout.Text = SteamGifCropper.Properties.Resources.Label_GifsicleTimeout;
+            //
+            // numUpDownGifsicleTimeout
+            //
+            numUpDownGifsicleTimeout.Increment = new decimal(new int[] { 5, 0, 0, 0 });
+            numUpDownGifsicleTimeout.Location = new System.Drawing.Point(82, 52);
+            numUpDownGifsicleTimeout.Margin = new System.Windows.Forms.Padding(2);
+            numUpDownGifsicleTimeout.Maximum = new decimal(new int[] { 600, 0, 0, 0 });
+            numUpDownGifsicleTimeout.Minimum = new decimal(new int[] { 5, 0, 0, 0 });
+            numUpDownGifsicleTimeout.Name = "numUpDownGifsicleTimeout";
+            numUpDownGifsicleTimeout.Size = new System.Drawing.Size(55, 23);
+            numUpDownGifsicleTimeout.TabIndex = 20;
+            numUpDownGifsicleTimeout.Value = new decimal(new int[] { 30, 0, 0, 0 });
+            //
+            // btnGifsicleSingle
+            //
+            btnGifsicleSingle.Location = new System.Drawing.Point(200, 50);
+            btnGifsicleSingle.Name = "btnGifsicleSingle";
+            btnGifsicleSingle.Size = new System.Drawing.Size(300, 26);
+            btnGifsicleSingle.TabIndex = 21;
+            btnGifsicleSingle.Text = SteamGifCropper.Properties.Resources.Button_GifsicleSingle;
+            btnGifsicleSingle.UseVisualStyleBackColor = true;
+            btnGifsicleSingle.Click += btnGifsicleSingle_Click;
+            //
             // numUpDownPaletteSicle
             // 
             numUpDownPaletteSicle.Location = new System.Drawing.Point(175, 26);
@@ -389,7 +428,7 @@
             // lblFramerate
             // 
             lblFramerate.AutoSize = true;
-            lblFramerate.Location = new System.Drawing.Point(11, 327);
+            lblFramerate.Location = new System.Drawing.Point(11, 284);
             lblFramerate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFramerate.Name = "lblFramerate";
             lblFramerate.Size = new System.Drawing.Size(0, 15);
@@ -398,7 +437,7 @@
             // lblFPS
             // 
             lblFPS.AutoSize = true;
-            lblFPS.Location = new System.Drawing.Point(310, 327);
+            lblFPS.Location = new System.Drawing.Point(310, 284);
             lblFPS.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFPS.Name = "lblFPS";
             lblFPS.Size = new System.Drawing.Size(0, 15);
@@ -416,7 +455,7 @@
             //
             // btnReverseGIF
             // 
-            btnReverseGIF.Location = new System.Drawing.Point(313, 95);
+            btnReverseGIF.Location = new System.Drawing.Point(313, 69);
             btnReverseGIF.Name = "btnReverseGIF";
             btnReverseGIF.Size = new System.Drawing.Size(300, 26);
             btnReverseGIF.TabIndex = 7;
@@ -426,7 +465,7 @@
             // 
             // btnLanguageChange
             // 
-            btnLanguageChange.Location = new System.Drawing.Point(548, 308);
+            btnLanguageChange.Location = new System.Drawing.Point(548, 256);
             btnLanguageChange.Name = "btnLanguageChange";
             btnLanguageChange.Size = new System.Drawing.Size(64, 26);
             btnLanguageChange.TabIndex = 16;
@@ -463,7 +502,7 @@
             // 
             // btnScrollStaticImage
             // 
-            btnScrollStaticImage.Location = new System.Drawing.Point(312, 126);
+            btnScrollStaticImage.Location = new System.Drawing.Point(313, 100);
             btnScrollStaticImage.Name = "btnScrollStaticImage";
             btnScrollStaticImage.Size = new System.Drawing.Size(300, 26);
             btnScrollStaticImage.TabIndex = 5;
@@ -473,7 +512,7 @@
             // 
             // btnScrollAnimatedGif
             // 
-            btnScrollAnimatedGif.Location = new System.Drawing.Point(7, 125);
+            btnScrollAnimatedGif.Location = new System.Drawing.Point(7, 100);
             btnScrollAnimatedGif.Name = "btnScrollAnimatedGif";
             btnScrollAnimatedGif.Size = new System.Drawing.Size(300, 26);
             btnScrollAnimatedGif.TabIndex = 6;
@@ -483,7 +522,7 @@
             // 
             // btnOverlayGIF
             // 
-            btnOverlayGIF.Location = new System.Drawing.Point(7, 187);
+            btnOverlayGIF.Location = new System.Drawing.Point(7, 162);
             btnOverlayGIF.Name = "btnOverlayGIF";
             btnOverlayGIF.Size = new System.Drawing.Size(300, 26);
             btnOverlayGIF.TabIndex = 10;
@@ -493,7 +532,7 @@
             // 
             // btnResizeNfpsGIF
             // 
-            btnResizeNfpsGIF.Location = new System.Drawing.Point(313, 187);
+            btnResizeNfpsGIF.Location = new System.Drawing.Point(313, 162);
             btnResizeNfpsGIF.Name = "btnResizeNfpsGIF";
             btnResizeNfpsGIF.Size = new System.Drawing.Size(300, 26);
             btnResizeNfpsGIF.TabIndex = 11;
@@ -504,7 +543,7 @@
             // lblResourceLimitDesc
             // 
             lblResourceLimitDesc.AutoSize = true;
-            lblResourceLimitDesc.Location = new System.Drawing.Point(7, 301);
+            lblResourceLimitDesc.Location = new System.Drawing.Point(7, 258);
             lblResourceLimitDesc.Name = "lblResourceLimitDesc";
             lblResourceLimitDesc.Size = new System.Drawing.Size(234, 15);
             lblResourceLimitDesc.TabIndex = 15;
@@ -512,7 +551,7 @@
             // 
             // numUpDownFramerate
             // 
-            numUpDownFramerate.Location = new System.Drawing.Point(255, 325);
+            numUpDownFramerate.Location = new System.Drawing.Point(255, 282);
             numUpDownFramerate.Margin = new System.Windows.Forms.Padding(2);
             numUpDownFramerate.Maximum = new decimal(new int[] { 30, 0, 0, 0 });
             numUpDownFramerate.Minimum = new decimal(new int[] { 5, 0, 0, 0 });
@@ -523,7 +562,7 @@
             // 
             // btnConcatenateGifs
             // 
-            btnConcatenateGifs.Location = new System.Drawing.Point(7, 219);
+            btnConcatenateGifs.Location = new System.Drawing.Point(7, 193);
             btnConcatenateGifs.Name = "btnConcatenateGifs";
             btnConcatenateGifs.Size = new System.Drawing.Size(300, 26);
             btnConcatenateGifs.TabIndex = 17;
@@ -533,7 +572,7 @@
             //
             // btnGridMosaic
             //
-            btnGridMosaic.Location = new System.Drawing.Point(313, 219);
+            btnGridMosaic.Location = new System.Drawing.Point(313, 193);
             btnGridMosaic.Name = "btnGridMosaic";
             btnGridMosaic.Size = new System.Drawing.Size(300, 26);
             btnGridMosaic.TabIndex = 18;
@@ -543,7 +582,7 @@
             //
             // btnSlotMachineStatic
             //
-            btnSlotMachineStatic.Location = new System.Drawing.Point(7, 251);
+            btnSlotMachineStatic.Location = new System.Drawing.Point(7, 224);
             btnSlotMachineStatic.Name = "btnSlotMachineStatic";
             btnSlotMachineStatic.Size = new System.Drawing.Size(300, 26);
             btnSlotMachineStatic.TabIndex = 19;
@@ -553,7 +592,7 @@
             //
             // btnSlotMachineGif
             //
-            btnSlotMachineGif.Location = new System.Drawing.Point(313, 251);
+            btnSlotMachineGif.Location = new System.Drawing.Point(313, 224);
             btnSlotMachineGif.Name = "btnSlotMachineGif";
             btnSlotMachineGif.Size = new System.Drawing.Size(300, 26);
             btnSlotMachineGif.TabIndex = 20;
@@ -566,7 +605,7 @@
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            ClientSize = new System.Drawing.Size(619, 524);
+            ClientSize = new System.Drawing.Size(619, 495);
             Controls.Add(lblResourceLimitDesc);
             Controls.Add(btnResizeNfpsGIF);
             Controls.Add(btnOverlayGIF);
@@ -604,6 +643,7 @@
             ((System.ComponentModel.ISupportInitialize)numUpDownPaletteSicle).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownLossy).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownGifsicleMinKB).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numUpDownGifsicleTimeout).EndInit();
             ((System.ComponentModel.ISupportInitialize)numUpDownPalette).EndInit();
             conMenuLangSwitch.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)numUpDownFramerate).EndInit();
@@ -628,6 +668,9 @@
         private System.Windows.Forms.Label label2;
         public System.Windows.Forms.NumericUpDown numUpDownOptimize;
         public System.Windows.Forms.NumericUpDown numUpDownGifsicleMinKB;
+        public System.Windows.Forms.NumericUpDown numUpDownGifsicleTimeout;
+        private System.Windows.Forms.Label lblGifsicleTimeout;
+        private System.Windows.Forms.Button btnGifsicleSingle;
         private System.Windows.Forms.Label lblGifsicleMinKB;
         public System.Windows.Forms.NumericUpDown numUpDownPaletteSicle;
         public System.Windows.Forms.NumericUpDown numUpDownLossy;

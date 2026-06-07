@@ -655,6 +655,12 @@
   <data name="Label_GifsicleMinKB" xml:space="preserve">
     <value>最小檔案 (KB)：</value>
   </data>
+  <data name="Label_GifsicleTimeout" xml:space="preserve">
+    <value>逾時（秒）：</value>
+  </data>
+  <data name="Button_GifsicleSingle" xml:space="preserve">
+    <value>對單一 GIF 執行 gifsicle</value>
+  </data>
   <data name="Status_GifsicleSkippedBelowThreshold" xml:space="preserve">
     <value>已略過 gifsicle（小於 {0} KB）</value>
   </data>

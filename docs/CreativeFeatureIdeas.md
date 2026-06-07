@@ -36,7 +36,11 @@
 - **XC coder 政策**（`f730b0a`）：`Program.cs` 的安全政策原本只允許 GIF/PNG/JPEG/BMP，誤擋了內部純色畫布產生器 `XC`，導致所有 `new MagickImage(color, w, h)`（split/merge/overlay/scroll/Coalesce 都用）失敗。XC 不是檔案解析器、無攻擊面，已加回白名單。
 - **進度條**（`a69d096`）：改用自繪 `FlatProgressBar`（`UserPaint` 純色填滿），繞過原生 comctl32 的 chunk/動畫繪製（深色主題下會在填滿邊緣留下兩條移動的黑線）；並把 `SplitGif` 進度改為單調遞增（每個 part 一個 20% 區段，不再每 part 跳到 100%）。
 - **移除「較快的調色盤處理」選項**：原本主視窗 + 合併/合併分割/串接 3 個對話框各有此勾選框（跳過 dithering、效益不明顯）。已全部移除 UI 與 resx，合併/串接一律用 FloydSteinberg 品質調色盤（呼叫端傳 `false`；內部 `useFastPalette` 參數仍在但恆為 false，屬休眠的死分支）。
-- **publish.cmd 修正**：原本只做增量 `dotnet publish`，會用到舊 obj 狀態 + 殘留舊本地化 DLL。改成先清 `publish\`、`dotnet clean`、再 `dotnet publish --no-incremental`，確保 build 到最新。CI（fresh runner）本就無此問題。
+- **publish.cmd 修正**：原本只做增量 `dotnet publish`，會用到舊 obj 狀態 + 殘留舊本地化 DLL。改成先刪 `publish\`+`bin\`+`obj\` 再 `dotnet publish`（含 `pause`），確保 build 到最新。CI（fresh runner）本就無此問題。
+- **gifsicle 只在「切成 5 份」時自動套用**：原本拉霸/格網/捲動/疊加（主面板勾選框驅動）也會自動跑 gifsicle，導致單一 766px 大檔 gifsicle 逾時。改為**只有 `SplitGif`（5 份切割）才自動 gifsicle**；串接保留自己獨立的勾選框。
+- **gifsicle timeout 可調**：`GifsicleWrapper.ProcessTimeout`（原硬編 30s）改由面板新 `numUpDownGifsicleTimeout` 控制（預設 30、5–600s），存進 `GifsicleSnapshot` 套用。
+- **新增「對單一 GIF 執行 gifsicle」按鈕**（`GifProcessor.OptimizeSingleGif`）：選一個 GIF，用面板 Lossy/Palette/Optimize/Dither/timeout 跑 gifsicle，輸出 `*_gifsicle.gif`（不受 chkGifsicle 或門檻限制）。
+- **主視窗版面整理**：所有 operation button 統一 26px 高、改成整齊 8×2 格線（修掉 `btnMp4ToGif`/`btnScrollAnimatedGif` 重疊、`btnMergeAndSplit` 過高、移除勾選框後右側留白），下方設定與 gifsicle 面板上移貼齊。
 
 ---
 
