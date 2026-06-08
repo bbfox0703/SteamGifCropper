@@ -133,7 +133,7 @@
     <value>Merge 5 GIF files into 1 part (766px), each ~153px</value>
   </data>
   <data name="Button_Mp4ToGif" xml:space="preserve">
-    <value>FFMPEG: Convert MP4 to GIF (with time control)</value>
+    <value>FFMPEG: Convert MP4/MOV to GIF (with time control)</value>
   </data>
   <data name="Button_MergeGifs" xml:space="preserve">
     <value>Merge 2-5 GIF files into one</value>
@@ -636,7 +636,7 @@ Files skipped (not 0x21): {1}</value>
     <value>Failed to reverse GIF: {0}</value>
   </data>
   <data name="FileDialog_Mp4Filter" xml:space="preserve">
-    <value>MP4 file (*.mp4)|*.mp4</value>
+    <value>Video files (*.mp4;*.mov;*.m4v;*.mkv;*.webm;*.avi)|*.mp4;*.mov;*.m4v;*.mkv;*.webm;*.avi</value>
   </data>
   <data name="FileDialog_SelectMp4" xml:space="preserve">
     <value>Select MP4 file to convert</value>
