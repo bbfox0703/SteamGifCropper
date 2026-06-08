@@ -1,3 +1,4 @@
+#nullable disable
 using System;
 using System.Collections.Generic;
 
@@ -69,6 +70,14 @@ namespace GifProcessorApp
         ZoomIn,         // 放大轉換
         ZoomOut,        // 縮小轉換
         Dissolve,       // 溶解效果
-        CrossFade       // 交叉淡化
+        CrossFade,      // 交叉淡化
+        IrisOpen,       // 圓形虹膜：圓圈擴張露出下一段
+        IrisClose,      // 圓形虹膜：圓圈收縮收掉前一段
+        WipeLeft,       // 擦除：由左向右
+        WipeRight,      // 擦除：由右向左
+        WipeDiagonal,   // 擦除：對角
+        DipToBlack,     // 先暗再進
+        BlurDissolve,   // 模糊溶解
+        Ripple          // 水波紋（重用 RippleField）
     }
 }

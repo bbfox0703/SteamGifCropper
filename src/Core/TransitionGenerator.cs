@@ -1,23 +1,38 @@
+#nullable disable
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using ImageMagick;
 
 namespace GifProcessorApp
 {
+    /// <summary>
+    /// Generates the frames of a transition between two GIF clips.
+    ///
+    /// DYNAMIC (overlap) model: a transition consumes the last N frames of the outgoing clip and the
+    /// first N frames of the incoming clip, where N = round(duration*fps). For transition frame i,
+    /// the outgoing clip's frame (count-N+i) is blended with the incoming clip's frame i — so BOTH
+    /// clips keep playing through the transition instead of freezing on a single boundary frame. The
+    /// concatenation assembler trims those N frames from each side so they are shown once (the overlap
+    /// shortens the total length by N frames per transition).
+    /// </summary>
     public static class TransitionGenerator
     {
         /// <summary>
-        /// Generate transition frames between two GIF collections
+        /// Number of transition frames for the given duration/fps, clamped so it never exceeds either
+        /// clip (the dynamic overlap needs N frames from each side). Returns 0 when there is no
+        /// transition. Pure — the assembler uses it to compute the trim, the generator to size the loop.
         /// </summary>
-        /// <param name="fromCollection">Source GIF collection</param>
-        /// <param name="toCollection">Target GIF collection</param>
-        /// <param name="transitionType">Type of transition effect</param>
-        /// <param name="durationSeconds">Duration of transition in seconds</param>
-        /// <param name="fps">Frames per second for the transition</param>
-        /// <param name="progress">Progress reporter for operation status</param>
-        /// <returns>Collection of transition frames</returns>
+        public static int GetFrameCount(float durationSeconds, int fps, int fromCount, int toCount)
+        {
+            if (durationSeconds <= 0f || fps <= 0 || fromCount <= 0 || toCount <= 0)
+                return 0;
+            int n = (int)Math.Round(durationSeconds * fps);
+            if (n < 1) n = 1;
+            int maxN = Math.Min(fromCount, toCount);
+            if (n > maxN) n = maxN;
+            return n;
+        }
+
         public static MagickImageCollection GenerateTransition(
             MagickImageCollection fromCollection,
             MagickImageCollection toCollection,
@@ -27,427 +42,282 @@ namespace GifProcessorApp
             IProgress<(int current, int total, string status)> progress = null,
             CancellationToken cancellationToken = default)
         {
+            var result = new MagickImageCollection();
+
             if (fromCollection == null || toCollection == null || fromCollection.Count == 0 || toCollection.Count == 0)
-                return new MagickImageCollection();
-
+                return result;
             if (transitionType == TransitionType.None || durationSeconds <= 0)
-                return new MagickImageCollection();
-                
-            // Check for cancellation
-            cancellationToken.ThrowIfCancellationRequested();
+                return result;
 
-            // Calculate number of transition frames
-            int transitionFrames = Math.Max(1, (int)(durationSeconds * fps));
-            
-            progress?.Report((0, transitionFrames, $"Initializing {transitionType} transition..."));
-            
-            // Get the last frame from source and first frame from target
-            var fromFrame = fromCollection[fromCollection.Count - 1] as MagickImage;
-            var toFrame = toCollection[0] as MagickImage;
+            int fromCount = fromCollection.Count;
+            int toCount = toCollection.Count;
+            int frames = GetFrameCount(durationSeconds, fps, fromCount, toCount);
+            if (frames <= 0)
+                return result;
 
-            if (fromFrame == null || toFrame == null)
-                return new MagickImageCollection();
-
-            // Ensure both frames have the same dimensions
-            var maxWidth = Math.Max((int)fromFrame.Width, (int)toFrame.Width);
-            var maxHeight = Math.Max((int)fromFrame.Height, (int)toFrame.Height);
-
-            // Resize frames to match dimensions if needed
-            var normalizedFromFrame = NormalizeFrameSize(fromFrame, maxWidth, maxHeight);
-            var normalizedToFrame = NormalizeFrameSize(toFrame, maxWidth, maxHeight);
-
-            var transitionCollection = new MagickImageCollection();
-
-            try
-            {
-                // Check available memory before proceeding
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                
-                // Generate transition frames based on type
-                switch (transitionType)
-                {
-                    case TransitionType.Fade:
-                        GenerateFadeTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, progress, cancellationToken);
-                        break;
-                    case TransitionType.SlideLeft:
-                        GenerateSlideTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, SlideDirection.Left, progress, cancellationToken);
-                        break;
-                    case TransitionType.SlideRight:
-                        GenerateSlideTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, SlideDirection.Right, progress, cancellationToken);
-                        break;
-                    case TransitionType.SlideUp:
-                        GenerateSlideTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, SlideDirection.Up, progress, cancellationToken);
-                        break;
-                    case TransitionType.SlideDown:
-                        GenerateSlideTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, SlideDirection.Down, progress, cancellationToken);
-                        break;
-                    case TransitionType.ZoomIn:
-                        GenerateZoomTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, true, progress, cancellationToken);
-                        break;
-                    case TransitionType.ZoomOut:
-                        GenerateZoomTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, false, progress, cancellationToken);
-                        break;
-                    case TransitionType.Dissolve:
-                        GenerateDissolveTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, progress, cancellationToken);
-                        break;
-                    case TransitionType.CrossFade:
-                        GenerateCrossFadeTransition(normalizedFromFrame, normalizedToFrame, transitionFrames, transitionCollection, fps, progress, cancellationToken);
-                        break;
-                    default:
-                        // No transition - return empty collection
-                        break;
-                }
-
-                progress?.Report((transitionFrames, transitionFrames, $"Completed {transitionType} transition"));
-                
-                // Optimize the collection to reduce memory usage
-                transitionCollection.Optimize();
-                
-                return transitionCollection;
-            }
-            finally
-            {
-                // Cleanup normalized frames if they were created
-                if (normalizedFromFrame != fromFrame)
-                    normalizedFromFrame.Dispose();
-                if (normalizedToFrame != toFrame)
-                    normalizedToFrame.Dispose();
-            }
-        }
-
-        private static MagickImage NormalizeFrameSize(MagickImage sourceFrame, int targetWidth, int targetHeight)
-        {
-            if (sourceFrame.Width == targetWidth && sourceFrame.Height == targetHeight)
-            {
-                return sourceFrame; // No need to resize
-            }
-
-            var normalizedFrame = sourceFrame.Clone();
-            
-            // Create a canvas with the target size and transparent background
-            using var canvas = new MagickImage(MagickColors.Transparent, (uint)targetWidth, (uint)targetHeight);
-            
-            // Calculate center position for the frame
-            int x = (targetWidth - (int)normalizedFrame.Width) / 2;
-            int y = (targetHeight - (int)normalizedFrame.Height) / 2;
-            
-            // Composite the frame onto the canvas
-            canvas.Composite(normalizedFrame, x, y, CompositeOperator.Over);
-            
-            normalizedFrame.Dispose();
-            return canvas.Clone() as MagickImage;
-        }
-
-        #region Fade Transition
-
-        private static void GenerateFadeTransition(
-            MagickImage fromFrame, 
-            MagickImage toFrame, 
-            int frames, 
-            MagickImageCollection collection,
-            int fps,
-            IProgress<(int current, int total, string status)> progress = null,
-            CancellationToken cancellationToken = default)
-        {
-            uint frameDelay = (uint)Math.Max(1, 100 / Math.Max(1, fps)); // Delay in 1/100ths of a second
-
-            for (int i = 0; i < frames; i++)
-            {
-                double fadeProgress = frames == 1 ? 1.0 : (double)i / (frames - 1);
-                double fromOpacity = 1.0 - fadeProgress;
-                double toOpacity = fadeProgress;
-                
-                progress?.Report((i + 1, frames, $"Generating fade frame {i + 1}/{frames}"));
-                
-                // Allow UI to update periodically and check for cancellation
-                if (i % 5 == 0)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    System.Threading.Thread.Yield();
-                }
-
-                using var transitionFrame = new MagickImage(MagickColors.Transparent, fromFrame.Width, fromFrame.Height);
-
-                // Apply from frame with decreasing opacity
-                using var fromFrameCopy = fromFrame.Clone();
-                fromFrameCopy.Evaluate(Channels.Alpha, EvaluateOperator.Multiply, fromOpacity);
-                transitionFrame.Composite(fromFrameCopy, CompositeOperator.Over);
-
-                // Apply to frame with increasing opacity  
-                using var toFrameCopy = toFrame.Clone();
-                toFrameCopy.Evaluate(Channels.Alpha, EvaluateOperator.Multiply, toOpacity);
-                transitionFrame.Composite(toFrameCopy, CompositeOperator.Over);
-
-                transitionFrame.AnimationDelay = frameDelay;
-                transitionFrame.GifDisposeMethod = GifDisposeMethod.Background;
-                collection.Add(transitionFrame.Clone());
-            }
-        }
-
-        #endregion
-
-        #region Slide Transition
-
-        private enum SlideDirection { Left, Right, Up, Down }
-
-        private static void GenerateSlideTransition(
-            MagickImage fromFrame,
-            MagickImage toFrame,
-            int frames,
-            MagickImageCollection collection,
-            int fps,
-            SlideDirection direction,
-            IProgress<(int current, int total, string status)> progress = null,
-            CancellationToken cancellationToken = default)
-        {
-            uint frameDelay = (uint)Math.Max(1, 100 / Math.Max(1, fps));
-            int width = (int)fromFrame.Width;
-            int height = (int)fromFrame.Height;
-
-            for (int i = 0; i < frames; i++)
-            {
-                double slideProgress = frames == 1 ? 1.0 : (double)i / (frames - 1);
-                
-                progress?.Report((i + 1, frames, $"Generating slide {direction.ToString().ToLower()} frame {i + 1}/{frames}"));
-                
-                // Allow UI to update periodically and check for cancellation
-                if (i % 5 == 0)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    System.Threading.Thread.Yield();
-                }
-                
-                using var transitionFrame = new MagickImage(MagickColors.Transparent, fromFrame.Width, fromFrame.Height);
-
-                int fromX = 0, fromY = 0, toX = 0, toY = 0;
-
-                switch (direction)
-                {
-                    case SlideDirection.Left:
-                        fromX = (int)(-slideProgress * width);
-                        toX = (int)((1.0 - slideProgress) * width);
-                        break;
-                    case SlideDirection.Right:
-                        fromX = (int)(slideProgress * width);
-                        toX = (int)(-(1.0 - slideProgress) * width);
-                        break;
-                    case SlideDirection.Up:
-                        fromY = (int)(-slideProgress * height);
-                        toY = (int)((1.0 - slideProgress) * height);
-                        break;
-                    case SlideDirection.Down:
-                        fromY = (int)(slideProgress * height);
-                        toY = (int)(-(1.0 - slideProgress) * height);
-                        break;
-                }
-
-                // Composite from frame
-                transitionFrame.Composite(fromFrame, fromX, fromY, CompositeOperator.Over);
-                
-                // Composite to frame
-                transitionFrame.Composite(toFrame, toX, toY, CompositeOperator.Over);
-
-                transitionFrame.AnimationDelay = frameDelay;
-                transitionFrame.GifDisposeMethod = GifDisposeMethod.Background;
-                collection.Add(transitionFrame.Clone());
-            }
-        }
-
-        #endregion
-
-        #region Zoom Transition
-
-        private static void GenerateZoomTransition(
-            MagickImage fromFrame,
-            MagickImage toFrame,
-            int frames,
-            MagickImageCollection collection,
-            int fps,
-            bool zoomIn,
-            IProgress<(int current, int total, string status)> progress = null,
-            CancellationToken cancellationToken = default)
-        {
+            int width = Math.Max((int)fromCollection[fromCount - 1].Width, (int)toCollection[0].Width);
+            int height = Math.Max((int)fromCollection[fromCount - 1].Height, (int)toCollection[0].Height);
             uint frameDelay = (uint)Math.Max(1, 100 / Math.Max(1, fps));
 
+            // Per-transition state that must stay stable across frames.
+            byte[] dissolveThresholds = null;
+            if (transitionType == TransitionType.Dissolve)
+            {
+                dissolveThresholds = new byte[width * height];
+                // Fixed seed so the mask is reproducible (and identical between runs of the same job).
+                new Random(20240601).NextBytes(dissolveThresholds);
+            }
+
+            RippleDrop[] rippleDrops = null;
+            RippleMedium rippleMedium = default;
+            if (transitionType == TransitionType.Ripple)
+            {
+                double maxR = Math.Sqrt((width / 2.0) * (width / 2.0) + (height / 2.0) * (height / 2.0));
+                rippleDrops = new[] { new RippleDrop(width / 2.0, height / 2.0, 0.0, 1.0) };
+                rippleMedium = new RippleMedium
+                {
+                    WaveSpeed = Math.Max(1.0, maxR),     // front reaches the corner by t=1 (we feed t as seconds)
+                    Wavelength = Math.Max(8.0, width / 6.0),
+                    SpatialDamping = 0.003,
+                    TimeDamping = 0.0,                   // no settling within the short transition
+                    Strength = Math.Max(4.0, width / 80.0),
+                    Threshold = 0.001
+                };
+            }
+
+            double maxRadius = Math.Sqrt((width / 2.0) * (width / 2.0) + (height / 2.0) * (height / 2.0));
+
             for (int i = 0; i < frames; i++)
             {
-                double zoomProgress = frames == 1 ? 1.0 : (double)i / (frames - 1);
-                
-                progress?.Report((i + 1, frames, $"Generating zoom {(zoomIn ? "in" : "out")} frame {i + 1}/{frames}"));
-                
-                // Allow UI to update periodically and check for cancellation
-                if (i % 5 == 0)
+                if (i % 4 == 0)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    System.Threading.Thread.Yield();
+                    Thread.Yield();
                 }
-                
-                using var transitionFrame = new MagickImage(MagickColors.Transparent, fromFrame.Width, fromFrame.Height);
 
-                // Calculate zoom parameters
-                double scale = zoomIn ? (1.0 + zoomProgress) : (2.0 - zoomProgress);
-                double opacity = 1.0 - zoomProgress;
+                double t = frames == 1 ? 1.0 : (double)i / (frames - 1);
+                progress?.Report((i + 1, frames, $"Generating {transitionType} frame {i + 1}/{frames}"));
 
-                // Apply zoom effect to from frame
-                using var scaledFromFrame = fromFrame.Clone();
-                scaledFromFrame.Resize(new MagickGeometry((uint)(fromFrame.Width * scale), (uint)(fromFrame.Height * scale)));
-                scaledFromFrame.Evaluate(Channels.Alpha, EvaluateOperator.Multiply, opacity);
+                // Running frames: outgoing clip's tail and incoming clip's head both advance.
+                using var fromFrame = Normalize((MagickImage)fromCollection[fromCount - frames + i], width, height);
+                using var toFrame = Normalize((MagickImage)toCollection[i], width, height);
 
-                // Center the scaled frame
-                int x = ((int)fromFrame.Width - (int)scaledFromFrame.Width) / 2;
-                int y = ((int)fromFrame.Height - (int)scaledFromFrame.Height) / 2;
-                
-                transitionFrame.Composite(scaledFromFrame, x, y, CompositeOperator.Over);
+                MagickImage frame = RenderFrame(transitionType, fromFrame, toFrame, t, width, height,
+                    dissolveThresholds, maxRadius, rippleDrops, rippleMedium);
 
-                // Fade in the target frame
-                using var toFrameCopy = toFrame.Clone();
-                toFrameCopy.Evaluate(Channels.Alpha, EvaluateOperator.Multiply, zoomProgress);
-                transitionFrame.Composite(toFrameCopy, CompositeOperator.Over);
+                frame.AnimationDelay = frameDelay;
+                frame.GifDisposeMethod = GifDisposeMethod.Background;
+                result.Add(frame);
+            }
 
-                transitionFrame.AnimationDelay = frameDelay;
-                transitionFrame.GifDisposeMethod = GifDisposeMethod.Background;
-                collection.Add(transitionFrame.Clone());
+            return result;
+        }
+
+        // ---- per-frame renderers -------------------------------------------------------------
+
+        private static MagickImage RenderFrame(
+            TransitionType type, MagickImage from, MagickImage to, double t, int w, int h,
+            byte[] dissolveThresholds, double maxRadius, RippleDrop[] rippleDrops, RippleMedium rippleMedium)
+        {
+            switch (type)
+            {
+                case TransitionType.Fade:
+                    return Blend(from, to, t, w, h);
+                case TransitionType.CrossFade:
+                    return Blend(from, to, EaseInOutCubic(t), w, h);
+
+                case TransitionType.SlideLeft:
+                    return Slide(from, to, t, w, h, -t * w, 0, (1 - t) * w, 0);
+                case TransitionType.SlideRight:
+                    return Slide(from, to, t, w, h, t * w, 0, -(1 - t) * w, 0);
+                case TransitionType.SlideUp:
+                    return Slide(from, to, t, w, h, 0, -t * h, 0, (1 - t) * h);
+                case TransitionType.SlideDown:
+                    return Slide(from, to, t, w, h, 0, t * h, 0, -(1 - t) * h);
+
+                case TransitionType.ZoomIn:
+                    return Zoom(from, to, t, w, h, true);
+                case TransitionType.ZoomOut:
+                    return Zoom(from, to, t, w, h, false);
+
+                case TransitionType.Dissolve:
+                {
+                    int cutoff = (int)Math.Round(t * 255.0);
+                    return Reveal(from, to, w, h, (x, y) => dissolveThresholds[y * w + x] <= cutoff);
+                }
+
+                case TransitionType.IrisOpen:
+                {
+                    double r = t * maxRadius;
+                    double cx = w / 2.0, cy = h / 2.0;
+                    return Reveal(from, to, w, h, (x, y) => Dist(x, y, cx, cy) <= r); // B inside the expanding circle
+                }
+                case TransitionType.IrisClose:
+                {
+                    double r = (1 - t) * maxRadius;
+                    double cx = w / 2.0, cy = h / 2.0;
+                    return Reveal(to, from, w, h, (x, y) => Dist(x, y, cx, cy) <= r); // A inside the shrinking circle, B outside
+                }
+
+                case TransitionType.WipeLeft:
+                {
+                    double edge = t * w;
+                    return Reveal(from, to, w, h, (x, y) => x <= edge); // B sweeps in from the left
+                }
+                case TransitionType.WipeRight:
+                {
+                    double edge = (1 - t) * w;
+                    return Reveal(from, to, w, h, (x, y) => x >= edge); // B sweeps in from the right
+                }
+                case TransitionType.WipeDiagonal:
+                {
+                    return Reveal(from, to, w, h, (x, y) => ((double)x / w + (double)y / h) * 0.5 <= t);
+                }
+
+                case TransitionType.DipToBlack:
+                    return DipToBlack(from, to, t, w, h);
+                case TransitionType.BlurDissolve:
+                    return BlurDissolve(from, to, t, w, h);
+                case TransitionType.Ripple:
+                    return Ripple(from, to, t, w, h, rippleDrops, rippleMedium);
+
+                default:
+                    return Blend(from, to, t, w, h);
             }
         }
 
-        #endregion
-
-        #region Dissolve Transition
-
-        private static void GenerateDissolveTransition(
-            MagickImage fromFrame,
-            MagickImage toFrame,
-            int frames,
-            MagickImageCollection collection,
-            int fps,
-            IProgress<(int current, int total, string status)> progress = null,
-            CancellationToken cancellationToken = default)
+        // Cross-dissolve: from at opacity (1-amount) under to at opacity (amount).
+        private static MagickImage Blend(MagickImage from, MagickImage to, double amount, int w, int h)
         {
-            uint frameDelay = (uint)Math.Max(1, 100 / Math.Max(1, fps));
-
-            int width = (int)fromFrame.Width;
-            int height = (int)fromFrame.Height;
-            int totalPixels = width * height;
-
-            // For large images, limit dissolve complexity to preserve memory
-            if (totalPixels > 500000) // If image is larger than ~700x700
+            var frame = new MagickImage(MagickColors.Transparent, (uint)w, (uint)h);
+            using (var a = (MagickImage)from.Clone())
             {
-                frames = Math.Min(frames, 10); // Limit frames to reduce memory usage
+                a.Evaluate(Channels.Alpha, EvaluateOperator.Multiply, 1.0 - amount);
+                frame.Composite(a, CompositeOperator.Over);
             }
-
-            // Assign every pixel a stable random threshold once. A pixel is revealed on frame f
-            // as soon as its threshold <= cutoff(f). Because the threshold is fixed across frames,
-            // the reveal is monotonic with no per-frame accumulation. The previous implementation
-            // re-counted "revealed" pixels from zero each frame while sharing a cumulative pattern,
-            // so once that pattern filled up the inner loop could spin forever (app hang). It also
-            // composited a 1x1 image per pixel; this builds the whole mask with one SetPixels call.
-            var random = new Random();
-            var thresholds = new byte[totalPixels];
-            random.NextBytes(thresholds);
-
-            for (int i = 0; i < frames; i++)
+            using (var b = (MagickImage)to.Clone())
             {
-                double dissolveProgress = frames == 1 ? 1.0 : (double)i / (frames - 1);
-                int cutoff = (int)Math.Round(dissolveProgress * 255.0);
+                b.Evaluate(Channels.Alpha, EvaluateOperator.Multiply, amount);
+                frame.Composite(b, CompositeOperator.Over);
+            }
+            return frame;
+        }
 
-                progress?.Report((i + 1, frames, $"Generating dissolve frame {i + 1}/{frames}"));
+        private static MagickImage Slide(MagickImage from, MagickImage to, double t, int w, int h,
+            double fromX, double fromY, double toX, double toY)
+        {
+            var frame = new MagickImage(MagickColors.Transparent, (uint)w, (uint)h);
+            frame.Composite(from, (int)Math.Round(fromX), (int)Math.Round(fromY), CompositeOperator.Over);
+            frame.Composite(to, (int)Math.Round(toX), (int)Math.Round(toY), CompositeOperator.Over);
+            return frame;
+        }
 
-                // Allow UI to update periodically and check for cancellation
-                if (i % 3 == 0)
+        private static MagickImage Zoom(MagickImage from, MagickImage to, double t, int w, int h, bool zoomIn)
+        {
+            var frame = new MagickImage(MagickColors.Transparent, (uint)w, (uint)h);
+            double scale = zoomIn ? (1.0 + t) : (2.0 - t);
+            using (var scaled = (MagickImage)from.Clone())
+            {
+                scaled.Resize(new MagickGeometry((uint)Math.Max(1, w * scale), (uint)Math.Max(1, h * scale)) { IgnoreAspectRatio = true });
+                scaled.Evaluate(Channels.Alpha, EvaluateOperator.Multiply, 1.0 - t);
+                int x = (w - (int)scaled.Width) / 2;
+                int y = (h - (int)scaled.Height) / 2;
+                frame.Composite(scaled, x, y, CompositeOperator.Over);
+            }
+            using (var b = (MagickImage)to.Clone())
+            {
+                b.Evaluate(Channels.Alpha, EvaluateOperator.Multiply, t);
+                frame.Composite(b, CompositeOperator.Over);
+            }
+            return frame;
+        }
+
+        // Lay `overlay` over `baseFrame` only where predicate(x,y) is true (a hard reveal mask).
+        private static MagickImage Reveal(MagickImage baseFrame, MagickImage overlay, int w, int h, Func<int, int, bool> revealed)
+        {
+            using var mask = new MagickImage(MagickColors.Black, (uint)w, (uint)h);
+            int channels = (int)mask.ChannelCount;
+            var maskPixels = new byte[w * h * channels];
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    System.Threading.Thread.Yield();
-                }
-
-                using var transitionFrame = fromFrame.Clone();
-                using var maskedToFrame = toFrame.Clone();
-
-                // Build a grayscale reveal mask: white (255) = revealed, black (0) = hidden.
-                using var mask = new MagickImage(MagickColors.Black, (uint)width, (uint)height);
-                int channels = (int)mask.ChannelCount;
-                var maskPixels = new byte[totalPixels * channels];
-                for (int p = 0; p < totalPixels; p++)
-                {
-                    byte value = thresholds[p] <= cutoff ? (byte)255 : (byte)0;
-                    int baseIndex = p * channels;
+                    byte value = revealed(x, y) ? (byte)255 : (byte)0;
+                    int baseIndex = (y * w + x) * channels;
                     for (int c = 0; c < channels; c++)
-                    {
                         maskPixels[baseIndex + c] = value;
-                    }
                 }
-
-                using (var pixels = mask.GetPixels())
-                {
-                    pixels.SetPixels(maskPixels);
-                }
-
-                // Copy the mask intensity into the target frame's alpha, then lay it over the source.
-                maskedToFrame.Composite(mask, CompositeOperator.CopyAlpha);
-                transitionFrame.Composite(maskedToFrame, CompositeOperator.Over);
-
-                transitionFrame.AnimationDelay = frameDelay;
-                transitionFrame.GifDisposeMethod = GifDisposeMethod.Background;
-                collection.Add(transitionFrame.Clone());
             }
+            using (var pixels = mask.GetPixels())
+            {
+                pixels.SetPixels(maskPixels);
+            }
+
+            using var maskedOverlay = (MagickImage)overlay.Clone();
+            maskedOverlay.Composite(mask, CompositeOperator.CopyAlpha);
+            var frame = (MagickImage)baseFrame.Clone();
+            frame.Composite(maskedOverlay, CompositeOperator.Over);
+            return frame;
         }
 
-        #endregion
-
-        #region Cross Fade Transition
-
-        private static void GenerateCrossFadeTransition(
-            MagickImage fromFrame,
-            MagickImage toFrame,
-            int frames,
-            MagickImageCollection collection,
-            int fps,
-            IProgress<(int current, int total, string status)> progress = null,
-            CancellationToken cancellationToken = default)
+        private static MagickImage DipToBlack(MagickImage from, MagickImage to, double t, int w, int h)
         {
-            // Cross fade is similar to fade but with more sophisticated blending
-            uint frameDelay = (uint)Math.Max(1, 100 / Math.Max(1, fps));
-
-            for (int i = 0; i < frames; i++)
+            var frame = new MagickImage(MagickColors.Black, (uint)w, (uint)h);
+            if (t < 0.5)
             {
-                double crossFadeProgress = frames == 1 ? 1.0 : (double)i / (frames - 1);
-                
-                progress?.Report((i + 1, frames, $"Generating crossfade frame {i + 1}/{frames}"));
-                
-                // Allow UI to update periodically and check for cancellation
-                if (i % 5 == 0)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    System.Threading.Thread.Yield();
-                }
-                
-                using var transitionFrame = new MagickImage(MagickColors.Transparent, fromFrame.Width, fromFrame.Height);
-
-                // Use more sophisticated blending curve for cross fade
-                double easedProgress = EaseInOutCubic(crossFadeProgress);
-                double fromOpacity = 1.0 - easedProgress;
-                double toOpacity = easedProgress;
-
-                // Blend frames
-                using var fromFrameCopy = fromFrame.Clone();
-                fromFrameCopy.Evaluate(Channels.Alpha, EvaluateOperator.Multiply, fromOpacity);
-                transitionFrame.Composite(fromFrameCopy, CompositeOperator.Over);
-
-                using var toFrameCopy = toFrame.Clone();
-                toFrameCopy.Evaluate(Channels.Alpha, EvaluateOperator.Multiply, toOpacity);
-                transitionFrame.Composite(toFrameCopy, CompositeOperator.Over);
-
-                transitionFrame.AnimationDelay = frameDelay;
-                transitionFrame.GifDisposeMethod = GifDisposeMethod.Background;
-                collection.Add(transitionFrame.Clone());
+                using var a = (MagickImage)from.Clone();
+                a.Evaluate(Channels.Alpha, EvaluateOperator.Multiply, 1.0 - t / 0.5); // fade A out to black
+                frame.Composite(a, CompositeOperator.Over);
             }
+            else
+            {
+                using var b = (MagickImage)to.Clone();
+                b.Evaluate(Channels.Alpha, EvaluateOperator.Multiply, (t - 0.5) / 0.5); // fade B in from black
+                frame.Composite(b, CompositeOperator.Over);
+            }
+            return frame;
+        }
+
+        private static MagickImage BlurDissolve(MagickImage from, MagickImage to, double t, int w, int h)
+        {
+            double maxSigma = Math.Max(2.0, Math.Min(w, h) / 60.0);
+            using var fromBlur = (MagickImage)from.Clone();
+            fromBlur.Blur(0, t * maxSigma);          // A gets blurrier as it leaves
+            using var toBlur = (MagickImage)to.Clone();
+            toBlur.Blur(0, (1.0 - t) * maxSigma);    // B starts blurred and sharpens in
+            return Blend(fromBlur, toBlur, t, w, h);
+        }
+
+        private static MagickImage Ripple(MagickImage from, MagickImage to, double t, int w, int h,
+            RippleDrop[] drops, RippleMedium medium)
+        {
+            using var blended = Blend(from, to, EaseInOutCubic(t), w, h);
+            // Feed t directly as the wave's elapsed seconds; the medium is tuned so the front crosses
+            // the frame by t=1, giving a watery wobble that peaks mid-transition and settles by the end.
+            return RippleRenderer.RenderFrame(blended, t, drops, medium);
+        }
+
+        private static MagickImage Normalize(MagickImage source, int targetWidth, int targetHeight)
+        {
+            if ((int)source.Width == targetWidth && (int)source.Height == targetHeight)
+                return (MagickImage)source.Clone();
+
+            var canvas = new MagickImage(MagickColors.Transparent, (uint)targetWidth, (uint)targetHeight);
+            int x = (targetWidth - (int)source.Width) / 2;
+            int y = (targetHeight - (int)source.Height) / 2;
+            canvas.Composite(source, x, y, CompositeOperator.Over);
+            return canvas;
+        }
+
+        private static double Dist(int x, int y, double cx, double cy)
+        {
+            double dx = x - cx, dy = y - cy;
+            return Math.Sqrt(dx * dx + dy * dy);
         }
 
         private static double EaseInOutCubic(double t)
         {
             return t < 0.5 ? 4 * t * t * t : 1 - Math.Pow(-2 * t + 2, 3) / 2;
         }
-
-        #endregion
     }
 }

@@ -1060,6 +1060,27 @@ FFmpeg 出力（切り捨て）:
   <data name="ConcatenateDialog_TransitionDissolve" xml:space="preserve">
     <value>ディゾルブ</value>
   </data>
+  <data name="ConcatenateDialog_TransitionTypeLabel" xml:space="preserve">
+    <value>トランジション：</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionCrossFade" xml:space="preserve">
+    <value>クロスフェード</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionIris" xml:space="preserve">
+    <value>アイリス</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionWipe" xml:space="preserve">
+    <value>ワイプ</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionDipToBlack" xml:space="preserve">
+    <value>黒へディップ</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionBlurDissolve" xml:space="preserve">
+    <value>ブラーディゾルブ</value>
+  </data>
+  <data name="ConcatenateDialog_TransitionRipple" xml:space="preserve">
+    <value>波紋</value>
+  </data>
   <data name="GTMainForm_ConcatenateGifs" xml:space="preserve">
     <value>GIFを結合</value>
   </data>
