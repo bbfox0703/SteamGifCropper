@@ -18,7 +18,8 @@ namespace GifProcessorApp
         public string InputFilePath { get; private set; } = string.Empty;
         public string OutputFilePath { get; private set; } = string.Empty;
         public bool IsGif { get; private set; }
-        public int DurationSeconds { get; private set; } = 3;
+        public double DurationSeconds { get; private set; } = 3.0;
+        public double StartSeconds { get; private set; } = 0.0;
         public int DurationVariancePercent { get; private set; } = 20;
         public int Fps { get; private set; } = 15;
         public int Spins { get; private set; } = 4;
@@ -40,6 +41,8 @@ namespace GifProcessorApp
         private ComboBox cmbDirection = null!;
         private NumericUpDown numBounce = null!;
         private NumericUpDown numHold = null!;
+        private NumericUpDown numStart = null!;
+        private Label lblStart = null!;
         private Label lblGifPlayMode = null!;
         private ComboBox cmbGifPlayMode = null!;
         private Button btnOK = null!;
@@ -64,8 +67,20 @@ namespace GifProcessorApp
             numHold.Visible = !gifMode;
             lblGifPlayMode.Visible = gifMode;
             cmbGifPlayMode.Visible = gifMode;
+            // Start offset only applies to GIF + "play during spin" (a window into the GIF timeline).
+            lblStart.Visible = gifMode;
+            numStart.Visible = gifMode;
+            cmbGifPlayMode.SelectedIndexChanged += (s, e) => UpdateStartEnabled();
             UpdateUIText();
+            UpdateStartEnabled();
             ApplyTheme();
+        }
+
+        private void UpdateStartEnabled()
+        {
+            bool enabled = IsGif && cmbGifPlayMode.SelectedIndex == 0;
+            numStart.Enabled = enabled;
+            lblStart.Enabled = enabled;
         }
 
         private void UpdateUIText()
@@ -81,6 +96,7 @@ namespace GifProcessorApp
             lblDirection.Text = Resources.SlotDialog_Direction;
             lblBounce.Text = Resources.SlotDialog_Bounce;
             lblHold.Text = Resources.SlotDialog_Hold;
+            lblStart.Text = Resources.Dialog_StartSeconds;
             lblGifPlayMode.Text = Resources.SlotDialog_GifPlayMode;
             btnBrowseInput.Text = Resources.Button_Browse;
             btnBrowseOutput.Text = Resources.Button_Browse;
@@ -259,7 +275,8 @@ namespace GifProcessorApp
             }
             InputFilePath = txtInputPath.Text;
             OutputFilePath = txtOutputPath.Text;
-            DurationSeconds = (int)numDuration.Value;
+            DurationSeconds = (double)numDuration.Value;
+            StartSeconds = (double)numStart.Value;
             DurationVariancePercent = (int)numDurVar.Value;
             Fps = (int)numFps.Value;
             Spins = (int)numSpins.Value;
@@ -296,6 +313,8 @@ namespace GifProcessorApp
             numBounce = new NumericUpDown();
             lblHold = new Label();
             numHold = new NumericUpDown();
+            numStart = new NumericUpDown();
+            lblStart = new Label();
             lblGifPlayMode = new Label();
             cmbGifPlayMode = new ComboBox();
             btnOK = new Button();
@@ -307,6 +326,7 @@ namespace GifProcessorApp
             ((System.ComponentModel.ISupportInitialize)numSpinVar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numBounce).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numHold).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numStart).BeginInit();
             SuspendLayout();
             //
             // lblInput
@@ -371,13 +391,15 @@ namespace GifProcessorApp
             //
             // numDuration
             //
+            numDuration.DecimalPlaces = 2;
+            numDuration.Increment = new decimal(new int[] { 25, 0, 0, 131072 }); // 0.25
             numDuration.Location = new System.Drawing.Point(114, 124);
-            numDuration.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
-            numDuration.Maximum = new decimal(new int[] { 10, 0, 0, 0 });
+            numDuration.Minimum = new decimal(new int[] { 10, 0, 0, 131072 }); // 0.10
+            numDuration.Maximum = new decimal(new int[] { 1000, 0, 0, 131072 }); // 10.00
             numDuration.Name = "numDuration";
-            numDuration.Size = new System.Drawing.Size(46, 23);
+            numDuration.Size = new System.Drawing.Size(52, 23);
             numDuration.TabIndex = 7;
-            numDuration.Value = new decimal(new int[] { 3, 0, 0, 0 });
+            numDuration.Value = new decimal(new int[] { 300, 0, 0, 131072 }); // 3.00
             //
             // lblDurVar
             //
@@ -521,9 +543,28 @@ namespace GifProcessorApp
             cmbGifPlayMode.Size = new System.Drawing.Size(212, 23);
             cmbGifPlayMode.TabIndex = 25;
             //
+            // lblStart (row 6, gif + play-during only)
+            //
+            lblStart.Location = new System.Drawing.Point(14, 225);
+            lblStart.Name = "lblStart";
+            lblStart.Size = new System.Drawing.Size(98, 20);
+            lblStart.TabIndex = 26;
+            lblStart.Text = "Start (s)";
+            //
+            // numStart
+            //
+            numStart.DecimalPlaces = 2;
+            numStart.Increment = new decimal(new int[] { 25, 0, 0, 131072 }); // 0.25
+            numStart.Location = new System.Drawing.Point(114, 223);
+            numStart.Minimum = new decimal(new int[] { 0, 0, 0, 0 });
+            numStart.Maximum = new decimal(new int[] { 60000, 0, 0, 131072 }); // 600.00
+            numStart.Name = "numStart";
+            numStart.Size = new System.Drawing.Size(60, 23);
+            numStart.TabIndex = 27;
+            //
             // btnOK
             //
-            btnOK.Location = new System.Drawing.Point(303, 228);
+            btnOK.Location = new System.Drawing.Point(303, 260);
             btnOK.Name = "btnOK";
             btnOK.Size = new System.Drawing.Size(75, 25);
             btnOK.TabIndex = 22;
@@ -534,7 +575,7 @@ namespace GifProcessorApp
             // btnCancel
             //
             btnCancel.DialogResult = DialogResult.Cancel;
-            btnCancel.Location = new System.Drawing.Point(384, 228);
+            btnCancel.Location = new System.Drawing.Point(384, 260);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new System.Drawing.Size(82, 25);
             btnCancel.TabIndex = 23;
@@ -546,13 +587,15 @@ namespace GifProcessorApp
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new System.Drawing.Size(480, 268);
+            ClientSize = new System.Drawing.Size(480, 300);
             Controls.Add(btnCancel);
             Controls.Add(btnOK);
             Controls.Add(cmbGifPlayMode);
             Controls.Add(lblGifPlayMode);
             Controls.Add(numHold);
             Controls.Add(lblHold);
+            Controls.Add(numStart);
+            Controls.Add(lblStart);
             Controls.Add(numBounce);
             Controls.Add(lblBounce);
             Controls.Add(cmbDirection);
@@ -586,6 +629,7 @@ namespace GifProcessorApp
             ((System.ComponentModel.ISupportInitialize)numSpinVar).EndInit();
             ((System.ComponentModel.ISupportInitialize)numBounce).EndInit();
             ((System.ComponentModel.ISupportInitialize)numHold).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numStart).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }

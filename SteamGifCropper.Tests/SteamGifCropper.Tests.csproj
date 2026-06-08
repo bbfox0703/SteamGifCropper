@@ -44,6 +44,7 @@
     <Compile Include="..\src\Core\GridMosaicGeometry.cs" Link="GridMosaicGeometry.cs" />
     <Compile Include="..\src\Core\SlotMachineGeometry.cs" Link="SlotMachineGeometry.cs" />
     <Compile Include="..\src\Core\QuicksandGeometry.cs" Link="QuicksandGeometry.cs" />
+    <Compile Include="..\src\Core\GifEffectWindow.cs" Link="GifEffectWindow.cs" />
     <Compile Include="..\src\Core\GridMosaicSettings.cs" Link="GridMosaicSettings.cs" />
     <Compile Include="..\src\Core\GridMosaicRenderer.cs" Link="GridMosaicRenderer.cs" />
   </ItemGroup>

@@ -2585,6 +2585,12 @@ namespace SteamGifCropper.Properties {
             }
         }
 
+        internal static string Dialog_StartSeconds {
+            get {
+                return ResourceManager.GetString("Dialog_StartSeconds", resourceCulture);
+            }
+        }
+
         internal static string GridDialog_Title {
             get {
                 return ResourceManager.GetString("GridDialog_Title", resourceCulture);

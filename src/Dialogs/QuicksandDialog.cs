@@ -19,7 +19,8 @@ namespace GifProcessorApp
         public string OutputFilePath { get; private set; } = string.Empty;
         public bool IsGif { get; private set; }
         public int Layers { get; private set; } = 16;
-        public int DurationSeconds { get; private set; } = 6;
+        public double DurationSeconds { get; private set; } = 6.0;
+        public double StartSeconds { get; private set; } = 0.0;
         public int Fps { get; private set; } = 15;
         public int MaxRevolutions { get; private set; } = 12;
         public int MinRevolutions { get; private set; } = 2;
@@ -42,6 +43,8 @@ namespace GifProcessorApp
         private ComboBox cmbFastBand = null!;
         private NumericUpDown numViscosity = null!;
         private ComboBox cmbGifPlayMode = null!;
+        private NumericUpDown numStart = null!;
+        private Label lblStart = null!;
         private Button btnOK = null!;
         private Button btnCancel = null!;
         private Label lblInput = null!;
@@ -59,10 +62,23 @@ namespace GifProcessorApp
         {
             IsGif = gifMode;
             InitializeComponent();
-            // The GIF playback-mode picker only applies to animated input.
+            // The GIF playback-mode picker + start-offset only apply to animated input.
             cmbGifPlayMode.Visible = gifMode;
+            lblStart.Visible = gifMode;
+            numStart.Visible = gifMode;
+            cmbGifPlayMode.SelectedIndexChanged += (s, e) => UpdateStartEnabled();
             UpdateUIText();
+            UpdateStartEnabled();
             ApplyTheme();
+        }
+
+        // The start offset only has meaning for "play during flow" (a window into the GIF timeline);
+        // "flow, then play" runs over a frozen frame, so it is greyed out there.
+        private void UpdateStartEnabled()
+        {
+            bool enabled = IsGif && cmbGifPlayMode.SelectedIndex == 0;
+            numStart.Enabled = enabled;
+            lblStart.Enabled = enabled;
         }
 
         private void UpdateUIText()
@@ -78,6 +94,7 @@ namespace GifProcessorApp
             lblDirection.Text = Resources.SlotDialog_Direction;
             lblFastBand.Text = Resources.QuickDialog_FastBand;
             lblViscosity.Text = Resources.QuickDialog_Viscosity;
+            lblStart.Text = Resources.Dialog_StartSeconds;
             btnBrowseInput.Text = Resources.Button_Browse;
             btnBrowseOutput.Text = Resources.Button_Browse;
             btnOK.Text = Resources.ScrollDialog_OK;
@@ -281,7 +298,8 @@ namespace GifProcessorApp
             InputFilePath = txtInputPath.Text;
             OutputFilePath = txtOutputPath.Text;
             Layers = (int)numLayers.Value;
-            DurationSeconds = (int)numDuration.Value;
+            DurationSeconds = (double)numDuration.Value;
+            StartSeconds = (double)numStart.Value;
             Fps = (int)numFps.Value;
             MaxRevolutions = (int)numMaxRevs.Value;
             MinRevolutions = (int)numMinRevs.Value;
@@ -320,6 +338,8 @@ namespace GifProcessorApp
             lblViscosity = new Label();
             numViscosity = new NumericUpDown();
             cmbGifPlayMode = new ComboBox();
+            lblStart = new Label();
+            numStart = new NumericUpDown();
             btnOK = new Button();
             btnCancel = new Button();
             ((System.ComponentModel.ISupportInitialize)numLayers).BeginInit();
@@ -328,6 +348,7 @@ namespace GifProcessorApp
             ((System.ComponentModel.ISupportInitialize)numMaxRevs).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numMinRevs).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numViscosity).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numStart).BeginInit();
             SuspendLayout();
             //
             // lblInput
@@ -410,13 +431,15 @@ namespace GifProcessorApp
             //
             // numDuration
             //
+            numDuration.DecimalPlaces = 2;
+            numDuration.Increment = new decimal(new int[] { 25, 0, 0, 131072 }); // 0.25
             numDuration.Location = new System.Drawing.Point(268, 124);
-            numDuration.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
-            numDuration.Maximum = new decimal(new int[] { 30, 0, 0, 0 });
+            numDuration.Minimum = new decimal(new int[] { 10, 0, 0, 131072 }); // 0.10
+            numDuration.Maximum = new decimal(new int[] { 3000, 0, 0, 131072 }); // 30.00
             numDuration.Name = "numDuration";
-            numDuration.Size = new System.Drawing.Size(46, 23);
+            numDuration.Size = new System.Drawing.Size(52, 23);
             numDuration.TabIndex = 9;
-            numDuration.Value = new decimal(new int[] { 6, 0, 0, 0 });
+            numDuration.Value = new decimal(new int[] { 600, 0, 0, 131072 }); // 6.00
             //
             // lblFps
             //
@@ -525,20 +548,39 @@ namespace GifProcessorApp
             numViscosity.TabIndex = 21;
             numViscosity.Value = new decimal(new int[] { 10, 0, 0, 65536 }); // 1.0
             //
-            // cmbGifPlayMode (gif mode only; self-describing items, no label)
+            // cmbGifPlayMode (row D, gif mode only; self-describing items, no label)
             //
             cmbGifPlayMode.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbGifPlayMode.Location = new System.Drawing.Point(322, 190);
+            cmbGifPlayMode.Location = new System.Drawing.Point(14, 223);
             cmbGifPlayMode.Name = "cmbGifPlayMode";
-            cmbGifPlayMode.Size = new System.Drawing.Size(144, 23);
+            cmbGifPlayMode.Size = new System.Drawing.Size(190, 23);
             cmbGifPlayMode.TabIndex = 22;
+            //
+            // lblStart (row D, gif + play-during only)
+            //
+            lblStart.Location = new System.Drawing.Point(214, 225);
+            lblStart.Name = "lblStart";
+            lblStart.Size = new System.Drawing.Size(80, 20);
+            lblStart.TabIndex = 23;
+            lblStart.Text = "Start (s)";
+            //
+            // numStart
+            //
+            numStart.DecimalPlaces = 2;
+            numStart.Increment = new decimal(new int[] { 25, 0, 0, 131072 }); // 0.25
+            numStart.Location = new System.Drawing.Point(300, 223);
+            numStart.Minimum = new decimal(new int[] { 0, 0, 0, 0 });
+            numStart.Maximum = new decimal(new int[] { 60000, 0, 0, 131072 }); // 600.00
+            numStart.Name = "numStart";
+            numStart.Size = new System.Drawing.Size(60, 23);
+            numStart.TabIndex = 24;
             //
             // btnOK
             //
-            btnOK.Location = new System.Drawing.Point(303, 228);
+            btnOK.Location = new System.Drawing.Point(303, 260);
             btnOK.Name = "btnOK";
             btnOK.Size = new System.Drawing.Size(75, 25);
-            btnOK.TabIndex = 23;
+            btnOK.TabIndex = 25;
             btnOK.Text = "OK";
             btnOK.UseVisualStyleBackColor = true;
             btnOK.Click += BtnOK_Click;
@@ -546,10 +588,10 @@ namespace GifProcessorApp
             // btnCancel
             //
             btnCancel.DialogResult = DialogResult.Cancel;
-            btnCancel.Location = new System.Drawing.Point(384, 228);
+            btnCancel.Location = new System.Drawing.Point(384, 260);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new System.Drawing.Size(82, 25);
-            btnCancel.TabIndex = 24;
+            btnCancel.TabIndex = 26;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
             //
@@ -558,9 +600,11 @@ namespace GifProcessorApp
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new System.Drawing.Size(480, 268);
+            ClientSize = new System.Drawing.Size(480, 300);
             Controls.Add(btnCancel);
             Controls.Add(btnOK);
+            Controls.Add(numStart);
+            Controls.Add(lblStart);
             Controls.Add(cmbGifPlayMode);
             Controls.Add(numViscosity);
             Controls.Add(lblViscosity);
@@ -596,6 +640,7 @@ namespace GifProcessorApp
             ((System.ComponentModel.ISupportInitialize)numMaxRevs).EndInit();
             ((System.ComponentModel.ISupportInitialize)numMinRevs).EndInit();
             ((System.ComponentModel.ISupportInitialize)numViscosity).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numStart).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }

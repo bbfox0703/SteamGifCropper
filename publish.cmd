@@ -19,4 +19,3 @@ if errorlevel 1 (
 
 echo.
 echo Published to .\publish\
-pause

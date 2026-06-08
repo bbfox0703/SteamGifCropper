@@ -854,6 +854,7 @@ namespace GifProcessorApp
                 OutputFilePath = dialog.OutputFilePath,
                 IsGif = isGif,
                 DurationSeconds = dialog.DurationSeconds,
+                StartSeconds = dialog.StartSeconds,
                 DurationVariancePercent = dialog.DurationVariancePercent,
                 Fps = dialog.Fps,
                 Spins = dialog.Spins,
@@ -949,7 +950,25 @@ namespace GifProcessorApp
                     gifSeconds += (double)frame.AnimationDelay / srcTicks;
                 }
             }
-            double maxSpinSeconds = (settings.IsGif && gifSeconds > 0.0) ? gifSeconds : double.MaxValue;
+            bool playDuring = settings.IsGif && settings.PlayGifDuringSpin;
+
+            // "Play during spin": clamp the [start, duration] window (2dp) into the GIF and spin within
+            // it (reels start at the window, lock before the GIF ends). "Spin then play"/static ignore
+            // the start offset (the spin runs over a frozen/static frame, then the GIF plays).
+            double windowStartSec = 0.0;
+            double baseDuration = settings.DurationSeconds;
+            double maxSpinSeconds;
+            if (playDuring)
+            {
+                var (cs, cd) = GifEffectWindow.Clamp(settings.StartSeconds, settings.DurationSeconds, gifSeconds);
+                windowStartSec = cs;
+                baseDuration = cd;
+                maxSpinSeconds = gifSeconds - windowStartSec; // a reel must lock before the GIF ends
+            }
+            else
+            {
+                maxSpinSeconds = (settings.IsGif && gifSeconds > 0.0) ? gifSeconds : double.MaxValue;
+            }
 
             // Randomize each reel's stop time (seconds) and revolution count so which reel stops first
             // (and which spins longest) is non-deterministic.
@@ -958,7 +977,7 @@ namespace GifProcessorApp
             int[] reelSpins = new int[reelCount];
             for (int c = 0; c < reelCount; c++)
             {
-                double durSec = SlotMachineGeometry.ApplyVariance(settings.DurationSeconds, settings.DurationVariancePercent, rng.NextDouble());
+                double durSec = SlotMachineGeometry.ApplyVariance(baseDuration, settings.DurationVariancePercent, rng.NextDouble());
                 if (durSec > maxSpinSeconds) durSec = maxSpinSeconds;
                 if (durSec < 0.1) durSec = 0.1;
                 reelStopSec[c] = durSec;
@@ -967,9 +986,9 @@ namespace GifProcessorApp
                 reelSpins[c] = Math.Max(1, (int)Math.Round(spinVal));
             }
 
-            if (settings.IsGif && settings.PlayGifDuringSpin)
+            if (playDuring)
             {
-                return BuildSlotMachinePlayDuringSpin(mainForm, source, settings, ranges, canvasWidth, canvasHeight, reelStopSec, reelSpins, srcTicks, gifSeconds);
+                return BuildSlotMachinePlayDuringSpin(mainForm, source, settings, ranges, canvasWidth, canvasHeight, reelStopSec, reelSpins, srcTicks, gifSeconds, windowStartSec);
             }
 
             return BuildSlotMachineSpinThenLock(mainForm, source, settings, ranges, canvasWidth, canvasHeight, reelStopSec, reelSpins, srcTicks);
@@ -1089,7 +1108,7 @@ namespace GifProcessorApp
         private static MagickImageCollection BuildSlotMachinePlayDuringSpin(GifToolMainForm mainForm,
             MagickImageCollection source, SlotMachineSettings settings,
             (int Start, int End)[] ranges, int canvasWidth, int canvasHeight,
-            double[] reelStopSec, int[] reelSpins, int srcTicks, double gifSeconds)
+            double[] reelStopSec, int[] reelSpins, int srcTicks, double gifSeconds, double windowStartSec)
         {
             int reelCount = ranges.Length;
             int n = source.Count;
@@ -1105,16 +1124,14 @@ namespace GifProcessorApp
             double gifFps = (gifSeconds > 0.0) ? n / gifSeconds : n;
             int overshootGif = Math.Max(0, (int)Math.Round(settings.BounceSeconds * gifFps));
 
-            // Convert each reel's stop time (seconds) to a GIF-frame index.
+            // The spin begins at the (frame-snapped) window start; reels lock at window start + their own
+            // randomized duration. Before startFrame the reels show the plain live GIF (offset 0).
+            int startFrame = GifEffectWindow.NearestFrameIndex(startSec, windowStartSec);
             int[] reelStopFrame = new int[reelCount];
             for (int c = 0; c < reelCount; c++)
             {
-                int idx = n;
-                for (int i = 0; i < n; i++)
-                {
-                    if (startSec[i] >= reelStopSec[c]) { idx = i; break; }
-                }
-                reelStopFrame[c] = Math.Max(1, idx);
+                reelStopFrame[c] = Math.Max(startFrame + 1,
+                    GifEffectWindow.NearestFrameIndex(startSec, windowStartSec + reelStopSec[c]));
             }
 
             var result = new MagickImageCollection();
@@ -1128,7 +1145,10 @@ namespace GifProcessorApp
                     using var col = (MagickImage)source[i].Clone();
                     col.Crop(new MagickGeometry(ranges[c].Start, 0, (uint)w, (uint)canvasHeight));
                     col.ResetPage();
-                    int off = SlotMachineGeometry.ReelOffsetY(i, reelStopFrame[c], reelSpins[c], canvasHeight, settings.TopToBottom, overshootGif);
+                    int local = i - startFrame;
+                    int off = local <= 0
+                        ? 0
+                        : SlotMachineGeometry.ReelOffsetY(local, reelStopFrame[c] - startFrame, reelSpins[c], canvasHeight, settings.TopToBottom, overshootGif);
                     if (off != 0)
                     {
                         col.Roll(0, off);
@@ -1187,6 +1207,7 @@ namespace GifProcessorApp
                 IsGif = isGif,
                 Layers = dialog.Layers,
                 DurationSeconds = dialog.DurationSeconds,
+                StartSeconds = dialog.StartSeconds,
                 Fps = dialog.Fps,
                 MaxRevolutions = dialog.MaxRevolutions,
                 MinRevolutions = dialog.MinRevolutions,
@@ -1355,18 +1376,17 @@ namespace GifProcessorApp
             }
             double gifSeconds = acc;
 
-            double flowDuration = settings.DurationSeconds;
-            if (gifSeconds > 0.0 && flowDuration > gifSeconds) flowDuration = gifSeconds;
-            if (flowDuration < 0.1) flowDuration = 0.1;
+            // Resolve the [start, duration] window (seconds, 2dp) into a clamped, frame-snapped frame
+            // range. The flow eases in at startFrame and back to aligned at endFrame; outside the
+            // window the frames pass through as the plain GIF.
+            var (startFrame, endFrame) = GifEffectWindow.ResolveFrames(startSec, gifSeconds,
+                settings.StartSeconds, settings.DurationSeconds);
 
             var result = new MagickImageCollection();
             int built = 0;
             for (int i = 0; i < n; i++)
             {
-                // t in [0, 1] over the flow window; once the frame's time passes the window the flow is
-                // done (offset 0) and the frame passes through as the plain GIF.
-                double t = startSec[i] / flowDuration;
-                if (t > 1.0) t = 1.0;
+                double t = GifEffectWindow.FramePhase(i, startFrame, endFrame);
 
                 var canvas = new MagickImage(MagickColors.Transparent, (uint)canvasWidth, (uint)canvasHeight);
                 for (int b = 0; b < layers; b++)
@@ -1401,7 +1421,7 @@ namespace GifProcessorApp
             int layers = bands.Length;
             int fps = Math.Max(1, settings.Fps);
             int delay = Math.Max(1, (int)Math.Round(100.0 / fps)); // GIF delay in 1/100 s
-            int flowFrames = Math.Max(1, settings.DurationSeconds * fps);
+            int flowFrames = Math.Max(1, (int)Math.Round(settings.DurationSeconds * fps));
             int playFrames = settings.IsGif ? source.Count : 0;
             int totalFrames = flowFrames + playFrames;
             bool vertical = settings.Axis == QuicksandFlowAxis.Vertical;

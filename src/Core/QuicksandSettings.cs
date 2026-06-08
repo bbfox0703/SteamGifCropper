@@ -20,7 +20,8 @@ namespace GifProcessorApp
         public bool IsGif { get; set; }
 
         public int Layers { get; set; } = 16;            // horizontal bands the image is sliced into
-        public int DurationSeconds { get; set; } = 6;    // length of one full flow-and-return cycle
+        public double DurationSeconds { get; set; } = 6.0; // length of one full flow-and-return cycle (2dp)
+        public double StartSeconds { get; set; } = 0.0;  // GIF "play during flow" only: when the flow begins
         public int Fps { get; set; } = 15;
         public int MaxRevolutions { get; set; } = 12;    // whole turns of the FAST band over the cycle
         public int MinRevolutions { get; set; } = 2;     // whole turns of the SLOW band over the cycle

@@ -44,6 +44,14 @@
 - **預設**：Layers 16、Duration 6s、FPS 15、Max 12 / Min 2 圈、FastBand 下方、Viscosity 1.0、向右流（水平）、同步播放。
 - **檔案**：`src/Core/QuicksandGeometry.cs`（純函式 ease/band-bounds/speed/revolutions/offset，可單測）、`QuicksandSettings.cs`、`src/Dialogs/QuicksandDialog.cs`、`GifProcessor.QuicksandStaticImage()`/`QuicksandGif()`/`RunQuicksand()`/`BuildQuicksandAnimation()`（分派器）/`BuildQuicksandPlayDuringFlow()`/`BuildQuicksandFlowThenPlay()`、主視窗兩顆按鈕（新增第 9 列 y=255、下方元件 +31px、表單加高至 556）、三語 resx、`SteamGifCropper.Tests/QuicksandGeometryTests.cs`（22 例）。
 
+### ✅ GIF 效果時間窗（浮點秒數 + 起始秒，拉霸 & 流沙共用）
+拉霸與流沙的 GIF「同步播放」模式可指定效果在 GIF 時間軸上的 **[起始秒, 長度] 窗**（皆 2 位小數）：
+
+- **浮點秒數**：Duration int→double（2dp），對齊最近的 frame；非同步模式（先轉/流動再播放、靜態）用 `round(秒數×fps)` 轉幀數。
+- **起始秒數**：只對「同步播放」（`PlayDuring*`）生效（dialog 中 GIF + 該模式才 enable），效果在 [start, start+len] 窗內套用、窗外播放原 GIF live 幀、輸出＝GIF 全長。拉霸：轉輪在窗起點開始轉、窗內各自隨機停；流沙：剪切在窗內 ease-in/out。
+- **夾擠規則**（`GifEffectWindow.Clamp`）：`len>=GIF長` → (0, 全長)；`start+len>GIF長` → start 回推到 `GIF長-len`；負 start→0。最差 start=0、len=全長。
+- **共用純函式** `src/Core/GifEffectWindow.cs`（`Clamp`/`NearestFrameIndex`/`ResolveFrames`/`FramePhase`，可單測，`GifEffectWindowTests` 16 例）。拉霸 `BuildSlotMachinePlayDuringSpin` 多 `windowStartSec` 參數（轉輪由 startFrame 起算、stop=start+各輪時長）；流沙 `BuildQuicksandPlayDuringFlow` 改用 `ResolveFrames`+`FramePhase`。共用標籤 `Dialog_StartSeconds`（三語）。兩個 dialog 各加一列 Start（GIF only、play-during 才 enable），表單加高至 300。
+
 ### 🔭 水波紋 / 聲波（Water Ripple）— 評估完成、尚未實作
 逐像素徑向位移場（非切片，現有積木幫不上忙；參考 `GridMosaicRenderer` 的像素寫入）。建議在 C# 端自做雙線性重採樣（繞過 Magick.NET-Q8 的 `Displace` 整數量化）：每個輸出像素依阻尼徑向波公式 `A·exp(-衰減·r)·時間包絡·sin(k·r−ωt)` 算 (dx,dy)、到來源雙線性取樣。落點可在圖外；邊界回波用「鏡像法 (method of images)」加衰減次波源（建議 v2 再加）。難度 ★★★（物理是封閉解、不難；成本在新 render primitive + 參數調校）。GIF 定格/跟播沿用同一二分法。
 
