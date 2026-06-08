@@ -310,7 +310,7 @@
     <value>GIF檔案 (*.gif)|*.gif</value>
   </data>
   <data name="FileDialog_ImageAndGifFilter" xml:space="preserve">
-    <value>圖片及GIF檔案 (*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.png;*.jpg;*.jpeg;*.bmp;*.gif</value>
+    <value>圖片及GIF檔案 (*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp;*.heic)|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp;*.heic</value>
   </data>
   <data name="Mp4Dialog_Seconds" xml:space="preserve">
     <value>秒</value>

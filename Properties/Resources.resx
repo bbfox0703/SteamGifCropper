@@ -309,7 +309,7 @@ Files skipped (not 0x21): {1}</value>
     <value>GIF Files (*.gif)|*.gif</value>
   </data>
   <data name="FileDialog_ImageAndGifFilter" xml:space="preserve">
-    <value>Image and GIF Files (*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.png;*.jpg;*.jpeg;*.bmp;*.gif</value>
+    <value>Image and GIF Files (*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp;*.heic)|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp;*.heic</value>
   </data>
   <data name="Mp4Dialog_Seconds" xml:space="preserve">
     <value>seconds</value>
