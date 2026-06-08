@@ -308,6 +308,9 @@ Files skipped (not 0x21): {1}</value>
   <data name="FileDialog_GifFilter" xml:space="preserve">
     <value>GIF Files (*.gif)|*.gif</value>
   </data>
+  <data name="FileDialog_GifAndWebpFilter" xml:space="preserve">
+    <value>GIF and WebP Files (*.gif;*.webp)|*.gif;*.webp</value>
+  </data>
   <data name="FileDialog_ImageAndGifFilter" xml:space="preserve">
     <value>Image and GIF Files (*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp;*.heic)|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp;*.heic</value>
   </data>

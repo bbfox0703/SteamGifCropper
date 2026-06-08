@@ -309,6 +309,9 @@
   <data name="FileDialog_GifFilter" xml:space="preserve">
     <value>GIFファイル (*.gif)|*.gif</value>
   </data>
+  <data name="FileDialog_GifAndWebpFilter" xml:space="preserve">
+    <value>GIF および WebP ファイル (*.gif;*.webp)|*.gif;*.webp</value>
+  </data>
   <data name="FileDialog_ImageAndGifFilter" xml:space="preserve">
     <value>画像およびGIFファイル (*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp;*.heic)|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp;*.heic</value>
   </data>
