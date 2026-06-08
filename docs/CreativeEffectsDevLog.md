@@ -104,3 +104,69 @@
 6. **在地化**：新字串要同時加到 `Properties/Resources.resx`、`Resources.zh-TW.resx`、`Resources.ja.resx`，並在 `Resources.Designer.cs` 補強型別屬性才能編譯。
 7. **建置 / 測試**：`dotnet build SteamGifCropper.sln`；測試用 `dotnet build` 後直接跑 `SteamGifCropper.Tests/bin/Debug/net10.0-windows/SteamGifCropper.Tests.exe`（`-class <Name>` 過濾）。`dotnet test` 在 .NET 10 SDK 不支援。
 8. **合併共通調色盤**：要把多個不同調色盤的 GIF 併到單一 256 色而不失真，**先把所有 frame 合成進一個 `MagickImageCollection`，再對整個 collection 跑一次 `Quantize(256, FloydSteinberg)`**（採樣所有 frame 的實際輸出像素 → 單一最佳共通調色盤）。這是 overlay 一直在用的做法。**別自己用單一 frame／單一裁切去建調色盤再 `Remap`**（舊 `BuildSharedPalette` bug，整張只剩約 20 色、嚴重退色）。串接是循序播放、每段保留各自調色盤即可，不需共通調色盤。
+
+---
+
+## 微/強風吹襲（Wind Sway，風吹麥田）— 已實作
+
+把圖片／GIF 加上「風吹過麥田」的起伏波狀效果：一道道沿風向掃過畫面的行進波 + 陣風的時間漲落。本質是**水波紋的方向版**——把 ripple 的「點源徑向波」換成「平面行進波」，其餘（逐像素 inverse-map + bilinear 重採樣 + `Parallel.For` + edge-clamp 的渲染管線、play-during/frozen 兩種播放模式、`GifEffectWindow` 時間窗、inline dialog + theme、純函式抽出做單測、三語 resx）全部沿用 ripple。**輸出單一 766px 全寬 GIF**（不分割、可串接；非 766/774 自動 `Resize(766,0)`；要切 5 份用主頁「切割 GIF」）。
+
+> 設計決策（與使用者確認）：① 每陣風有**獨立 duration 欄**（非僅 start+intensity）；② 核爆版用**同一 dialog 的模式切換**呈現（非獨立按鈕）。
+
+- **為何比水波紋便宜**：平面波每像素只算 1 個風向投影 + 1~3 陣風的 sin/exp，沒有 ripple 的 per-drop `sqrt` 距離迴圈。
+
+#### 數學模型（`WindField.cs`，純函式，link 進 test）
+- 8 方向 = 行進方向單位向量 `d=(cosθ,sinθ)`（座標 +x 右、+y 下）。UI 選「**風從哪邊來**」（規格用語），內部轉成 travel = 反向。8 個 from→travel：左→(1,0)、右→(−1,0)、上→(0,1)、下→(0,−1)、左上→(.707,.707)、右上→(−.707,.707)、左下→(.707,−.707)、右下→(−.707,−.707)。
+- 每像素 `p=(x,y)`、絕對時間 `t`，對每陣風 g 累加（`d_g` = forward 為 `d`、reverse 為 `−d`）：
+  - `s = p·d_g`（投影到風向＝相位座標）
+  - `τ = t − start_g`；`τ<0` 或 `τ>duration_g` → 不貢獻
+  - `env = intensity_g · GustEnvelope(τ, duration_g)`，Hann 窗 `sin²(π·τ/duration)`：漲→盛→衰、兩端為 0 → 陣風自然吹起又停（每陣風自帶 duration，故不需 ripple 那種共用 TimeDamping 壽命）
+  - `ripple = sin(k·s − ω·τ)`，`k=2π/wavelength`、`ω=waveSpeed·k`（行進的滾動波）
+  - `disp += env · ( BendRatio·d_g + ripple·d_g + FlutterRatio·rippleP·perp(d_g) )`
+    - 沿風向 steady bend（麥子被吹彎）+ 滾動 ripple（一波波掃過）+ 微量垂直 flutter（`perp(d)=(−d.y,d.x)`，可用稍高頻 `rippleP`）讓它不死板
+  - 最後整體 `× SwayStrength`（px 位移尺度）
+- 多陣風相加 → 重疊起伏／亂流自動浮現（同 ripple 的干涉）。
+- 純函式：`GustEnvelope(τ,duration)`、`TotalSeconds(gusts)`（= `max(start+duration)`）、`AnyGustActive(t,gusts)`（play-along 跳過無作用幀直接複製）、`Displacement(x,y,t,gusts,medium)`。
+
+#### 設定（`WindSettings.cs`）
+- **場景**：`Fps`、`DurationSeconds`（總時間，master）、`PlayGifDuringWind`（GIF 才有意義）、`EffectStartSeconds`（效果窗起點，僅 play-during；沿用 `GifEffectWindow.Clamp/ResolveFrames`，陣風 start 相對窗起點）。
+- **共用介質**：`Direction`（8 選 enum→單位向量）、`Wavelength`、`WaveSpeed`、`SwayStrength`、`BendRatio`、`FlutterRatio`。
+- **模式 `Mode`：Normal | Nuclear**（dialog 切換，隱藏/顯示對應面板）。
+  - Normal：`List<WindGust>`（最多 3），每陣 `{StartSeconds, DurationSeconds, Intensity, enabled}`，方向皆 forward（共用）。編欄位自動勾選（比照 ripple drop）。
+  - Nuclear（**只 1 波**）：`BlastStrength/BlastDuration`、`StillGap`、`ReverseStrength/ReverseDuration`。內部展開成 2 個 gust：A `{start 0, dur=Blast, int=BlastStrength, forward}`、B `{start Blast+Gap, dur=Reverse, int=ReverseStrength, reverse=true}`。**風向反轉是「方向共用」的唯一例外，只在核爆模式發生。**
+
+#### 播放 / mixing（重用 ripple 結構，語意同 `BuildRipplePlayAlong`/`BuildRippleFrozenThenPlay`）
+- `BuildWindPlayAlong`（GIF + 同步）：**輸出 = GIF 全長、原生 delay**；風效只混在 `[EffectStartSeconds, +Duration)` 窗內的 live 幀（窗內無作用幀用 `AnyGustActive` 跳過、直接複製原幀），窗外播原片。→ 影片 15s / 風 6s / start 0 = 前 6s mixing + 後 9s 原片，完全吻合需求。
+- `BuildWindFrozenThenPlay`（GIF + 定格 / 靜態圖）：定格 frame 0（或靜態圖）吹 `Duration` 秒 @ FPS，GIF 再播**完整**原片（原生時序，輸出 = Duration + GIF 長）；靜態圖只吹 `Duration`（輸出 = Duration）。
+
+#### 渲染（`WindRenderer.cs`）
+- 與 `RippleRenderer.RenderFrame` 幾乎一字不差（讀 RGBA byte buffer、`Parallel.For` 逐 row、`SampleBilinearRgba` edge-clamp、`PixelReadSettings`/`ReadPixels`/`ResetPage`），只把 `RippleField.Displacement` 換成 `WindField.Displacement`。**建議**：把 `SampleBilinearRgba` + 重採樣骨架抽成共用 helper（如 `DisplacementResampler`），ripple/wind 共用、只換位移來源 delegate。
+- 上風側取樣會落在畫面外 → edge-clamp 邊緣像素（同 ripple，可接受的 smear）。
+
+#### 檔案清單（實作時）
+- `src/Core/WindField.cs`（純函式）、`WindRenderer.cs`、`WindSettings.cs`（含 8-dir enum + `ToMedium()` + nuclear→gusts 展開）
+- `src/Dialogs/WindDialog.cs`（鏡射 `RippleDialog`：inline `InitializeComponent`、`namespace GifProcessorApp : Form`、`UpdateUIText()`/`ApplyTheme()`/dark-light helper、`BuildSettings(bool)`；8 方向下拉；GIF 才顯示播放模式 combo + EffectStart；模式切換顯示/隱藏 Normal vs Nuclear 面板。**不需** picker——風效是全畫面，無落點）
+- `src/Core/GifProcessor.Wind.cs`（`WindStaticImage()`/`WindGif()`/`RunWind()`/`BuildWindAnimation()` 分派 + `BuildWindPlayAlong()`/`BuildWindFrozenThenPlay()`）
+- `src/Forms/GTMainForm.cs` + `.Designer.cs`：`btnWindStatic`/`btnWindGif` 兩顆（第 11 列、下方元件 +31、表單加高），`UpdateUIText` 補字串，`ExecuteWithErrorHandling` 包裝（比照 `btnRippleStatic/Gif`）
+- 三語 resx（`Properties/Resources.resx`/`.zh-TW.resx`/`.ja.resx`）+ `Resources.Designer.cs`：Title、各欄 label（方向/波長/波速/強度/彎曲/抖動/陣風欄頭/核爆參數）、按鈕 `Button_WindStatic`/`Button_WindGif`、模式與方向選項、`Status_WindBuilding`
+- `SteamGifCropper.Tests/WindFieldTests.cs` + 在 `SteamGifCropper.Tests.csproj` 加 `<Compile Include="..\src\Core\WindField.cs">`（`GifEffectWindow.cs` 已 link）
+
+#### 預設值（起始猜測，待視覺調校）
+- Duration 6s、FPS 20、風從左來（向右吹）、Wavelength 120、WaveSpeed 300、SwayStrength 10、BendRatio 0.4、FlutterRatio 0.2
+- 3 陣風：① `{0, 2.5, 1.0, on}` ② `{1.5, 3.0, 0.8}` ③ `{3.5, 2.5, 1.0}`
+- 核爆：BlastStrength 1.2 / BlastDuration 0.4、StillGap 0.6、ReverseStrength 2.0 / ReverseDuration 4.0
+
+#### 踩雷提醒（同其他創意效果）
+- 純函式務必抽到 `WindField.cs` 並在 test csproj 加 `<Compile Include>`（測試用 stub，不編譯 `GifProcessor.cs`）。
+- 進度條用 `FlatProgressBar`/`SetProgressBar(...)`，別用原生 `ProgressBar`。
+- ImageMagick 安全政策不新增 coder（XC 純色畫布已允許）；風效不需 Png32 picker。
+- 新字串三個 resx 同步加、`Resources.Designer.cs` 補強型別屬性才能編譯。
+
+#### 實作結果與與設計的小偏離
+- **檔案**（皆已建立並建置通過）：`src/Core/WindField.cs`（純函式）、`WindRenderer.cs`（ripple 重採樣的獨立複本，**未共用**——依使用者決定「ripple/wind 先獨立，日後要調整才方便」）、`WindSettings.cs`（8-dir enum + `WindMode` + `ToMedium()` + `ResolveGusts()` nuclear 展開）、`src/Dialogs/WindDialog.cs`（模式切換顯示 `_normalControls`/`_nuclearControls` 兩組）、`src/Core/GifProcessor.Wind.cs`（`WindStaticImage/WindGif/RunWind/BuildWindAnimation/BuildWindPlayAlong/BuildWindFrozenThenPlay`）。
+- **主視窗**：`btnWindStatic`/`btnWindGif`（第 11 列 y=317、TabIndex 25/26），下方元件（語言鈕、資源標籤、framerate 列）+31px、`ClientSize` 587→**618**；click handler + UpdateUIText 已接。
+- **在地化**：新增 **34** 個 `Wind*` 鍵（三語 resx + `Resources.Designer.cs`）。
+- **時間包絡**：採 Hann 窗 `sin²(π·τ/duration)`（如設計）。**Nuclear 反向腳**透過 `WindGust.Reverse`（風向乘 −1）。
+- **測試**：`SteamGifCropper.Tests/WindFieldTests.cs`（**17** 例：方向向量、Hann 包絡、TotalSeconds、AnyGustActive、位移為零/沿風向/隨強度/疊加加倍/反向取負、`ResolveGusts` nuclear 展開、`ToMedium`），csproj link `WindField.cs` + `WindSettings.cs`。全 **192** 例綠燈。
+- **csproj NoWarn**：因把 `WindSettings.cs`（與 `RippleSettings.cs` 同樣未標註 nullable 的 string 屬性）link 進 Nullable-enabled 的測試專案，測試專案 `NoWarn` 加上 `CS8618`（生產組件 Nullable 關閉、無此警告）。
+- **未做 picker**：風是全畫面、無落點，故無 RippleDropPicker 等價物（如設計）。

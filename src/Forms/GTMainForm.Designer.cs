@@ -82,6 +82,8 @@
             btnQuicksandGif = new System.Windows.Forms.Button();
             btnRippleStatic = new System.Windows.Forms.Button();
             btnRippleGif = new System.Windows.Forms.Button();
+            btnWindStatic = new System.Windows.Forms.Button();
+            btnWindGif = new System.Windows.Forms.Button();
             chkAutoFitSplit = new System.Windows.Forms.CheckBox();
             numUpDownTargetKB = new System.Windows.Forms.NumericUpDown();
             lblAutoFitTries = new System.Windows.Forms.Label();
@@ -498,7 +500,7 @@
             // lblFramerate
             // 
             lblFramerate.AutoSize = true;
-            lblFramerate.Location = new System.Drawing.Point(11, 346);
+            lblFramerate.Location = new System.Drawing.Point(11, 377);
             lblFramerate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFramerate.Name = "lblFramerate";
             lblFramerate.Size = new System.Drawing.Size(0, 15);
@@ -507,7 +509,7 @@
             // lblFPS
             // 
             lblFPS.AutoSize = true;
-            lblFPS.Location = new System.Drawing.Point(310, 346);
+            lblFPS.Location = new System.Drawing.Point(310, 377);
             lblFPS.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFPS.Name = "lblFPS";
             lblFPS.Size = new System.Drawing.Size(0, 15);
@@ -535,7 +537,7 @@
             // 
             // btnLanguageChange
             // 
-            btnLanguageChange.Location = new System.Drawing.Point(548, 318);
+            btnLanguageChange.Location = new System.Drawing.Point(548, 349);
             btnLanguageChange.Name = "btnLanguageChange";
             btnLanguageChange.Size = new System.Drawing.Size(64, 26);
             btnLanguageChange.TabIndex = 16;
@@ -613,7 +615,7 @@
             // lblResourceLimitDesc
             // 
             lblResourceLimitDesc.AutoSize = true;
-            lblResourceLimitDesc.Location = new System.Drawing.Point(7, 320);
+            lblResourceLimitDesc.Location = new System.Drawing.Point(7, 351);
             lblResourceLimitDesc.Name = "lblResourceLimitDesc";
             lblResourceLimitDesc.Size = new System.Drawing.Size(234, 15);
             lblResourceLimitDesc.TabIndex = 15;
@@ -621,7 +623,7 @@
             // 
             // numUpDownFramerate
             // 
-            numUpDownFramerate.Location = new System.Drawing.Point(255, 344);
+            numUpDownFramerate.Location = new System.Drawing.Point(255, 375);
             numUpDownFramerate.Margin = new System.Windows.Forms.Padding(2);
             numUpDownFramerate.Maximum = new decimal(new int[] { 30, 0, 0, 0 });
             numUpDownFramerate.Minimum = new decimal(new int[] { 5, 0, 0, 0 });
@@ -710,12 +712,32 @@
             btnRippleGif.UseVisualStyleBackColor = true;
             btnRippleGif.Click += btnRippleGif_Click;
             //
+            // btnWindStatic
+            //
+            btnWindStatic.Location = new System.Drawing.Point(7, 317);
+            btnWindStatic.Name = "btnWindStatic";
+            btnWindStatic.Size = new System.Drawing.Size(300, 26);
+            btnWindStatic.TabIndex = 25;
+            btnWindStatic.Text = SteamGifCropper.Properties.Resources.Button_WindStatic;
+            btnWindStatic.UseVisualStyleBackColor = true;
+            btnWindStatic.Click += btnWindStatic_Click;
+            //
+            // btnWindGif
+            //
+            btnWindGif.Location = new System.Drawing.Point(313, 317);
+            btnWindGif.Name = "btnWindGif";
+            btnWindGif.Size = new System.Drawing.Size(300, 26);
+            btnWindGif.TabIndex = 26;
+            btnWindGif.Text = SteamGifCropper.Properties.Resources.Button_WindGif;
+            btnWindGif.UseVisualStyleBackColor = true;
+            btnWindGif.Click += btnWindGif_Click;
+            //
             // GifToolMainForm
             //
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            ClientSize = new System.Drawing.Size(619, 587);
+            ClientSize = new System.Drawing.Size(619, 618);
             Controls.Add(lblResourceLimitDesc);
             Controls.Add(btnResizeNfpsGIF);
             Controls.Add(btnOverlayGIF);
@@ -744,6 +766,8 @@
             Controls.Add(btnQuicksandGif);
             Controls.Add(btnRippleStatic);
             Controls.Add(btnRippleGif);
+            Controls.Add(btnWindStatic);
+            Controls.Add(btnWindGif);
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new System.Windows.Forms.Padding(2);
             Name = "GifToolMainForm";
@@ -822,6 +846,8 @@
         private System.Windows.Forms.Button btnQuicksandGif;
         private System.Windows.Forms.Button btnRippleStatic;
         private System.Windows.Forms.Button btnRippleGif;
+        private System.Windows.Forms.Button btnWindStatic;
+        private System.Windows.Forms.Button btnWindGif;
         public System.Windows.Forms.CheckBox chkAutoFitSplit;
         public System.Windows.Forms.NumericUpDown numUpDownTargetKB;
         private System.Windows.Forms.Label lblAutoFitTries;

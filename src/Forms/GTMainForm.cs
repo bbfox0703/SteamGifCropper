@@ -259,6 +259,16 @@ namespace GifProcessorApp
             await ExecuteWithErrorHandling(async () => await GifProcessor.RippleGif(this), "water ripple (GIF)");
         }
 
+        private async void btnWindStatic_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(async () => await GifProcessor.WindStaticImage(this), "wind sway (image)");
+        }
+
+        private async void btnWindGif_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(async () => await GifProcessor.WindGif(this), "wind sway (GIF)");
+        }
+
         private async void btnGifsicleSingle_Click(object sender, EventArgs e)
         {
             await ExecuteWithErrorHandling(async () => await GifProcessor.OptimizeSingleGif(this), "gifsicle optimization");
@@ -392,6 +402,8 @@ namespace GifProcessorApp
                 btnQuicksandGif.Text = SteamGifCropper.Properties.Resources.Button_QuicksandGif;
                 btnRippleStatic.Text = SteamGifCropper.Properties.Resources.Button_RippleStatic;
                 btnRippleGif.Text = SteamGifCropper.Properties.Resources.Button_RippleGif;
+                btnWindStatic.Text = SteamGifCropper.Properties.Resources.Button_WindStatic;
+                btnWindGif.Text = SteamGifCropper.Properties.Resources.Button_WindGif;
                 btnScrollAnimatedGif.Text = SteamGifCropper.Properties.Resources.Button_ScrollAnimatedGif;
                 label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
                 lblFramerate.Text = SteamGifCropper.Properties.Resources.Label_Framerate;

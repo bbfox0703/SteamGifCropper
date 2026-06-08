@@ -2207,6 +2207,210 @@ namespace SteamGifCropper.Properties {
             }
         }
 
+        internal static string Button_WindStatic {
+            get {
+                return ResourceManager.GetString("Button_WindStatic", resourceCulture);
+            }
+        }
+
+        internal static string Button_WindGif {
+            get {
+                return ResourceManager.GetString("Button_WindGif", resourceCulture);
+            }
+        }
+
+        internal static string Status_WindBuilding {
+            get {
+                return ResourceManager.GetString("Status_WindBuilding", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_Title {
+            get {
+                return ResourceManager.GetString("WindDialog_Title", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_Direction {
+            get {
+                return ResourceManager.GetString("WindDialog_Direction", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_Mode {
+            get {
+                return ResourceManager.GetString("WindDialog_Mode", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_ModeNormal {
+            get {
+                return ResourceManager.GetString("WindDialog_ModeNormal", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_ModeNuclear {
+            get {
+                return ResourceManager.GetString("WindDialog_ModeNuclear", resourceCulture);
+            }
+        }
+
+        internal static string WindDir_FromLeft {
+            get {
+                return ResourceManager.GetString("WindDir_FromLeft", resourceCulture);
+            }
+        }
+
+        internal static string WindDir_FromRight {
+            get {
+                return ResourceManager.GetString("WindDir_FromRight", resourceCulture);
+            }
+        }
+
+        internal static string WindDir_FromTop {
+            get {
+                return ResourceManager.GetString("WindDir_FromTop", resourceCulture);
+            }
+        }
+
+        internal static string WindDir_FromBottom {
+            get {
+                return ResourceManager.GetString("WindDir_FromBottom", resourceCulture);
+            }
+        }
+
+        internal static string WindDir_FromTopLeft {
+            get {
+                return ResourceManager.GetString("WindDir_FromTopLeft", resourceCulture);
+            }
+        }
+
+        internal static string WindDir_FromTopRight {
+            get {
+                return ResourceManager.GetString("WindDir_FromTopRight", resourceCulture);
+            }
+        }
+
+        internal static string WindDir_FromBottomLeft {
+            get {
+                return ResourceManager.GetString("WindDir_FromBottomLeft", resourceCulture);
+            }
+        }
+
+        internal static string WindDir_FromBottomRight {
+            get {
+                return ResourceManager.GetString("WindDir_FromBottomRight", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_Wavelength {
+            get {
+                return ResourceManager.GetString("WindDialog_Wavelength", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_WaveSpeed {
+            get {
+                return ResourceManager.GetString("WindDialog_WaveSpeed", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_Strength {
+            get {
+                return ResourceManager.GetString("WindDialog_Strength", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_BendRatio {
+            get {
+                return ResourceManager.GetString("WindDialog_BendRatio", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_FlutterRatio {
+            get {
+                return ResourceManager.GetString("WindDialog_FlutterRatio", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_GustsTitle {
+            get {
+                return ResourceManager.GetString("WindDialog_GustsTitle", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_GustN {
+            get {
+                return ResourceManager.GetString("WindDialog_GustN", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_ColStart {
+            get {
+                return ResourceManager.GetString("WindDialog_ColStart", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_ColDuration {
+            get {
+                return ResourceManager.GetString("WindDialog_ColDuration", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_ColPower {
+            get {
+                return ResourceManager.GetString("WindDialog_ColPower", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_NukeTitle {
+            get {
+                return ResourceManager.GetString("WindDialog_NukeTitle", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_NukeBlastStrength {
+            get {
+                return ResourceManager.GetString("WindDialog_NukeBlastStrength", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_NukeBlastDuration {
+            get {
+                return ResourceManager.GetString("WindDialog_NukeBlastDuration", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_NukeGap {
+            get {
+                return ResourceManager.GetString("WindDialog_NukeGap", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_NukeReverseStrength {
+            get {
+                return ResourceManager.GetString("WindDialog_NukeReverseStrength", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_NukeReverseDuration {
+            get {
+                return ResourceManager.GetString("WindDialog_NukeReverseDuration", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_GifPlayDuring {
+            get {
+                return ResourceManager.GetString("WindDialog_GifPlayDuring", resourceCulture);
+            }
+        }
+
+        internal static string WindDialog_GifFreeze {
+            get {
+                return ResourceManager.GetString("WindDialog_GifFreeze", resourceCulture);
+            }
+        }
+
         internal static string Status_RippleBuilding {
             get {
                 return ResourceManager.GetString("Status_RippleBuilding", resourceCulture);
