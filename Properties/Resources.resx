@@ -162,9 +162,6 @@
   <data name="Status_Saving" xml:space="preserve">
     <value>Saving...</value>
   </data>
-  <data name="Status_ReducingPalette" xml:space="preserve">
-    <value>Reducing palette...</value>
-  </data>
   <data name="Status_CoalescingFrames" xml:space="preserve">
     <value>Coalescing frames...</value>
   </data>
@@ -174,26 +171,11 @@
   <data name="Status_Loading" xml:space="preserve">
     <value>Loading...</value>
   </data>
-  <data name="Status_Overlaying" xml:space="preserve">
-    <value>Overlaying...</value>
-  </data>
-  <data name="Status_ResizingFrames" xml:space="preserve">
-    <value>Resizing frames...</value>
-  </data>
   <data name="Status_Optimizing" xml:space="preserve">
     <value>Optimizing...</value>
   </data>
   <data name="Status_RestoringTailBytes" xml:space="preserve">
     <value>Restoring tail bytes...</value>
-  </data>
-  <data name="Status_ProcessingPart" xml:space="preserve">
-    <value>Processing part {0}, frame {1}...</value>
-  </data>
-  <data name="Status_ProcessingCount" xml:space="preserve">
-    <value>Processing... {0}/{1}</value>
-  </data>
-  <data name="Status_ProcessingFrame" xml:space="preserve">
-    <value>Processing frame {0}/{1}</value>
   </data>
   <data name="Status_ResizingGif" xml:space="preserve">
     <value>Resizing GIF #{0} to {1}px width...</value>
@@ -207,9 +189,6 @@
   <data name="Status_MappingSharedPalette" xml:space="preserve">
     <value>Mapping to shared palette...</value>
   </data>
-  <data name="Status_MergingFrame" xml:space="preserve">
-    <value>Merging frame {0}/{1}...</value>
-  </data>
   <data name="Title_Error" xml:space="preserve">
     <value>Error</value>
   </data>
@@ -218,9 +197,6 @@
   </data>
   <data name="Title_Warning" xml:space="preserve">
     <value>Warning</value>
-  </data>
-  <data name="Title_Information" xml:space="preserve">
-    <value>Information</value>
   </data>
   <data name="Title_StartupError" xml:space="preserve">
     <value>Startup Error</value>
@@ -234,9 +210,6 @@
   <data name="Title_Mp4ToGifError" xml:space="preserve">
     <value>MP4 to GIF Conversion Error</value>
   </data>
-  <data name="Title_MergeGifs" xml:space="preserve">
-    <value>Merge GIF Files</value>
-  </data>
   <data name="Title_MergeGifError" xml:space="preserve">
     <value>GIF Merge Error</value>
   </data>
@@ -248,9 +221,6 @@
   </data>
   <data name="Title_InvalidColorType" xml:space="preserve">
     <value>Invalid Color Type</value>
-  </data>
-  <data name="Title_SelectionOrder" xml:space="preserve">
-    <value>Selection Order Information</value>
   </data>
   <data name="Message_ProcessingComplete" xml:space="preserve">
     <value>GIF processing and splitting completed successfully!</value>
@@ -264,9 +234,6 @@
   <data name="Message_GifMergeComplete" xml:space="preserve">
     <value>GIF files merged successfully!\nSaved as: {0}</value>
   </data>
-  <data name="Message_SelectGifFiles" xml:space="preserve">
-    <value>Please select 2-5 GIF files to merge (in order from left to right):</value>
-  </data>
   <data name="Message_GifFileCount" xml:space="preserve">
     <value>Please select between 2 and 5 GIF files.</value>
   </data>
@@ -278,9 +245,6 @@
   </data>
   <data name="Message_ResizeComplete" xml:space="preserve">
     <value>GIF resizing completed successfully!\nSaved as: {0}</value>
-  </data>
-  <data name="Message_Mp4ConversionComplete" xml:space="preserve">
-    <value>MP4 to GIF conversion completed successfully!\nSaved as: {0}</value>
   </data>
   <data name="Message_OverlayComplete" xml:space="preserve">
     <value>Overlay complete.</value>
@@ -344,47 +308,11 @@ Files skipped (not 0x21): {1}</value>
   <data name="FileDialog_GifFilter" xml:space="preserve">
     <value>GIF Files (*.gif)|*.gif</value>
   </data>
-  <data name="FileDialog_ImageFilter" xml:space="preserve">
-    <value>Image Files (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp</value>
-  </data>
   <data name="FileDialog_ImageAndGifFilter" xml:space="preserve">
     <value>Image and GIF Files (*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.png;*.jpg;*.jpeg;*.bmp;*.gif</value>
   </data>
-  <data name="FileDialog_SelectGifOrder" xml:space="preserve">
-    <value>Select GIF file #{0} (position {1} from left to right)</value>
-  </data>
-  <data name="Instruction_SelectFiveGifs" xml:space="preserve">
-    <value>You will need to select 5 GIF files one by one in the desired order.\n\nFile 1: First position (leftmost)\nFile 2: Second position\nFile 3: Third position (center)\nFile 4: Fourth position\nFile 5: Fifth position (rightmost)</value>
-  </data>
-  <data name="Mp4Dialog_InputFile" xml:space="preserve">
-    <value>Input MP4 file:</value>
-  </data>
-  <data name="Mp4Dialog_OutputFile" xml:space="preserve">
-    <value>Output GIF file:</value>
-  </data>
-  <data name="Mp4Dialog_StartTime" xml:space="preserve">
-    <value>Start time:</value>
-  </data>
-  <data name="Mp4Dialog_Minutes" xml:space="preserve">
-    <value>min:</value>
-  </data>
   <data name="Mp4Dialog_Seconds" xml:space="preserve">
     <value>seconds</value>
-  </data>
-  <data name="Mp4Dialog_Duration" xml:space="preserve">
-    <value>Duration:</value>
-  </data>
-  <data name="Group_Dither" xml:space="preserve">
-    <value>Dither</value>
-  </data>
-  <data name="Label_Optimize" xml:space="preserve">
-    <value>Optimize:</value>
-  </data>
-  <data name="Label_Palette" xml:space="preserve">
-    <value>Palette:</value>
-  </data>
-  <data name="Label_Lossy" xml:space="preserve">
-    <value>Lossy:</value>
   </data>
   <data name="Radio_Default" xml:space="preserve">
     <value>Default</value>
@@ -403,9 +331,6 @@ Files skipped (not 0x21): {1}</value>
   </data>
   <data name="Label_FPS" xml:space="preserve">
     <value>frames per second</value>
-  </data>
-  <data name="Tooltip_Framerate" xml:space="preserve">
-    <value>Framerate setting only applies to: MP4 to GIF conversion, scroll animations, and resize/FPS tool. Split GIF and merge operations preserve original timing.</value>
   </data>
   <data name="Button_ReverseGif" xml:space="preserve">
     <value>FFMPEG: Reverse animated GIF</value>
@@ -656,30 +581,6 @@ Files skipped (not 0x21): {1}</value>
   <data name="ScrollDialog_AutoDuration" xml:space="preserve">
     <value>Auto-calculate GIF cycle duration</value>
   </data>
-  <data name="Status_AutoCalculatedDuration" xml:space="preserve">
-    <value>Auto-calculated GIF cycle duration: {0:F2}s → {1}s</value>
-  </data>
-  <data name="Status_AutoDurationMode" xml:space="preserve">
-    <value>Auto-duration mode</value>
-  </data>
-  <data name="Status_ManualDurationMode" xml:space="preserve">
-    <value>Manual {0}s</value>
-  </data>
-  <data name="Status_ScrollParameters" xml:space="preserve">
-    <value>{0}: {1} frames, X:{2:F2}px/frame, Y:{3:F2}px/frame</value>
-  </data>
-  <data name="Status_FullCycleFinalPosition" xml:space="preserve">
-    <value>Full cycle final position: X={0}, Y={1} (not reset to 0)</value>
-  </data>
-  <data name="Status_AutoDurationComplete" xml:space="preserve">
-    <value>Auto-duration complete: {0} frames (same as source)</value>
-  </data>
-  <data name="Status_TimelineContinuity" xml:space="preserve">
-    <value>Timeline continuity: Last used frame {0}, continuing from frame {1}</value>
-  </data>
-  <data name="Status_StepBasedContinuity" xml:space="preserve">
-    <value>Step-based continuity: Used {0} scroll frames, last frame {1}, continuing from frame {2}</value>
-  </data>
   <data name="Button_OverlayGif" xml:space="preserve">
     <value>Overlay GIF over GIF</value>
   </data>
@@ -698,12 +599,6 @@ Files skipped (not 0x21): {1}</value>
   <data name="Status_MergingHorizontally" xml:space="preserve">
     <value>Merging GIFs horizontally to 766px width...</value>
   </data>
-  <data name="Status_FiveGifComplete" xml:space="preserve">
-    <value>Five GIF merge and split completed successfully!</value>
-  </data>
-  <data name="Status_ErrorOccurred" xml:space="preserve">
-    <value>Error occurred during processing.</value>
-  </data>
   <data name="MergeFiveGif_Success" xml:space="preserve">
     <value>Five GIF merge and split completed successfully!</value>
   </data>
@@ -715,15 +610,6 @@ Files skipped (not 0x21): {1}</value>
   </data>
   <data name="Status_ProcessingPartPalette" xml:space="preserve">
     <value>Processing part {0} with palette reduction, frame {1}...</value>
-  </data>
-  <data name="Status_Mp4ShortClip" xml:space="preserve">
-    <value>Short clip - CPU more efficient...</value>
-  </data>
-  <data name="Status_Mp4CPU" xml:space="preserve">
-    <value>Converting MP4 to GIF with optimized CPU...</value>
-  </data>
-  <data name="Status_Mp4Complete" xml:space="preserve">
-    <value>MP4 to GIF conversion completed successfully!</value>
   </data>
   <data name="FileDialog_SelectGifToReverse" xml:space="preserve">
     <value>Select a GIF file to reverse</value>
@@ -746,12 +632,6 @@ Files skipped (not 0x21): {1}</value>
   <data name="Error_GifReverseFailed" xml:space="preserve">
     <value>Failed to reverse GIF: {0}</value>
   </data>
-  <data name="Error_FileValidationFailed" xml:space="preserve">
-    <value>File validation failed: {0}</value>
-  </data>
-  <data name="Error_GifMergeFailed" xml:space="preserve">
-    <value>GIF merge failed: {0}</value>
-  </data>
   <data name="FileDialog_Mp4Filter" xml:space="preserve">
     <value>MP4 file (*.mp4)|*.mp4</value>
   </data>
@@ -760,12 +640,6 @@ Files skipped (not 0x21): {1}</value>
   </data>
   <data name="FileDialog_SaveGif" xml:space="preserve">
     <value>Save GIF file as...</value>
-  </data>
-  <data name="Status_ConvertingMp4" xml:space="preserve">
-    <value>Converting to GIF...</value>
-  </data>
-  <data name="Title_Mp4ConversionError" xml:space="preserve">
-    <value>Conversion error</value>
   </data>
   <data name="CheckBox_GifsicleOptimization" xml:space="preserve">
     <value>Enable gifsicle optimization</value>
@@ -811,9 +685,6 @@ Files skipped (not 0x21): {1}</value>
   </data>
   <data name="MergeDialog_Instructions" xml:space="preserve">
     <value>Please select 2-5 GIF files to merge (in order from left to right):</value>
-  </data>
-  <data name="MergeDialog_GifFiles" xml:space="preserve">
-    <value>GIF Files (2-5):</value>
   </data>
   <data name="MergeDialog_AddFiles" xml:space="preserve">
     <value>Add Files...</value>
@@ -920,12 +791,6 @@ Details: {0}</value>
   <data name="Mp4Dialog_FFmpegHelp" xml:space="preserve">
     <value>How to install FFmpeg? (Required for MP4 conversion)</value>
   </data>
-  <data name="Mp4Dialog_GPUDecode" xml:space="preserve">
-    <value>GPU decode (decode only, GIF encode uses CPU)</value>
-  </data>
-  <data name="Mp4Dialog_CheckingGPU" xml:space="preserve">
-    <value>Checking GPU...</value>
-  </data>
   <data name="Mp4Dialog_Title" xml:space="preserve">
     <value>MP4 to GIF Converter</value>
   </data>
@@ -984,15 +849,6 @@ To install FFmpeg:
 
 For more help, click the link in the MP4 to GIF dialog.</value>
   </data>
-  <data name="Mp4ToGif_FFmpegLog" xml:space="preserve">
-    <value> (FFmpeg log: {0})</value>
-  </data>
-  <data name="Mp4ToGif_FFmpegOutput" xml:space="preserve">
-    <value> FFmpeg output: {0}</value>
-  </data>
-  <data name="Mp4ToGif_Converting" xml:space="preserve">
-    <value>Converting MP4 to GIF with optimized CPU...</value>
-  </data>
   <data name="Mp4ToGif_Success" xml:space="preserve">
     <value>MP4 to GIF conversion completed successfully!</value>
   </data>
@@ -1043,13 +899,7 @@ Technical details: {5}</value>
   <data name="ScrollDialog_Title" xml:space="preserve">
     <value>Scroll Image/GIF</value>
   </data>
-  <data name="ScrollDialog_TitleImageAndGif" xml:space="preserve">
-    <value>Scroll Image/GIF</value>
-  </data>
   <data name="ScrollDialog_InputLabel" xml:space="preserve">
-    <value>Input image or GIF</value>
-  </data>
-  <data name="ScrollDialog_InputImageOrGif" xml:space="preserve">
     <value>Input image or GIF</value>
   </data>
   <data name="ScrollDialog_OutputLabel" xml:space="preserve">
@@ -1080,9 +930,6 @@ Technical details: {5}</value>
     <value>Cancel</value>
   </data>
   <data name="ScrollDialog_SelectInput" xml:space="preserve">
-    <value>Select an image or GIF file</value>
-  </data>
-  <data name="ScrollDialog_SelectImageOrGif" xml:space="preserve">
     <value>Select an image or GIF file</value>
   </data>
   <data name="ScrollDialog_SelectOutput" xml:space="preserve">
@@ -1118,9 +965,6 @@ Technical details: {5}</value>
   <data name="ScrollDialog_DirRightDown" xml:space="preserve">
     <value>Right-Down</value>
   </data>
-  <data name="Button_ConcatenateGifs" xml:space="preserve">
-    <value>Concatenate GIF files (with FPS/Palette control)</value>
-  </data>
   <data name="ConcatenateDialog_Title" xml:space="preserve">
     <value>Concatenate GIF Files</value>
   </data>
@@ -1151,9 +995,6 @@ Technical details: {5}</value>
   <data name="ConcatenateDialog_PaletteUseReference" xml:space="preserve">
     <value>Use Reference GIF:</value>
   </data>
-  <data name="ConcatenateDialog_StrongPaletteWeighting" xml:space="preserve">
-    <value>8x weight for reference palette</value>
-  </data>
   <data name="ConcatenateDialog_UnifyDimensions" xml:space="preserve">
     <value>Unify dimensions (resize to largest)</value>
   </data>
@@ -1169,82 +1010,12 @@ Technical details: {5}</value>
   <data name="ConcatenateDialog_RequireOutput" xml:space="preserve">
     <value>Please specify an output file.</value>
   </data>
-  <data name="ConcatenateDialog_SelectGifFiles" xml:space="preserve">
-    <value>Select GIF files to concatenate</value>
-  </data>
-  <data name="ConcatenateDialog_SaveGif" xml:space="preserve">
-    <value>Save concatenated GIF as...</value>
-  </data>
-  <data name="Status_AnalyzingGifs" xml:space="preserve">
-    <value>Analyzing GIF properties...</value>
-  </data>
-  <data name="Status_UnifyingFrameRates" xml:space="preserve">
-    <value>Unifying frame rates...</value>
-  </data>
-  <data name="Status_UnifyingDimensions" xml:space="preserve">
-    <value>Unifying dimensions...</value>
-  </data>
-  <data name="Status_BuildingUnifiedPalette" xml:space="preserve">
-    <value>Building unified palette...</value>
-  </data>
-  <data name="Status_ApplyingUnifiedPalette" xml:space="preserve">
-    <value>Applying unified palette...</value>
-  </data>
-  <data name="Status_ConcatenatingGifs" xml:space="preserve">
-    <value>Concatenating GIF files...</value>
-  </data>
-  <data name="Message_ConcatenationComplete" xml:space="preserve">
-    <value>GIF concatenation completed successfully!
-Saved as: {0}</value>
-  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\lang_switch.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="TransitionDialog_TransitionSettings" xml:space="preserve">
-    <value>Transition Settings</value>
-  </data>
   <data name="TransitionDialog_NoTransition" xml:space="preserve">
     <value>No Transition</value>
   </data>
   <data name="TransitionDialog_Fade" xml:space="preserve">
     <value>Fade</value>
-  </data>
-  <data name="TransitionDialog_Slide" xml:space="preserve">
-    <value>Slide</value>
-  </data>
-  <data name="TransitionDialog_Zoom" xml:space="preserve">
-    <value>Zoom</value>
-  </data>
-  <data name="TransitionDialog_Dissolve" xml:space="preserve">
-    <value>Dissolve</value>
-  </data>
-  <data name="TransitionDialog_Left" xml:space="preserve">
-    <value>Left</value>
-  </data>
-  <data name="TransitionDialog_Right" xml:space="preserve">
-    <value>Right</value>
-  </data>
-  <data name="TransitionDialog_Up" xml:space="preserve">
-    <value>Up</value>
-  </data>
-  <data name="TransitionDialog_Down" xml:space="preserve">
-    <value>Down</value>
-  </data>
-  <data name="TransitionDialog_ZoomIn" xml:space="preserve">
-    <value>Zoom In</value>
-  </data>
-  <data name="TransitionDialog_ZoomOut" xml:space="preserve">
-    <value>Zoom Out</value>
-  </data>
-  <data name="TransitionDialog_TransitionDuration" xml:space="preserve">
-    <value>Transition Duration:</value>
-  </data>
-  <data name="TransitionDialog_Seconds" xml:space="preserve">
-    <value>seconds</value>
-  </data>
-  <data name="TransitionDialog_Cancel" xml:space="preserve">
-    <value>Cancel</value>
   </data>
   <data name="ConcatenateDialog_OutputFile" xml:space="preserve">
     <value>Output GIF file:</value>
@@ -1288,14 +1059,8 @@ Saved as: {0}</value>
   <data name="GTMainForm_ConcatenateGifs" xml:space="preserve">
     <value>Concatenate GIFs</value>
   </data>
-  <data name="ConcatenateDialog_WindowTitle" xml:space="preserve">
-    <value>Concatenate GIF Files</value>
-  </data>
   <data name="ConcatenateDialog_TransitionSettings" xml:space="preserve">
     <value>Transition Settings</value>
-  </data>
-  <data name="ConcatenateDialog_OutputFileLabel" xml:space="preserve">
-    <value>Output GIF file:</value>
   </data>
   <data name="OverlayDialog_SelectBaseGif" xml:space="preserve">
     <value>Please select a base GIF file.</value>
@@ -1392,33 +1157,6 @@ Saved as: {0}</value>
   </data>
   <data name="Direction_RightDown" xml:space="preserve">
     <value>Right Down</value>
-  </data>
-  <data name="TransitionDialog_Cancelling" xml:space="preserve">
-    <value>Cancel...</value>
-  </data>
-  <data name="TransitionDialog_SelectTransitionType" xml:space="preserve">
-    <value>Select transition type</value>
-  </data>
-  <data name="ConcatenateDialog_Preview" xml:space="preserve">
-    <value>Preview</value>
-  </data>
-  <data name="ConcatenateDialog_AutoUpdatePreview" xml:space="preserve">
-    <value>Auto update preview</value>
-  </data>
-  <data name="ConcatenateDialog_NoPreviewAvailable" xml:space="preserve">
-    <value>No preview available</value>
-  </data>
-  <data name="ConcatenateDialog_GeneratingPreview" xml:space="preserve">
-    <value>Generating preview...</value>
-  </data>
-  <data name="ConcatenateDialog_FrameInfo" xml:space="preserve">
-    <value>Frame  info: {0}, total {1}</value>
-  </data>
-  <data name="ConcatenateDialog_PreviewError" xml:space="preserve">
-    <value>Preview error: {0}</value>
-  </data>
-  <data name="ConcatenateDialog_FailedToGeneratePreview" xml:space="preserve">
-    <value>Preview update failed</value>
   </data>
   <data name="Error_InvalidFileFormat" xml:space="preserve">
     <value>The file "{0}" is not a valid image file. Expected format: {1}</value>

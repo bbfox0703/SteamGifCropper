@@ -268,15 +268,6 @@ namespace SteamGifCropper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select GIF file #{0} (position {1} from left to right).
-        /// </summary>
-        internal static string FileDialog_SelectGifOrder {
-            get {
-                return ResourceManager.GetString("FileDialog_SelectGifOrder", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Select GIF files to restore tail bytes from 0x21 to 0x3B.
         /// </summary>
         internal static string FileDialog_SelectGifRestore {
@@ -295,51 +286,6 @@ namespace SteamGifCropper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Dither.
-        /// </summary>
-        internal static string Group_Dither {
-            get {
-                return ResourceManager.GetString("Group_Dither", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You will need to select 5 GIF files one by one in the desired order.\n\nFile 1: First position (leftmost)\nFile 2: Second position\nFile 3: Third position (center)\nFile 4: Fourth position\nFile 5: Fifth position (rightmost).
-        /// </summary>
-        internal static string Instruction_SelectFiveGifs {
-            get {
-                return ResourceManager.GetString("Instruction_SelectFiveGifs", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Lossy:.
-        /// </summary>
-        internal static string Label_Lossy {
-            get {
-                return ResourceManager.GetString("Label_Lossy", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Optimize:.
-        /// </summary>
-        internal static string Label_Optimize {
-            get {
-                return ResourceManager.GetString("Label_Optimize", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Palette:.
-        /// </summary>
-        internal static string Label_Palette {
-            get {
-                return ResourceManager.GetString("Label_Palette", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Framerate:.
         /// </summary>
         internal static string Label_Framerate {
@@ -354,15 +300,6 @@ namespace SteamGifCropper.Properties {
         internal static string Label_FPS {
             get {
                 return ResourceManager.GetString("Label_FPS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Target framerate for all GIF outputs (frames per second).
-        /// </summary>
-        internal static string Tooltip_Framerate {
-            get {
-                return ResourceManager.GetString("Tooltip_Framerate", resourceCulture);
             }
         }
         
@@ -412,15 +349,6 @@ namespace SteamGifCropper.Properties {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to Please select 2-5 GIF files to merge (in order from left to right):.
-        /// </summary>
-        internal static string Message_SelectGifFiles {
-            get {
-                return ResourceManager.GetString("Message_SelectGifFiles", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Please select between 2 and 5 GIF files..
         /// </summary>
         internal static string Message_GifFileCount {
@@ -447,15 +375,6 @@ namespace SteamGifCropper.Properties {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to MP4 to GIF conversion completed successfully!\nSaved as: {0}.
-        /// </summary>
-        internal static string Message_Mp4ConversionComplete {
-            get {
-                return ResourceManager.GetString("Message_Mp4ConversionComplete", resourceCulture);
-            }
-        }
-
         /// <summary>
         ///   Looks up a localized string similar to Overlay complete..
         /// </summary>
@@ -511,56 +430,11 @@ namespace SteamGifCropper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Duration:.
-        /// </summary>
-        internal static string Mp4Dialog_Duration {
-            get {
-                return ResourceManager.GetString("Mp4Dialog_Duration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Input MP4 file:.
-        /// </summary>
-        internal static string Mp4Dialog_InputFile {
-            get {
-                return ResourceManager.GetString("Mp4Dialog_InputFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to min:.
-        /// </summary>
-        internal static string Mp4Dialog_Minutes {
-            get {
-                return ResourceManager.GetString("Mp4Dialog_Minutes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Output GIF file:.
-        /// </summary>
-        internal static string Mp4Dialog_OutputFile {
-            get {
-                return ResourceManager.GetString("Mp4Dialog_OutputFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to sec:.
         /// </summary>
         internal static string Mp4Dialog_Seconds {
             get {
                 return ResourceManager.GetString("Mp4Dialog_Seconds", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Start time:.
-        /// </summary>
-        internal static string Mp4Dialog_StartTime {
-            get {
-                return ResourceManager.GetString("Mp4Dialog_StartTime", resourceCulture);
             }
         }
         
@@ -642,24 +516,6 @@ namespace SteamGifCropper.Properties {
         internal static string Status_Error {
             get {
                 return ResourceManager.GetString("Status_Error", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error occurred during processing..
-        /// </summary>
-        internal static string Status_ErrorOccurred {
-            get {
-                return ResourceManager.GetString("Status_ErrorOccurred", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Five GIF merge and split completed successfully!.
-        /// </summary>
-        internal static string Status_FiveGifComplete {
-            get {
-                return ResourceManager.GetString("Status_FiveGifComplete", resourceCulture);
             }
         }
         
@@ -763,15 +619,6 @@ namespace SteamGifCropper.Properties {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to Overlaying....
-        /// </summary>
-        internal static string Status_Overlaying {
-            get {
-                return ResourceManager.GetString("Status_Overlaying", resourceCulture);
-            }
-        }
-
-        /// <summary>
         ///   Looks up a localized string similar to Mapping to shared palette....
         /// </summary>
         internal static string Status_MappingSharedPalette {
@@ -781,38 +628,11 @@ namespace SteamGifCropper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Merging frame {0}/{1}....
-        /// </summary>
-        internal static string Status_MergingFrame {
-            get {
-                return ResourceManager.GetString("Status_MergingFrame", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Merging GIFs horizontally to 766px width....
         /// </summary>
         internal static string Status_MergingHorizontally {
             get {
                 return ResourceManager.GetString("Status_MergingHorizontally", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Converting MP4 to GIF with optimized CPU....
-        /// </summary>
-        internal static string Status_Mp4CPU {
-            get {
-                return ResourceManager.GetString("Status_Mp4CPU", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to MP4 to GIF conversion completed successfully!.
-        /// </summary>
-        internal static string Status_Mp4Complete {
-            get {
-                return ResourceManager.GetString("Status_Mp4Complete", resourceCulture);
             }
         }
         
@@ -835,15 +655,6 @@ namespace SteamGifCropper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Short clip - CPU more efficient....
-        /// </summary>
-        internal static string Status_Mp4ShortClip {
-            get {
-                return ResourceManager.GetString("Status_Mp4ShortClip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Optimizing....
         /// </summary>
         internal static string Status_Optimizing {
@@ -862,38 +673,11 @@ namespace SteamGifCropper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Processing... {0}/{1}.
-        /// </summary>
-        internal static string Status_ProcessingCount {
-            get {
-                return ResourceManager.GetString("Status_ProcessingCount", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Processing frame {0}/{1}.
-        /// </summary>
-        internal static string Status_ProcessingFrame {
-            get {
-                return ResourceManager.GetString("Status_ProcessingFrame", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Processing with reduced palette....
         /// </summary>
         internal static string Status_ProcessingPalette {
             get {
                 return ResourceManager.GetString("Status_ProcessingPalette", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Processing part {0}, frame {1}....
-        /// </summary>
-        internal static string Status_ProcessingPart {
-            get {
-                return ResourceManager.GetString("Status_ProcessingPart", resourceCulture);
             }
         }
         
@@ -912,15 +696,6 @@ namespace SteamGifCropper.Properties {
         internal static string Status_Ready {
             get {
                 return ResourceManager.GetString("Status_Ready", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Resizing frames....
-        /// </summary>
-        internal static string Status_ResizingFrames {
-            get {
-                return ResourceManager.GetString("Status_ResizingFrames", resourceCulture);
             }
         }
         
@@ -957,15 +732,6 @@ namespace SteamGifCropper.Properties {
         internal static string Status_Saving {
             get {
                 return ResourceManager.GetString("Status_Saving", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reducing palette....
-        /// </summary>
-        internal static string Status_ReducingPalette {
-            get {
-                return ResourceManager.GetString("Status_ReducingPalette", resourceCulture);
             }
         }
         
@@ -1033,15 +799,6 @@ namespace SteamGifCropper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Information.
-        /// </summary>
-        internal static string Title_Information {
-            get {
-                return ResourceManager.GetString("Title_Information", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Initialization Error.
         /// </summary>
         internal static string Title_InitializationError {
@@ -1069,29 +826,11 @@ namespace SteamGifCropper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Merge GIF Files.
-        /// </summary>
-        internal static string Title_MergeGifs {
-            get {
-                return ResourceManager.GetString("Title_MergeGifs", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to GIF Merge Error.
         /// </summary>
         internal static string Title_MergeGifError {
             get {
                 return ResourceManager.GetString("Title_MergeGifError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Selection Order Information.
-        /// </summary>
-        internal static string Title_SelectionOrder {
-            get {
-                return ResourceManager.GetString("Title_SelectionOrder", resourceCulture);
             }
         }
         
@@ -1227,15 +966,6 @@ namespace SteamGifCropper.Properties {
         internal static string MergeDialog_Instructions {
             get {
                 return ResourceManager.GetString("MergeDialog_Instructions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to GIF Files (2-5):.
-        /// </summary>
-        internal static string MergeDialog_GifFiles {
-            get {
-                return ResourceManager.GetString("MergeDialog_GifFiles", resourceCulture);
             }
         }
         
@@ -1537,24 +1267,6 @@ namespace SteamGifCropper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to GPU decode (decode only, GIF encode uses CPU).
-        /// </summary>
-        internal static string Mp4Dialog_GPUDecode {
-            get {
-                return ResourceManager.GetString("Mp4Dialog_GPUDecode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Checking GPU....
-        /// </summary>
-        internal static string Mp4Dialog_CheckingGPU {
-            get {
-                return ResourceManager.GetString("Mp4Dialog_CheckingGPU", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to MP4 to GIF Converter.
         /// </summary>
         internal static string Mp4Dialog_Title {
@@ -1735,33 +1447,6 @@ namespace SteamGifCropper.Properties {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to  (FFmpeg log: {0}).
-        /// </summary>
-        internal static string Mp4ToGif_FFmpegLog {
-            get {
-                return ResourceManager.GetString("Mp4ToGif_FFmpegLog", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to  FFmpeg output: {0}.
-        /// </summary>
-        internal static string Mp4ToGif_FFmpegOutput {
-            get {
-                return ResourceManager.GetString("Mp4ToGif_FFmpegOutput", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Converting MP4 to GIF with optimized CPU....
-        /// </summary>
-        internal static string Mp4ToGif_Converting {
-            get {
-                return ResourceManager.GetString("Mp4ToGif_Converting", resourceCulture);
-            }
-        }
-
-        /// <summary>
         ///   Looks up a localized string similar to MP4 to GIF conversion completed successfully!.
         /// </summary>
         internal static string Mp4ToGif_Success {
@@ -1896,15 +1581,6 @@ namespace SteamGifCropper.Properties {
         internal static string Button_ResizeNfpsGif {
             get {
                 return ResourceManager.GetString("Button_ResizeNfpsGif", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Image Files (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp.
-        /// </summary>
-        internal static string FileDialog_ImageFilter {
-            get {
-                return ResourceManager.GetString("FileDialog_ImageFilter", resourceCulture);
             }
         }
 
@@ -2162,12 +1838,6 @@ namespace SteamGifCropper.Properties {
         }
 
         // Transition Dialog Resources
-        internal static string TransitionDialog_TransitionSettings {
-            get {
-                return ResourceManager.GetString("TransitionDialog_TransitionSettings", resourceCulture);
-            }
-        }
-
         internal static string TransitionDialog_NoTransition {
             get {
                 return ResourceManager.GetString("TransitionDialog_NoTransition", resourceCulture);
@@ -2177,78 +1847,6 @@ namespace SteamGifCropper.Properties {
         internal static string TransitionDialog_Fade {
             get {
                 return ResourceManager.GetString("TransitionDialog_Fade", resourceCulture);
-            }
-        }
-
-        internal static string TransitionDialog_Slide {
-            get {
-                return ResourceManager.GetString("TransitionDialog_Slide", resourceCulture);
-            }
-        }
-
-        internal static string TransitionDialog_Zoom {
-            get {
-                return ResourceManager.GetString("TransitionDialog_Zoom", resourceCulture);
-            }
-        }
-
-        internal static string TransitionDialog_Dissolve {
-            get {
-                return ResourceManager.GetString("TransitionDialog_Dissolve", resourceCulture);
-            }
-        }
-
-        internal static string TransitionDialog_Left {
-            get {
-                return ResourceManager.GetString("TransitionDialog_Left", resourceCulture);
-            }
-        }
-
-        internal static string TransitionDialog_Right {
-            get {
-                return ResourceManager.GetString("TransitionDialog_Right", resourceCulture);
-            }
-        }
-
-        internal static string TransitionDialog_Up {
-            get {
-                return ResourceManager.GetString("TransitionDialog_Up", resourceCulture);
-            }
-        }
-
-        internal static string TransitionDialog_Down {
-            get {
-                return ResourceManager.GetString("TransitionDialog_Down", resourceCulture);
-            }
-        }
-
-        internal static string TransitionDialog_ZoomIn {
-            get {
-                return ResourceManager.GetString("TransitionDialog_ZoomIn", resourceCulture);
-            }
-        }
-
-        internal static string TransitionDialog_ZoomOut {
-            get {
-                return ResourceManager.GetString("TransitionDialog_ZoomOut", resourceCulture);
-            }
-        }
-
-        internal static string TransitionDialog_TransitionDuration {
-            get {
-                return ResourceManager.GetString("TransitionDialog_TransitionDuration", resourceCulture);
-            }
-        }
-
-        internal static string TransitionDialog_Seconds {
-            get {
-                return ResourceManager.GetString("TransitionDialog_Seconds", resourceCulture);
-            }
-        }
-
-        internal static string TransitionDialog_Cancel {
-            get {
-                return ResourceManager.GetString("TransitionDialog_Cancel", resourceCulture);
             }
         }
 
@@ -2306,21 +1904,9 @@ namespace SteamGifCropper.Properties {
             }
         }
 
-        internal static string ConcatenateDialog_WindowTitle {
-            get {
-                return ResourceManager.GetString("ConcatenateDialog_WindowTitle", resourceCulture);
-            }
-        }
-
         internal static string ConcatenateDialog_TransitionSettings {
             get {
                 return ResourceManager.GetString("ConcatenateDialog_TransitionSettings", resourceCulture);
-            }
-        }
-
-        internal static string ConcatenateDialog_OutputFileLabel {
-            get {
-                return ResourceManager.GetString("ConcatenateDialog_OutputFileLabel", resourceCulture);
             }
         }
 
@@ -2825,24 +2411,6 @@ namespace SteamGifCropper.Properties {
         internal static string FileDialog_ImageAndGifFilter {
             get {
                 return ResourceManager.GetString("FileDialog_ImageAndGifFilter", resourceCulture);
-            }
-        }
-
-        internal static string ScrollDialog_TitleImageAndGif {
-            get {
-                return ResourceManager.GetString("ScrollDialog_TitleImageAndGif", resourceCulture);
-            }
-        }
-
-        internal static string ScrollDialog_InputImageOrGif {
-            get {
-                return ResourceManager.GetString("ScrollDialog_InputImageOrGif", resourceCulture);
-            }
-        }
-
-        internal static string ScrollDialog_SelectImageOrGif {
-            get {
-                return ResourceManager.GetString("ScrollDialog_SelectImageOrGif", resourceCulture);
             }
         }
 
