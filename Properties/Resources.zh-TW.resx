@@ -553,6 +553,66 @@
   <data name="Dialog_StartSeconds" xml:space="preserve">
     <value>起始（秒）</value>
   </data>
+  <data name="Button_RippleStatic" xml:space="preserve">
+    <value>766px 水波紋（圖片）</value>
+  </data>
+  <data name="Button_RippleGif" xml:space="preserve">
+    <value>766px 水波紋（GIF）</value>
+  </data>
+  <data name="Status_RippleBuilding" xml:space="preserve">
+    <value>正在建立水波紋…</value>
+  </data>
+  <data name="RippleDialog_Title" xml:space="preserve">
+    <value>水波紋（766px）</value>
+  </data>
+  <data name="RippleDialog_WaveSpeed" xml:space="preserve">
+    <value>波速</value>
+  </data>
+  <data name="RippleDialog_Wavelength" xml:space="preserve">
+    <value>波長</value>
+  </data>
+  <data name="RippleDialog_Strength" xml:space="preserve">
+    <value>位移強度</value>
+  </data>
+  <data name="RippleDialog_SpatialDamping" xml:space="preserve">
+    <value>空間衰減</value>
+  </data>
+  <data name="RippleDialog_TimeDamping" xml:space="preserve">
+    <value>時間衰減</value>
+  </data>
+  <data name="RippleDialog_Threshold" xml:space="preserve">
+    <value>消失門檻</value>
+  </data>
+  <data name="RippleDialog_DropsTitle" xml:space="preserve">
+    <value>水滴（最多3）</value>
+  </data>
+  <data name="RippleDialog_ColX" xml:space="preserve">
+    <value>X（px）</value>
+  </data>
+  <data name="RippleDialog_ColY" xml:space="preserve">
+    <value>Y（px）</value>
+  </data>
+  <data name="RippleDialog_ColIntensity" xml:space="preserve">
+    <value>強度</value>
+  </data>
+  <data name="RippleDialog_ColTime" xml:space="preserve">
+    <value>起始</value>
+  </data>
+  <data name="RippleDialog_DropN" xml:space="preserve">
+    <value>第 {0} 滴</value>
+  </data>
+  <data name="RippleDialog_GifPlayDuring" xml:space="preserve">
+    <value>波疊在播放上</value>
+  </data>
+  <data name="RippleDialog_GifFreeze" xml:space="preserve">
+    <value>定格第一幀</value>
+  </data>
+  <data name="RippleDialog_Pick" xml:space="preserve">
+    <value>點選</value>
+  </data>
+  <data name="RippleDialog_PickTitle" xml:space="preserve">
+    <value>點擊圖片設定落點</value>
+  </data>
   <data name="GridDialog_Title" xml:space="preserve">
     <value>格網馬賽克切割</value>
   </data>

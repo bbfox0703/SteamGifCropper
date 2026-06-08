@@ -80,6 +80,8 @@
             btnSlotMachineGif = new System.Windows.Forms.Button();
             btnQuicksandStatic = new System.Windows.Forms.Button();
             btnQuicksandGif = new System.Windows.Forms.Button();
+            btnRippleStatic = new System.Windows.Forms.Button();
+            btnRippleGif = new System.Windows.Forms.Button();
             chkAutoFitSplit = new System.Windows.Forms.CheckBox();
             numUpDownTargetKB = new System.Windows.Forms.NumericUpDown();
             lblAutoFitTries = new System.Windows.Forms.Label();
@@ -146,7 +148,7 @@
             // pBarTaskStatus
             // 
             pBarTaskStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            pBarTaskStatus.Location = new System.Drawing.Point(0, 503);
+            pBarTaskStatus.Location = new System.Drawing.Point(0, 534);
             pBarTaskStatus.Margin = new System.Windows.Forms.Padding(2);
             pBarTaskStatus.Name = "pBarTaskStatus";
             pBarTaskStatus.Size = new System.Drawing.Size(619, 20);
@@ -155,7 +157,7 @@
             // lblStatus
             // 
             lblStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            lblStatus.Location = new System.Drawing.Point(0, 488);
+            lblStatus.Location = new System.Drawing.Point(0, 519);
             lblStatus.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new System.Drawing.Size(619, 15);
@@ -208,7 +210,7 @@
             panelGifsicle.Controls.Add(numUpDownPalette);
             panelGifsicle.Controls.Add(lblPaletteDesc);
             panelGifsicle.Dock = System.Windows.Forms.DockStyle.Bottom;
-            panelGifsicle.Location = new System.Drawing.Point(0, 369);
+            panelGifsicle.Location = new System.Drawing.Point(0, 400);
             panelGifsicle.Margin = new System.Windows.Forms.Padding(2);
             panelGifsicle.Name = "panelGifsicle";
             panelGifsicle.Size = new System.Drawing.Size(619, 175);
@@ -496,7 +498,7 @@
             // lblFramerate
             // 
             lblFramerate.AutoSize = true;
-            lblFramerate.Location = new System.Drawing.Point(11, 315);
+            lblFramerate.Location = new System.Drawing.Point(11, 346);
             lblFramerate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFramerate.Name = "lblFramerate";
             lblFramerate.Size = new System.Drawing.Size(0, 15);
@@ -505,7 +507,7 @@
             // lblFPS
             // 
             lblFPS.AutoSize = true;
-            lblFPS.Location = new System.Drawing.Point(310, 315);
+            lblFPS.Location = new System.Drawing.Point(310, 346);
             lblFPS.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFPS.Name = "lblFPS";
             lblFPS.Size = new System.Drawing.Size(0, 15);
@@ -533,7 +535,7 @@
             // 
             // btnLanguageChange
             // 
-            btnLanguageChange.Location = new System.Drawing.Point(548, 287);
+            btnLanguageChange.Location = new System.Drawing.Point(548, 318);
             btnLanguageChange.Name = "btnLanguageChange";
             btnLanguageChange.Size = new System.Drawing.Size(64, 26);
             btnLanguageChange.TabIndex = 16;
@@ -611,7 +613,7 @@
             // lblResourceLimitDesc
             // 
             lblResourceLimitDesc.AutoSize = true;
-            lblResourceLimitDesc.Location = new System.Drawing.Point(7, 289);
+            lblResourceLimitDesc.Location = new System.Drawing.Point(7, 320);
             lblResourceLimitDesc.Name = "lblResourceLimitDesc";
             lblResourceLimitDesc.Size = new System.Drawing.Size(234, 15);
             lblResourceLimitDesc.TabIndex = 15;
@@ -619,7 +621,7 @@
             // 
             // numUpDownFramerate
             // 
-            numUpDownFramerate.Location = new System.Drawing.Point(255, 313);
+            numUpDownFramerate.Location = new System.Drawing.Point(255, 344);
             numUpDownFramerate.Margin = new System.Windows.Forms.Padding(2);
             numUpDownFramerate.Maximum = new decimal(new int[] { 30, 0, 0, 0 });
             numUpDownFramerate.Minimum = new decimal(new int[] { 5, 0, 0, 0 });
@@ -688,12 +690,32 @@
             btnQuicksandGif.UseVisualStyleBackColor = true;
             btnQuicksandGif.Click += btnQuicksandGif_Click;
             //
+            // btnRippleStatic
+            //
+            btnRippleStatic.Location = new System.Drawing.Point(7, 286);
+            btnRippleStatic.Name = "btnRippleStatic";
+            btnRippleStatic.Size = new System.Drawing.Size(300, 26);
+            btnRippleStatic.TabIndex = 23;
+            btnRippleStatic.Text = SteamGifCropper.Properties.Resources.Button_RippleStatic;
+            btnRippleStatic.UseVisualStyleBackColor = true;
+            btnRippleStatic.Click += btnRippleStatic_Click;
+            //
+            // btnRippleGif
+            //
+            btnRippleGif.Location = new System.Drawing.Point(313, 286);
+            btnRippleGif.Name = "btnRippleGif";
+            btnRippleGif.Size = new System.Drawing.Size(300, 26);
+            btnRippleGif.TabIndex = 24;
+            btnRippleGif.Text = SteamGifCropper.Properties.Resources.Button_RippleGif;
+            btnRippleGif.UseVisualStyleBackColor = true;
+            btnRippleGif.Click += btnRippleGif_Click;
+            //
             // GifToolMainForm
             //
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            ClientSize = new System.Drawing.Size(619, 556);
+            ClientSize = new System.Drawing.Size(619, 587);
             Controls.Add(lblResourceLimitDesc);
             Controls.Add(btnResizeNfpsGIF);
             Controls.Add(btnOverlayGIF);
@@ -720,6 +742,8 @@
             Controls.Add(btnSlotMachineGif);
             Controls.Add(btnQuicksandStatic);
             Controls.Add(btnQuicksandGif);
+            Controls.Add(btnRippleStatic);
+            Controls.Add(btnRippleGif);
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new System.Windows.Forms.Padding(2);
             Name = "GifToolMainForm";
@@ -796,6 +820,8 @@
         private System.Windows.Forms.Button btnSlotMachineGif;
         private System.Windows.Forms.Button btnQuicksandStatic;
         private System.Windows.Forms.Button btnQuicksandGif;
+        private System.Windows.Forms.Button btnRippleStatic;
+        private System.Windows.Forms.Button btnRippleGif;
         public System.Windows.Forms.CheckBox chkAutoFitSplit;
         public System.Windows.Forms.NumericUpDown numUpDownTargetKB;
         private System.Windows.Forms.Label lblAutoFitTries;

@@ -545,6 +545,66 @@ Files skipped (not 0x21): {1}</value>
   <data name="Dialog_StartSeconds" xml:space="preserve">
     <value>Start (s)</value>
   </data>
+  <data name="Button_RippleStatic" xml:space="preserve">
+    <value>766px Water Ripple (Image)</value>
+  </data>
+  <data name="Button_RippleGif" xml:space="preserve">
+    <value>766px Water Ripple (GIF)</value>
+  </data>
+  <data name="Status_RippleBuilding" xml:space="preserve">
+    <value>Building water ripple...</value>
+  </data>
+  <data name="RippleDialog_Title" xml:space="preserve">
+    <value>Water Ripple (766px)</value>
+  </data>
+  <data name="RippleDialog_WaveSpeed" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="RippleDialog_Wavelength" xml:space="preserve">
+    <value>Wavelen</value>
+  </data>
+  <data name="RippleDialog_Strength" xml:space="preserve">
+    <value>Displace</value>
+  </data>
+  <data name="RippleDialog_SpatialDamping" xml:space="preserve">
+    <value>Dist fade</value>
+  </data>
+  <data name="RippleDialog_TimeDamping" xml:space="preserve">
+    <value>Time fade</value>
+  </data>
+  <data name="RippleDialog_Threshold" xml:space="preserve">
+    <value>Vanish</value>
+  </data>
+  <data name="RippleDialog_DropsTitle" xml:space="preserve">
+    <value>Drops (max 3)</value>
+  </data>
+  <data name="RippleDialog_ColX" xml:space="preserve">
+    <value>X (px)</value>
+  </data>
+  <data name="RippleDialog_ColY" xml:space="preserve">
+    <value>Y (px)</value>
+  </data>
+  <data name="RippleDialog_ColIntensity" xml:space="preserve">
+    <value>Power</value>
+  </data>
+  <data name="RippleDialog_ColTime" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="RippleDialog_DropN" xml:space="preserve">
+    <value>Drop {0}</value>
+  </data>
+  <data name="RippleDialog_GifPlayDuring" xml:space="preserve">
+    <value>Ripple over playback</value>
+  </data>
+  <data name="RippleDialog_GifFreeze" xml:space="preserve">
+    <value>Freeze on frame 0</value>
+  </data>
+  <data name="RippleDialog_Pick" xml:space="preserve">
+    <value>Pick</value>
+  </data>
+  <data name="RippleDialog_PickTitle" xml:space="preserve">
+    <value>Click the image to set the drop position</value>
+  </data>
   <data name="GridDialog_Title" xml:space="preserve">
     <value>Grid Mosaic Split</value>
   </data>

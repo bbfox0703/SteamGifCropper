@@ -553,6 +553,66 @@
   <data name="Dialog_StartSeconds" xml:space="preserve">
     <value>開始（秒）</value>
   </data>
+  <data name="Button_RippleStatic" xml:space="preserve">
+    <value>766px 水波紋（画像）</value>
+  </data>
+  <data name="Button_RippleGif" xml:space="preserve">
+    <value>766px 水波紋（GIF）</value>
+  </data>
+  <data name="Status_RippleBuilding" xml:space="preserve">
+    <value>水波紋を生成中…</value>
+  </data>
+  <data name="RippleDialog_Title" xml:space="preserve">
+    <value>水波紋（766px）</value>
+  </data>
+  <data name="RippleDialog_WaveSpeed" xml:space="preserve">
+    <value>波速</value>
+  </data>
+  <data name="RippleDialog_Wavelength" xml:space="preserve">
+    <value>波長</value>
+  </data>
+  <data name="RippleDialog_Strength" xml:space="preserve">
+    <value>変位強度</value>
+  </data>
+  <data name="RippleDialog_SpatialDamping" xml:space="preserve">
+    <value>空間減衰</value>
+  </data>
+  <data name="RippleDialog_TimeDamping" xml:space="preserve">
+    <value>時間減衰</value>
+  </data>
+  <data name="RippleDialog_Threshold" xml:space="preserve">
+    <value>消失閾値</value>
+  </data>
+  <data name="RippleDialog_DropsTitle" xml:space="preserve">
+    <value>水滴（最大3）</value>
+  </data>
+  <data name="RippleDialog_ColX" xml:space="preserve">
+    <value>X（px）</value>
+  </data>
+  <data name="RippleDialog_ColY" xml:space="preserve">
+    <value>Y（px）</value>
+  </data>
+  <data name="RippleDialog_ColIntensity" xml:space="preserve">
+    <value>強度</value>
+  </data>
+  <data name="RippleDialog_ColTime" xml:space="preserve">
+    <value>開始</value>
+  </data>
+  <data name="RippleDialog_DropN" xml:space="preserve">
+    <value>{0} 滴目</value>
+  </data>
+  <data name="RippleDialog_GifPlayDuring" xml:space="preserve">
+    <value>再生に波を重ねる</value>
+  </data>
+  <data name="RippleDialog_GifFreeze" xml:space="preserve">
+    <value>最初のフレームで固定</value>
+  </data>
+  <data name="RippleDialog_Pick" xml:space="preserve">
+    <value>選取</value>
+  </data>
+  <data name="RippleDialog_PickTitle" xml:space="preserve">
+    <value>クリックで落下位置を設定</value>
+  </data>
   <data name="GridDialog_Title" xml:space="preserve">
     <value>グリッドモザイク分割</value>
   </data>

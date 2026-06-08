@@ -52,8 +52,17 @@
 - **夾擠規則**（`GifEffectWindow.Clamp`）：`len>=GIF長` → (0, 全長)；`start+len>GIF長` → start 回推到 `GIF長-len`；負 start→0。最差 start=0、len=全長。
 - **共用純函式** `src/Core/GifEffectWindow.cs`（`Clamp`/`NearestFrameIndex`/`ResolveFrames`/`FramePhase`，可單測，`GifEffectWindowTests` 16 例）。拉霸 `BuildSlotMachinePlayDuringSpin` 多 `windowStartSec` 參數（轉輪由 startFrame 起算、stop=start+各輪時長）；流沙 `BuildQuicksandPlayDuringFlow` 改用 `ResolveFrames`+`FramePhase`。共用標籤 `Dialog_StartSeconds`（三語）。兩個 dialog 各加一列 Start（GIF only、play-during 才 enable），表單加高至 300。
 
-### 🔭 水波紋 / 聲波（Water Ripple）— 評估完成、尚未實作
-逐像素徑向位移場（非切片，現有積木幫不上忙；參考 `GridMosaicRenderer` 的像素寫入）。建議在 C# 端自做雙線性重採樣（繞過 Magick.NET-Q8 的 `Displace` 整數量化）：每個輸出像素依阻尼徑向波公式 `A·exp(-衰減·r)·時間包絡·sin(k·r−ωt)` 算 (dx,dy)、到來源雙線性取樣。落點可在圖外；邊界回波用「鏡像法 (method of images)」加衰減次波源（建議 v2 再加）。難度 ★★★（物理是封閉解、不難；成本在新 render primitive + 參數調校）。GIF 定格/跟播沿用同一二分法。
+### ✅ 水波紋 / 聲波（Water Ripple）— v1 已實作
+逐像素徑向位移場（非切片）。每個輸出像素依阻尼徑向波在 C# 端算 (dx,dy)、到來源做雙線性重採樣（`Parallel.For`，繞過 Magick.NET-Q8 `Displace` 量化）。
+
+- **模型**（`RippleField`，純函式）：每滴 = 從落點擴張的環波，波前半徑 `R=c·τ`（τ=已落下秒）。波前內每點 `amp = 強度·exp(−時間衰減·τ)·exp(−空間衰減·r)·sin(k·r−ω·τ)`，沿**徑向單位向量**推。**多滴把各自的徑向位移向量相加 → 干涉自動浮現**。某滴 envelope `強度·exp(−時間衰減·τ)` < 門檻 → 剔除（決定壽命）。輸出 = `Strength·Σ`。落點**可在圖外**（取樣 edge-clamp）。
+- **介質共用 / 每滴各異**：`RippleMedium`（波速/波長/空間衰減/時間衰減/位移強度/消失門檻）全域共用——這是讓干涉良定義的關鍵；`RippleDrop`（X/Y/起始秒/強度）每滴各自。**最多 3 滴**（效能不是限制，是 dialog 與視覺清晰度）。
+- **GIF 兩種模式（比照拉霸/流沙，**保留 GIF 全長、原生時序**）**：`波疊在播放上`＝輸出==GIF 全長、原生 delay；波在 `[0, Duration)` 窗內混在 live 幀上（窗內無作用幀用 `AnyDropActive` 跳過直接複製），`Duration` 後播原樣（`BuildRipplePlayAlong`）。`定格第一幀`＝定格 frame 0 做波 `Duration` 秒（@輸出 fps）、再播**完整** GIF（原生時序），輸出==Duration＋GIF 長度（`BuildRippleFrozenThenPlay`）。靜態圖只做波 `Duration` 秒。⚠️ 早期版本誤把跟播做成「重取樣成 `Duration×fps` 幀、截斷/循環 GIF」（4 秒就結束），已修正。
+- **FPS / 播放時間**：跟播保留 GIF 原生 delay → **輸出播放時長＝來源時長**（來源 15/30fps 都不變）；輸出 FPS 設定只影響「定格/靜態」那段合成場景，不改 GIF 本身播放速度。
+- **每滴自動啟用**：編輯某滴的 X/Y/起始/強度任一欄會自動勾選該滴（`ValueChanged`，在 `InitializeComponent` 後接、避免初始設值誤觸）；picker 點選也自動勾選。避免「改了強度卻沒勾、看起來沒效果」。
+- **v1 未做**：邊界回波（鏡像法）—— v2 再加，只是在 drops 串列多疊 4 個對邊鏡射的衰減次波源（同一 `RippleField.Displacement` 即可吃）。
+- **檔案**：`src/Core/RippleField.cs`（純函式 Envelope/DropLifetime/TotalSeconds/Displacement，可單測）、`RippleRenderer.cs`（並行雙線性重採樣，RGBA byte buffer + `ToByteArray`/`ReadPixels`）、`RippleSettings.cs`（含 `ToMedium()`）、`src/Dialogs/RippleDialog.cs`（手寫；`MakeNum` helper + decimal 字面值 + 迴圈建 3 滴列；**dialog 自己 `BuildSettings()`** 避免漏抄欄位）、`GifProcessor.RippleStaticImage()`/`RippleGif()`/`RunRipple()`/`BuildRippleAnimation()`、主視窗第 10 列兩顆按鈕（下方元件 +31、表單加高至 587）、三語 resx、`RippleFieldTests`（13 例）+ `RippleRendererTests`（3 例 smoke）。
+- **預設**：Duration 4s、FPS 20、波速 220、波長 36、空間衰減 0.004、時間衰減 0.8、位移強度 8、消失門檻 0.03；第 1 滴預設開（200,150,t=0,強度1）。
 
 ### ✅ 連帶修正
 - **XC coder 政策**（`f730b0a`）：`Program.cs` 的安全政策原本只允許 GIF/PNG/JPEG/BMP，誤擋了內部純色畫布產生器 `XC`，導致所有 `new MagickImage(color, w, h)`（split/merge/overlay/scroll/Coalesce 都用）失敗。XC 不是檔案解析器、無攻擊面，已加回白名單。
@@ -108,9 +117,10 @@ Steam 展示櫃是 5 個垂直欄位，拉霸機剛好是 5 個垂直轉輪，�
 
 ## 實作要點 / 踩雷紀錄（接手前必讀）
 
-1. **ImageMagick 安全政策**（`Program.cs` `ConfigureImageMagickPolicy`）：只允許 `GIF/PNG/JPEG/BMP/XC` coder。
+1. **ImageMagick 安全政策**（`Program.cs` `ConfigureImageMagickPolicy`）：只允許 `GIF/PNG/PNG32/JPEG/BMP/XC` coder。
    - 不要用清單外的格式 coder（SVG/PDF/TIFF… 全被擋，是刻意的）。
    - `new MagickImage(color, w, h)` 內部走 `xc:` pseudo-coder（已允許）。**向量 `Drawables` 繪製也會經過 XC** —— 本專案測試行程「不」套用此政策，所以用到 XC 的程式碼在測試會過、在 app 卻可能炸；新功能若用 Drawables 要記得這點，或改用像素寫入（見 `GridMosaicRenderer`）。
+   - **`PNG32`**（與 `PNG` 同一解析器、強制 8-bit RGBA）已加入白名單：水波紋落點 picker 把 frame 0 `Write(ms, MagickFormat.Png32)` 產生預覽 bitmap，否則會擲 `not authorized ... 'PNG32'`。**注意 coder 名稱要逐一列**——`Png32` 不被 `PNG` 涵蓋。
 2. **新 dialog 樣式**：鏡射 `ScrollStaticImageDialog`（inline `InitializeComponent`、無 `.Designer.cs`、`namespace GifProcessorApp : Form`、含 `UpdateUIText()` + `ApplyTheme()` + 複製 `ApplyDark/LightThemeToControls`）。流程：dialog 開在 `GifProcessor.<Op>()` 裡，`ShowDialog()==OK` 後讀公開屬性再呼叫處理方法。
 3. **單元測試**：測試專案用 **stub**（`GifProcessor.Stub.cs`），並非編譯真正的 `GifProcessor.cs`，而是逐檔 `<Compile Include>` 連結無重依賴的小檔。要單測新邏輯，**把純函式抽到無依賴的獨立檔**（如 `GridMosaicGeometry.cs`），並在 `SteamGifCropper.Tests.csproj` 加一行 `<Compile Include>` 連結它。
 4. **進度條**：一律用 `FlatProgressBar`（`src/Forms/FlatProgressBar.cs`），別用原生 `ProgressBar`（深色主題下填滿邊緣會有黑線/動畫殘影）。全 app 只有主視窗一條 `pBarTaskStatus`，進度都呼叫 `GifProcessor.SetProgressBar(...)`。
