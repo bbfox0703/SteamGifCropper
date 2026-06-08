@@ -46,7 +46,7 @@ Scroll
 - **Tail byte utilities** – batch toggle the final byte between `0x3B`/`0x21` for multiple GIF files.
 - **Merge & split five GIFs** – resize inputs (~153px each), sync durations, build a shared palette, merge to 766px, then reslice into five showcase-ready parts.
 - **Merge 2–5 GIFs side by side** – compose inputs without resizing, with shared palette options and FPS mismatch warnings.
-- **Concatenate GIFs with transitions** – combine multiple GIFs into a single animation, unify FPS/dimensions/palette, and add optional fade/slide/zoom/dissolve transitions.
+- **Concatenate GIFs with transitions** – combine multiple GIFs into a single animation, unify FPS/dimensions/palette, and add an optional transition. Transitions are *dynamic* (both clips keep playing through the cut): fade, cross-fade, slide, zoom, iris, wipe, dip-to-black, blur dissolve, dissolve, and a ripple transition.
 - **Reverse playback** – generate a reversed copy of a GIF.
 - **MP4 → GIF conversion** – uses FFmpeg to convert a segment (custom start time and duration) into GIF format.
 - **Overlay GIFs** – position one GIF atop another to create composite animations.
@@ -136,7 +136,7 @@ Resizes each GIF to ~153px, synchronizes duration, merges to a 766px preview GIF
 ### Concatenating GIFs with transitions
 1. Click **Concatenate GIFs** and pick at least two GIF files.
 2. Choose how to unify FPS, dimensions and palette (auto, reference GIF, or custom options).
-3. Select a transition style (none, fade, slide, zoom or dissolve), direction/type, and duration.
+3. Pick a transition from the dropdown (fade, cross-fade, slide ←→↑↓, zoom, iris, wipe, dip-to-black, blur dissolve, dissolve, ripple) and a duration. Transitions are dynamic — both clips keep playing through the transition, which overlaps (and slightly shortens) the join.
 4. Optionally run gifsicle optimization after export.
 
 The tool creates a single GIF stitched in sequence and honours the configured resource limits.
