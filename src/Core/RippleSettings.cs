@@ -16,6 +16,7 @@ namespace GifProcessorApp
         public int Fps { get; set; } = 20;
         public double DurationSeconds { get; set; } = 4.0;     // total scene length (2dp)
         public bool PlayGifDuringRipple { get; set; } = true;  // GIF: ripple over live frames vs frozen frame 0
+        public bool KeepOriginalSize { get; set; } = false;    // true: process at native size (no 766px fit)
 
         // Medium (shared)
         public double WaveSpeed { get; set; } = 220.0;     // px/sec

@@ -128,6 +128,19 @@ namespace GifProcessorApp
 
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Message_MergingGifs);
 
+                // Merge holds every source frame AND the full merged result in the cache at once (and
+                // Quantize runs over the whole result), so warn before a large job. Estimate = all source
+                // pixels + result pixels (4 bytes/px). ResourceLimits still caps + spills to disk; this is
+                // just a heads-up before a slow/heavy run.
+                double srcBytes = collections.Sum(c => (double)c.Count * c[0].Width * c[0].Height * 4.0);
+                double resBytes = (double)targetFrameCount * totalWidth * maxHeight * 4.0;
+                if (!ConfirmLargeMemory(mainForm, (srcBytes + resBytes) / (1024.0 * 1024.0),
+                        (uint)totalWidth, (uint)maxHeight, targetFrameCount))
+                {
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Idle);
+                    return; // outer finally still disposes collections + restores the 0x21 trailer
+                }
+
                 var mergedCollection = new MagickImageCollection();
 
                 try
@@ -172,6 +185,11 @@ namespace GifProcessorApp
 
                             mergedCollection.Add(canvas);
                         }
+
+                        // Every source frame is composited into the merged canvases now; free the source
+                        // collections before the memory-heavy Quantize so we don't hold sources + result
+                        // at the same time. (The outer finally disposes again — Dispose is idempotent.)
+                        foreach (var c in collections) c.Dispose();
 
                         // Build ONE optimal 256-colour palette from ALL merged frames and apply it.
                         // Quantizing the whole assembled collection (the same approach OverlayGif

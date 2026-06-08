@@ -77,6 +77,17 @@ namespace GifProcessorApp
 
                 SetProgressBar(mainForm.pBarTaskStatus, 20, 100);
 
+                // Merge+split clones the sources through two stages (resize, then synchronize) before
+                // compositing, so peak ~2x the loaded sources. Warn before a large job (ResourceLimits
+                // still caps + spills to disk; this is just a heads-up).
+                double srcBytesFive = collections.Sum(c => (double)c.Count * c[0].Width * c[0].Height * 4.0);
+                if (!ConfirmLargeMemory(mainForm, srcBytesFive * 2.0 / (1024.0 * 1024.0),
+                        collections.Max(c => c[0].Width), collections.Max(c => c[0].Height), collections.Max(c => c.Count)))
+                {
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Idle);
+                    return; // outer finally disposes the loaded collections
+                }
+
                 string firstGifPath = gifFiles[0];
                 string mergedFileName = $"{Path.GetFileNameWithoutExtension(firstGifPath)}_merged.gif";
                 string outputDir = Path.GetDirectoryName(firstGifPath);
@@ -88,9 +99,14 @@ namespace GifProcessorApp
                 {
                     resizedCollections = ResizeGifsToSpecificWidths(loadedCollections, mainForm);
                     SetProgressBar(mainForm.pBarTaskStatus, 40, 100);
+                    // Originals are cloned into the resized set now; free them. (finally disposes again —
+                    // MagickImageCollection.Dispose is idempotent.)
+                    foreach (var c in loadedCollections) c?.Dispose();
 
                     syncedCollections = SynchronizeToShortestDuration(resizedCollections, mainForm);
                     SetProgressBar(mainForm.pBarTaskStatus, 60, 100);
+                    // Resized frames are cloned into the synced set now; free them before the heavy merge.
+                    foreach (var c in resizedCollections) c?.Dispose();
 
                     MergeGifsHorizontally(syncedCollections, mergedFilePath, mainForm,
                         ResourceLimits.Memory, ResourceLimits.Disk);

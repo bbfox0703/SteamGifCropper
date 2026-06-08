@@ -2411,6 +2411,24 @@ namespace SteamGifCropper.Properties {
             }
         }
 
+        internal static string Dialog_KeepOriginalSize {
+            get {
+                return ResourceManager.GetString("Dialog_KeepOriginalSize", resourceCulture);
+            }
+        }
+
+        internal static string Warn_LargeMemoryTitle {
+            get {
+                return ResourceManager.GetString("Warn_LargeMemoryTitle", resourceCulture);
+            }
+        }
+
+        internal static string Warn_LargeMemory {
+            get {
+                return ResourceManager.GetString("Warn_LargeMemory", resourceCulture);
+            }
+        }
+
         internal static string Status_RippleBuilding {
             get {
                 return ResourceManager.GetString("Status_RippleBuilding", resourceCulture);

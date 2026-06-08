@@ -29,6 +29,7 @@ namespace GifProcessorApp
         public bool FlowRight { get; private set; } = true;
         public QuicksandFlowAxis Axis { get; private set; } = QuicksandFlowAxis.Horizontal;
         public bool PlayGifDuringFlow { get; private set; } = true;
+        public bool KeepOriginalSize { get; private set; } = false;
 
         private TextBox txtInputPath = null!;
         private Button btnBrowseInput = null!;
@@ -47,6 +48,7 @@ namespace GifProcessorApp
         private Label lblStart = null!;
         private Button btnOK = null!;
         private Button btnCancel = null!;
+        private CheckBox chkKeepSize = null!;
         private Label lblInput = null!;
         private Label lblOutput = null!;
         private Label lblLayers = null!;
@@ -99,6 +101,7 @@ namespace GifProcessorApp
             btnBrowseOutput.Text = Resources.Button_Browse;
             btnOK.Text = Resources.ScrollDialog_OK;
             btnCancel.Text = Resources.ScrollDialog_Cancel;
+            chkKeepSize.Text = Resources.Dialog_KeepOriginalSize;
 
             // 4-way picker encodes both the flow axis and direction: 0 right, 1 left (horizontal),
             // 2 down, 3 up (vertical).
@@ -179,6 +182,11 @@ namespace GifProcessorApp
                     label.BackColor = System.Drawing.Color.Transparent;
                     label.ForeColor = System.Drawing.Color.White;
                 }
+                else if (control is CheckBox checkBox)
+                {
+                    checkBox.BackColor = System.Drawing.Color.Transparent;
+                    checkBox.ForeColor = System.Drawing.Color.White;
+                }
                 else if (control is TextBox textBox)
                 {
                     textBox.BackColor = System.Drawing.Color.FromArgb(64, 64, 64);
@@ -217,6 +225,11 @@ namespace GifProcessorApp
                 {
                     label.BackColor = System.Drawing.Color.Transparent;
                     label.ForeColor = System.Drawing.SystemColors.ControlText;
+                }
+                else if (control is CheckBox checkBox)
+                {
+                    checkBox.BackColor = System.Drawing.Color.Transparent;
+                    checkBox.ForeColor = System.Drawing.SystemColors.ControlText;
                 }
                 else if (control is TextBox textBox)
                 {
@@ -309,6 +322,7 @@ namespace GifProcessorApp
             Axis = dir >= 2 ? QuicksandFlowAxis.Vertical : QuicksandFlowAxis.Horizontal;
             FlowRight = dir == 0 || dir == 2; // right (horizontal) / down (vertical) = positive roll
             PlayGifDuringFlow = cmbGifPlayMode.SelectedIndex == 0;
+            KeepOriginalSize = chkKeepSize.Checked;
             DialogResult = DialogResult.OK;
             Close();
         }
@@ -342,6 +356,7 @@ namespace GifProcessorApp
             numStart = new NumericUpDown();
             btnOK = new Button();
             btnCancel = new Button();
+            chkKeepSize = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)numLayers).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numDuration).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numFps).BeginInit();
@@ -595,6 +610,16 @@ namespace GifProcessorApp
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
             //
+            // chkKeepSize (process at native size instead of fitting to 766px)
+            //
+            chkKeepSize.AutoSize = false;
+            chkKeepSize.Location = new System.Drawing.Point(14, 264);
+            chkKeepSize.Name = "chkKeepSize";
+            chkKeepSize.Size = new System.Drawing.Size(280, 22);
+            chkKeepSize.TabIndex = 27;
+            chkKeepSize.Text = "Keep original size";
+            chkKeepSize.UseVisualStyleBackColor = true;
+            //
             // QuicksandDialog
             //
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -603,6 +628,7 @@ namespace GifProcessorApp
             ClientSize = new System.Drawing.Size(480, 300);
             Controls.Add(btnCancel);
             Controls.Add(btnOK);
+            Controls.Add(chkKeepSize);
             Controls.Add(numStart);
             Controls.Add(lblStart);
             Controls.Add(cmbGifPlayMode);

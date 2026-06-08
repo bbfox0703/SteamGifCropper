@@ -403,10 +403,10 @@
     <value>結果停留（秒）</value>
   </data>
   <data name="Button_QuicksandStatic" xml:space="preserve">
-    <value>766px 流沙（圖片）</value>
+    <value>流沙（圖片）</value>
   </data>
   <data name="Button_QuicksandGif" xml:space="preserve">
-    <value>766px 流沙（GIF）</value>
+    <value>流沙（GIF）</value>
   </data>
   <data name="Status_QuicksandBuilding" xml:space="preserve">
     <value>正在建立流沙流動…</value>
@@ -475,10 +475,10 @@
     <value>起始（秒）</value>
   </data>
   <data name="Button_RippleStatic" xml:space="preserve">
-    <value>766px 水波紋（圖片）</value>
+    <value>水波紋（圖片）</value>
   </data>
   <data name="Button_RippleGif" xml:space="preserve">
-    <value>766px 水波紋（GIF）</value>
+    <value>水波紋（GIF）</value>
   </data>
   <data name="Status_RippleBuilding" xml:space="preserve">
     <value>正在建立水波紋…</value>
@@ -1193,10 +1193,10 @@ FFmpeg 輸出 (部分)：
     <value>檔案 "{0}" 超過允許的最大檔案大小 {1} MB。</value>
   </data>
   <data name="Button_WindStatic" xml:space="preserve">
-    <value>766px 風吹效果（圖片）</value>
+    <value>風吹效果（圖片）</value>
   </data>
   <data name="Button_WindGif" xml:space="preserve">
-    <value>766px 風吹效果（GIF）</value>
+    <value>風吹效果（GIF）</value>
   </data>
   <data name="Status_WindBuilding" xml:space="preserve">
     <value>正在建立風吹效果…</value>
@@ -1293,5 +1293,14 @@ FFmpeg 輸出 (部分)：
   </data>
   <data name="WindDialog_GifFreeze" xml:space="preserve">
     <value>定格第一幀</value>
+  </data>
+  <data name="Dialog_KeepOriginalSize" xml:space="preserve">
+    <value>保持原始尺寸（不縮到 766px）</value>
+  </data>
+  <data name="Warn_LargeMemoryTitle" xml:space="preserve">
+    <value>大型輸出</value>
+  </data>
+  <data name="Warn_LargeMemory" xml:space="preserve">
+    <value>將以 {1}×{2}、{3} 幀處理，預估佔用約 {0} MB 記憶體，可能很慢或記憶體不足。要繼續嗎？</value>
   </data>
 </root>

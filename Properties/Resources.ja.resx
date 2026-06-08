@@ -403,10 +403,10 @@
     <value>結果の保持（秒）</value>
   </data>
   <data name="Button_QuicksandStatic" xml:space="preserve">
-    <value>766px 流砂（画像）</value>
+    <value>流砂（画像）</value>
   </data>
   <data name="Button_QuicksandGif" xml:space="preserve">
-    <value>766px 流砂（GIF）</value>
+    <value>流砂（GIF）</value>
   </data>
   <data name="Status_QuicksandBuilding" xml:space="preserve">
     <value>流砂アニメーションを生成中…</value>
@@ -475,10 +475,10 @@
     <value>開始（秒）</value>
   </data>
   <data name="Button_RippleStatic" xml:space="preserve">
-    <value>766px 水波紋（画像）</value>
+    <value>水波紋（画像）</value>
   </data>
   <data name="Button_RippleGif" xml:space="preserve">
-    <value>766px 水波紋（GIF）</value>
+    <value>水波紋（GIF）</value>
   </data>
   <data name="Status_RippleBuilding" xml:space="preserve">
     <value>水波紋を生成中…</value>
@@ -1193,10 +1193,10 @@ FFmpeg 出力（切り捨て）:
     <value>ファイル "{0}" は最大許容サイズ {1} MB を超えています。</value>
   </data>
   <data name="Button_WindStatic" xml:space="preserve">
-    <value>766px 風効果（画像）</value>
+    <value>風効果（画像）</value>
   </data>
   <data name="Button_WindGif" xml:space="preserve">
-    <value>766px 風効果（GIF）</value>
+    <value>風効果（GIF）</value>
   </data>
   <data name="Status_WindBuilding" xml:space="preserve">
     <value>風効果を生成中…</value>
@@ -1293,5 +1293,14 @@ FFmpeg 出力（切り捨て）:
   </data>
   <data name="WindDialog_GifFreeze" xml:space="preserve">
     <value>最初のフレームで固定</value>
+  </data>
+  <data name="Dialog_KeepOriginalSize" xml:space="preserve">
+    <value>元のサイズを維持（766pxに縮小しない）</value>
+  </data>
+  <data name="Warn_LargeMemoryTitle" xml:space="preserve">
+    <value>大きな出力</value>
+  </data>
+  <data name="Warn_LargeMemory" xml:space="preserve">
+    <value>{1}×{2}、{3} フレームで処理し、約 {0} MB のメモリを使用します。遅くなるかメモリ不足になる可能性があります。続行しますか？</value>
   </data>
 </root>

@@ -57,6 +57,7 @@ namespace GifProcessorApp
 
         private Button btnOK = null!;
         private Button btnCancel = null!;
+        private CheckBox chkKeepSize = null!;
 
         public RippleDialog(bool gifMode)
         {
@@ -96,6 +97,7 @@ namespace GifProcessorApp
                 TimeDamping = (double)numTimeDamping.Value,
                 Strength = (double)numStrength.Value,
                 Threshold = (double)numThreshold.Value,
+                KeepOriginalSize = chkKeepSize.Checked,
             };
             for (int i = 0; i < DropCount; i++)
             {
@@ -131,6 +133,7 @@ namespace GifProcessorApp
             btnBrowseOutput.Text = Resources.Button_Browse;
             btnOK.Text = Resources.ScrollDialog_OK;
             btnCancel.Text = Resources.ScrollDialog_Cancel;
+            chkKeepSize.Text = Resources.Dialog_KeepOriginalSize;
             for (int i = 0; i < DropCount; i++)
             {
                 chkDrops[i].Text = string.Format(Resources.RippleDialog_DropN, i + 1);
@@ -417,6 +420,7 @@ namespace GifProcessorApp
             btnOK = new Button { Location = new Point(363, 330), Size = new Size(75, 25), Text = "OK", UseVisualStyleBackColor = true };
             btnOK.Click += BtnOK_Click;
             btnCancel = new Button { Location = new Point(444, 330), Size = new Size(82, 25), Text = "Cancel", DialogResult = DialogResult.Cancel, UseVisualStyleBackColor = true };
+            chkKeepSize = new CheckBox { Location = new Point(14, 334), Size = new Size(330, 22), Text = "Keep original size", UseVisualStyleBackColor = true };
 
             SuspendLayout();
             Controls.Add(lblInput);
@@ -458,6 +462,7 @@ namespace GifProcessorApp
             }
             Controls.Add(btnOK);
             Controls.Add(btnCancel);
+            Controls.Add(chkKeepSize);
 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;

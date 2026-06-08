@@ -32,5 +32,9 @@ namespace GifProcessorApp
         // GIF variant only. true: the GIF plays while the bands flow (each output frame shears the live
         // GIF frame at that time). false: the bands flow over a frozen first frame.
         public bool PlayGifDuringFlow { get; set; } = true;
+
+        // true: process at the input's native size instead of fitting to 766px (general-purpose use,
+        // not Steam prep — the output then won't feed the 766/774-only "Split GIF").
+        public bool KeepOriginalSize { get; set; } = false;
     }
 }
