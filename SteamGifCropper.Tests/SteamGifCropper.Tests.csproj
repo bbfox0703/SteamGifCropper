@@ -49,6 +49,8 @@
     <Compile Include="..\src\Core\RippleRenderer.cs" Link="RippleRenderer.cs" />
     <Compile Include="..\src\Core\GridMosaicSettings.cs" Link="GridMosaicSettings.cs" />
     <Compile Include="..\src\Core\GridMosaicRenderer.cs" Link="GridMosaicRenderer.cs" />
+    <Compile Include="..\src\Core\GifConcatenationSettings.cs" Link="GifConcatenationSettings.cs" />
+    <Compile Include="..\src\Core\TransitionGenerator.cs" Link="TransitionGenerator.cs" />
   </ItemGroup>
 
   <ItemGroup>

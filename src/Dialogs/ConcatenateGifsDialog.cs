@@ -49,16 +49,35 @@ namespace GifProcessorApp
 
         // Transition Settings
         private GroupBox grpTransitionSettings;
-        private RadioButton rbTransitionNone;
-        private RadioButton rbTransitionFade;
-        private RadioButton rbTransitionSlide;
-        private RadioButton rbTransitionZoom;
-        private RadioButton rbTransitionDissolve;
-        private ComboBox cmbSlideDirection;
-        private ComboBox cmbZoomType;
+        private Label lblTransitionType;
+        private ComboBox cmbTransition;
         private NumericUpDown nudTransitionDuration;
         private Label lblTransitionDuration;
         private Label lblSeconds;
+
+        // ComboBox order -> TransitionType, each with a localized family-name resource key and a
+        // (non-translated) direction/variant suffix. The selected index maps 1:1 to this array.
+        private static readonly (TransitionType Type, string Key, string Suffix)[] _transitionItems =
+        {
+            (TransitionType.None,         "TransitionDialog_NoTransition",            ""),
+            (TransitionType.Fade,         "TransitionDialog_Fade",                    ""),
+            (TransitionType.CrossFade,    "ConcatenateDialog_TransitionCrossFade",    ""),
+            (TransitionType.SlideLeft,    "ConcatenateDialog_TransitionSlide",        " ←"),
+            (TransitionType.SlideRight,   "ConcatenateDialog_TransitionSlide",        " →"),
+            (TransitionType.SlideUp,      "ConcatenateDialog_TransitionSlide",        " ↑"),
+            (TransitionType.SlideDown,    "ConcatenateDialog_TransitionSlide",        " ↓"),
+            (TransitionType.ZoomIn,       "ConcatenateDialog_TransitionZoom",         " +"),
+            (TransitionType.ZoomOut,      "ConcatenateDialog_TransitionZoom",         " −"),
+            (TransitionType.IrisOpen,     "ConcatenateDialog_TransitionIris",         " ◯+"),
+            (TransitionType.IrisClose,    "ConcatenateDialog_TransitionIris",         " ◯−"),
+            (TransitionType.WipeLeft,     "ConcatenateDialog_TransitionWipe",         " →"),
+            (TransitionType.WipeRight,    "ConcatenateDialog_TransitionWipe",         " ←"),
+            (TransitionType.WipeDiagonal, "ConcatenateDialog_TransitionWipe",         " ↘"),
+            (TransitionType.Dissolve,     "ConcatenateDialog_TransitionDissolve",     ""),
+            (TransitionType.BlurDissolve, "ConcatenateDialog_TransitionBlurDissolve", ""),
+            (TransitionType.DipToBlack,   "ConcatenateDialog_TransitionDipToBlack",   ""),
+            (TransitionType.Ripple,       "ConcatenateDialog_TransitionRipple",       ""),
+        };
 
         // Preview functionality removed
 
@@ -77,10 +96,10 @@ namespace GifProcessorApp
             ApplyTheme();
             UpdateReferenceComboBoxes();
 
-            // Add event handlers for preview updates (after InitializeComponent)
-            cmbSlideDirection.SelectedIndexChanged += CmbSlideDirection_SelectedIndexChanged;
-            cmbZoomType.SelectedIndexChanged += CmbZoomType_SelectedIndexChanged;
-            nudTransitionDuration.ValueChanged += NudTransitionDuration_ValueChanged;
+            // Build the transition dropdown and react to selection (after InitializeComponent).
+            PopulateTransitions();
+            cmbTransition.SelectedIndexChanged += CmbTransition_SelectedIndexChanged;
+            CmbTransition_SelectedIndexChanged(this, EventArgs.Empty); // set initial enabled state (None)
         }
 
         private void InitializeSettings()
@@ -233,13 +252,8 @@ namespace GifProcessorApp
             txtOutputFile = new TextBox();
             btnBrowseOutput = new Button();
             grpTransitionSettings = new GroupBox();
-            rbTransitionNone = new RadioButton();
-            rbTransitionFade = new RadioButton();
-            rbTransitionSlide = new RadioButton();
-            rbTransitionZoom = new RadioButton();
-            rbTransitionDissolve = new RadioButton();
-            cmbSlideDirection = new ComboBox();
-            cmbZoomType = new ComboBox();
+            lblTransitionType = new Label();
+            cmbTransition = new ComboBox();
             lblTransitionDuration = new Label();
             nudTransitionDuration = new NumericUpDown();
             lblSeconds = new Label();
@@ -486,13 +500,8 @@ namespace GifProcessorApp
             // 
             // grpTransitionSettings
             // 
-            grpTransitionSettings.Controls.Add(rbTransitionNone);
-            grpTransitionSettings.Controls.Add(rbTransitionFade);
-            grpTransitionSettings.Controls.Add(rbTransitionSlide);
-            grpTransitionSettings.Controls.Add(rbTransitionZoom);
-            grpTransitionSettings.Controls.Add(rbTransitionDissolve);
-            grpTransitionSettings.Controls.Add(cmbSlideDirection);
-            grpTransitionSettings.Controls.Add(cmbZoomType);
+            grpTransitionSettings.Controls.Add(lblTransitionType);
+            grpTransitionSettings.Controls.Add(cmbTransition);
             grpTransitionSettings.Controls.Add(lblTransitionDuration);
             grpTransitionSettings.Controls.Add(nudTransitionDuration);
             grpTransitionSettings.Controls.Add(lblSeconds);
@@ -502,83 +511,22 @@ namespace GifProcessorApp
             grpTransitionSettings.TabIndex = 17;
             grpTransitionSettings.TabStop = false;
             grpTransitionSettings.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_TransitionSettings;
-            // 
-            // rbTransitionNone
-            // 
-            rbTransitionNone.AutoSize = true;
-            rbTransitionNone.Checked = true;
-            rbTransitionNone.Location = new Point(6, 22);
-            rbTransitionNone.Name = "rbTransitionNone";
-            rbTransitionNone.Size = new Size(101, 19);
-            rbTransitionNone.TabIndex = 0;
-            rbTransitionNone.TabStop = true;
-            rbTransitionNone.Text = SteamGifCropper.Properties.Resources.TransitionDialog_NoTransition;
-            rbTransitionNone.UseVisualStyleBackColor = true;
-            rbTransitionNone.CheckedChanged += RbTransition_CheckedChanged;
-            // 
-            // rbTransitionFade
-            // 
-            rbTransitionFade.AutoSize = true;
-            rbTransitionFade.Location = new Point(113, 22);
-            rbTransitionFade.Name = "rbTransitionFade";
-            rbTransitionFade.Size = new Size(53, 19);
-            rbTransitionFade.TabIndex = 1;
-            rbTransitionFade.Text = SteamGifCropper.Properties.Resources.TransitionDialog_Fade;
-            rbTransitionFade.UseVisualStyleBackColor = true;
-            rbTransitionFade.CheckedChanged += RbTransition_CheckedChanged;
-            // 
-            // rbTransitionSlide
-            // 
-            rbTransitionSlide.AutoSize = true;
-            rbTransitionSlide.Location = new Point(189, 22);
-            rbTransitionSlide.Name = "rbTransitionSlide";
-            rbTransitionSlide.Size = new Size(53, 19);
-            rbTransitionSlide.TabIndex = 2;
-            rbTransitionSlide.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_TransitionSlide;
-            rbTransitionSlide.UseVisualStyleBackColor = true;
-            rbTransitionSlide.CheckedChanged += RbTransition_CheckedChanged;
-            // 
-            // rbTransitionZoom
-            // 
-            rbTransitionZoom.AutoSize = true;
-            rbTransitionZoom.Location = new Point(266, 22);
-            rbTransitionZoom.Name = "rbTransitionZoom";
-            rbTransitionZoom.Size = new Size(59, 19);
-            rbTransitionZoom.TabIndex = 3;
-            rbTransitionZoom.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_TransitionZoom;
-            rbTransitionZoom.UseVisualStyleBackColor = true;
-            rbTransitionZoom.CheckedChanged += RbTransition_CheckedChanged;
-            // 
-            // rbTransitionDissolve
-            // 
-            rbTransitionDissolve.AutoSize = true;
-            rbTransitionDissolve.Location = new Point(351, 22);
-            rbTransitionDissolve.Name = "rbTransitionDissolve";
-            rbTransitionDissolve.Size = new Size(71, 19);
-            rbTransitionDissolve.TabIndex = 4;
-            rbTransitionDissolve.Text = SteamGifCropper.Properties.Resources.ConcatenateDialog_TransitionDissolve;
-            rbTransitionDissolve.UseVisualStyleBackColor = true;
-            rbTransitionDissolve.CheckedChanged += RbTransition_CheckedChanged;
-            // 
-            // cmbSlideDirection
-            // 
-            cmbSlideDirection.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbSlideDirection.Enabled = false;
-            cmbSlideDirection.Items.AddRange(new object[] { "Left", "Right", "Up", "Down" });
-            cmbSlideDirection.Location = new Point(180, 46);
-            cmbSlideDirection.Name = "cmbSlideDirection";
-            cmbSlideDirection.Size = new Size(80, 23);
-            cmbSlideDirection.TabIndex = 5;
-            // 
-            // cmbZoomType
-            // 
-            cmbZoomType.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbZoomType.Enabled = false;
-            cmbZoomType.Items.AddRange(new object[] { "Zoom In", "Zoom Out" });
-            cmbZoomType.Location = new Point(269, 46);
-            cmbZoomType.Name = "cmbZoomType";
-            cmbZoomType.Size = new Size(80, 23);
-            cmbZoomType.TabIndex = 6;
+            //
+            // lblTransitionType
+            //
+            lblTransitionType.AutoSize = true;
+            lblTransitionType.Location = new Point(6, 25);
+            lblTransitionType.Name = "lblTransitionType";
+            lblTransitionType.TabIndex = 0;
+            lblTransitionType.Text = SteamGifCropper.Properties.Resources.ResourceManager.GetString("ConcatenateDialog_TransitionTypeLabel", SteamGifCropper.Properties.Resources.Culture) ?? "Transition:";
+            //
+            // cmbTransition
+            //
+            cmbTransition.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbTransition.Location = new Point(120, 22);
+            cmbTransition.Name = "cmbTransition";
+            cmbTransition.Size = new Size(300, 23);
+            cmbTransition.TabIndex = 1;
             // 
             // lblTransitionDuration
             // 
@@ -789,17 +737,13 @@ namespace GifProcessorApp
             cmbPaletteReference.Enabled = rbPaletteUseReference.Checked;
         }
 
-        private void RbTransition_CheckedChanged(object sender, EventArgs e)
+        private void CmbTransition_SelectedIndexChanged(object sender, EventArgs e)
         {
-            cmbSlideDirection.Enabled = rbTransitionSlide.Checked;
-            cmbZoomType.Enabled = rbTransitionZoom.Checked;
-
-            // Enable/disable transition duration for all transition types except None
-            bool hasTransition = !rbTransitionNone.Checked;
+            // Enable the duration controls for every transition except None (index 0).
+            bool hasTransition = cmbTransition.SelectedIndex > 0;
             nudTransitionDuration.Enabled = hasTransition;
             lblTransitionDuration.Enabled = hasTransition;
             lblSeconds.Enabled = hasTransition;
-
         }
 
         private void UpdateReferenceComboBoxes()
@@ -893,28 +837,9 @@ namespace GifProcessorApp
             Settings.UseGifsicleOptimization = chkUseGifsicleOptimization.Checked;
 
             // Transition settings
-            if (rbTransitionNone.Checked)
-                Settings.Transition = TransitionType.None;
-            else if (rbTransitionFade.Checked)
-                Settings.Transition = TransitionType.Fade;
-            else if (rbTransitionSlide.Checked)
-            {
-                switch (cmbSlideDirection.SelectedIndex)
-                {
-                    case 0: Settings.Transition = TransitionType.SlideLeft; break;
-                    case 1: Settings.Transition = TransitionType.SlideRight; break;
-                    case 2: Settings.Transition = TransitionType.SlideUp; break;
-                    case 3: Settings.Transition = TransitionType.SlideDown; break;
-                    default: Settings.Transition = TransitionType.SlideLeft; break;
-                }
-            }
-            else if (rbTransitionZoom.Checked)
-            {
-                Settings.Transition = cmbZoomType.SelectedIndex == 0 ? TransitionType.ZoomIn : TransitionType.ZoomOut;
-            }
-            else if (rbTransitionDissolve.Checked)
-                Settings.Transition = TransitionType.Dissolve;
-
+            int transIndex = cmbTransition.SelectedIndex;
+            if (transIndex < 0 || transIndex >= _transitionItems.Length) transIndex = 0;
+            Settings.Transition = _transitionItems[transIndex].Type;
             Settings.TransitionDuration = (float)nudTransitionDuration.Value;
 
             // Prepare output properties
@@ -925,41 +850,17 @@ namespace GifProcessorApp
             Close();
         }
 
-        // Transition preview functionality removed - keeping GetSelectedTransitionType for main processing
-        private TransitionType GetSelectedTransitionType()
+        // Populate the transition dropdown from _transitionItems (localized family name + variant suffix).
+        private void PopulateTransitions()
         {
-            if (rbTransitionFade.Checked) return TransitionType.Fade;
-            if (rbTransitionSlide.Checked)
+            cmbTransition.Items.Clear();
+            foreach (var item in _transitionItems)
             {
-                switch (cmbSlideDirection.SelectedIndex)
-                {
-                    case 0: return TransitionType.SlideLeft;
-                    case 1: return TransitionType.SlideRight;
-                    case 2: return TransitionType.SlideUp;
-                    case 3: return TransitionType.SlideDown;
-                    default: return TransitionType.SlideLeft;
-                }
+                string name = SteamGifCropper.Properties.Resources.ResourceManager
+                    .GetString(item.Key, SteamGifCropper.Properties.Resources.Culture) ?? item.Key;
+                cmbTransition.Items.Add(name + item.Suffix);
             }
-            if (rbTransitionZoom.Checked)
-                return cmbZoomType.SelectedIndex == 0 ? TransitionType.ZoomIn : TransitionType.ZoomOut;
-            if (rbTransitionDissolve.Checked) return TransitionType.Dissolve;
-            return TransitionType.None;
-        }
-
-        // Event handlers for preview updates
-        private void CmbSlideDirection_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            // Auto preview removed
-        }
-
-        private void CmbZoomType_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            // Auto preview removed
-        }
-
-        private void NudTransitionDuration_ValueChanged(object sender, EventArgs e)
-        {
-            // Auto preview removed
+            cmbTransition.SelectedIndex = 0; // None
         }
 
         // Preview functionality completely removed

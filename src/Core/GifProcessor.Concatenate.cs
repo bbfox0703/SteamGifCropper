@@ -350,78 +350,76 @@ namespace GifProcessorApp
 
             try
             {
-                for (int i = 0; i < gifCollections.Count; i++)
+                int n = gifCollections.Count;
+
+                // Frame count of each transition (between clip i and i+1; 0 = none). Used both to
+                // generate the transition and to TRIM the overlap from each clip, so the frames shared
+                // by the dynamic transition appear once (the overlap shortens the total length).
+                int[] transN = new int[n];
+                for (int i = 0; i < n - 1; i++)
+                {
+                    transN[i] = settings.Transition == TransitionType.None
+                        ? 0
+                        : TransitionGenerator.GetFrameCount(settings.TransitionDuration, fps,
+                            gifCollections[i].Count, gifCollections[i + 1].Count);
+                }
+
+                // Append one frame to the result, centering it on a maxWidth x maxHeight canvas if its
+                // own size differs.
+                void AppendNormalized(IMagickImage<byte> frame)
+                {
+                    var clonedFrame = frame.Clone();
+                    if (clonedFrame.Width != maxWidth || clonedFrame.Height != maxHeight)
+                    {
+                        var canvas = new MagickImage(MagickColors.Transparent, (uint)maxWidth, (uint)maxHeight);
+                        int cx = (maxWidth - (int)clonedFrame.Width) / 2;
+                        int cy = (maxHeight - (int)clonedFrame.Height) / 2;
+                        canvas.Composite(clonedFrame, cx, cy, CompositeOperator.Over);
+                        canvas.AnimationDelay = clonedFrame.AnimationDelay;
+                        canvas.GifDisposeMethod = clonedFrame.GifDisposeMethod;
+                        clonedFrame.Dispose();
+                        result.Add(canvas);
+                    }
+                    else
+                    {
+                        result.Add(clonedFrame);
+                    }
+                }
+
+                for (int i = 0; i < n; i++)
                 {
                     var collection = gifCollections[i];
-                    
-                    // Add all frames from current GIF, ensuring consistent dimensions
-                    foreach (var frame in collection)
+
+                    // Trim the frames consumed by the incoming transition (clip head) and the outgoing
+                    // transition (clip tail) so the overlapped frames are shown once.
+                    int headSkip = (i > 0) ? transN[i - 1] : 0;
+                    int tailHold = (i < n - 1) ? transN[i] : 0;
+                    int startFrame = headSkip;
+                    int endFrame = collection.Count - tailHold; // exclusive
+                    if (endFrame < startFrame) endFrame = startFrame; // guard for a clip shorter than its transitions
+
+                    for (int f = startFrame; f < endFrame; f++)
                     {
-                        var clonedFrame = frame.Clone();
-                        
-                        // Ensure consistent dimensions
-                        if (clonedFrame.Width != maxWidth || clonedFrame.Height != maxHeight)
-                        {
-                            // Create canvas with target size and center the frame
-                            var canvas = new MagickImage(MagickColors.Transparent, (uint)maxWidth, (uint)maxHeight);
-                            
-                            // Calculate center position
-                            int x = (maxWidth - (int)clonedFrame.Width) / 2;
-                            int y = (maxHeight - (int)clonedFrame.Height) / 2;
-                            
-                            // Composite the frame onto the canvas
-                            canvas.Composite(clonedFrame, x, y, CompositeOperator.Over);
-                            canvas.AnimationDelay = clonedFrame.AnimationDelay;
-                            canvas.GifDisposeMethod = clonedFrame.GifDisposeMethod;
-                            
-                            clonedFrame.Dispose();
-                            result.Add(canvas);
-                        }
-                        else
-                        {
-                            result.Add(clonedFrame);
-                        }
+                        AppendNormalized(collection[f]);
                     }
 
-                    // Generate transition to next GIF (if not the last one)
-                    if (i < gifCollections.Count - 1 && settings.Transition != TransitionType.None)
+                    // Generate the dynamic transition into the next clip.
+                    if (i < n - 1 && transN[i] > 0)
                     {
-                        var currentCollection = gifCollections[i];
                         var nextCollection = gifCollections[i + 1];
-
                         var transitionFrames = await Task.Run(() => TransitionGenerator.GenerateTransition(
-                            currentCollection,
+                            collection,
                             nextCollection,
                             settings.Transition,
                             settings.TransitionDuration,
                             fps,
                             progress));
 
-                        // Add transition frames (they should already have correct dimensions)
                         foreach (var transitionFrame in transitionFrames)
                         {
-                            var clonedTransition = transitionFrame.Clone();
-                            
-                            // Double-check dimensions for transition frames
-                            if (clonedTransition.Width != maxWidth || clonedTransition.Height != maxHeight)
-                            {
-                                var canvas = new MagickImage(MagickColors.Transparent, (uint)maxWidth, (uint)maxHeight);
-                                int x = (maxWidth - (int)clonedTransition.Width) / 2;
-                                int y = (maxHeight - (int)clonedTransition.Height) / 2;
-                                canvas.Composite(clonedTransition, x, y, CompositeOperator.Over);
-                                canvas.AnimationDelay = clonedTransition.AnimationDelay;
-                                canvas.GifDisposeMethod = clonedTransition.GifDisposeMethod;
-                                
-                                clonedTransition.Dispose();
-                                result.Add(canvas);
-                            }
-                            else
-                            {
-                                result.Add(clonedTransition);
-                            }
+                            AppendNormalized(transitionFrame);
                         }
 
-                        // Cleanup transition frames
                         transitionFrames.Dispose();
                     }
                 }

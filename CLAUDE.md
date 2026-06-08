@@ -92,7 +92,7 @@ The application follows a specific initialization sequence:
 - **Key Operations:**
   - Steam-specific splitting: 766px/774px wide GIFs → 5 parts with 100px height extension
   - Tail byte modification: Changes last byte from `0x3B` to `0x21` for Steam compatibility
-  - Transition effects for concatenation (fade, slide, zoom, dissolve)
+  - Dynamic (overlap) transition effects for concatenation: fade, cross-fade, slide, zoom, iris, wipe, dip-to-black, blur dissolve, dissolve, ripple (both clips keep playing through the transition; the overlap shortens the join)
   - Palette optimization and quantization
 
 #### GifToolMainForm (Main UI)
@@ -109,7 +109,7 @@ Each dialog handles one specific operation type:
 - `Mp4ToGifDialog` - MP4 to GIF conversion with time controls
 - `MergeGifsDialog` - Merge 2-5 GIFs side-by-side
 - `MergeFiveGifsDialog` - Merge and split 5 GIFs (Steam showcase format)
-- `ConcatenateGifsDialog` - Concatenate GIFs with transition effects
+- `ConcatenateGifsDialog` - Concatenate GIFs with transition effects (transition type chosen via a single ComboBox; localized family names fetched via `ResourceManager.GetString`, so no Designer entries are needed for them)
 - `OverlayGifDialog` - Overlay one GIF onto another
 - `ResizeNfpsGifDialog` - Resize and change FPS
 - `ScrollStaticImageDialog` - Create scrolling animations
@@ -303,7 +303,7 @@ SteamGifCropper/
 │   │   ├── GifSizeFitter.cs                # Auto-fit-to-≤5MB pipe for gifsicle
 │   │   ├── GifWriteDefines.cs              # Custom GIF write settings
 │   │   ├── GifConcatenationSettings.cs
-│   │   ├── TransitionGenerator.cs          # Transition effects
+│   │   ├── TransitionGenerator.cs          # Dynamic (running-frame) transitions; pure GetFrameCount + per-frame renderers (linked into the test project)
 │   │   ├── ImageInputValidator.cs
 │   │   ├── ScrollDirection.cs
 │   │   ├── GifEffectWindow.cs              # Pure [start,duration] frame-window math (slot/quicksand)
