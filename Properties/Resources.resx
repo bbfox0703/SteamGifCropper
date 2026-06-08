@@ -848,8 +848,20 @@ Files skipped (not 0x21): {1}</value>
   <data name="MergeDialog_CannotCreateDir" xml:space="preserve">
     <value>Cannot create output directory:</value>
   </data>
-  <data name="MergeDialog_PaletteSource" xml:space="preserve">
-    <value>Palette source:</value>
+  <data name="MergeDialog_TailByteFlipError" xml:space="preserve">
+    <value>Cannot change the GIF trailer byte of a source file (it may be read-only or in use). The merge has been aborted and any files already changed were restored.
+
+Details: {0}</value>
+  </data>
+  <data name="MergeDialog_TailFilesModifiedOnError" xml:space="preserve">
+    <value>The merge did not complete. The Steam trailer byte (0x21) of the following source file(s) was temporarily changed to 0x3B for processing and has been restored:
+
+{0}</value>
+  </data>
+  <data name="MergeDialog_TailRestoreWarning" xml:space="preserve">
+    <value>Warning: the Steam trailer byte (0x21) could not be restored on the following file(s); they remain at 0x3B:
+
+{0}</value>
   </data>
   <data name="MergeDialog_SelectGifFiles" xml:space="preserve">
     <value>Select GIF files to merge</value>
@@ -859,9 +871,6 @@ Files skipped (not 0x21): {1}</value>
   </data>
   <data name="MergeDialog_GifFilter" xml:space="preserve">
     <value>GIF Files (*.gif)|*.gif</value>
-  </data>
-  <data name="MergeDialog_GifNumberFormat" xml:space="preserve">
-    <value>GIF {0}: {1}</value>
   </data>
   <data name="MergeFiveGifDialog_Instructions" xml:space="preserve">
     <value>Please select exactly 5 GIF files to merge and split (in order from left to right):</value>

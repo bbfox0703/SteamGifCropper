@@ -185,8 +185,7 @@ namespace GifProcessorApp
                     {
                         await GifProcessor.MergeAndSplitFiveGifs(
                             this,
-                            dialog.SelectedFilePaths,
-                            dialog.PaletteSourceIndex);
+                            dialog.SelectedFilePaths);
                     }
                 }
             }, "five GIF merge and split");
@@ -205,7 +204,7 @@ namespace GifProcessorApp
                 {
                     if (dialog.ShowDialog() == DialogResult.OK)
                     {
-                        await GifProcessor.MergeMultipleGifs(dialog.SelectedFilePaths, dialog.OutputFilePath, this, dialog.PaletteSourceIndex);
+                        await GifProcessor.MergeMultipleGifs(dialog.SelectedFilePaths, dialog.OutputFilePath, this);
                     }
                 }
             }, "GIF merge");

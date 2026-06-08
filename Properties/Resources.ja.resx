@@ -856,8 +856,20 @@
   <data name="MergeDialog_CannotCreateDir" xml:space="preserve">
     <value>出力ディレクトリを作成できません：</value>
   </data>
-  <data name="MergeDialog_PaletteSource" xml:space="preserve">
-    <value>パレットのソース：</value>
+  <data name="MergeDialog_TailByteFlipError" xml:space="preserve">
+    <value>ソースファイルの GIF 終端バイトを変更できません（読み取り専用か使用中の可能性があります）。結合を中止し、すでに変更したファイルは復元しました。
+
+詳細：{0}</value>
+  </data>
+  <data name="MergeDialog_TailFilesModifiedOnError" xml:space="preserve">
+    <value>結合は完了しませんでした。次のソースファイルの Steam 終端バイト（0x21）は処理のため一時的に 0x3B に変更され、復元されました：
+
+{0}</value>
+  </data>
+  <data name="MergeDialog_TailRestoreWarning" xml:space="preserve">
+    <value>警告：次のファイルの Steam 終端バイト（0x21）を復元できず、0x3B のままです：
+
+{0}</value>
   </data>
   <data name="MergeDialog_SelectGifFiles" xml:space="preserve">
     <value>結合する GIF ファイルを選択</value>
@@ -867,9 +879,6 @@
   </data>
   <data name="MergeDialog_GifFilter" xml:space="preserve">
     <value>GIF Files (*.gif)|*.gif</value>
-  </data>
-  <data name="MergeDialog_GifNumberFormat" xml:space="preserve">
-    <value>GIF {0}: {1}</value>
   </data>
   <data name="MergeFiveGifDialog_Instructions" xml:space="preserve">
     <value>結合および分割するGIFファイルをちょうど5つ、左から右の順に選択してください。</value>

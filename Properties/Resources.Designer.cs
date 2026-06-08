@@ -1337,16 +1337,34 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("MergeDialog_CannotCreateDir", resourceCulture);
             }
         }
-        
+
         /// <summary>
-        ///   Looks up a localized string similar to Palette source:.
+        ///   Looks up a localized string similar to Cannot change the GIF trailer byte of a source file (it may be read-only or in use). The merge has been aborted....
         /// </summary>
-        internal static string MergeDialog_PaletteSource {
+        internal static string MergeDialog_TailByteFlipError {
             get {
-                return ResourceManager.GetString("MergeDialog_PaletteSource", resourceCulture);
+                return ResourceManager.GetString("MergeDialog_TailByteFlipError", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to The merge did not complete. The Steam trailer byte (0x21) of the following source file(s) was temporarily changed....
+        /// </summary>
+        internal static string MergeDialog_TailFilesModifiedOnError {
+            get {
+                return ResourceManager.GetString("MergeDialog_TailFilesModifiedOnError", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Warning: the Steam trailer byte (0x21) could not be restored on the following file(s); they remain at 0x3B:.
+        /// </summary>
+        internal static string MergeDialog_TailRestoreWarning {
+            get {
+                return ResourceManager.GetString("MergeDialog_TailRestoreWarning", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Select GIF files to merge.
         /// </summary>
@@ -1371,15 +1389,6 @@ namespace SteamGifCropper.Properties {
         internal static string MergeDialog_GifFilter {
             get {
                 return ResourceManager.GetString("MergeDialog_GifFilter", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to GIF {0}: {1}.
-        /// </summary>
-        internal static string MergeDialog_GifNumberFormat {
-            get {
-                return ResourceManager.GetString("MergeDialog_GifNumberFormat", resourceCulture);
             }
         }
         
