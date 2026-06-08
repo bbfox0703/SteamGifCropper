@@ -162,9 +162,6 @@
   <data name="Status_Saving" xml:space="preserve">
     <value>保存しています...</value>
   </data>
-  <data name="Status_ReducingPalette" xml:space="preserve">
-    <value>パレットを縮小しています...</value>
-  </data>
   <data name="Status_CoalescingFrames" xml:space="preserve">
     <value>フレームを結合しています...</value>
   </data>
@@ -174,26 +171,11 @@
   <data name="Status_Loading" xml:space="preserve">
     <value>読み込み中...</value>
   </data>
-  <data name="Status_Overlaying" xml:space="preserve">
-    <value>オーバーレイ中...</value>
-  </data>
-  <data name="Status_ResizingFrames" xml:space="preserve">
-    <value>フレームサイズ変更中...</value>
-  </data>
   <data name="Status_Optimizing" xml:space="preserve">
     <value>最適化中...</value>
   </data>
   <data name="Status_RestoringTailBytes" xml:space="preserve">
     <value>テールバイト復元中...</value>
-  </data>
-  <data name="Status_ProcessingPart" xml:space="preserve">
-    <value>パート{0}、フレーム{1}を処理中...</value>
-  </data>
-  <data name="Status_ProcessingCount" xml:space="preserve">
-    <value>処理中... {0}/{1}</value>
-  </data>
-  <data name="Status_ProcessingFrame" xml:space="preserve">
-    <value>フレーム{0}/{1}を処理中</value>
   </data>
   <data name="Status_ResizingGif" xml:space="preserve">
     <value>GIF #{0}を{1}px幅にサイズ変更中...</value>
@@ -207,9 +189,6 @@
   <data name="Status_MappingSharedPalette" xml:space="preserve">
     <value>共有パレットにマッピング中...</value>
   </data>
-  <data name="Status_MergingFrame" xml:space="preserve">
-    <value>フレーム{0}/{1}をマージしています...</value>
-  </data>
   <data name="Title_Error" xml:space="preserve">
     <value>エラー</value>
   </data>
@@ -218,9 +197,6 @@
   </data>
   <data name="Title_Warning" xml:space="preserve">
     <value>警告</value>
-  </data>
-  <data name="Title_Information" xml:space="preserve">
-    <value>情報</value>
   </data>
   <data name="Title_StartupError" xml:space="preserve">
     <value>起動エラー</value>
@@ -234,9 +210,6 @@
   <data name="Title_Mp4ToGifError" xml:space="preserve">
     <value>MP4からGIF変換エラー</value>
   </data>
-  <data name="Title_MergeGifs" xml:space="preserve">
-    <value>GIFマージ</value>
-  </data>
   <data name="Title_MergeGifError" xml:space="preserve">
     <value>GIFマージエラー</value>
   </data>
@@ -248,9 +221,6 @@
   </data>
   <data name="Title_InvalidColorType" xml:space="preserve">
     <value>無効な色タイプ</value>
-  </data>
-  <data name="Title_SelectionOrder" xml:space="preserve">
-    <value>選択順序</value>
   </data>
   <data name="Message_ProcessingComplete" xml:space="preserve">
     <value>処理が完了しました！</value>
@@ -265,9 +235,6 @@
     <value>GIFマージが完了しました！
 出力ファイル：{0}</value>
   </data>
-  <data name="Message_SelectGifFiles" xml:space="preserve">
-    <value>マージする2-5個のGIFファイルを選択してください</value>
-  </data>
   <data name="Message_GifFileCount" xml:space="preserve">
     <value>2～5 個のGIFファイルを選択してください。</value>
   </data>
@@ -279,10 +246,6 @@
   </data>
   <data name="Message_ResizeComplete" xml:space="preserve">
     <value>GIF のリサイズが正常に完了しました！\n保存名: {0}</value>
-  </data>
-  <data name="Message_Mp4ConversionComplete" xml:space="preserve">
-    <value>MP4からGIFへの変換が完了しました！
-出力ファイル：{0}</value>
   </data>
   <data name="Message_OverlayComplete" xml:space="preserve">
     <value>オーバーレイが完了しました。</value>
@@ -346,53 +309,11 @@
   <data name="FileDialog_GifFilter" xml:space="preserve">
     <value>GIFファイル (*.gif)|*.gif</value>
   </data>
-  <data name="FileDialog_ImageFilter" xml:space="preserve">
-    <value>画像ファイル (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp</value>
-  </data>
   <data name="FileDialog_ImageAndGifFilter" xml:space="preserve">
     <value>画像およびGIFファイル (*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.png;*.jpg;*.jpeg;*.bmp;*.gif</value>
   </data>
-  <data name="FileDialog_SelectGifOrder" xml:space="preserve">
-    <value>GIF ファイル #{0} を選択してください（左から右へ {1} 番目の位置）</value>
-  </data>
-  <data name="Instruction_SelectFiveGifs" xml:space="preserve">
-    <value>希望する順序で5つのGIFファイルを1つずつ選択する必要があります。
-
-ファイル1：第1位置（左端）
-ファイル2：第2位置
-ファイル3：第3位置（中央）
-ファイル4：第4位置
-ファイル5：第5位置（右端）</value>
-  </data>
-  <data name="Mp4Dialog_InputFile" xml:space="preserve">
-    <value>入力ファイル：</value>
-  </data>
-  <data name="Mp4Dialog_OutputFile" xml:space="preserve">
-    <value>出力ファイル：</value>
-  </data>
-  <data name="Mp4Dialog_StartTime" xml:space="preserve">
-    <value>開始時刻:</value>
-  </data>
-  <data name="Mp4Dialog_Minutes" xml:space="preserve">
-    <value>分</value>
-  </data>
   <data name="Mp4Dialog_Seconds" xml:space="preserve">
     <value>秒</value>
-  </data>
-  <data name="Mp4Dialog_Duration" xml:space="preserve">
-    <value>持続時間：</value>
-  </data>
-  <data name="Group_Dither" xml:space="preserve">
-    <value>ディザリング</value>
-  </data>
-  <data name="Label_Optimize" xml:space="preserve">
-    <value>Optimize:</value>
-  </data>
-  <data name="Label_Palette" xml:space="preserve">
-    <value>Palette:</value>
-  </data>
-  <data name="Label_Lossy" xml:space="preserve">
-    <value>Lossy:</value>
   </data>
   <data name="Radio_Default" xml:space="preserve">
     <value>デフォルト</value>
@@ -411,9 +332,6 @@
   </data>
   <data name="Label_FPS" xml:space="preserve">
     <value>フレーム/秒</value>
-  </data>
-  <data name="Tooltip_Framerate" xml:space="preserve">
-    <value>フレームレート設定はMP4変換、スクロールアニメーション、リサイズ/FPSツールのみに適用。分割・結合は元のタイミングを保持。</value>
   </data>
   <data name="Button_ReverseGif" xml:space="preserve">
     <value>FFMPEG：アニメーションGIFを反転</value>
@@ -664,30 +582,6 @@
   <data name="ScrollDialog_AutoDuration" xml:space="preserve">
     <value>GIFサイクル期間を自動計算</value>
   </data>
-  <data name="Status_AutoCalculatedDuration" xml:space="preserve">
-    <value>GIFサイクル期間を自動計算：{0:F2}秒 → {1}秒</value>
-  </data>
-  <data name="Status_AutoDurationMode" xml:space="preserve">
-    <value>自動期間モード</value>
-  </data>
-  <data name="Status_ManualDurationMode" xml:space="preserve">
-    <value>手動{0}秒</value>
-  </data>
-  <data name="Status_ScrollParameters" xml:space="preserve">
-    <value>{0}：{1}フレーム、X:{2:F2}px/フレーム、Y:{3:F2}px/フレーム</value>
-  </data>
-  <data name="Status_FullCycleFinalPosition" xml:space="preserve">
-    <value>フルサイクル最終位置：X={0}、Y={1}（0にリセットしない）</value>
-  </data>
-  <data name="Status_AutoDurationComplete" xml:space="preserve">
-    <value>自動期間完了：{0}フレーム（ソースと同じ）</value>
-  </data>
-  <data name="Status_TimelineContinuity" xml:space="preserve">
-    <value>タイムライン継続性：最後に使用したフレーム{0}、フレーム{1}から継続</value>
-  </data>
-  <data name="Status_StepBasedContinuity" xml:space="preserve">
-    <value>ステップベース継続性：{0}スクロールフレームを使用、最後のフレーム{1}、フレーム{2}から継続</value>
-  </data>
   <data name="Button_OverlayGif" xml:space="preserve">
     <value>GIFを別のGIFに重ねる</value>
   </data>
@@ -706,12 +600,6 @@
   <data name="Status_MergingHorizontally" xml:space="preserve">
     <value>GIFを766px幅に水平マージ中...</value>
   </data>
-  <data name="Status_FiveGifComplete" xml:space="preserve">
-    <value>5つのGIF処理が完了しました！</value>
-  </data>
-  <data name="Status_ErrorOccurred" xml:space="preserve">
-    <value>エラーが発生しました</value>
-  </data>
   <data name="MergeFiveGif_Success" xml:space="preserve">
     <value>5つのGIFの結合と分割が正常に完了しました！</value>
   </data>
@@ -723,15 +611,6 @@
   </data>
   <data name="Status_ProcessingPartPalette" xml:space="preserve">
     <value>パート{0}のパレット、フレーム{1}を処理しています...</value>
-  </data>
-  <data name="Status_Mp4ShortClip" xml:space="preserve">
-    <value>短いクリップ：最適化設定でMP4を変換中...</value>
-  </data>
-  <data name="Status_Mp4CPU" xml:space="preserve">
-    <value>最適化されたCPUでMP4をGIFに変換しています...</value>
-  </data>
-  <data name="Status_Mp4Complete" xml:space="preserve">
-    <value>MP4からGIFへの変換が正常に完了しました！</value>
   </data>
   <data name="FileDialog_SelectGifToReverse" xml:space="preserve">
     <value>反転するGIFファイルを選択</value>
@@ -754,12 +633,6 @@
   <data name="Error_GifReverseFailed" xml:space="preserve">
     <value>GIF反転に失敗しました：{0}</value>
   </data>
-  <data name="Error_FileValidationFailed" xml:space="preserve">
-    <value>ファイル検証に失敗しました：{0}</value>
-  </data>
-  <data name="Error_GifMergeFailed" xml:space="preserve">
-    <value>GIFマージに失敗しました：{0}</value>
-  </data>
   <data name="FileDialog_Mp4Filter" xml:space="preserve">
     <value>MP4ファイル (*.mp4)|*.mp4</value>
   </data>
@@ -768,12 +641,6 @@
   </data>
   <data name="FileDialog_SaveGif" xml:space="preserve">
     <value>GIFファイルを名前を付けて保存...</value>
-  </data>
-  <data name="Status_ConvertingMp4" xml:space="preserve">
-    <value>MP4をGIFに変換しています...</value>
-  </data>
-  <data name="Title_Mp4ConversionError" xml:space="preserve">
-    <value>MP4変換エラー</value>
   </data>
   <data name="CheckBox_GifsicleOptimization" xml:space="preserve">
     <value>gifsicle最適化を有効にする</value>
@@ -819,9 +686,6 @@
   </data>
   <data name="MergeDialog_Instructions" xml:space="preserve">
     <value>マージする2-5個のGIFファイルを選択してください（左から右の順序で）：</value>
-  </data>
-  <data name="MergeDialog_GifFiles" xml:space="preserve">
-    <value>GIFファイル（2-5個）：</value>
   </data>
   <data name="MergeDialog_AddFiles" xml:space="preserve">
     <value>ファイルを追加...</value>
@@ -878,7 +742,7 @@
     <value>マージした GIF を別名で保存…</value>
   </data>
   <data name="MergeDialog_GifFilter" xml:space="preserve">
-    <value>GIF Files (*.gif)|*.gif</value>
+    <value>GIFファイル (*.gif)|*.gif</value>
   </data>
   <data name="MergeFiveGifDialog_Instructions" xml:space="preserve">
     <value>結合および分割するGIFファイルをちょうど5つ、左から右の順に選択してください。</value>
@@ -927,12 +791,6 @@
   </data>
   <data name="Mp4Dialog_FFmpegHelp" xml:space="preserve">
     <value>FFmpeg をインストールする方法は？（MP4 変換に必須）</value>
-  </data>
-  <data name="Mp4Dialog_GPUDecode" xml:space="preserve">
-    <value>GPUデコード（デコードのみ、GIFエンコードはCPUを使用）</value>
-  </data>
-  <data name="Mp4Dialog_CheckingGPU" xml:space="preserve">
-    <value>GPUを確認中...</value>
   </data>
   <data name="Mp4Dialog_Title" xml:space="preserve">
     <value>MP4 → GIF コンバーター</value>
@@ -992,15 +850,6 @@ FFmpeg をインストールするには:
 
 詳細は MP4→GIF ダイアログのリンクを参照してください。</value>
   </data>
-  <data name="Mp4ToGif_FFmpegLog" xml:space="preserve">
-    <value> (FFmpeg ログ: {0})</value>
-  </data>
-  <data name="Mp4ToGif_FFmpegOutput" xml:space="preserve">
-    <value> FFmpeg 出力: {0}</value>
-  </data>
-  <data name="Mp4ToGif_Converting" xml:space="preserve">
-    <value>最適化された CPU で MP4 を GIF に変換中...</value>
-  </data>
   <data name="Mp4ToGif_Success" xml:space="preserve">
     <value>MP4 から GIF への変換が完了しました！</value>
   </data>
@@ -1051,13 +900,7 @@ FFmpeg 出力（切り捨て）:
   <data name="ScrollDialog_Title" xml:space="preserve">
     <value>画像／GIFをスクロール</value>
   </data>
-  <data name="ScrollDialog_TitleImageAndGif" xml:space="preserve">
-    <value>画像／GIFをスクロール</value>
-  </data>
   <data name="ScrollDialog_InputLabel" xml:space="preserve">
-    <value>入力画像またはGIF</value>
-  </data>
-  <data name="ScrollDialog_InputImageOrGif" xml:space="preserve">
     <value>入力画像またはGIF</value>
   </data>
   <data name="ScrollDialog_OutputLabel" xml:space="preserve">
@@ -1088,9 +931,6 @@ FFmpeg 出力（切り捨て）:
     <value>キャンセル</value>
   </data>
   <data name="ScrollDialog_SelectInput" xml:space="preserve">
-    <value>画像またはGIFファイルを選択</value>
-  </data>
-  <data name="ScrollDialog_SelectImageOrGif" xml:space="preserve">
     <value>画像またはGIFファイルを選択</value>
   </data>
   <data name="ScrollDialog_SelectOutput" xml:space="preserve">
@@ -1126,9 +966,6 @@ FFmpeg 出力（切り捨て）:
   <data name="ScrollDialog_DirRightDown" xml:space="preserve">
     <value>右下</value>
   </data>
-  <data name="Button_ConcatenateGifs" xml:space="preserve">
-    <value>GIFファイルを結合（FPS／パレット制御付き）</value>
-  </data>
   <data name="ConcatenateDialog_Title" xml:space="preserve">
     <value>GIFファイルを結合</value>
   </data>
@@ -1159,9 +996,6 @@ FFmpeg 出力（切り捨て）:
   <data name="ConcatenateDialog_PaletteUseReference" xml:space="preserve">
     <value>参照GIFを使用：</value>
   </data>
-  <data name="ConcatenateDialog_StrongPaletteWeighting" xml:space="preserve">
-    <value>参照パレットに8倍の重み付け</value>
-  </data>
   <data name="ConcatenateDialog_UnifyDimensions" xml:space="preserve">
     <value>寸法を統一（最大にリサイズ）</value>
   </data>
@@ -1177,82 +1011,12 @@ FFmpeg 出力（切り捨て）:
   <data name="ConcatenateDialog_RequireOutput" xml:space="preserve">
     <value>出力ファイルを指定してください。</value>
   </data>
-  <data name="ConcatenateDialog_SelectGifFiles" xml:space="preserve">
-    <value>結合するGIFファイルを選択</value>
-  </data>
-  <data name="ConcatenateDialog_SaveGif" xml:space="preserve">
-    <value>結合したGIFを名前を付けて保存...</value>
-  </data>
-  <data name="Status_AnalyzingGifs" xml:space="preserve">
-    <value>GIFプロパティを解析中...</value>
-  </data>
-  <data name="Status_UnifyingFrameRates" xml:space="preserve">
-    <value>フレームレートを統一中...</value>
-  </data>
-  <data name="Status_UnifyingDimensions" xml:space="preserve">
-    <value>寸法を統一中...</value>
-  </data>
-  <data name="Status_BuildingUnifiedPalette" xml:space="preserve">
-    <value>統一パレットを生成中...</value>
-  </data>
-  <data name="Status_ApplyingUnifiedPalette" xml:space="preserve">
-    <value>統一パレットを適用中...</value>
-  </data>
-  <data name="Status_ConcatenatingGifs" xml:space="preserve">
-    <value>GIFファイルを結合中...</value>
-  </data>
-  <data name="Message_ConcatenationComplete" xml:space="preserve">
-    <value>GIFの結合が正常に完了しました！
-保存先: {0}</value>
-  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="lang_switch" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\lang_switch.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="TransitionDialog_TransitionSettings" xml:space="preserve">
-    <value>トランジション設定</value>
-  </data>
   <data name="TransitionDialog_NoTransition" xml:space="preserve">
     <value>トランジションなし</value>
   </data>
   <data name="TransitionDialog_Fade" xml:space="preserve">
     <value>フェード</value>
-  </data>
-  <data name="TransitionDialog_Slide" xml:space="preserve">
-    <value>スライド</value>
-  </data>
-  <data name="TransitionDialog_Zoom" xml:space="preserve">
-    <value>ズーム</value>
-  </data>
-  <data name="TransitionDialog_Dissolve" xml:space="preserve">
-    <value>ディゾルブ</value>
-  </data>
-  <data name="TransitionDialog_Left" xml:space="preserve">
-    <value>左</value>
-  </data>
-  <data name="TransitionDialog_Right" xml:space="preserve">
-    <value>右</value>
-  </data>
-  <data name="TransitionDialog_Up" xml:space="preserve">
-    <value>上</value>
-  </data>
-  <data name="TransitionDialog_Down" xml:space="preserve">
-    <value>下</value>
-  </data>
-  <data name="TransitionDialog_ZoomIn" xml:space="preserve">
-    <value>ズームイン</value>
-  </data>
-  <data name="TransitionDialog_ZoomOut" xml:space="preserve">
-    <value>ズームアウト</value>
-  </data>
-  <data name="TransitionDialog_TransitionDuration" xml:space="preserve">
-    <value>トランジション時間：</value>
-  </data>
-  <data name="TransitionDialog_Seconds" xml:space="preserve">
-    <value>秒</value>
-  </data>
-  <data name="TransitionDialog_Cancel" xml:space="preserve">
-    <value>キャンセル</value>
   </data>
   <data name="ConcatenateDialog_OutputFile" xml:space="preserve">
     <value>出力GIFファイル：</value>
@@ -1296,14 +1060,8 @@ FFmpeg 出力（切り捨て）:
   <data name="GTMainForm_ConcatenateGifs" xml:space="preserve">
     <value>GIFを結合</value>
   </data>
-  <data name="ConcatenateDialog_WindowTitle" xml:space="preserve">
-    <value>GIFファイルを結合</value>
-  </data>
   <data name="ConcatenateDialog_TransitionSettings" xml:space="preserve">
     <value>トランジション設定</value>
-  </data>
-  <data name="ConcatenateDialog_OutputFileLabel" xml:space="preserve">
-    <value>出力GIFファイル：</value>
   </data>
   <data name="OverlayDialog_SelectBaseGif" xml:space="preserve">
     <value>ベースGIFファイルを選択してください。</value>
@@ -1400,57 +1158,6 @@ FFmpeg 出力（切り捨て）:
   </data>
   <data name="Direction_RightDown" xml:space="preserve">
     <value>右下</value>
-  </data>
-  <data name="TransitionDialog_PreviewTransition" xml:space="preserve">
-    <value>トランジションをプレビュー</value>
-  </data>
-  <data name="TransitionDialog_Generating" xml:space="preserve">
-    <value>生成中...</value>
-  </data>
-  <data name="TransitionDialog_Cancelling" xml:space="preserve">
-    <value>キャンセル中...</value>
-  </data>
-  <data name="TransitionDialog_PreviewError" xml:space="preserve">
-    <value>プレビューエラー</value>
-  </data>
-  <data name="TransitionDialog_PreviewCancelled" xml:space="preserve">
-    <value>ユーザーによりプレビューがキャンセルされました</value>
-  </data>
-  <data name="TransitionDialog_RequireMinTwoGifs" xml:space="preserve">
-    <value>トランジションをプレビューするにはGIFファイルを少なくとも2つ選択してください。</value>
-  </data>
-  <data name="TransitionDialog_SelectTransitionType" xml:space="preserve">
-    <value>プレビューするトランジションの種類を選択してください。</value>
-  </data>
-  <data name="TransitionDialog_InitializingPreview" xml:space="preserve">
-    <value>プレビューを初期化中...</value>
-  </data>
-  <data name="TransitionDialog_ResizingForPreview" xml:space="preserve">
-    <value>プレビュー用に画像をリサイズ中...</value>
-  </data>
-  <data name="TransitionDialog_ErrorGeneratingPreview" xml:space="preserve">
-    <value>トランジションプレビューの生成に失敗しました: {0}</value>
-  </data>
-  <data name="ConcatenateDialog_Preview" xml:space="preserve">
-    <value>プレビュー</value>
-  </data>
-  <data name="ConcatenateDialog_AutoUpdatePreview" xml:space="preserve">
-    <value>プレビューを自動更新</value>
-  </data>
-  <data name="ConcatenateDialog_NoPreviewAvailable" xml:space="preserve">
-    <value>プレビューは利用できません</value>
-  </data>
-  <data name="ConcatenateDialog_GeneratingPreview" xml:space="preserve">
-    <value>プレビューを生成中...</value>
-  </data>
-  <data name="ConcatenateDialog_FrameInfo" xml:space="preserve">
-    <value>フレーム: {0}, 合計: {1}</value>
-  </data>
-  <data name="ConcatenateDialog_PreviewError" xml:space="preserve">
-    <value>プレビューエラー: {0}</value>
-  </data>
-  <data name="ConcatenateDialog_FailedToGeneratePreview" xml:space="preserve">
-    <value>プレビューの生成に失敗しました。</value>
   </data>
   <data name="Error_InvalidFileFormat" xml:space="preserve">
     <value>ファイル "{0}" は有効な画像ファイルではありません。対応形式：{1}</value>
