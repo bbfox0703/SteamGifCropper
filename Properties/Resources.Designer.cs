@@ -2591,6 +2591,126 @@ namespace SteamGifCropper.Properties {
             }
         }
 
+        internal static string Button_RippleStatic {
+            get {
+                return ResourceManager.GetString("Button_RippleStatic", resourceCulture);
+            }
+        }
+
+        internal static string Button_RippleGif {
+            get {
+                return ResourceManager.GetString("Button_RippleGif", resourceCulture);
+            }
+        }
+
+        internal static string Status_RippleBuilding {
+            get {
+                return ResourceManager.GetString("Status_RippleBuilding", resourceCulture);
+            }
+        }
+
+        internal static string RippleDialog_Title {
+            get {
+                return ResourceManager.GetString("RippleDialog_Title", resourceCulture);
+            }
+        }
+
+        internal static string RippleDialog_WaveSpeed {
+            get {
+                return ResourceManager.GetString("RippleDialog_WaveSpeed", resourceCulture);
+            }
+        }
+
+        internal static string RippleDialog_Wavelength {
+            get {
+                return ResourceManager.GetString("RippleDialog_Wavelength", resourceCulture);
+            }
+        }
+
+        internal static string RippleDialog_Strength {
+            get {
+                return ResourceManager.GetString("RippleDialog_Strength", resourceCulture);
+            }
+        }
+
+        internal static string RippleDialog_SpatialDamping {
+            get {
+                return ResourceManager.GetString("RippleDialog_SpatialDamping", resourceCulture);
+            }
+        }
+
+        internal static string RippleDialog_TimeDamping {
+            get {
+                return ResourceManager.GetString("RippleDialog_TimeDamping", resourceCulture);
+            }
+        }
+
+        internal static string RippleDialog_Threshold {
+            get {
+                return ResourceManager.GetString("RippleDialog_Threshold", resourceCulture);
+            }
+        }
+
+        internal static string RippleDialog_DropsTitle {
+            get {
+                return ResourceManager.GetString("RippleDialog_DropsTitle", resourceCulture);
+            }
+        }
+
+        internal static string RippleDialog_ColX {
+            get {
+                return ResourceManager.GetString("RippleDialog_ColX", resourceCulture);
+            }
+        }
+
+        internal static string RippleDialog_ColY {
+            get {
+                return ResourceManager.GetString("RippleDialog_ColY", resourceCulture);
+            }
+        }
+
+        internal static string RippleDialog_ColIntensity {
+            get {
+                return ResourceManager.GetString("RippleDialog_ColIntensity", resourceCulture);
+            }
+        }
+
+        internal static string RippleDialog_ColTime {
+            get {
+                return ResourceManager.GetString("RippleDialog_ColTime", resourceCulture);
+            }
+        }
+
+        internal static string RippleDialog_DropN {
+            get {
+                return ResourceManager.GetString("RippleDialog_DropN", resourceCulture);
+            }
+        }
+
+        internal static string RippleDialog_GifPlayDuring {
+            get {
+                return ResourceManager.GetString("RippleDialog_GifPlayDuring", resourceCulture);
+            }
+        }
+
+        internal static string RippleDialog_GifFreeze {
+            get {
+                return ResourceManager.GetString("RippleDialog_GifFreeze", resourceCulture);
+            }
+        }
+
+        internal static string RippleDialog_Pick {
+            get {
+                return ResourceManager.GetString("RippleDialog_Pick", resourceCulture);
+            }
+        }
+
+        internal static string RippleDialog_PickTitle {
+            get {
+                return ResourceManager.GetString("RippleDialog_PickTitle", resourceCulture);
+            }
+        }
+
         internal static string GridDialog_Title {
             get {
                 return ResourceManager.GetString("GridDialog_Title", resourceCulture);

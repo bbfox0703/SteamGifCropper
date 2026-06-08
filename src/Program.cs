@@ -67,6 +67,9 @@ namespace GifProcessorApp
         /// width, height)` — used by split, merge, overlay, scroll, grid and Coalesce — creates
         /// its canvas by reading the "xc:" pseudo-coder; blocking it raises
         /// "operation not authorized by the security policy `XC'".
+        /// PNG32 is the same PNG parser forced to 8-bit RGBA (no extra attack surface); the ripple
+        /// drop-position picker writes frame 0 to a PNG32 stream to build its preview bitmap, which
+        /// otherwise raises "operation not authorized by the security policy `PNG32'".
         /// </summary>
         private static void ConfigureImageMagickPolicy()
         {
@@ -74,7 +77,7 @@ namespace GifProcessorApp
             configFiles.Policy.Data = @"<policymap>
   <policy domain=""delegate"" rights=""none"" pattern=""*"" />
   <policy domain=""coder"" rights=""none"" pattern=""*"" />
-  <policy domain=""coder"" rights=""read|write"" pattern=""{GIF,PNG,JPEG,BMP,XC}"" />
+  <policy domain=""coder"" rights=""read|write"" pattern=""{GIF,PNG,PNG32,JPEG,BMP,XC}"" />
 </policymap>";
             MagickNET.Initialize(configFiles);
         }
