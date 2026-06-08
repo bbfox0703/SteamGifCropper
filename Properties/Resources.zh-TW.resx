@@ -121,7 +121,7 @@
     <value>用gifsicle將GIF檔案分割為5個部分</value>
   </data>
   <data name="Button_ResizeGif" xml:space="preserve">
-    <value>調整GIF檔案尺寸至766像素寬度</value>
+    <value>調整GIF／圖片尺寸至766像素寬度</value>
   </data>
   <data name="Button_WriteTailByte" xml:space="preserve">
     <value>將GIF檔案最後位元組寫入為0x21</value>

@@ -283,9 +283,11 @@ namespace GifProcessorApp
                 throw new InvalidOperationException($"Failed to modify GIF file {filePath}: {ex.Message}", ex);
             }
         }
+        // Accepts a GIF or a still image (PNG/JPEG/BMP/WebP/HEIC/...). A still image loads as a
+        // single-frame collection, so it resizes and writes out as a single-frame 766px GIF.
         public static void ResizeGifTo766(string inputFilePath, string outputFilePath, GifToolMainForm mainForm = null)
         {
-            ImageInputValidator.ValidateGif(inputFilePath);
+            ImageInputValidator.ValidateImage(inputFilePath);
             try
             {
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_CoalescingFrames);
@@ -339,15 +341,19 @@ namespace GifProcessorApp
         {
             using (var openFileDialog = new OpenFileDialog
             {
-                Filter = SteamGifCropper.Properties.Resources.FileDialog_GifFilter,
+                Filter = SteamGifCropper.Properties.Resources.FileDialog_ImageAndGifFilter,
                 Title = SteamGifCropper.Properties.Resources.FileDialog_SelectGifResize
             })
             {
                 if (openFileDialog.ShowDialog() != DialogResult.OK) return;
 
                 string inputFilePath = openFileDialog.FileName;
-                ImageInputValidator.ValidateGif(inputFilePath);
-                string outputFilePath = GenerateOutputPath(inputFilePath, "_766px");
+                ImageInputValidator.ValidateImage(inputFilePath);
+                // Always emit a 766px GIF (single-frame for a still image) so the result feeds the
+                // GIF-only tools (grid mosaic, split, ...) and the 766px pipeline regardless of input.
+                string outputFilePath = Path.Combine(
+                    Path.GetDirectoryName(inputFilePath),
+                    Path.GetFileNameWithoutExtension(inputFilePath) + "_766px.gif");
 
                 mainForm.Enabled = false;
                 try
