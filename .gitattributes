@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Bundled gifsicle binary: never apply EOL normalization (keep the .exe byte-exact).
+tools/gifsicle/gifsicle.exe binary

@@ -856,8 +856,20 @@
   <data name="MergeDialog_CannotCreateDir" xml:space="preserve">
     <value>無法建立輸出目錄：</value>
   </data>
-  <data name="MergeDialog_PaletteSource" xml:space="preserve">
-    <value>調色盤來源：</value>
+  <data name="MergeDialog_TailByteFlipError" xml:space="preserve">
+    <value>無法變更來源檔案的 GIF 檔尾位元組（檔案可能為唯讀或被佔用）。已中止合併，先前已變更的檔案均已還原。
+
+詳細資訊：{0}</value>
+  </data>
+  <data name="MergeDialog_TailFilesModifiedOnError" xml:space="preserve">
+    <value>合併未完成。下列來源檔案的 Steam 檔尾位元組（0x21）已在處理期間暫時改為 0x3B，現已還原：
+
+{0}</value>
+  </data>
+  <data name="MergeDialog_TailRestoreWarning" xml:space="preserve">
+    <value>警告：下列檔案的 Steam 檔尾位元組（0x21）無法還原，仍維持為 0x3B：
+
+{0}</value>
   </data>
   <data name="MergeDialog_SelectGifFiles" xml:space="preserve">
     <value>選擇要合併的 GIF 檔案</value>
@@ -867,9 +879,6 @@
   </data>
   <data name="MergeDialog_GifFilter" xml:space="preserve">
     <value>GIF Files (*.gif)|*.gif</value>
-  </data>
-  <data name="MergeDialog_GifNumberFormat" xml:space="preserve">
-    <value>GIF {0}: {1}</value>
   </data>
   <data name="MergeFiveGifDialog_Instructions" xml:space="preserve">
     <value>請選擇正好 5 個要合併並分割的 GIF 檔案（由左至右的順序）：</value>
