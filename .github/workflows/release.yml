@@ -52,9 +52,9 @@ jobs:
         run: dotnet restore SteamGifCropper.csproj
 
       # Self-contained 發佈:打包 .NET 10 runtime,使用者免裝 runtime 直接執行
-      # -p:DebugType=portable -p:DebugSymbols=true 確保輸出含 .pdb(會一併打包進 zip)
+      # -p:DebugType=none -p:DebugSymbols=false 不產生/不打包 .pdb(zip 內不含偵錯符號)
       - name: Publish (self-contained, win-x64)
-        run: dotnet publish SteamGifCropper.csproj -c Release -r win-x64 --self-contained true -p:DebugType=portable -p:DebugSymbols=true -o publish
+        run: dotnet publish SteamGifCropper.csproj -c Release -r win-x64 --self-contained true -p:DebugType=none -p:DebugSymbols=false -o publish
 
       - name: Package zip
         shell: pwsh
