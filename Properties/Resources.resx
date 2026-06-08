@@ -1191,4 +1191,106 @@ Technical details: {5}</value>
   <data name="Error_FileTooLarge" xml:space="preserve">
     <value>The file "{0}" exceeds the maximum allowed size of {1} MB.</value>
   </data>
+  <data name="Button_WindStatic" xml:space="preserve">
+    <value>766px Wind Sway (Image)</value>
+  </data>
+  <data name="Button_WindGif" xml:space="preserve">
+    <value>766px Wind Sway (GIF)</value>
+  </data>
+  <data name="Status_WindBuilding" xml:space="preserve">
+    <value>Building wind sway...</value>
+  </data>
+  <data name="WindDialog_Title" xml:space="preserve">
+    <value>Wind Sway (766px)</value>
+  </data>
+  <data name="WindDialog_Direction" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="WindDialog_Mode" xml:space="preserve">
+    <value>Mode</value>
+  </data>
+  <data name="WindDialog_ModeNormal" xml:space="preserve">
+    <value>Normal (gusts)</value>
+  </data>
+  <data name="WindDialog_ModeNuclear" xml:space="preserve">
+    <value>Nuclear blast</value>
+  </data>
+  <data name="WindDir_FromLeft" xml:space="preserve">
+    <value>From left →</value>
+  </data>
+  <data name="WindDir_FromRight" xml:space="preserve">
+    <value>From right ←</value>
+  </data>
+  <data name="WindDir_FromTop" xml:space="preserve">
+    <value>From top ↓</value>
+  </data>
+  <data name="WindDir_FromBottom" xml:space="preserve">
+    <value>From bottom ↑</value>
+  </data>
+  <data name="WindDir_FromTopLeft" xml:space="preserve">
+    <value>From top-left ↘</value>
+  </data>
+  <data name="WindDir_FromTopRight" xml:space="preserve">
+    <value>From top-right ↙</value>
+  </data>
+  <data name="WindDir_FromBottomLeft" xml:space="preserve">
+    <value>From bottom-left ↗</value>
+  </data>
+  <data name="WindDir_FromBottomRight" xml:space="preserve">
+    <value>From bottom-right ↖</value>
+  </data>
+  <data name="WindDialog_Wavelength" xml:space="preserve">
+    <value>Wavelen</value>
+  </data>
+  <data name="WindDialog_WaveSpeed" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="WindDialog_Strength" xml:space="preserve">
+    <value>Sway</value>
+  </data>
+  <data name="WindDialog_BendRatio" xml:space="preserve">
+    <value>Bend</value>
+  </data>
+  <data name="WindDialog_FlutterRatio" xml:space="preserve">
+    <value>Flutter</value>
+  </data>
+  <data name="WindDialog_GustsTitle" xml:space="preserve">
+    <value>Gusts (max 3)</value>
+  </data>
+  <data name="WindDialog_GustN" xml:space="preserve">
+    <value>Gust {0}</value>
+  </data>
+  <data name="WindDialog_ColStart" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="WindDialog_ColDuration" xml:space="preserve">
+    <value>Length</value>
+  </data>
+  <data name="WindDialog_ColPower" xml:space="preserve">
+    <value>Power</value>
+  </data>
+  <data name="WindDialog_NukeTitle" xml:space="preserve">
+    <value>Nuclear blast (single event)</value>
+  </data>
+  <data name="WindDialog_NukeBlastStrength" xml:space="preserve">
+    <value>Blast power</value>
+  </data>
+  <data name="WindDialog_NukeBlastDuration" xml:space="preserve">
+    <value>Blast len</value>
+  </data>
+  <data name="WindDialog_NukeGap" xml:space="preserve">
+    <value>Still gap</value>
+  </data>
+  <data name="WindDialog_NukeReverseStrength" xml:space="preserve">
+    <value>Back power</value>
+  </data>
+  <data name="WindDialog_NukeReverseDuration" xml:space="preserve">
+    <value>Back len</value>
+  </data>
+  <data name="WindDialog_GifPlayDuring" xml:space="preserve">
+    <value>Wind over playback</value>
+  </data>
+  <data name="WindDialog_GifFreeze" xml:space="preserve">
+    <value>Freeze on frame 0</value>
+  </data>
 </root>

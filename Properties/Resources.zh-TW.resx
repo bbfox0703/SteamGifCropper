@@ -1192,4 +1192,106 @@ FFmpeg 輸出 (部分)：
   <data name="Error_FileTooLarge" xml:space="preserve">
     <value>檔案 "{0}" 超過允許的最大檔案大小 {1} MB。</value>
   </data>
+  <data name="Button_WindStatic" xml:space="preserve">
+    <value>766px 風吹效果（圖片）</value>
+  </data>
+  <data name="Button_WindGif" xml:space="preserve">
+    <value>766px 風吹效果（GIF）</value>
+  </data>
+  <data name="Status_WindBuilding" xml:space="preserve">
+    <value>正在建立風吹效果…</value>
+  </data>
+  <data name="WindDialog_Title" xml:space="preserve">
+    <value>風吹效果（766px）</value>
+  </data>
+  <data name="WindDialog_Direction" xml:space="preserve">
+    <value>風從</value>
+  </data>
+  <data name="WindDialog_Mode" xml:space="preserve">
+    <value>模式</value>
+  </data>
+  <data name="WindDialog_ModeNormal" xml:space="preserve">
+    <value>一般（陣風）</value>
+  </data>
+  <data name="WindDialog_ModeNuclear" xml:space="preserve">
+    <value>核爆</value>
+  </data>
+  <data name="WindDir_FromLeft" xml:space="preserve">
+    <value>從左 →</value>
+  </data>
+  <data name="WindDir_FromRight" xml:space="preserve">
+    <value>從右 ←</value>
+  </data>
+  <data name="WindDir_FromTop" xml:space="preserve">
+    <value>從上 ↓</value>
+  </data>
+  <data name="WindDir_FromBottom" xml:space="preserve">
+    <value>從下 ↑</value>
+  </data>
+  <data name="WindDir_FromTopLeft" xml:space="preserve">
+    <value>從左上 ↘</value>
+  </data>
+  <data name="WindDir_FromTopRight" xml:space="preserve">
+    <value>從右上 ↙</value>
+  </data>
+  <data name="WindDir_FromBottomLeft" xml:space="preserve">
+    <value>從左下 ↗</value>
+  </data>
+  <data name="WindDir_FromBottomRight" xml:space="preserve">
+    <value>從右下 ↖</value>
+  </data>
+  <data name="WindDialog_Wavelength" xml:space="preserve">
+    <value>波長</value>
+  </data>
+  <data name="WindDialog_WaveSpeed" xml:space="preserve">
+    <value>波速</value>
+  </data>
+  <data name="WindDialog_Strength" xml:space="preserve">
+    <value>起伏</value>
+  </data>
+  <data name="WindDialog_BendRatio" xml:space="preserve">
+    <value>彎曲</value>
+  </data>
+  <data name="WindDialog_FlutterRatio" xml:space="preserve">
+    <value>抖動</value>
+  </data>
+  <data name="WindDialog_GustsTitle" xml:space="preserve">
+    <value>陣風（最多3）</value>
+  </data>
+  <data name="WindDialog_GustN" xml:space="preserve">
+    <value>陣風 {0}</value>
+  </data>
+  <data name="WindDialog_ColStart" xml:space="preserve">
+    <value>起始</value>
+  </data>
+  <data name="WindDialog_ColDuration" xml:space="preserve">
+    <value>時長</value>
+  </data>
+  <data name="WindDialog_ColPower" xml:space="preserve">
+    <value>強度</value>
+  </data>
+  <data name="WindDialog_NukeTitle" xml:space="preserve">
+    <value>核爆（單一事件）</value>
+  </data>
+  <data name="WindDialog_NukeBlastStrength" xml:space="preserve">
+    <value>衝擊強度</value>
+  </data>
+  <data name="WindDialog_NukeBlastDuration" xml:space="preserve">
+    <value>衝擊時長</value>
+  </data>
+  <data name="WindDialog_NukeGap" xml:space="preserve">
+    <value>靜止間隔</value>
+  </data>
+  <data name="WindDialog_NukeReverseStrength" xml:space="preserve">
+    <value>反向強度</value>
+  </data>
+  <data name="WindDialog_NukeReverseDuration" xml:space="preserve">
+    <value>反向時長</value>
+  </data>
+  <data name="WindDialog_GifPlayDuring" xml:space="preserve">
+    <value>風疊在播放上</value>
+  </data>
+  <data name="WindDialog_GifFreeze" xml:space="preserve">
+    <value>定格第一幀</value>
+  </data>
 </root>
