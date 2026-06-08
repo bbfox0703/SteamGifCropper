@@ -8,9 +8,9 @@ if exist publish rmdir /s /q publish
 if exist obj rmdir /s /q obj
 if exist bin rmdir /s /q bin
 
-REM -p:DebugType=portable -p:DebugSymbols=true ensures the .pdb is emitted and copied to the
-REM publish output (CopyOutputSymbolsToPublishDirectory defaults to true).
-dotnet publish SteamGifCropper.csproj -c Release -r win-x64 --self-contained false -p:DebugType=portable -p:DebugSymbols=true -o publish
+REM -p:DebugType=none -p:DebugSymbols=false suppresses the .pdb so it is neither emitted nor
+REM shipped in the publish output (overrides the csproj Release "pdbonly" default).
+dotnet publish SteamGifCropper.csproj -c Release -r win-x64 --self-contained false -p:DebugType=none -p:DebugSymbols=false -o publish
 if errorlevel 1 (
     echo.
     echo Publish FAILED.
