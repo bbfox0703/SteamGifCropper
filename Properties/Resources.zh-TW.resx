@@ -133,7 +133,7 @@
     <value>合併5個GIF檔案為1個部分(766px)，每個約153px</value>
   </data>
   <data name="Button_Mp4ToGif" xml:space="preserve">
-    <value>FFMPEG: 轉換MP4為GIF (指定影片轉出長度)</value>
+    <value>FFMPEG: 轉換MP4/MOV為GIF (指定影片轉出長度)</value>
   </data>
   <data name="Button_MergeGifs" xml:space="preserve">
     <value>合併2-5個GIF檔案為一個</value>
@@ -308,6 +308,9 @@
   </data>
   <data name="FileDialog_GifFilter" xml:space="preserve">
     <value>GIF檔案 (*.gif)|*.gif</value>
+  </data>
+  <data name="FileDialog_GifAndWebpFilter" xml:space="preserve">
+    <value>GIF 及 WebP 檔案 (*.gif;*.webp)|*.gif;*.webp</value>
   </data>
   <data name="FileDialog_ImageAndGifFilter" xml:space="preserve">
     <value>圖片及GIF檔案 (*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp;*.heic)|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp;*.heic</value>
@@ -634,7 +637,7 @@
     <value>GIF反轉失敗：{0}</value>
   </data>
   <data name="FileDialog_Mp4Filter" xml:space="preserve">
-    <value>MP4檔案 (*.mp4)|*.mp4</value>
+    <value>影片檔案 (*.mp4;*.mov;*.m4v;*.mkv;*.webm;*.avi)|*.mp4;*.mov;*.m4v;*.mkv;*.webm;*.avi</value>
   </data>
   <data name="FileDialog_SelectMp4" xml:space="preserve">
     <value>選擇一個MP4檔案來轉換</value>

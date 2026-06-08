@@ -42,7 +42,7 @@ namespace GifProcessorApp
             if (dialog.ShowDialog(mainForm) != DialogResult.OK)
                 return;
 
-            ImageInputValidator.ValidateGif(dialog.InputFilePath);
+            ImageInputValidator.ValidateGifOrWebp(dialog.InputFilePath);
             await RunSlotMachine(mainForm, BuildSettings(dialog, true));
         }
 

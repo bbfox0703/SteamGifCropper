@@ -69,6 +69,25 @@ namespace SteamGifCropper
                 string.Format(SteamGifCropper.Properties.Resources.Error_InvalidFileFormat, Path.GetFileName(filePath), "GIF, PNG, JPEG, BMP, WebP, HEIC"));
         }
 
+        /// <summary>
+        /// Validates an animated "GIF-variant" input: a GIF or a WebP (WebP may be animated or, if
+        /// still, loads as a single frame). Used by the slot/quicksand/ripple GIF variants.
+        /// </summary>
+        public static void ValidateGifOrWebp(string filePath)
+        {
+            ValidateFileExists(filePath);
+            ValidateFileSize(filePath);
+
+            byte[] header = ReadHeaderUpTo(filePath, 12);
+            if (StartsWith(header, GifMagic87) || StartsWith(header, GifMagic89))
+                return;
+            if (IsWebp(header))
+                return;
+
+            throw new InvalidOperationException(
+                string.Format(SteamGifCropper.Properties.Resources.Error_InvalidFileFormat, Path.GetFileName(filePath), "GIF, WebP"));
+        }
+
         // RIFF....WEBP : a WebP file (still or animated).
         private static bool IsWebp(byte[] header)
         {

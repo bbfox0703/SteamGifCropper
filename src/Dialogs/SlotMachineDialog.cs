@@ -230,7 +230,7 @@ namespace GifProcessorApp
         {
             using var ofd = new OpenFileDialog
             {
-                Filter = IsGif ? Resources.FileDialog_GifFilter : Resources.FileDialog_ImageAndGifFilter,
+                Filter = IsGif ? Resources.FileDialog_GifAndWebpFilter : Resources.FileDialog_ImageAndGifFilter,
                 Title = Resources.SlotDialog_InputLabel
             };
             if (ofd.ShowDialog() == DialogResult.OK)

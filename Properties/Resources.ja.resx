@@ -133,7 +133,7 @@
     <value>5つのGIFファイルを1つの部分(766px)にマージ、各約153px</value>
   </data>
   <data name="Button_Mp4ToGif" xml:space="preserve">
-    <value>FFMPEG: MP4をGIFに変換（時間制御付き）</value>
+    <value>FFMPEG: MP4/MOVをGIFに変換（時間制御付き）</value>
   </data>
   <data name="Button_MergeGifs" xml:space="preserve">
     <value>2-5個のGIFファイルを1つにマージ</value>
@@ -308,6 +308,9 @@
   </data>
   <data name="FileDialog_GifFilter" xml:space="preserve">
     <value>GIFファイル (*.gif)|*.gif</value>
+  </data>
+  <data name="FileDialog_GifAndWebpFilter" xml:space="preserve">
+    <value>GIF および WebP ファイル (*.gif;*.webp)|*.gif;*.webp</value>
   </data>
   <data name="FileDialog_ImageAndGifFilter" xml:space="preserve">
     <value>画像およびGIFファイル (*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp;*.heic)|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp;*.heic</value>
@@ -634,7 +637,7 @@
     <value>GIF反転に失敗しました：{0}</value>
   </data>
   <data name="FileDialog_Mp4Filter" xml:space="preserve">
-    <value>MP4ファイル (*.mp4)|*.mp4</value>
+    <value>動画ファイル (*.mp4;*.mov;*.m4v;*.mkv;*.webm;*.avi)|*.mp4;*.mov;*.m4v;*.mkv;*.webm;*.avi</value>
   </data>
   <data name="FileDialog_SelectMp4" xml:space="preserve">
     <value>変換するMP4ファイルを選択</value>

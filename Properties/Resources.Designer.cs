@@ -248,7 +248,16 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("FileDialog_GifFilter", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to GIF and WebP Files (*.gif;*.webp)|*.gif;*.webp.
+        /// </summary>
+        internal static string FileDialog_GifAndWebpFilter {
+            get {
+                return ResourceManager.GetString("FileDialog_GifAndWebpFilter", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Select a GIF file to process.
         /// </summary>
