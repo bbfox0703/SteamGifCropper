@@ -170,3 +170,27 @@
 - **測試**：`SteamGifCropper.Tests/WindFieldTests.cs`（**17** 例：方向向量、Hann 包絡、TotalSeconds、AnyGustActive、位移為零/沿風向/隨強度/疊加加倍/反向取負、`ResolveGusts` nuclear 展開、`ToMedium`），csproj link `WindField.cs` + `WindSettings.cs`。全 **192** 例綠燈。
 - **csproj NoWarn**：因把 `WindSettings.cs`（與 `RippleSettings.cs` 同樣未標註 nullable 的 string 屬性）link 進 Nullable-enabled 的測試專案，測試專案 `NoWarn` 加上 `CS8618`（生產組件 Nullable 關閉、無此警告）。
 - **未做 picker**：風是全畫面、無落點，故無 RippleDropPicker 等價物（如設計）。
+
+---
+
+## 通用尺寸開關：「保持原始尺寸（不縮到 766px）」— 已實作
+
+水波紋 / 風 / 流沙的底層 math 本來就吃任意寬高，766 只出現在入口的 auto-resize 守門。加一個 per-dialog 勾選框，讓這三個效果可當**通用 GIF 特效**用（非 Steam 前置）。
+
+- **範圍**：僅 ripple / wind / quicksand（真正尺寸無關）。**拉霸 / 格網維持 766-only**——它們的語意是 5 個 Steam 槽位（`Ranges766/774`、`reelCount = ranges.Length = 5`），「自由尺寸」沒有明確定義，要做得另開「N 等分欄」的題目。
+- **設定**：`RippleSettings`/`WindSettings`/`QuicksandSettings` 各加 `bool KeepOriginalSize`（預設 `false` ＝維持現況）。三個 dialog 各加 `chkKeepSize`（共用字串 `Dialog_KeepOriginalSize`）。
+- **引擎**：`RunRipple`/`RunWind`/`RunQuicksand` 把 auto-resize 條件改成 `!settings.KeepOriginalSize && !IsValidCanvasWidth(width)`，其餘完全不變（math 已通用）。
+- **記憶體護欄**（共用 `GifProcessor.cs`）：`EstimatePeakMemoryMB(frames,w,h) = 2×幀×寬×高×4`（兩份 RGBA：coalesced 來源 + 輸出 collection）；`ConfirmLargeCanvas(...)` 在估值 > `max(512MB, ResourceLimits.Memory×0.6)` 時 marshal 到 UI thread 跳 Yes/No 警告（`Warn_LargeMemory`/`Warn_LargeMemoryTitle`），取消則 `canceled = true` 提前 return、不顯示成功訊息（成功訊息已包進 `if (!canceled)`）。766px 時估值極小、等同 no-op。`outFrames` 取 `max(來源幀, 輸出幀)`：play-during = 來源長度；frozen/static = `Duration×fps`(+GIF)。
+- **連帶修正**：`QuicksandDialog` 的 dark/light 主題原本沒處理 `CheckBox`（深色下會黑字黑底看不見），已補上 CheckBox 分支；ripple/wind dialog 本來就一起處理 `Label || CheckBox`。
+- **取捨（重要）**：`KeepOriginalSize` 的輸出若非 766/774，**餵不進主頁「Split GIF」**（Steam 5 切擋寬度）——這正是這開關的用意（通用、非 Steam）。
+- **檔案**：3 settings、3 dialog、`GifProcessor.cs`（兩個 helper）、3 個 `Run*`、3 resx + `Resources.Designer.cs`（3 新鍵）。建置 0 warning，全測試綠燈。
+
+### 合併記憶體強化（合併 2–5、合併並切 5）— 已實作
+
+合併是全工具最吃記憶體的操作：它要把**同一時刻**各檔的 frame 併排合成，所以必須**同時**握住所有來源的全部影格＋整個合併結果（再對結果跑一次 `Quantize`）。早期 24–40GB 的失控是在設 `ResourceLimits`（PR #89/#91，`f64f268`/`afae4e6`）+ 修 leak（`b202393`）之前；現在全程走 Magick pixel cache → 受 4GB/8GB 上限管，溢寫磁碟、超過才丟**可攔截**的 `cache resources exhausted`（跳錯誤框、非 crash）。本次再做兩件事降峰值：
+
+- **提早釋放來源**：
+  - `MergeMultipleGifs`：所有 merged frame 合成完後、`Quantize` 前就 `Dispose()` 來源 `collections`（之後只用 `mergedCollection`），把 Quantize/Write 期間峰值大致砍半。
+  - `MergeAndSplitFiveGifs`：它更重（`collections`→`resizedCollections`→`syncedCollections`→merged `output` 共 ~4 份 clone）。改成 resize 完就釋放 `collections`、sync 完就釋放 `resizedCollections`（最外層 `finally` 仍會再 dispose 一次——`MagickImageCollection.Dispose` 為 idempotent，安全）。
+- **事前警告**：兩條路徑都在動工前用共用的 `ConfirmLargeMemory(mainForm, estMb, w, h, frames)`（從 `ConfirmLargeCanvas` 抽出）估算（合併=Σ來源像素＋結果像素；合併並切 5≈來源×2 的 clone 重疊），超門檻跳 Yes/No、取消則提前 return（外層 finally 照樣 dispose／還原 0x21）。`ConfirmLargeMemory` 改用 `InvokeRequired` 判斷，UI thread 直接跑、背景 thread 才 marshal（合併的呼叫點在 UI thread）。
+- **結論**：合併不會再失控吃到 24–40GB；最壞是走磁碟變慢或丟可攔截的錯誤。前提仍是 temp 磁碟要有 ~8GB 空間。

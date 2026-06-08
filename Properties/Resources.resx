@@ -402,10 +402,10 @@ Files skipped (not 0x21): {1}</value>
     <value>Hold result (s)</value>
   </data>
   <data name="Button_QuicksandStatic" xml:space="preserve">
-    <value>766px Quicksand (Image)</value>
+    <value>Quicksand (Image)</value>
   </data>
   <data name="Button_QuicksandGif" xml:space="preserve">
-    <value>766px Quicksand (GIF)</value>
+    <value>Quicksand (GIF)</value>
   </data>
   <data name="Status_QuicksandBuilding" xml:space="preserve">
     <value>Building quicksand flow...</value>
@@ -474,10 +474,10 @@ Files skipped (not 0x21): {1}</value>
     <value>Start (s)</value>
   </data>
   <data name="Button_RippleStatic" xml:space="preserve">
-    <value>766px Water Ripple (Image)</value>
+    <value>Water Ripple (Image)</value>
   </data>
   <data name="Button_RippleGif" xml:space="preserve">
-    <value>766px Water Ripple (GIF)</value>
+    <value>Water Ripple (GIF)</value>
   </data>
   <data name="Status_RippleBuilding" xml:space="preserve">
     <value>Building water ripple...</value>
@@ -1192,10 +1192,10 @@ Technical details: {5}</value>
     <value>The file "{0}" exceeds the maximum allowed size of {1} MB.</value>
   </data>
   <data name="Button_WindStatic" xml:space="preserve">
-    <value>766px Wind Sway (Image)</value>
+    <value>Wind Sway (Image)</value>
   </data>
   <data name="Button_WindGif" xml:space="preserve">
-    <value>766px Wind Sway (GIF)</value>
+    <value>Wind Sway (GIF)</value>
   </data>
   <data name="Status_WindBuilding" xml:space="preserve">
     <value>Building wind sway...</value>
@@ -1292,5 +1292,14 @@ Technical details: {5}</value>
   </data>
   <data name="WindDialog_GifFreeze" xml:space="preserve">
     <value>Freeze on frame 0</value>
+  </data>
+  <data name="Dialog_KeepOriginalSize" xml:space="preserve">
+    <value>Keep original size (no 766px fit)</value>
+  </data>
+  <data name="Warn_LargeMemoryTitle" xml:space="preserve">
+    <value>Large output</value>
+  </data>
+  <data name="Warn_LargeMemory" xml:space="preserve">
+    <value>This will process at {1}×{2} for {3} frames, using roughly {0} MB of memory. It may be slow or run out of memory. Continue?</value>
   </data>
 </root>

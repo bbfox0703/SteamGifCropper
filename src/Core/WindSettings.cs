@@ -27,6 +27,7 @@ namespace GifProcessorApp
         public double DurationSeconds { get; set; } = 6.0;     // total effect length (2dp)
         public double EffectStartSeconds { get; set; } = 0.0;  // GIF "play during" only: where the window begins
         public bool PlayGifDuringWind { get; set; } = true;    // GIF: wind over live frames vs frozen frame 0
+        public bool KeepOriginalSize { get; set; } = false;    // true: process at native size (no 766px fit)
 
         // Shared medium
         public WindFromDirection Direction { get; set; } = WindFromDirection.Left;

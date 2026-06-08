@@ -64,6 +64,7 @@ namespace GifProcessorApp
                 FlowRight = dialog.FlowRight,
                 Axis = dialog.Axis,
                 PlayGifDuringFlow = dialog.PlayGifDuringFlow,
+                KeepOriginalSize = dialog.KeepOriginalSize,
             };
         }
 
@@ -74,20 +75,22 @@ namespace GifProcessorApp
             SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
             SetProgressVisible(mainForm, true);
 
+            bool canceled = false;
             try
             {
-                // Build the full-width 766px flow animation (heavy → background thread). No auto-split:
-                // the output is a single 766px GIF so it can be chained with other effects and split
-                // later with the main "Split GIF" button (which adds the 100px extension + 0x21 tail).
+                // Build the full-width flow animation (heavy → background thread). No auto-split: the
+                // output is a single GIF so it can be chained with other effects and split later with the
+                // main "Split GIF" button (which adds the 100px extension + 0x21 tail).
                 await Task.Run(() =>
                 {
                     SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_QuicksandBuilding);
                     using var source = new MagickImageCollection(settings.InputFilePath);
                     source.Coalesce();
 
-                    // Auto-resize to 766px wide when the input isn't already a supported width.
+                    // Auto-resize to 766px wide when the input isn't already a supported width — unless the
+                    // user opted to keep the original size (general-purpose use, not Steam prep).
                     uint width = source[0].Width;
-                    if (!IsValidCanvasWidth(width))
+                    if (!settings.KeepOriginalSize && !IsValidCanvasWidth(width))
                     {
                         foreach (var frame in source)
                         {
@@ -99,18 +102,32 @@ namespace GifProcessorApp
 
                     int canvasHeight = (int)source[0].Height;
 
+                    // Warn before running at a large native size (output frame count: play-during keeps
+                    // the GIF length; flow-then-play / static add the flow frames).
+                    int outFrames = (settings.IsGif && settings.PlayGifDuringFlow)
+                        ? source.Count
+                        : (int)Math.Round(Math.Max(0.1, settings.DurationSeconds) * Math.Max(1, settings.Fps)) + (settings.IsGif ? source.Count : 0);
+                    if (!ConfirmLargeCanvas(mainForm, Math.Max(source.Count, outFrames), width, (uint)canvasHeight))
+                    {
+                        canceled = true;
+                        return;
+                    }
+
                     using var animation = BuildQuicksandAnimation(mainForm, source, settings, (int)width, canvasHeight);
                     SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
                     animation.Optimize();
                     animation.Write(settings.OutputFilePath);
                 });
 
-                SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
-                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
-                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
-                    SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
-                    SteamGifCropper.Properties.Resources.Title_Success,
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (!canceled)
+                {
+                    SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
+                    WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                        SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
+                        SteamGifCropper.Properties.Resources.Title_Success,
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
             catch (Exception ex)
             {

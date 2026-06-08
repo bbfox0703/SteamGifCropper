@@ -41,6 +41,7 @@ namespace GifProcessorApp
             SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
             SetProgressVisible(mainForm, true);
 
+            bool canceled = false;
             try
             {
                 await Task.Run(() =>
@@ -50,15 +51,27 @@ namespace GifProcessorApp
                     source.Coalesce();
 
                     // Auto-resize to 766px wide when not already a supported width (the wave geometry is
-                    // expressed in this canvas).
+                    // expressed in this canvas) — unless the user opted to keep the original size.
                     uint width = source[0].Width;
-                    if (!IsValidCanvasWidth(width))
+                    if (!settings.KeepOriginalSize && !IsValidCanvasWidth(width))
                     {
                         foreach (var frame in source)
                         {
                             frame.ResetPage();
                             frame.Resize(SupportedWidth1, 0);
                         }
+                        width = source[0].Width;
+                    }
+
+                    // Warn before running at a large native size (output frame count: wind-over-playback
+                    // keeps the GIF length; frozen / static add the wind frames).
+                    int outFrames = (settings.IsGif && settings.PlayGifDuringWind)
+                        ? source.Count
+                        : (int)Math.Round(Math.Max(0.1, settings.DurationSeconds) * Math.Max(1, settings.Fps)) + (settings.IsGif ? source.Count : 0);
+                    if (!ConfirmLargeCanvas(mainForm, Math.Max(source.Count, outFrames), width, source[0].Height))
+                    {
+                        canceled = true;
+                        return;
                     }
 
                     using var animation = BuildWindAnimation(mainForm, source, settings);
@@ -67,12 +80,15 @@ namespace GifProcessorApp
                     animation.Write(settings.OutputFilePath);
                 });
 
-                SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
-                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
-                WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
-                    SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
-                    SteamGifCropper.Properties.Resources.Title_Success,
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (!canceled)
+                {
+                    SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);
+                    WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                        SteamGifCropper.Properties.Resources.Message_ProcessingComplete,
+                        SteamGifCropper.Properties.Resources.Title_Success,
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
             catch (Exception ex)
             {

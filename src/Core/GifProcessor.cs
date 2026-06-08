@@ -42,6 +42,44 @@ namespace GifProcessorApp
             return canvasWidth == SupportedWidth1 ? Ranges766 : Ranges774;
         }
 
+        // Peak working-set estimate (MB) for the per-pixel effects (ripple / wind / quicksand): roughly
+        // two full RGBA copies live at once (the coalesced source collection + the result collection),
+        // Q8 = 4 bytes/pixel. Used only to warn before running an effect at a large native size.
+        internal static double EstimatePeakMemoryMB(int frames, uint width, uint height)
+        {
+            double bytes = 2.0 * frames * (double)width * height * 4.0;
+            return bytes / (1024.0 * 1024.0);
+        }
+
+        // Warn (Yes/No) when an estimated peak working set (MB) exceeds ~60% of the configured
+        // ImageMagick memory limit (512 MB floor). width/height/frames only describe the output for the
+        // message. Runs the prompt on the UI thread whether called from the UI thread or a background
+        // Task. Returns true to proceed, false if the user cancels.
+        private static bool ConfirmLargeMemory(GifToolMainForm mainForm, double estMb, uint width, uint height, int frames)
+        {
+            double limitMb = ResourceLimits.Memory / (1024.0 * 1024.0);
+            double thresholdMb = Math.Max(512.0, limitMb * 0.6);
+            if (estMb <= thresholdMb) return true;
+
+            bool proceed = true;
+            Action ask = () =>
+            {
+                DialogResult result = WindowsThemeManager.ShowThemeAwareMessageBox(mainForm,
+                    string.Format(SteamGifCropper.Properties.Resources.Warn_LargeMemory,
+                        (long)estMb, width, height, frames),
+                    SteamGifCropper.Properties.Resources.Warn_LargeMemoryTitle,
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                proceed = result == DialogResult.Yes;
+            };
+            if (mainForm.InvokeRequired) mainForm.Invoke(ask); else ask();
+            return proceed;
+        }
+
+        // Per-pixel effects (ripple / wind / quicksand) at native (non-766) size can balloon: ~2 full
+        // RGBA copies (coalesced source + result). At 766px the estimate is tiny, so this is a no-op.
+        private static bool ConfirmLargeCanvas(GifToolMainForm mainForm, int frames, uint width, uint height)
+            => ConfirmLargeMemory(mainForm, EstimatePeakMemoryMB(frames, width, height), width, height, frames);
+
         private static int GetAppSettingInt(string key, int defaultValue)
         {
             try

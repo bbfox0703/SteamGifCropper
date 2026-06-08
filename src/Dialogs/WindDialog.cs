@@ -78,6 +78,7 @@ namespace GifProcessorApp
 
         private Button btnOK = null!;
         private Button btnCancel = null!;
+        private CheckBox chkKeepSize = null!;
 
         public WindDialog(bool gifMode)
         {
@@ -121,6 +122,7 @@ namespace GifProcessorApp
                 Strength = (double)numStrength.Value,
                 BendRatio = (double)numBend.Value,
                 FlutterRatio = (double)numFlutter.Value,
+                KeepOriginalSize = chkKeepSize.Checked,
                 Mode = cmbMode.SelectedIndex == 1 ? WindMode.Nuclear : WindMode.Normal,
                 NukeBlastStrength = (double)numNukeBlastStrength.Value,
                 NukeBlastDuration = (double)numNukeBlastDuration.Value,
@@ -184,6 +186,7 @@ namespace GifProcessorApp
             btnBrowseOutput.Text = Resources.Button_Browse;
             btnOK.Text = Resources.ScrollDialog_OK;
             btnCancel.Text = Resources.ScrollDialog_Cancel;
+            chkKeepSize.Text = Resources.Dialog_KeepOriginalSize;
             for (int i = 0; i < GustCount; i++)
             {
                 chkGusts[i].Text = string.Format(Resources.WindDialog_GustN, i + 1);
@@ -465,6 +468,7 @@ namespace GifProcessorApp
             btnOK = new Button { Location = new Point(363, 372), Size = new Size(75, 25), Text = "OK", UseVisualStyleBackColor = true };
             btnOK.Click += BtnOK_Click;
             btnCancel = new Button { Location = new Point(444, 372), Size = new Size(82, 25), Text = "Cancel", DialogResult = DialogResult.Cancel, UseVisualStyleBackColor = true };
+            chkKeepSize = new CheckBox { Location = new Point(14, 376), Size = new Size(340, 22), Text = "Keep original size", UseVisualStyleBackColor = true };
 
             _normalControls.AddRange(new Control[] { lblGustsTitle, lblHdrStart, lblHdrDuration, lblHdrPower });
             for (int i = 0; i < GustCount; i++)
@@ -514,6 +518,7 @@ namespace GifProcessorApp
             foreach (var c in _nuclearControls) Controls.Add(c);
             Controls.Add(btnOK);
             Controls.Add(btnCancel);
+            Controls.Add(chkKeepSize);
 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
