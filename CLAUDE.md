@@ -120,7 +120,9 @@ Each dialog handles one specific operation type:
 - `RippleDropPickerForm` - Click-to-pick a ripple drop position on frame 0
 
 > **Creative-effects detail:** these "766px single-output, chainable" effects (grid mosaic, slot
-> machine, quicksand, ripple) and their roadmap are documented in `docs/CreativeFeatureIdeas.md`.
+> machine, quicksand, ripple) — their ideas and completion status live in
+> `docs/CreativeFeatureIdeas.md`; the detailed implementation/handoff dev log (file lists, commits,
+> semantics, gotchas) lives in `docs/CreativeEffectsDevLog.md`.
 > Their math is extracted into pure, dependency-free files for unit testing — `SlotMachineGeometry.cs`,
 > `QuicksandGeometry.cs`, `GifEffectWindow.cs`, `GridMosaicGeometry.cs`, `RippleField.cs` (+ the
 > Magick-side `RippleRenderer.cs`, `GridMosaicRenderer.cs`) — linked into the test project.
