@@ -36,6 +36,8 @@ public class QuicksandGeometryTests
     [InlineData(300, 16)] // remainder distributed
     [InlineData(301, 16)]
     [InlineData(150, 7)]
+    [InlineData(766, 16)] // vertical flow: width split into columns
+    [InlineData(766, 5)]
     public void BandBounds_TileTheLengthExactlyWithoutGaps(int totalLength, int layers)
     {
         int expectedStart = 0;

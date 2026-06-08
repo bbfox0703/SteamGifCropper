@@ -1193,6 +1193,7 @@ namespace GifProcessorApp
                 FastBand = dialog.FastBand,
                 Viscosity = dialog.Viscosity,
                 FlowRight = dialog.FlowRight,
+                Axis = dialog.Axis,
                 PlayGifDuringFlow = dialog.PlayGifDuringFlow,
             };
         }
@@ -1270,13 +1271,19 @@ namespace GifProcessorApp
             int srcTicks = (int)source[0].AnimationTicksPerSecond;
             if (srcTicks <= 0) srcTicks = 100;
 
+            // Horizontal flow slices the height into stacked rows; vertical slices the width into
+            // side-by-side columns. bandTotal is the dimension the bands divide; the scroll wrap
+            // dimension is the other one (handled per-axis in the build helpers).
+            bool vertical = settings.Axis == QuicksandFlowAxis.Vertical;
+            int bandTotal = vertical ? canvasWidth : canvasHeight;
+
             // Per-band bounds + whole-number revolution counts (the viscous shear gradient). Shared by
             // both playback models.
             var bands = new (int Start, int Size)[layers];
             int[] bandRevs = new int[layers];
             for (int b = 0; b < layers; b++)
             {
-                bands[b] = QuicksandGeometry.BandBounds(b, layers, canvasHeight);
+                bands[b] = QuicksandGeometry.BandBounds(b, layers, bandTotal);
                 bandRevs[b] = QuicksandGeometry.BandRevolutions(b, layers, settings.MinRevolutions,
                     settings.MaxRevolutions, settings.FastBand, settings.Viscosity);
             }
@@ -1297,6 +1304,34 @@ namespace GifProcessorApp
                 canvasWidth, canvasHeight, srcTicks);
         }
 
+        // Crops band [start, start+size) from src along the flow-perpendicular axis (a full-width row
+        // for horizontal flow, a full-height column for vertical), returning a page-reset clone.
+        private static MagickImage CropQuicksandBand(IMagickImage<byte> src, bool vertical, int start, int size,
+            int canvasWidth, int canvasHeight)
+        {
+            var band = (MagickImage)src.Clone();
+            band.Crop(vertical
+                ? new MagickGeometry(start, 0, (uint)size, (uint)canvasHeight)
+                : new MagickGeometry(0, start, (uint)canvasWidth, (uint)size));
+            band.ResetPage();
+            return band;
+        }
+
+        // Wrap-scrolls a band along the flow axis by `off` then composites it back at its band position
+        // and disposes it. Horizontal flow rolls/places on X; vertical on Y.
+        private static void RollAndCompositeBand(MagickImage canvas, MagickImage band, bool vertical,
+            int start, int off)
+        {
+            if (off != 0)
+            {
+                if (vertical) band.Roll(0, off);
+                else band.Roll(off, 0);
+            }
+            if (vertical) canvas.Composite(band, start, 0, CompositeOperator.Over);
+            else canvas.Composite(band, 0, start, CompositeOperator.Over);
+            band.Dispose();
+        }
+
         // GIF plays on its own timeline; the quicksand flow is mixed onto the LIVE frames for the first
         // `Duration` seconds, then settles (offset 0) and the GIF keeps playing untouched. Output length
         // == GIF length. The flow window is capped to the GIF length so it always returns to aligned
@@ -1307,6 +1342,8 @@ namespace GifProcessorApp
         {
             int layers = bands.Length;
             int n = source.Count;
+            bool vertical = settings.Axis == QuicksandFlowAxis.Vertical;
+            int wrapLength = vertical ? canvasHeight : canvasWidth;
 
             // Cumulative start time (seconds) of each source frame.
             double[] startSec = new double[n];
@@ -1334,16 +1371,9 @@ namespace GifProcessorApp
                 var canvas = new MagickImage(MagickColors.Transparent, (uint)canvasWidth, (uint)canvasHeight);
                 for (int b = 0; b < layers; b++)
                 {
-                    var band = (MagickImage)source[i].Clone();
-                    band.Crop(new MagickGeometry(0, bands[b].Start, (uint)canvasWidth, (uint)bands[b].Size));
-                    band.ResetPage();
-                    int off = QuicksandGeometry.BandOffset(t, bandRevs[b], canvasWidth, settings.FlowRight);
-                    if (off != 0)
-                    {
-                        band.Roll(off, 0);
-                    }
-                    canvas.Composite(band, 0, bands[b].Start, CompositeOperator.Over);
-                    band.Dispose();
+                    var band = CropQuicksandBand(source[i], vertical, bands[b].Start, bands[b].Size, canvasWidth, canvasHeight);
+                    int off = QuicksandGeometry.BandOffset(t, bandRevs[b], wrapLength, settings.FlowRight);
+                    RollAndCompositeBand(canvas, band, vertical, bands[b].Start, off);
                 }
 
                 canvas.AnimationDelay = source[i].AnimationDelay;
@@ -1374,6 +1404,8 @@ namespace GifProcessorApp
             int flowFrames = Math.Max(1, settings.DurationSeconds * fps);
             int playFrames = settings.IsGif ? source.Count : 0;
             int totalFrames = flowFrames + playFrames;
+            bool vertical = settings.Axis == QuicksandFlowAxis.Vertical;
+            int wrapLength = vertical ? canvasHeight : canvasWidth;
 
             var result = new MagickImageCollection();
             var frozenBands = new MagickImage[layers];
@@ -1382,10 +1414,7 @@ namespace GifProcessorApp
                 // Pre-crop each band from the frozen first frame once (they never change during the flow).
                 for (int b = 0; b < layers; b++)
                 {
-                    var slice = (MagickImage)source[0].Clone();
-                    slice.Crop(new MagickGeometry(0, bands[b].Start, (uint)canvasWidth, (uint)bands[b].Size));
-                    slice.ResetPage();
-                    frozenBands[b] = slice;
+                    frozenBands[b] = CropQuicksandBand(source[0], vertical, bands[b].Start, bands[b].Size, canvasWidth, canvasHeight);
                 }
 
                 int built = 0;
@@ -1398,13 +1427,8 @@ namespace GifProcessorApp
                     for (int b = 0; b < layers; b++)
                     {
                         var band = (MagickImage)frozenBands[b].Clone();
-                        int off = QuicksandGeometry.BandOffset(t, bandRevs[b], canvasWidth, settings.FlowRight);
-                        if (off != 0)
-                        {
-                            band.Roll(off, 0);
-                        }
-                        canvas.Composite(band, 0, bands[b].Start, CompositeOperator.Over);
-                        band.Dispose();
+                        int off = QuicksandGeometry.BandOffset(t, bandRevs[b], wrapLength, settings.FlowRight);
+                        RollAndCompositeBand(canvas, band, vertical, bands[b].Start, off);
                     }
                     canvas.AnimationDelay = (uint)delay;
                     canvas.AnimationTicksPerSecond = 100;

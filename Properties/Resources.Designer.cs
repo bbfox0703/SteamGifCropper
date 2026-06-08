@@ -2549,6 +2549,30 @@ namespace SteamGifCropper.Properties {
             }
         }
 
+        internal static string QuickDialog_DirDown {
+            get {
+                return ResourceManager.GetString("QuickDialog_DirDown", resourceCulture);
+            }
+        }
+
+        internal static string QuickDialog_DirUp {
+            get {
+                return ResourceManager.GetString("QuickDialog_DirUp", resourceCulture);
+            }
+        }
+
+        internal static string QuickDialog_BandRight {
+            get {
+                return ResourceManager.GetString("QuickDialog_BandRight", resourceCulture);
+            }
+        }
+
+        internal static string QuickDialog_BandLeft {
+            get {
+                return ResourceManager.GetString("QuickDialog_BandLeft", resourceCulture);
+            }
+        }
+
         internal static string QuickDialog_GifPlayDuringFlow {
             get {
                 return ResourceManager.GetString("QuickDialog_GifPlayDuringFlow", resourceCulture);

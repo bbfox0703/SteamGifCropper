@@ -532,6 +532,18 @@
   <data name="QuickDialog_DirLeft" xml:space="preserve">
     <value>左へ流す ←</value>
   </data>
+  <data name="QuickDialog_DirDown" xml:space="preserve">
+    <value>下へ流す ↓</value>
+  </data>
+  <data name="QuickDialog_DirUp" xml:space="preserve">
+    <value>上へ流す ↑</value>
+  </data>
+  <data name="QuickDialog_BandRight" xml:space="preserve">
+    <value>右</value>
+  </data>
+  <data name="QuickDialog_BandLeft" xml:space="preserve">
+    <value>左</value>
+  </data>
   <data name="QuickDialog_GifPlayDuringFlow" xml:space="preserve">
     <value>流動中も再生</value>
   </data>

@@ -1,10 +1,20 @@
 namespace GifProcessorApp
 {
+    // Direction the bands flow. Horizontal slices the image into stacked rows that wrap-scroll left/
+    // right; Vertical slices it into side-by-side columns that wrap-scroll up/down. The per-band math
+    // (QuicksandGeometry) is axis-agnostic — only the crop/roll/composite axis differs in the engine.
+    public enum QuicksandFlowAxis
+    {
+        Horizontal = 0,
+        Vertical = 1,
+    }
+
     // Parameters captured from QuicksandDialog and consumed by the GifProcessor quicksand engine.
     // Output is a single full-width 766px GIF (no auto-split) so it can be chained with other effects;
     // split into 5 parts later with the main "Split GIF" button.
     public class QuicksandSettings
     {
+        public QuicksandFlowAxis Axis { get; set; } = QuicksandFlowAxis.Horizontal;
         public string InputFilePath { get; set; }
         public string OutputFilePath { get; set; }
         public bool IsGif { get; set; }

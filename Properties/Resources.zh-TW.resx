@@ -532,6 +532,18 @@
   <data name="QuickDialog_DirLeft" xml:space="preserve">
     <value>向左流 ←</value>
   </data>
+  <data name="QuickDialog_DirDown" xml:space="preserve">
+    <value>向下流 ↓</value>
+  </data>
+  <data name="QuickDialog_DirUp" xml:space="preserve">
+    <value>向上流 ↑</value>
+  </data>
+  <data name="QuickDialog_BandRight" xml:space="preserve">
+    <value>右方</value>
+  </data>
+  <data name="QuickDialog_BandLeft" xml:space="preserve">
+    <value>左方</value>
+  </data>
   <data name="QuickDialog_GifPlayDuringFlow" xml:space="preserve">
     <value>流動時同步播放</value>
   </data>

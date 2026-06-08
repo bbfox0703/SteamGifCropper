@@ -524,6 +524,18 @@ Files skipped (not 0x21): {1}</value>
   <data name="QuickDialog_DirLeft" xml:space="preserve">
     <value>Flow left ←</value>
   </data>
+  <data name="QuickDialog_DirDown" xml:space="preserve">
+    <value>Flow down ↓</value>
+  </data>
+  <data name="QuickDialog_DirUp" xml:space="preserve">
+    <value>Flow up ↑</value>
+  </data>
+  <data name="QuickDialog_BandRight" xml:space="preserve">
+    <value>Right</value>
+  </data>
+  <data name="QuickDialog_BandLeft" xml:space="preserve">
+    <value>Left</value>
+  </data>
   <data name="QuickDialog_GifPlayDuringFlow" xml:space="preserve">
     <value>Play during flow</value>
   </data>

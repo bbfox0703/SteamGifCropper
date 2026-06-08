@@ -26,6 +26,7 @@ namespace GifProcessorApp
         public QuicksandFastBand FastBand { get; private set; } = QuicksandFastBand.Bottom;
         public double Viscosity { get; private set; } = 1.0;
         public bool FlowRight { get; private set; } = true;
+        public QuicksandFlowAxis Axis { get; private set; } = QuicksandFlowAxis.Horizontal;
         public bool PlayGifDuringFlow { get; private set; } = true;
 
         private TextBox txtInputPath = null!;
@@ -82,24 +83,42 @@ namespace GifProcessorApp
             btnOK.Text = Resources.ScrollDialog_OK;
             btnCancel.Text = Resources.ScrollDialog_Cancel;
 
+            // 4-way picker encodes both the flow axis and direction: 0 right, 1 left (horizontal),
+            // 2 down, 3 up (vertical).
             int dirSel = cmbDirection.SelectedIndex < 0 ? 0 : cmbDirection.SelectedIndex;
             cmbDirection.Items.Clear();
             cmbDirection.Items.Add(Resources.QuickDialog_DirRight);
             cmbDirection.Items.Add(Resources.QuickDialog_DirLeft);
+            cmbDirection.Items.Add(Resources.QuickDialog_DirDown);
+            cmbDirection.Items.Add(Resources.QuickDialog_DirUp);
             cmbDirection.SelectedIndex = dirSel;
 
-            int bandSel = cmbFastBand.SelectedIndex < 0 ? 0 : cmbFastBand.SelectedIndex;
-            cmbFastBand.Items.Clear();
-            cmbFastBand.Items.Add(Resources.QuickDialog_BandBottom);
-            cmbFastBand.Items.Add(Resources.QuickDialog_BandTop);
-            cmbFastBand.Items.Add(Resources.QuickDialog_BandMiddle);
-            cmbFastBand.SelectedIndex = bandSel;
+            RefreshFastBandLabels();
 
             int playSel = cmbGifPlayMode.SelectedIndex < 0 ? 0 : cmbGifPlayMode.SelectedIndex;
             cmbGifPlayMode.Items.Clear();
             cmbGifPlayMode.Items.Add(Resources.QuickDialog_GifPlayDuringFlow);
             cmbGifPlayMode.Items.Add(Resources.QuickDialog_GifFreezeFrame0);
             cmbGifPlayMode.SelectedIndex = playSel;
+        }
+
+        // The fast-band picker's labels follow the flow axis: horizontal rows read bottom/top/middle,
+        // vertical columns read right/left/middle. The index -> enum mapping is identical either way
+        // (0 = last band, 1 = first band, 2 = middle), so the selection survives an axis switch.
+        private void RefreshFastBandLabels()
+        {
+            bool vertical = cmbDirection.SelectedIndex >= 2;
+            int sel = cmbFastBand.SelectedIndex < 0 ? 0 : cmbFastBand.SelectedIndex;
+            cmbFastBand.Items.Clear();
+            cmbFastBand.Items.Add(vertical ? Resources.QuickDialog_BandRight : Resources.QuickDialog_BandBottom);
+            cmbFastBand.Items.Add(vertical ? Resources.QuickDialog_BandLeft : Resources.QuickDialog_BandTop);
+            cmbFastBand.Items.Add(Resources.QuickDialog_BandMiddle);
+            cmbFastBand.SelectedIndex = sel;
+        }
+
+        private void CmbDirection_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            RefreshFastBandLabels();
         }
 
         private void ApplyTheme()
@@ -268,7 +287,9 @@ namespace GifProcessorApp
             MinRevolutions = (int)numMinRevs.Value;
             FastBand = (QuicksandFastBand)cmbFastBand.SelectedIndex;
             Viscosity = (double)numViscosity.Value;
-            FlowRight = cmbDirection.SelectedIndex == 0;
+            int dir = cmbDirection.SelectedIndex;
+            Axis = dir >= 2 ? QuicksandFlowAxis.Vertical : QuicksandFlowAxis.Horizontal;
+            FlowRight = dir == 0 || dir == 2; // right (horizontal) / down (vertical) = positive roll
             PlayGifDuringFlow = cmbGifPlayMode.SelectedIndex == 0;
             DialogResult = DialogResult.OK;
             Close();
@@ -466,6 +487,7 @@ namespace GifProcessorApp
             cmbDirection.Name = "cmbDirection";
             cmbDirection.Size = new System.Drawing.Size(104, 23);
             cmbDirection.TabIndex = 17;
+            cmbDirection.SelectedIndexChanged += CmbDirection_SelectedIndexChanged;
             //
             // lblFastBand
             //

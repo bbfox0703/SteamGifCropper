@@ -38,10 +38,10 @@
 - **黏性流體感**：愈下／上／中（可選 `FastBand`）流愈快、另一端最慢，中間層用 `Viscosity` gamma 曲線塑形（>1 = 慢層更黏）。每層圈數 = `MinRevolutions`..`MaxRevolutions` 依 `BandSpeed^viscosity` 內插後四捨五入成整數（整數圈才能精準回歸 → 無縫循環的關鍵）。
 - **回歸原座標**：位移 = 圈數 × 寬度 × easeInOut(t)；t=0 與 t=1 皆對齊原圖，且頭尾速度≈0 → 銜接無跳變。frame 0 即原圖。
 - **GIF 播放方式（對齊拉霸的兩種模式）**：`流動時同步播放`（流沙剪切混在 **live GIF** 上做前 `Duration` 秒、之後 GIF 繼續播完剩餘；**輸出長度＝GIF 長度**；flow window 夾到 ≤GIF 長度確保流動在片內回歸對齊→無縫，等同 `BuildSlotMachinePlayDuringSpin`）或 `先流動再播放`（凍結 frame 0 流動 `Duration` 秒、再從 frame 0 播放**完整** GIF；**輸出長度＝Duration＋GIF 長度**，等同 `BuildSlotMachineSpinThenLock`）。靜態圖只走流動路徑（輸出＝Duration、循環）。⚠️ 早期版本曾誤把同步模式做成「重取樣成 `Duration×fps` 幀、截斷 GIF」（檔案異常小），已修正為上述語意。
-- **方向**：向右／向左（`Roll` offset 正負）。
+- **方向 + 軸（單一 4 選下拉）**：向右→／向左←（水平，切橫列、`Roll(off,0)`、wrap=寬）或向下↓／向上↑（垂直，切直欄、`Roll(0,off)`、wrap=高）。`cmbDirection.SelectedIndex` 0/1=水平、2/3=垂直；`FlowRight`(=正向 roll)=index 0 或 2。「最快層位置」下拉依軸**動態改字**（水平＝下/上/中、垂直＝右/左/中），但 index→enum 映射不變（0=末層、1=首層、2=中），`CmbDirection_SelectedIndexChanged`→`RefreshFastBandLabels()` 處理。
+- **軸無關引擎**：`BuildQuicksandAnimation` 分派器算 `bool vertical`、`bandTotal`（垂直=寬、水平=高）餵 `BandBounds`；兩個 build helper 共用 `CropQuicksandBand()`（依軸切橫列/直欄）+ `RollAndCompositeBand()`（依軸 `Roll(off,0)`/`Roll(0,off)` 並合成），`wrapLength`=另一個維度。
 - **前置**：非 766/774 寬自動 `Resize(766,0)`；不自動分割、不自動 gifsicle（同拉霸）。
-- **預設**：Layers 16、Duration 6s、FPS 15、Max 12 / Min 2 圈、FastBand 下方、Viscosity 1.0、向右、同步播放。
-- **未做（後續）**：縱向（上下流）版——幾何已是軸無關（`BandOffset` 回傳沿流軸的 offset），只差在 build loop 改成切直欄 + `Roll(0,off)`，可一個 axis 參數搞定。
+- **預設**：Layers 16、Duration 6s、FPS 15、Max 12 / Min 2 圈、FastBand 下方、Viscosity 1.0、向右流（水平）、同步播放。
 - **檔案**：`src/Core/QuicksandGeometry.cs`（純函式 ease/band-bounds/speed/revolutions/offset，可單測）、`QuicksandSettings.cs`、`src/Dialogs/QuicksandDialog.cs`、`GifProcessor.QuicksandStaticImage()`/`QuicksandGif()`/`RunQuicksand()`/`BuildQuicksandAnimation()`（分派器）/`BuildQuicksandPlayDuringFlow()`/`BuildQuicksandFlowThenPlay()`、主視窗兩顆按鈕（新增第 9 列 y=255、下方元件 +31px、表單加高至 556）、三語 resx、`SteamGifCropper.Tests/QuicksandGeometryTests.cs`（22 例）。
 
 ### 🔭 水波紋 / 聲波（Water Ripple）— 評估完成、尚未實作
