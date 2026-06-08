@@ -102,9 +102,9 @@ The application follows a specific initialization sequence:
   - Manages UI state, progress bars, status text
   - Dynamic theme switching (Windows dark/light mode detection)
   - Multi-language UI updates
-  - Provides buttons for 14+ different GIF processing operations
+  - Provides buttons for 20+ different GIF processing operations
 
-#### Specialized Dialogs (7 dialogs)
+#### Specialized Dialogs
 Each dialog handles one specific operation type:
 - `Mp4ToGifDialog` - MP4 to GIF conversion with time controls
 - `MergeGifsDialog` - Merge 2-5 GIFs side-by-side
@@ -113,6 +113,17 @@ Each dialog handles one specific operation type:
 - `OverlayGifDialog` - Overlay one GIF onto another
 - `ResizeNfpsGifDialog` - Resize and change FPS
 - `ScrollStaticImageDialog` - Create scrolling animations
+- `GridMosaicDialog` - Slot-aligned grid/mosaic overlay (766px)
+- `SlotMachineDialog` - 5-reel slot machine (image / GIF)
+- `QuicksandDialog` - Horizontal/vertical viscous band flow (image / GIF)
+- `RippleDialog` - Water ripple: up to 3 interfering drops (image / GIF)
+- `RippleDropPickerForm` - Click-to-pick a ripple drop position on frame 0
+
+> **Creative-effects detail:** these "766px single-output, chainable" effects (grid mosaic, slot
+> machine, quicksand, ripple) and their roadmap are documented in `docs/CreativeFeatureIdeas.md`.
+> Their math is extracted into pure, dependency-free files for unit testing — `SlotMachineGeometry.cs`,
+> `QuicksandGeometry.cs`, `GifEffectWindow.cs`, `GridMosaicGeometry.cs`, `RippleField.cs` (+ the
+> Magick-side `RippleRenderer.cs`, `GridMosaicRenderer.cs`) — linked into the test project.
 
 ### Magick.NET (ImageMagick) Integration
 
@@ -285,25 +296,36 @@ SteamGifCropper/
 ├── src/
 │   ├── Program.cs                          # Entry point & initialization
 │   ├── Core/                               # Processing engine & settings types
-│   │   ├── GifProcessor.cs                 # Core processing engine (3200+ lines)
+│   │   ├── GifProcessor.cs                 # Core processing engine (5000+ lines; all effects)
 │   │   ├── GifsicleWrapper.cs              # Gifsicle integration
+│   │   ├── GifSizeFitter.cs                # Auto-fit-to-≤5MB pipe for gifsicle
 │   │   ├── GifWriteDefines.cs              # Custom GIF write settings
 │   │   ├── GifConcatenationSettings.cs
 │   │   ├── TransitionGenerator.cs          # Transition effects
 │   │   ├── ImageInputValidator.cs
-│   │   └── ScrollDirection.cs
+│   │   ├── ScrollDirection.cs
+│   │   ├── GifEffectWindow.cs              # Pure [start,duration] frame-window math (slot/quicksand)
+│   │   ├── GridMosaicSettings/Geometry/Renderer.cs   # Grid mosaic (geometry pure, renderer Magick)
+│   │   ├── SlotMachineSettings/Geometry.cs           # Slot machine (geometry pure)
+│   │   ├── QuicksandSettings/Geometry.cs             # Quicksand flow (geometry pure)
+│   │   └── RippleSettings/Field/Renderer.cs          # Water ripple (Field pure, Renderer Magick)
 │   ├── Forms/
 │   │   ├── GTMainForm.cs                   # Main UI form
 │   │   ├── GTMainForm.Designer.cs
 │   │   └── GTMainForm.resx
-│   ├── Dialogs/                            # 7 operation dialogs (.cs / .Designer.cs / .resx)
+│   ├── Dialogs/                            # operation dialogs (inline forms; most have no .Designer/.resx)
 │   │   ├── ConcatenateGifsDialog.*
 │   │   ├── MergeGifsDialog.*
 │   │   ├── MergeFiveGifsDialog.*
 │   │   ├── Mp4ToGifDialog.*
 │   │   ├── OverlayGifDialog.*              # has .ja.resx and .zh-TW.resx
 │   │   ├── ResizeNfpsGifDialog.*
-│   │   └── ScrollStaticImageDialog.*
+│   │   ├── ScrollStaticImageDialog.*
+│   │   ├── GridMosaicDialog.cs
+│   │   ├── SlotMachineDialog.cs
+│   │   ├── QuicksandDialog.cs
+│   │   ├── RippleDialog.cs
+│   │   └── RippleDropPickerForm.cs         # Click-to-pick ripple drop position
 │   └── Platform/                           # Windows integration
 │       ├── WindowsThemeManager.cs
 │       └── RegistryProvider.cs
