@@ -240,6 +240,16 @@ namespace GifProcessorApp
             await ExecuteWithErrorHandling(async () => await GifProcessor.SlotMachineGif(this), "slot machine (GIF)");
         }
 
+        private async void btnQuicksandStatic_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(async () => await GifProcessor.QuicksandStaticImage(this), "quicksand (image)");
+        }
+
+        private async void btnQuicksandGif_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(async () => await GifProcessor.QuicksandGif(this), "quicksand (GIF)");
+        }
+
         private async void btnGifsicleSingle_Click(object sender, EventArgs e)
         {
             await ExecuteWithErrorHandling(async () => await GifProcessor.OptimizeSingleGif(this), "gifsicle optimization");
@@ -369,6 +379,8 @@ namespace GifProcessorApp
                 btnGridMosaic.Text = SteamGifCropper.Properties.Resources.Button_GridMosaic;
                 btnSlotMachineStatic.Text = SteamGifCropper.Properties.Resources.Button_SlotMachineStatic;
                 btnSlotMachineGif.Text = SteamGifCropper.Properties.Resources.Button_SlotMachineGif;
+                btnQuicksandStatic.Text = SteamGifCropper.Properties.Resources.Button_QuicksandStatic;
+                btnQuicksandGif.Text = SteamGifCropper.Properties.Resources.Button_QuicksandGif;
                 btnScrollAnimatedGif.Text = SteamGifCropper.Properties.Resources.Button_ScrollAnimatedGif;
                 label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
                 lblFramerate.Text = SteamGifCropper.Properties.Resources.Label_Framerate;

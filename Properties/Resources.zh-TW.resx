@@ -481,6 +481,78 @@
   <data name="SlotDialog_Hold" xml:space="preserve">
     <value>結果停留（秒）</value>
   </data>
+  <data name="Button_QuicksandStatic" xml:space="preserve">
+    <value>766px 流沙（圖片）</value>
+  </data>
+  <data name="Button_QuicksandGif" xml:space="preserve">
+    <value>766px 流沙（GIF）</value>
+  </data>
+  <data name="Status_QuicksandBuilding" xml:space="preserve">
+    <value>正在建立流沙流動…</value>
+  </data>
+  <data name="QuickDialog_Title" xml:space="preserve">
+    <value>流沙流動（766px）</value>
+  </data>
+  <data name="QuickDialog_InputLabel" xml:space="preserve">
+    <value>輸入圖片或 GIF</value>
+  </data>
+  <data name="QuickDialog_OutputLabel" xml:space="preserve">
+    <value>輸出 GIF</value>
+  </data>
+  <data name="QuickDialog_Layers" xml:space="preserve">
+    <value>分層數</value>
+  </data>
+  <data name="QuickDialog_Duration" xml:space="preserve">
+    <value>時間長度（秒）</value>
+  </data>
+  <data name="QuickDialog_MaxRevs" xml:space="preserve">
+    <value>最快圈數</value>
+  </data>
+  <data name="QuickDialog_MinRevs" xml:space="preserve">
+    <value>最慢圈數</value>
+  </data>
+  <data name="QuickDialog_FastBand" xml:space="preserve">
+    <value>最快層位置</value>
+  </data>
+  <data name="QuickDialog_BandBottom" xml:space="preserve">
+    <value>下方</value>
+  </data>
+  <data name="QuickDialog_BandTop" xml:space="preserve">
+    <value>上方</value>
+  </data>
+  <data name="QuickDialog_BandMiddle" xml:space="preserve">
+    <value>中間</value>
+  </data>
+  <data name="QuickDialog_Viscosity" xml:space="preserve">
+    <value>黏滯度</value>
+  </data>
+  <data name="QuickDialog_DirRight" xml:space="preserve">
+    <value>向右流 →</value>
+  </data>
+  <data name="QuickDialog_DirLeft" xml:space="preserve">
+    <value>向左流 ←</value>
+  </data>
+  <data name="QuickDialog_DirDown" xml:space="preserve">
+    <value>向下流 ↓</value>
+  </data>
+  <data name="QuickDialog_DirUp" xml:space="preserve">
+    <value>向上流 ↑</value>
+  </data>
+  <data name="QuickDialog_BandRight" xml:space="preserve">
+    <value>右方</value>
+  </data>
+  <data name="QuickDialog_BandLeft" xml:space="preserve">
+    <value>左方</value>
+  </data>
+  <data name="QuickDialog_GifPlayDuringFlow" xml:space="preserve">
+    <value>流動時同步播放</value>
+  </data>
+  <data name="QuickDialog_GifFreezeFrame0" xml:space="preserve">
+    <value>先流動再播放</value>
+  </data>
+  <data name="Dialog_StartSeconds" xml:space="preserve">
+    <value>起始（秒）</value>
+  </data>
   <data name="GridDialog_Title" xml:space="preserve">
     <value>格網馬賽克切割</value>
   </data>

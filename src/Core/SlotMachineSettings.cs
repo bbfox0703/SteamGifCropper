@@ -7,7 +7,8 @@ namespace GifProcessorApp
         public string OutputFilePath { get; set; }
         public bool IsGif { get; set; }
 
-        public int DurationSeconds { get; set; } = 3;          // base spinning time
+        public double DurationSeconds { get; set; } = 3.0;     // base spinning time (2dp)
+        public double StartSeconds { get; set; } = 0.0;        // GIF "play during spin" only: when spinning begins
         public int DurationVariancePercent { get; set; } = 20; // per-reel +/- swing on the stop time
         public int Fps { get; set; } = 15;
         public int Spins { get; set; } = 4;                    // base full vertical revolutions per reel

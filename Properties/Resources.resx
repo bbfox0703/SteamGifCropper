@@ -473,6 +473,78 @@ Files skipped (not 0x21): {1}</value>
   <data name="SlotDialog_Hold" xml:space="preserve">
     <value>Hold result (s)</value>
   </data>
+  <data name="Button_QuicksandStatic" xml:space="preserve">
+    <value>766px Quicksand (Image)</value>
+  </data>
+  <data name="Button_QuicksandGif" xml:space="preserve">
+    <value>766px Quicksand (GIF)</value>
+  </data>
+  <data name="Status_QuicksandBuilding" xml:space="preserve">
+    <value>Building quicksand flow...</value>
+  </data>
+  <data name="QuickDialog_Title" xml:space="preserve">
+    <value>Quicksand Flow (766px)</value>
+  </data>
+  <data name="QuickDialog_InputLabel" xml:space="preserve">
+    <value>Input image or GIF</value>
+  </data>
+  <data name="QuickDialog_OutputLabel" xml:space="preserve">
+    <value>Output GIF</value>
+  </data>
+  <data name="QuickDialog_Layers" xml:space="preserve">
+    <value>Layers</value>
+  </data>
+  <data name="QuickDialog_Duration" xml:space="preserve">
+    <value>Duration (s)</value>
+  </data>
+  <data name="QuickDialog_MaxRevs" xml:space="preserve">
+    <value>Max turns (fast)</value>
+  </data>
+  <data name="QuickDialog_MinRevs" xml:space="preserve">
+    <value>Min turns (slow)</value>
+  </data>
+  <data name="QuickDialog_FastBand" xml:space="preserve">
+    <value>Fast band</value>
+  </data>
+  <data name="QuickDialog_BandBottom" xml:space="preserve">
+    <value>Bottom</value>
+  </data>
+  <data name="QuickDialog_BandTop" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="QuickDialog_BandMiddle" xml:space="preserve">
+    <value>Middle</value>
+  </data>
+  <data name="QuickDialog_Viscosity" xml:space="preserve">
+    <value>Viscosity</value>
+  </data>
+  <data name="QuickDialog_DirRight" xml:space="preserve">
+    <value>Flow right →</value>
+  </data>
+  <data name="QuickDialog_DirLeft" xml:space="preserve">
+    <value>Flow left ←</value>
+  </data>
+  <data name="QuickDialog_DirDown" xml:space="preserve">
+    <value>Flow down ↓</value>
+  </data>
+  <data name="QuickDialog_DirUp" xml:space="preserve">
+    <value>Flow up ↑</value>
+  </data>
+  <data name="QuickDialog_BandRight" xml:space="preserve">
+    <value>Right</value>
+  </data>
+  <data name="QuickDialog_BandLeft" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="QuickDialog_GifPlayDuringFlow" xml:space="preserve">
+    <value>Play during flow</value>
+  </data>
+  <data name="QuickDialog_GifFreezeFrame0" xml:space="preserve">
+    <value>Flow, then play</value>
+  </data>
+  <data name="Dialog_StartSeconds" xml:space="preserve">
+    <value>Start (s)</value>
+  </data>
   <data name="GridDialog_Title" xml:space="preserve">
     <value>Grid Mosaic Split</value>
   </data>

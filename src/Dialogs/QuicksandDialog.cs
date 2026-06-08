@@ -6,68 +6,64 @@ using SteamGifCropper.Properties;
 
 namespace GifProcessorApp
 {
-    // Slot-machine (拉霸) parameters dialog. Mirrors ScrollStaticImageDialog's inline layout +
-    // theme handling. gifMode toggles the input file filter (animated GIF vs any image) and hides
-    // the "hold result" field (a GIF plays after the reels lock instead of holding a still frame).
+    // Quicksand-flow (流沙) parameters dialog. Mirrors SlotMachineDialog's inline layout + theme
+    // handling. gifMode toggles the input file filter (animated GIF vs any image) and shows the GIF
+    // playback-mode picker (play during flow vs freeze on frame 0).
     //
-    // Per-reel stop time and revolution count are randomized (Duration/Spins +/- their variance %),
-    // so which reel stops first and which spins longest is non-deterministic — that replaces the old
-    // fixed "stagger" setting.
-    public class SlotMachineDialog : Form
+    // The image is sliced into N horizontal bands; each band wrap-scrolls horizontally a whole number
+    // of turns over the duration (eased in/out, returning to the original), with the turn count graded
+    // across the bands so one edge (or the centre) flows fastest — a viscous shear / quicksand look.
+    public class QuicksandDialog : Form
     {
         public string InputFilePath { get; private set; } = string.Empty;
         public string OutputFilePath { get; private set; } = string.Empty;
         public bool IsGif { get; private set; }
-        public double DurationSeconds { get; private set; } = 3.0;
+        public int Layers { get; private set; } = 16;
+        public double DurationSeconds { get; private set; } = 6.0;
         public double StartSeconds { get; private set; } = 0.0;
-        public int DurationVariancePercent { get; private set; } = 20;
         public int Fps { get; private set; } = 15;
-        public int Spins { get; private set; } = 4;
-        public int SpinsVariancePercent { get; private set; } = 25;
-        public double BounceSeconds { get; private set; } = 0.5;
-        public bool TopToBottom { get; private set; } = true;
-        public int HoldSeconds { get; private set; } = 1;
-        public bool PlayGifDuringSpin { get; private set; } = true;
+        public int MaxRevolutions { get; private set; } = 12;
+        public int MinRevolutions { get; private set; } = 2;
+        public QuicksandFastBand FastBand { get; private set; } = QuicksandFastBand.Bottom;
+        public double Viscosity { get; private set; } = 1.0;
+        public bool FlowRight { get; private set; } = true;
+        public QuicksandFlowAxis Axis { get; private set; } = QuicksandFlowAxis.Horizontal;
+        public bool PlayGifDuringFlow { get; private set; } = true;
 
         private TextBox txtInputPath = null!;
         private Button btnBrowseInput = null!;
         private TextBox txtOutputPath = null!;
         private Button btnBrowseOutput = null!;
+        private NumericUpDown numLayers = null!;
         private NumericUpDown numDuration = null!;
-        private NumericUpDown numDurVar = null!;
         private NumericUpDown numFps = null!;
-        private NumericUpDown numSpins = null!;
-        private NumericUpDown numSpinVar = null!;
+        private NumericUpDown numMaxRevs = null!;
+        private NumericUpDown numMinRevs = null!;
         private ComboBox cmbDirection = null!;
-        private NumericUpDown numBounce = null!;
-        private NumericUpDown numHold = null!;
+        private ComboBox cmbFastBand = null!;
+        private NumericUpDown numViscosity = null!;
+        private ComboBox cmbGifPlayMode = null!;
         private NumericUpDown numStart = null!;
         private Label lblStart = null!;
-        private Label lblGifPlayMode = null!;
-        private ComboBox cmbGifPlayMode = null!;
         private Button btnOK = null!;
         private Button btnCancel = null!;
         private Label lblInput = null!;
         private Label lblOutput = null!;
+        private Label lblLayers = null!;
         private Label lblDuration = null!;
-        private Label lblDurVar = null!;
         private Label lblFps = null!;
-        private Label lblSpins = null!;
-        private Label lblSpinVar = null!;
+        private Label lblMaxRevs = null!;
+        private Label lblMinRevs = null!;
         private Label lblDirection = null!;
-        private Label lblBounce = null!;
-        private Label lblHold = null!;
+        private Label lblFastBand = null!;
+        private Label lblViscosity = null!;
 
-        public SlotMachineDialog(bool gifMode)
+        public QuicksandDialog(bool gifMode)
         {
             IsGif = gifMode;
             InitializeComponent();
-            // Hold (static) and the GIF playback-mode picker share the same slot and are mutually exclusive.
-            lblHold.Visible = !gifMode;
-            numHold.Visible = !gifMode;
-            lblGifPlayMode.Visible = gifMode;
+            // The GIF playback-mode picker + start-offset only apply to animated input.
             cmbGifPlayMode.Visible = gifMode;
-            // Start offset only applies to GIF + "play during spin" (a window into the GIF timeline).
             lblStart.Visible = gifMode;
             numStart.Visible = gifMode;
             cmbGifPlayMode.SelectedIndexChanged += (s, e) => UpdateStartEnabled();
@@ -76,6 +72,8 @@ namespace GifProcessorApp
             ApplyTheme();
         }
 
+        // The start offset only has meaning for "play during flow" (a window into the GIF timeline);
+        // "flow, then play" runs over a frozen frame, so it is greyed out there.
         private void UpdateStartEnabled()
         {
             bool enabled = IsGif && cmbGifPlayMode.SelectedIndex == 0;
@@ -85,35 +83,59 @@ namespace GifProcessorApp
 
         private void UpdateUIText()
         {
-            Text = Resources.SlotDialog_Title;
-            lblInput.Text = Resources.SlotDialog_InputLabel;
-            lblOutput.Text = Resources.SlotDialog_OutputLabel;
-            lblDuration.Text = Resources.SlotDialog_Duration;
-            lblDurVar.Text = Resources.SlotDialog_Variance;
+            Text = Resources.QuickDialog_Title;
+            lblInput.Text = Resources.QuickDialog_InputLabel;
+            lblOutput.Text = Resources.QuickDialog_OutputLabel;
+            lblLayers.Text = Resources.QuickDialog_Layers;
+            lblDuration.Text = Resources.QuickDialog_Duration;
             lblFps.Text = Resources.SlotDialog_Fps;
-            lblSpins.Text = Resources.SlotDialog_Spins;
-            lblSpinVar.Text = Resources.SlotDialog_Variance;
+            lblMaxRevs.Text = Resources.QuickDialog_MaxRevs;
+            lblMinRevs.Text = Resources.QuickDialog_MinRevs;
             lblDirection.Text = Resources.SlotDialog_Direction;
-            lblBounce.Text = Resources.SlotDialog_Bounce;
-            lblHold.Text = Resources.SlotDialog_Hold;
+            lblFastBand.Text = Resources.QuickDialog_FastBand;
+            lblViscosity.Text = Resources.QuickDialog_Viscosity;
             lblStart.Text = Resources.Dialog_StartSeconds;
-            lblGifPlayMode.Text = Resources.SlotDialog_GifPlayMode;
             btnBrowseInput.Text = Resources.Button_Browse;
             btnBrowseOutput.Text = Resources.Button_Browse;
             btnOK.Text = Resources.ScrollDialog_OK;
             btnCancel.Text = Resources.ScrollDialog_Cancel;
 
-            int selected = cmbDirection.SelectedIndex < 0 ? 0 : cmbDirection.SelectedIndex;
+            // 4-way picker encodes both the flow axis and direction: 0 right, 1 left (horizontal),
+            // 2 down, 3 up (vertical).
+            int dirSel = cmbDirection.SelectedIndex < 0 ? 0 : cmbDirection.SelectedIndex;
             cmbDirection.Items.Clear();
-            cmbDirection.Items.Add(Resources.SlotDialog_DirTopDown);
-            cmbDirection.Items.Add(Resources.SlotDialog_DirBottomUp);
-            cmbDirection.SelectedIndex = selected;
+            cmbDirection.Items.Add(Resources.QuickDialog_DirRight);
+            cmbDirection.Items.Add(Resources.QuickDialog_DirLeft);
+            cmbDirection.Items.Add(Resources.QuickDialog_DirDown);
+            cmbDirection.Items.Add(Resources.QuickDialog_DirUp);
+            cmbDirection.SelectedIndex = dirSel;
 
-            int gifModeSel = cmbGifPlayMode.SelectedIndex < 0 ? 0 : cmbGifPlayMode.SelectedIndex;
+            RefreshFastBandLabels();
+
+            int playSel = cmbGifPlayMode.SelectedIndex < 0 ? 0 : cmbGifPlayMode.SelectedIndex;
             cmbGifPlayMode.Items.Clear();
-            cmbGifPlayMode.Items.Add(Resources.SlotDialog_GifPlayDuringSpin);
-            cmbGifPlayMode.Items.Add(Resources.SlotDialog_GifSpinThenPlay);
-            cmbGifPlayMode.SelectedIndex = gifModeSel;
+            cmbGifPlayMode.Items.Add(Resources.QuickDialog_GifPlayDuringFlow);
+            cmbGifPlayMode.Items.Add(Resources.QuickDialog_GifFreezeFrame0);
+            cmbGifPlayMode.SelectedIndex = playSel;
+        }
+
+        // The fast-band picker's labels follow the flow axis: horizontal rows read bottom/top/middle,
+        // vertical columns read right/left/middle. The index -> enum mapping is identical either way
+        // (0 = last band, 1 = first band, 2 = middle), so the selection survives an axis switch.
+        private void RefreshFastBandLabels()
+        {
+            bool vertical = cmbDirection.SelectedIndex >= 2;
+            int sel = cmbFastBand.SelectedIndex < 0 ? 0 : cmbFastBand.SelectedIndex;
+            cmbFastBand.Items.Clear();
+            cmbFastBand.Items.Add(vertical ? Resources.QuickDialog_BandRight : Resources.QuickDialog_BandBottom);
+            cmbFastBand.Items.Add(vertical ? Resources.QuickDialog_BandLeft : Resources.QuickDialog_BandTop);
+            cmbFastBand.Items.Add(Resources.QuickDialog_BandMiddle);
+            cmbFastBand.SelectedIndex = sel;
+        }
+
+        private void CmbDirection_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            RefreshFastBandLabels();
         }
 
         private void ApplyTheme()
@@ -231,7 +253,7 @@ namespace GifProcessorApp
             using var ofd = new OpenFileDialog
             {
                 Filter = IsGif ? Resources.FileDialog_GifFilter : Resources.FileDialog_ImageAndGifFilter,
-                Title = Resources.SlotDialog_InputLabel
+                Title = Resources.QuickDialog_InputLabel
             };
             if (ofd.ShowDialog() == DialogResult.OK)
             {
@@ -239,7 +261,7 @@ namespace GifProcessorApp
                 if (string.IsNullOrWhiteSpace(txtOutputPath.Text))
                 {
                     string dir = Path.GetDirectoryName(ofd.FileName) ?? string.Empty;
-                    string name = Path.GetFileNameWithoutExtension(ofd.FileName) + "_slot.gif";
+                    string name = Path.GetFileNameWithoutExtension(ofd.FileName) + "_quicksand.gif";
                     txtOutputPath.Text = Path.Combine(dir, name);
                 }
             }
@@ -250,10 +272,10 @@ namespace GifProcessorApp
             using var sfd = new SaveFileDialog
             {
                 Filter = Resources.FileDialog_GifFilter,
-                Title = Resources.SlotDialog_OutputLabel,
+                Title = Resources.QuickDialog_OutputLabel,
                 FileName = string.IsNullOrEmpty(txtInputPath.Text)
-                    ? "output_slot.gif"
-                    : Path.GetFileNameWithoutExtension(txtInputPath.Text) + "_slot.gif"
+                    ? "output_quicksand.gif"
+                    : Path.GetFileNameWithoutExtension(txtInputPath.Text) + "_quicksand.gif"
             };
             if (sfd.ShowDialog() == DialogResult.OK)
             {
@@ -275,16 +297,18 @@ namespace GifProcessorApp
             }
             InputFilePath = txtInputPath.Text;
             OutputFilePath = txtOutputPath.Text;
+            Layers = (int)numLayers.Value;
             DurationSeconds = (double)numDuration.Value;
             StartSeconds = (double)numStart.Value;
-            DurationVariancePercent = (int)numDurVar.Value;
             Fps = (int)numFps.Value;
-            Spins = (int)numSpins.Value;
-            SpinsVariancePercent = (int)numSpinVar.Value;
-            BounceSeconds = (double)numBounce.Value;
-            TopToBottom = cmbDirection.SelectedIndex == 0;
-            HoldSeconds = (int)numHold.Value;
-            PlayGifDuringSpin = cmbGifPlayMode.SelectedIndex == 0;
+            MaxRevolutions = (int)numMaxRevs.Value;
+            MinRevolutions = (int)numMinRevs.Value;
+            FastBand = (QuicksandFastBand)cmbFastBand.SelectedIndex;
+            Viscosity = (double)numViscosity.Value;
+            int dir = cmbDirection.SelectedIndex;
+            Axis = dir >= 2 ? QuicksandFlowAxis.Vertical : QuicksandFlowAxis.Horizontal;
+            FlowRight = dir == 0 || dir == 2; // right (horizontal) / down (vertical) = positive roll
+            PlayGifDuringFlow = cmbGifPlayMode.SelectedIndex == 0;
             DialogResult = DialogResult.OK;
             Close();
         }
@@ -297,35 +321,33 @@ namespace GifProcessorApp
             lblOutput = new Label();
             txtOutputPath = new TextBox();
             btnBrowseOutput = new Button();
+            lblLayers = new Label();
+            numLayers = new NumericUpDown();
             lblDuration = new Label();
             numDuration = new NumericUpDown();
-            lblDurVar = new Label();
-            numDurVar = new NumericUpDown();
             lblFps = new Label();
             numFps = new NumericUpDown();
-            lblSpins = new Label();
-            numSpins = new NumericUpDown();
-            lblSpinVar = new Label();
-            numSpinVar = new NumericUpDown();
+            lblMaxRevs = new Label();
+            numMaxRevs = new NumericUpDown();
+            lblMinRevs = new Label();
+            numMinRevs = new NumericUpDown();
             lblDirection = new Label();
             cmbDirection = new ComboBox();
-            lblBounce = new Label();
-            numBounce = new NumericUpDown();
-            lblHold = new Label();
-            numHold = new NumericUpDown();
-            numStart = new NumericUpDown();
-            lblStart = new Label();
-            lblGifPlayMode = new Label();
+            lblFastBand = new Label();
+            cmbFastBand = new ComboBox();
+            lblViscosity = new Label();
+            numViscosity = new NumericUpDown();
             cmbGifPlayMode = new ComboBox();
+            lblStart = new Label();
+            numStart = new NumericUpDown();
             btnOK = new Button();
             btnCancel = new Button();
+            ((System.ComponentModel.ISupportInitialize)numLayers).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numDuration).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numDurVar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numFps).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numSpins).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numSpinVar).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numBounce).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numHold).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numMaxRevs).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numMinRevs).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numViscosity).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numStart).BeginInit();
             SuspendLayout();
             //
@@ -381,47 +403,47 @@ namespace GifProcessorApp
             btnBrowseOutput.UseVisualStyleBackColor = true;
             btnBrowseOutput.Click += BtnBrowseOutput_Click;
             //
+            // lblLayers
+            //
+            lblLayers.Location = new System.Drawing.Point(14, 126);
+            lblLayers.Name = "lblLayers";
+            lblLayers.Size = new System.Drawing.Size(98, 20);
+            lblLayers.TabIndex = 6;
+            lblLayers.Text = "Layers";
+            //
+            // numLayers
+            //
+            numLayers.Location = new System.Drawing.Point(114, 124);
+            numLayers.Minimum = new decimal(new int[] { 2, 0, 0, 0 });
+            numLayers.Maximum = new decimal(new int[] { 64, 0, 0, 0 });
+            numLayers.Name = "numLayers";
+            numLayers.Size = new System.Drawing.Size(46, 23);
+            numLayers.TabIndex = 7;
+            numLayers.Value = new decimal(new int[] { 16, 0, 0, 0 });
+            //
             // lblDuration
             //
-            lblDuration.Location = new System.Drawing.Point(14, 126);
+            lblDuration.Location = new System.Drawing.Point(168, 126);
             lblDuration.Name = "lblDuration";
-            lblDuration.Size = new System.Drawing.Size(98, 20);
-            lblDuration.TabIndex = 6;
+            lblDuration.Size = new System.Drawing.Size(96, 20);
+            lblDuration.TabIndex = 8;
             lblDuration.Text = "Duration";
             //
             // numDuration
             //
             numDuration.DecimalPlaces = 2;
             numDuration.Increment = new decimal(new int[] { 25, 0, 0, 131072 }); // 0.25
-            numDuration.Location = new System.Drawing.Point(114, 124);
+            numDuration.Location = new System.Drawing.Point(268, 124);
             numDuration.Minimum = new decimal(new int[] { 10, 0, 0, 131072 }); // 0.10
-            numDuration.Maximum = new decimal(new int[] { 1000, 0, 0, 131072 }); // 10.00
+            numDuration.Maximum = new decimal(new int[] { 3000, 0, 0, 131072 }); // 30.00
             numDuration.Name = "numDuration";
             numDuration.Size = new System.Drawing.Size(52, 23);
-            numDuration.TabIndex = 7;
-            numDuration.Value = new decimal(new int[] { 300, 0, 0, 131072 }); // 3.00
-            //
-            // lblDurVar
-            //
-            lblDurVar.Location = new System.Drawing.Point(168, 126);
-            lblDurVar.Name = "lblDurVar";
-            lblDurVar.Size = new System.Drawing.Size(66, 20);
-            lblDurVar.TabIndex = 8;
-            lblDurVar.Text = "Variance";
-            //
-            // numDurVar
-            //
-            numDurVar.Location = new System.Drawing.Point(236, 124);
-            numDurVar.Minimum = new decimal(new int[] { 0, 0, 0, 0 });
-            numDurVar.Maximum = new decimal(new int[] { 30, 0, 0, 0 });
-            numDurVar.Name = "numDurVar";
-            numDurVar.Size = new System.Drawing.Size(46, 23);
-            numDurVar.TabIndex = 9;
-            numDurVar.Value = new decimal(new int[] { 20, 0, 0, 0 });
+            numDuration.TabIndex = 9;
+            numDuration.Value = new decimal(new int[] { 600, 0, 0, 131072 }); // 6.00
             //
             // lblFps
             //
-            lblFps.Location = new System.Drawing.Point(292, 126);
+            lblFps.Location = new System.Drawing.Point(322, 126);
             lblFps.Name = "lblFps";
             lblFps.Size = new System.Drawing.Size(34, 20);
             lblFps.TabIndex = 10;
@@ -429,7 +451,7 @@ namespace GifProcessorApp
             //
             // numFps
             //
-            numFps.Location = new System.Drawing.Point(330, 124);
+            numFps.Location = new System.Drawing.Point(360, 124);
             numFps.Minimum = new decimal(new int[] { 5, 0, 0, 0 });
             numFps.Maximum = new decimal(new int[] { 50, 0, 0, 0 });
             numFps.Name = "numFps";
@@ -437,137 +459,128 @@ namespace GifProcessorApp
             numFps.TabIndex = 11;
             numFps.Value = new decimal(new int[] { 15, 0, 0, 0 });
             //
-            // lblSpins
+            // lblMaxRevs
             //
-            lblSpins.Location = new System.Drawing.Point(14, 159);
-            lblSpins.Name = "lblSpins";
-            lblSpins.Size = new System.Drawing.Size(98, 20);
-            lblSpins.TabIndex = 12;
-            lblSpins.Text = "Spins";
+            lblMaxRevs.Location = new System.Drawing.Point(14, 159);
+            lblMaxRevs.Name = "lblMaxRevs";
+            lblMaxRevs.Size = new System.Drawing.Size(98, 20);
+            lblMaxRevs.TabIndex = 12;
+            lblMaxRevs.Text = "Max turns";
             //
-            // numSpins
+            // numMaxRevs
             //
-            numSpins.Location = new System.Drawing.Point(114, 157);
-            numSpins.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
-            numSpins.Maximum = new decimal(new int[] { 20, 0, 0, 0 });
-            numSpins.Name = "numSpins";
-            numSpins.Size = new System.Drawing.Size(46, 23);
-            numSpins.TabIndex = 13;
-            numSpins.Value = new decimal(new int[] { 4, 0, 0, 0 });
+            numMaxRevs.Location = new System.Drawing.Point(114, 157);
+            numMaxRevs.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numMaxRevs.Maximum = new decimal(new int[] { 50, 0, 0, 0 });
+            numMaxRevs.Name = "numMaxRevs";
+            numMaxRevs.Size = new System.Drawing.Size(46, 23);
+            numMaxRevs.TabIndex = 13;
+            numMaxRevs.Value = new decimal(new int[] { 12, 0, 0, 0 });
             //
-            // lblSpinVar
+            // lblMinRevs
             //
-            lblSpinVar.Location = new System.Drawing.Point(168, 159);
-            lblSpinVar.Name = "lblSpinVar";
-            lblSpinVar.Size = new System.Drawing.Size(66, 20);
-            lblSpinVar.TabIndex = 14;
-            lblSpinVar.Text = "Variance";
+            lblMinRevs.Location = new System.Drawing.Point(168, 159);
+            lblMinRevs.Name = "lblMinRevs";
+            lblMinRevs.Size = new System.Drawing.Size(96, 20);
+            lblMinRevs.TabIndex = 14;
+            lblMinRevs.Text = "Min turns";
             //
-            // numSpinVar
+            // numMinRevs
             //
-            numSpinVar.Location = new System.Drawing.Point(236, 157);
-            numSpinVar.Minimum = new decimal(new int[] { 0, 0, 0, 0 });
-            numSpinVar.Maximum = new decimal(new int[] { 50, 0, 0, 0 });
-            numSpinVar.Name = "numSpinVar";
-            numSpinVar.Size = new System.Drawing.Size(46, 23);
-            numSpinVar.TabIndex = 15;
-            numSpinVar.Value = new decimal(new int[] { 25, 0, 0, 0 });
+            numMinRevs.Location = new System.Drawing.Point(268, 157);
+            numMinRevs.Minimum = new decimal(new int[] { 0, 0, 0, 0 });
+            numMinRevs.Maximum = new decimal(new int[] { 50, 0, 0, 0 });
+            numMinRevs.Name = "numMinRevs";
+            numMinRevs.Size = new System.Drawing.Size(46, 23);
+            numMinRevs.TabIndex = 15;
+            numMinRevs.Value = new decimal(new int[] { 2, 0, 0, 0 });
             //
             // lblDirection
             //
-            lblDirection.Location = new System.Drawing.Point(292, 159);
+            lblDirection.Location = new System.Drawing.Point(322, 159);
             lblDirection.Name = "lblDirection";
-            lblDirection.Size = new System.Drawing.Size(40, 20);
+            lblDirection.Size = new System.Drawing.Size(36, 20);
             lblDirection.TabIndex = 16;
             lblDirection.Text = "Dir";
             //
             // cmbDirection
             //
             cmbDirection.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbDirection.Location = new System.Drawing.Point(332, 157);
+            cmbDirection.Location = new System.Drawing.Point(360, 157);
             cmbDirection.Name = "cmbDirection";
-            cmbDirection.Size = new System.Drawing.Size(130, 23);
+            cmbDirection.Size = new System.Drawing.Size(104, 23);
             cmbDirection.TabIndex = 17;
+            cmbDirection.SelectedIndexChanged += CmbDirection_SelectedIndexChanged;
             //
-            // lblBounce
+            // lblFastBand
             //
-            lblBounce.Location = new System.Drawing.Point(14, 192);
-            lblBounce.Name = "lblBounce";
-            lblBounce.Size = new System.Drawing.Size(98, 20);
-            lblBounce.TabIndex = 18;
-            lblBounce.Text = "Bounce";
+            lblFastBand.Location = new System.Drawing.Point(14, 192);
+            lblFastBand.Name = "lblFastBand";
+            lblFastBand.Size = new System.Drawing.Size(68, 20);
+            lblFastBand.TabIndex = 18;
+            lblFastBand.Text = "Fast band";
             //
-            // numBounce
+            // cmbFastBand
             //
-            numBounce.DecimalPlaces = 1;
-            numBounce.Increment = new decimal(new int[] { 1, 0, 0, 65536 }); // 0.1
-            numBounce.Location = new System.Drawing.Point(114, 190);
-            numBounce.Minimum = new decimal(new int[] { 0, 0, 0, 0 });
-            numBounce.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
-            numBounce.Name = "numBounce";
-            numBounce.Size = new System.Drawing.Size(46, 23);
-            numBounce.TabIndex = 19;
-            numBounce.Value = new decimal(new int[] { 5, 0, 0, 65536 }); // 0.5
+            cmbFastBand.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbFastBand.Location = new System.Drawing.Point(84, 190);
+            cmbFastBand.Name = "cmbFastBand";
+            cmbFastBand.Size = new System.Drawing.Size(82, 23);
+            cmbFastBand.TabIndex = 19;
             //
-            // lblHold
+            // lblViscosity
             //
-            lblHold.Location = new System.Drawing.Point(168, 192);
-            lblHold.Name = "lblHold";
-            lblHold.Size = new System.Drawing.Size(110, 20);
-            lblHold.TabIndex = 20;
-            lblHold.Text = "Hold";
+            lblViscosity.Location = new System.Drawing.Point(168, 192);
+            lblViscosity.Name = "lblViscosity";
+            lblViscosity.Size = new System.Drawing.Size(96, 20);
+            lblViscosity.TabIndex = 20;
+            lblViscosity.Text = "Viscosity";
             //
-            // numHold
+            // numViscosity
             //
-            numHold.Location = new System.Drawing.Point(284, 190);
-            numHold.Minimum = new decimal(new int[] { 0, 0, 0, 0 });
-            numHold.Maximum = new decimal(new int[] { 10, 0, 0, 0 });
-            numHold.Name = "numHold";
-            numHold.Size = new System.Drawing.Size(46, 23);
-            numHold.TabIndex = 21;
-            numHold.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            numViscosity.DecimalPlaces = 1;
+            numViscosity.Increment = new decimal(new int[] { 1, 0, 0, 65536 }); // 0.1
+            numViscosity.Location = new System.Drawing.Point(268, 190);
+            numViscosity.Minimum = new decimal(new int[] { 2, 0, 0, 65536 }); // 0.2
+            numViscosity.Maximum = new decimal(new int[] { 30, 0, 0, 65536 }); // 3.0
+            numViscosity.Name = "numViscosity";
+            numViscosity.Size = new System.Drawing.Size(46, 23);
+            numViscosity.TabIndex = 21;
+            numViscosity.Value = new decimal(new int[] { 10, 0, 0, 65536 }); // 1.0
             //
-            // lblGifPlayMode (shares the row-5 right slot with Hold; only one is visible)
-            //
-            lblGifPlayMode.Location = new System.Drawing.Point(168, 192);
-            lblGifPlayMode.Name = "lblGifPlayMode";
-            lblGifPlayMode.Size = new System.Drawing.Size(80, 20);
-            lblGifPlayMode.TabIndex = 24;
-            lblGifPlayMode.Text = "GIF playback";
-            //
-            // cmbGifPlayMode
+            // cmbGifPlayMode (row D, gif mode only; self-describing items, no label)
             //
             cmbGifPlayMode.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbGifPlayMode.Location = new System.Drawing.Point(250, 190);
+            cmbGifPlayMode.Location = new System.Drawing.Point(14, 223);
             cmbGifPlayMode.Name = "cmbGifPlayMode";
-            cmbGifPlayMode.Size = new System.Drawing.Size(212, 23);
-            cmbGifPlayMode.TabIndex = 25;
+            cmbGifPlayMode.Size = new System.Drawing.Size(190, 23);
+            cmbGifPlayMode.TabIndex = 22;
             //
-            // lblStart (row 6, gif + play-during only)
+            // lblStart (row D, gif + play-during only)
             //
-            lblStart.Location = new System.Drawing.Point(14, 225);
+            lblStart.Location = new System.Drawing.Point(214, 225);
             lblStart.Name = "lblStart";
-            lblStart.Size = new System.Drawing.Size(98, 20);
-            lblStart.TabIndex = 26;
+            lblStart.Size = new System.Drawing.Size(80, 20);
+            lblStart.TabIndex = 23;
             lblStart.Text = "Start (s)";
             //
             // numStart
             //
             numStart.DecimalPlaces = 2;
             numStart.Increment = new decimal(new int[] { 25, 0, 0, 131072 }); // 0.25
-            numStart.Location = new System.Drawing.Point(114, 223);
+            numStart.Location = new System.Drawing.Point(300, 223);
             numStart.Minimum = new decimal(new int[] { 0, 0, 0, 0 });
             numStart.Maximum = new decimal(new int[] { 60000, 0, 0, 131072 }); // 600.00
             numStart.Name = "numStart";
             numStart.Size = new System.Drawing.Size(60, 23);
-            numStart.TabIndex = 27;
+            numStart.TabIndex = 24;
             //
             // btnOK
             //
             btnOK.Location = new System.Drawing.Point(303, 260);
             btnOK.Name = "btnOK";
             btnOK.Size = new System.Drawing.Size(75, 25);
-            btnOK.TabIndex = 22;
+            btnOK.TabIndex = 25;
             btnOK.Text = "OK";
             btnOK.UseVisualStyleBackColor = true;
             btnOK.Click += BtnOK_Click;
@@ -578,11 +591,11 @@ namespace GifProcessorApp
             btnCancel.Location = new System.Drawing.Point(384, 260);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new System.Drawing.Size(82, 25);
-            btnCancel.TabIndex = 23;
+            btnCancel.TabIndex = 26;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
             //
-            // SlotMachineDialog
+            // QuicksandDialog
             //
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -590,26 +603,25 @@ namespace GifProcessorApp
             ClientSize = new System.Drawing.Size(480, 300);
             Controls.Add(btnCancel);
             Controls.Add(btnOK);
-            Controls.Add(cmbGifPlayMode);
-            Controls.Add(lblGifPlayMode);
-            Controls.Add(numHold);
-            Controls.Add(lblHold);
             Controls.Add(numStart);
             Controls.Add(lblStart);
-            Controls.Add(numBounce);
-            Controls.Add(lblBounce);
+            Controls.Add(cmbGifPlayMode);
+            Controls.Add(numViscosity);
+            Controls.Add(lblViscosity);
+            Controls.Add(cmbFastBand);
+            Controls.Add(lblFastBand);
             Controls.Add(cmbDirection);
             Controls.Add(lblDirection);
-            Controls.Add(numSpinVar);
-            Controls.Add(lblSpinVar);
-            Controls.Add(numSpins);
-            Controls.Add(lblSpins);
+            Controls.Add(numMinRevs);
+            Controls.Add(lblMinRevs);
+            Controls.Add(numMaxRevs);
+            Controls.Add(lblMaxRevs);
             Controls.Add(numFps);
             Controls.Add(lblFps);
-            Controls.Add(numDurVar);
-            Controls.Add(lblDurVar);
             Controls.Add(numDuration);
             Controls.Add(lblDuration);
+            Controls.Add(numLayers);
+            Controls.Add(lblLayers);
             Controls.Add(btnBrowseOutput);
             Controls.Add(txtOutputPath);
             Controls.Add(lblOutput);
@@ -619,16 +631,15 @@ namespace GifProcessorApp
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
-            Name = "SlotMachineDialog";
+            Name = "QuicksandDialog";
             StartPosition = FormStartPosition.CenterParent;
-            Text = "Slot Machine";
+            Text = "Quicksand Flow";
+            ((System.ComponentModel.ISupportInitialize)numLayers).EndInit();
             ((System.ComponentModel.ISupportInitialize)numDuration).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numDurVar).EndInit();
             ((System.ComponentModel.ISupportInitialize)numFps).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numSpins).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numSpinVar).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numBounce).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numHold).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numMaxRevs).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numMinRevs).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numViscosity).EndInit();
             ((System.ComponentModel.ISupportInitialize)numStart).EndInit();
             ResumeLayout(false);
             PerformLayout();

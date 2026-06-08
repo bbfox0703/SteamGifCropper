@@ -78,6 +78,8 @@
             btnGridMosaic = new System.Windows.Forms.Button();
             btnSlotMachineStatic = new System.Windows.Forms.Button();
             btnSlotMachineGif = new System.Windows.Forms.Button();
+            btnQuicksandStatic = new System.Windows.Forms.Button();
+            btnQuicksandGif = new System.Windows.Forms.Button();
             chkAutoFitSplit = new System.Windows.Forms.CheckBox();
             numUpDownTargetKB = new System.Windows.Forms.NumericUpDown();
             lblAutoFitTries = new System.Windows.Forms.Label();
@@ -144,7 +146,7 @@
             // pBarTaskStatus
             // 
             pBarTaskStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            pBarTaskStatus.Location = new System.Drawing.Point(0, 472);
+            pBarTaskStatus.Location = new System.Drawing.Point(0, 503);
             pBarTaskStatus.Margin = new System.Windows.Forms.Padding(2);
             pBarTaskStatus.Name = "pBarTaskStatus";
             pBarTaskStatus.Size = new System.Drawing.Size(619, 20);
@@ -153,7 +155,7 @@
             // lblStatus
             // 
             lblStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            lblStatus.Location = new System.Drawing.Point(0, 457);
+            lblStatus.Location = new System.Drawing.Point(0, 488);
             lblStatus.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new System.Drawing.Size(619, 15);
@@ -206,7 +208,7 @@
             panelGifsicle.Controls.Add(numUpDownPalette);
             panelGifsicle.Controls.Add(lblPaletteDesc);
             panelGifsicle.Dock = System.Windows.Forms.DockStyle.Bottom;
-            panelGifsicle.Location = new System.Drawing.Point(0, 338);
+            panelGifsicle.Location = new System.Drawing.Point(0, 369);
             panelGifsicle.Margin = new System.Windows.Forms.Padding(2);
             panelGifsicle.Name = "panelGifsicle";
             panelGifsicle.Size = new System.Drawing.Size(619, 175);
@@ -494,7 +496,7 @@
             // lblFramerate
             // 
             lblFramerate.AutoSize = true;
-            lblFramerate.Location = new System.Drawing.Point(11, 284);
+            lblFramerate.Location = new System.Drawing.Point(11, 315);
             lblFramerate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFramerate.Name = "lblFramerate";
             lblFramerate.Size = new System.Drawing.Size(0, 15);
@@ -503,7 +505,7 @@
             // lblFPS
             // 
             lblFPS.AutoSize = true;
-            lblFPS.Location = new System.Drawing.Point(310, 284);
+            lblFPS.Location = new System.Drawing.Point(310, 315);
             lblFPS.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFPS.Name = "lblFPS";
             lblFPS.Size = new System.Drawing.Size(0, 15);
@@ -531,7 +533,7 @@
             // 
             // btnLanguageChange
             // 
-            btnLanguageChange.Location = new System.Drawing.Point(548, 256);
+            btnLanguageChange.Location = new System.Drawing.Point(548, 287);
             btnLanguageChange.Name = "btnLanguageChange";
             btnLanguageChange.Size = new System.Drawing.Size(64, 26);
             btnLanguageChange.TabIndex = 16;
@@ -609,7 +611,7 @@
             // lblResourceLimitDesc
             // 
             lblResourceLimitDesc.AutoSize = true;
-            lblResourceLimitDesc.Location = new System.Drawing.Point(7, 258);
+            lblResourceLimitDesc.Location = new System.Drawing.Point(7, 289);
             lblResourceLimitDesc.Name = "lblResourceLimitDesc";
             lblResourceLimitDesc.Size = new System.Drawing.Size(234, 15);
             lblResourceLimitDesc.TabIndex = 15;
@@ -617,7 +619,7 @@
             // 
             // numUpDownFramerate
             // 
-            numUpDownFramerate.Location = new System.Drawing.Point(255, 282);
+            numUpDownFramerate.Location = new System.Drawing.Point(255, 313);
             numUpDownFramerate.Margin = new System.Windows.Forms.Padding(2);
             numUpDownFramerate.Maximum = new decimal(new int[] { 30, 0, 0, 0 });
             numUpDownFramerate.Minimum = new decimal(new int[] { 5, 0, 0, 0 });
@@ -666,12 +668,32 @@
             btnSlotMachineGif.UseVisualStyleBackColor = true;
             btnSlotMachineGif.Click += btnSlotMachineGif_Click;
             //
+            // btnQuicksandStatic
+            //
+            btnQuicksandStatic.Location = new System.Drawing.Point(7, 255);
+            btnQuicksandStatic.Name = "btnQuicksandStatic";
+            btnQuicksandStatic.Size = new System.Drawing.Size(300, 26);
+            btnQuicksandStatic.TabIndex = 21;
+            btnQuicksandStatic.Text = SteamGifCropper.Properties.Resources.Button_QuicksandStatic;
+            btnQuicksandStatic.UseVisualStyleBackColor = true;
+            btnQuicksandStatic.Click += btnQuicksandStatic_Click;
+            //
+            // btnQuicksandGif
+            //
+            btnQuicksandGif.Location = new System.Drawing.Point(313, 255);
+            btnQuicksandGif.Name = "btnQuicksandGif";
+            btnQuicksandGif.Size = new System.Drawing.Size(300, 26);
+            btnQuicksandGif.TabIndex = 22;
+            btnQuicksandGif.Text = SteamGifCropper.Properties.Resources.Button_QuicksandGif;
+            btnQuicksandGif.UseVisualStyleBackColor = true;
+            btnQuicksandGif.Click += btnQuicksandGif_Click;
+            //
             // GifToolMainForm
             //
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            ClientSize = new System.Drawing.Size(619, 525);
+            ClientSize = new System.Drawing.Size(619, 556);
             Controls.Add(lblResourceLimitDesc);
             Controls.Add(btnResizeNfpsGIF);
             Controls.Add(btnOverlayGIF);
@@ -696,6 +718,8 @@
             Controls.Add(btnGridMosaic);
             Controls.Add(btnSlotMachineStatic);
             Controls.Add(btnSlotMachineGif);
+            Controls.Add(btnQuicksandStatic);
+            Controls.Add(btnQuicksandGif);
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new System.Windows.Forms.Padding(2);
             Name = "GifToolMainForm";
@@ -770,6 +794,8 @@
         private System.Windows.Forms.Button btnGridMosaic;
         private System.Windows.Forms.Button btnSlotMachineStatic;
         private System.Windows.Forms.Button btnSlotMachineGif;
+        private System.Windows.Forms.Button btnQuicksandStatic;
+        private System.Windows.Forms.Button btnQuicksandGif;
         public System.Windows.Forms.CheckBox chkAutoFitSplit;
         public System.Windows.Forms.NumericUpDown numUpDownTargetKB;
         private System.Windows.Forms.Label lblAutoFitTries;
