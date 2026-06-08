@@ -70,6 +70,10 @@ namespace GifProcessorApp
         /// PNG32 is the same PNG parser forced to 8-bit RGBA (no extra attack surface); the ripple
         /// drop-position picker writes frame 0 to a PNG32 stream to build its preview bitmap, which
         /// otherwise raises "operation not authorized by the security policy `PNG32'".
+        /// WEBP/HEIC/HEIF are added so still-image inputs (slot/quicksand/ripple/scroll, resize)
+        /// accept those formats. They are built-in coders (libwebp/libheif compiled into Magick.NET),
+        /// not external delegate programs, so only the coder domain needs them — the delegate domain
+        /// stays fully blocked.
         /// </summary>
         private static void ConfigureImageMagickPolicy()
         {
@@ -77,7 +81,7 @@ namespace GifProcessorApp
             configFiles.Policy.Data = @"<policymap>
   <policy domain=""delegate"" rights=""none"" pattern=""*"" />
   <policy domain=""coder"" rights=""none"" pattern=""*"" />
-  <policy domain=""coder"" rights=""read|write"" pattern=""{GIF,PNG,PNG32,JPEG,BMP,XC}"" />
+  <policy domain=""coder"" rights=""read|write"" pattern=""{GIF,PNG,PNG32,JPEG,BMP,WEBP,HEIC,HEIF,XC}"" />
 </policymap>";
             MagickNET.Initialize(configFiles);
         }

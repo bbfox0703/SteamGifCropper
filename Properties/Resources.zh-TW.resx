@@ -121,7 +121,7 @@
     <value>用gifsicle將GIF檔案分割為5個部分</value>
   </data>
   <data name="Button_ResizeGif" xml:space="preserve">
-    <value>調整GIF檔案尺寸至766像素寬度</value>
+    <value>調整GIF／圖片尺寸至766像素寬度</value>
   </data>
   <data name="Button_WriteTailByte" xml:space="preserve">
     <value>將GIF檔案最後位元組寫入為0x21</value>
@@ -310,7 +310,7 @@
     <value>GIF檔案 (*.gif)|*.gif</value>
   </data>
   <data name="FileDialog_ImageAndGifFilter" xml:space="preserve">
-    <value>圖片及GIF檔案 (*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.png;*.jpg;*.jpeg;*.bmp;*.gif</value>
+    <value>圖片及GIF檔案 (*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp;*.heic)|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp;*.heic</value>
   </data>
   <data name="Mp4Dialog_Seconds" xml:space="preserve">
     <value>秒</value>

@@ -121,7 +121,7 @@
     <value>Split GIF file into 5 parts with gifsicle</value>
   </data>
   <data name="Button_ResizeGif" xml:space="preserve">
-    <value>Resize GIF file to 766px width</value>
+    <value>Resize GIF/image to 766px width</value>
   </data>
   <data name="Button_WriteTailByte" xml:space="preserve">
     <value>Write GIF files last byte as 0x21</value>
@@ -309,7 +309,7 @@ Files skipped (not 0x21): {1}</value>
     <value>GIF Files (*.gif)|*.gif</value>
   </data>
   <data name="FileDialog_ImageAndGifFilter" xml:space="preserve">
-    <value>Image and GIF Files (*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.png;*.jpg;*.jpeg;*.bmp;*.gif</value>
+    <value>Image and GIF Files (*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp;*.heic)|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp;*.heic</value>
   </data>
   <data name="Mp4Dialog_Seconds" xml:space="preserve">
     <value>seconds</value>

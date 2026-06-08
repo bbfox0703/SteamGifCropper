@@ -121,7 +121,7 @@
     <value>gifsicleでGIFファイルを5つの部分に分割</value>
   </data>
   <data name="Button_ResizeGif" xml:space="preserve">
-    <value>GIFファイルのサイズを766ピクセル幅に調整</value>
+    <value>GIF／画像のサイズを766ピクセル幅に調整</value>
   </data>
   <data name="Button_WriteTailByte" xml:space="preserve">
     <value>GIFファイルの最後のバイトを0x21に書き込み</value>
@@ -310,7 +310,7 @@
     <value>GIFファイル (*.gif)|*.gif</value>
   </data>
   <data name="FileDialog_ImageAndGifFilter" xml:space="preserve">
-    <value>画像およびGIFファイル (*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.png;*.jpg;*.jpeg;*.bmp;*.gif</value>
+    <value>画像およびGIFファイル (*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp;*.heic)|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.webp;*.heic</value>
   </data>
   <data name="Mp4Dialog_Seconds" xml:space="preserve">
     <value>秒</value>
