@@ -51,6 +51,11 @@ Scroll
 - **MP4 → GIF conversion** – uses FFmpeg to convert a segment (custom start time and duration) into GIF format.
 - **Overlay GIFs** – position one GIF atop another to create composite animations.
 - **Scrolling animations** – create scrolling GIFs from still images or existing GIFs with direction, step size, auto-duration and loop options.
+- **Grid mosaic split** – overlay slot-aligned grid lines (transparent or solid) across the full 766px so the five showcase slots read as one deliberate grid/mosaic.
+- **Slot machine / 777 five reels** – turn a 766px image or GIF into a 5-reel slot machine; each column wrap-scrolls vertically and decelerates to a random stop, locking onto the original; freeze frame 0 or play along.
+- **Quicksand horizontal/vertical flow** – slice the 766px into N bands that wrap-scroll at graded speeds (fast at the bottom/top/middle) for a viscous flow, returning to the original at the set duration.
+- **Water ripple** – drop up to 3 water drops on an image or GIF; each emits an expanding damped ripple and they interfere, refracting the pixels; pick drop positions on a preview or type them (including off-screen).
+  > These creative effects output a **single full-width 766px GIF (no auto-split)** so they can be chained; split into five with the main "Split GIF" button when ready.
 - **Resize & change frame rate** – adjust width, height and FPS (FFmpeg-based when available) with optional aspect ratio lock.
 - **gifsicle support** – call `gifsicle.exe` for palette optimization, lossy compression and dithering.
 - **Resource limit awareness** – enforces Magick.NET memory/disk limits to avoid exhausting system resources.
@@ -62,7 +67,7 @@ Scroll
 ## System Requirements
 
 - **Operating System**: Windows 10 1904 or higher
-- **Runtime**: .NET 8 runtime
+- **Runtime**: .NET 10 runtime
 - **Dependencies**: Magick.NET (based on ImageMagick) -- already included in zip file
 - **FFMPEG**: For features using FFMPEG functionality, the system must have FFMPEG installed and set in the OS system environment variable **PATH**, otherwise it cannot be called. You can directly install using PowerShell 7 command: `winget install ffmpeg`.
 - **gifsicle.exe external program**: `gifsicle.exe` now ships bundled with the app (next to the executable), so no install is required. If the bundled copy is missing, the OS **PATH** copy is used as a fallback.
