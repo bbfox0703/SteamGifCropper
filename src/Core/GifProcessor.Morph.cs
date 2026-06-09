@@ -37,23 +37,15 @@ namespace GifProcessorApp
             {
                 await Task.Run(() =>
                 {
-                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_MorphBuilding);
-
-                    using var aSrc = new MagickImageCollection(settings.InputAPath);
-                    aSrc.Coalesce();
-                    using var bSrc = new MagickImageCollection(settings.InputBPath);
-                    bSrc.Coalesce();
+                    using var aSrc = LoadCoalesceWithProgress(mainForm, settings.InputAPath);
+                    using var bSrc = LoadCoalesceWithProgress(mainForm, settings.InputBPath);
 
                     // Target canvas: A's size, or fit A to 766px wide when its width isn't a supported one.
                     uint aw = aSrc[0].Width;
                     uint ah = aSrc[0].Height;
                     if (!settings.KeepOriginalSize && !IsValidCanvasWidth(aw))
                     {
-                        foreach (var frame in aSrc)
-                        {
-                            frame.ResetPage();
-                            frame.Resize(SupportedWidth1, 0);
-                        }
+                        ResizeAllToWidthWithProgress(mainForm, aSrc, SupportedWidth1);
                         aw = aSrc[0].Width;
                         ah = aSrc[0].Height;
                     }
@@ -62,9 +54,12 @@ namespace GifProcessorApp
 
                     // Fit B onto the same canvas (preserve aspect, centre) so the morph blends pixel-for-pixel.
                     using var bFit = new MagickImageCollection();
-                    foreach (var frame in bSrc)
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_PreparingFrames);
+                    for (int bi = 0; bi < bSrc.Count; bi++)
                     {
-                        bFit.Add(FitToCanvas(frame, targetW, targetH));
+                        bFit.Add(FitToCanvas(bSrc[bi], targetW, targetH));
+                        if ((bi + 1) % 5 == 0 || bi + 1 == bSrc.Count)
+                            SetProgressBar(mainForm.pBarTaskStatus, (bi + 1) * 100 / bSrc.Count, 100);
                     }
 
                     // Per-frame start times + total length for A and B.
@@ -85,9 +80,7 @@ namespace GifProcessorApp
 
                     using var animation = BuildMorph(mainForm, aSrc, bFit, aStart, bStart, aDur, bDur,
                         aTicks, bTicks, targetW, targetH, preRoll, morph, settings, estFrames);
-                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
-                    animation.Optimize();
-                    animation.Write(settings.OutputPath);
+                    OptimizeAndWriteWithProgress(mainForm, animation, settings.OutputPath);
                 });
 
                 if (!canceled)

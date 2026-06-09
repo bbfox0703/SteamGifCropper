@@ -671,6 +671,24 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Status_Optimizing", resourceCulture);
             }
         }
+
+        internal static string Status_Decoding {
+            get {
+                return ResourceManager.GetString("Status_Decoding", resourceCulture);
+            }
+        }
+
+        internal static string Status_PreparingFrames {
+            get {
+                return ResourceManager.GetString("Status_PreparingFrames", resourceCulture);
+            }
+        }
+
+        internal static string Status_ConvertingVideo {
+            get {
+                return ResourceManager.GetString("Status_ConvertingVideo", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Processing....

@@ -285,6 +285,18 @@ IProgress<(int current, int total, string status)>
 ```
 - Updates throttled to every 10 frames to reduce UI overhead
 - Thread-safe with `Invoke`/`BeginInvoke` patterns
+- **Stage progress for the silent synchronous phases** (frame decode, resize-all, optimize, large-file
+  write, full-collection Quantize) routes through shared `GifProcessor.cs` helpers so the status
+  bar/label never goes stale: `LoadCoalesceWithProgress` (decode + coalesce stage labels),
+  `ResizeAllToWidthWithProgress`, `RunMagickWithProgress(stage, action)` and
+  `OptimizeAndWriteWithProgress`. `RunMagickWithProgress` subscribes to **ImageMagick's per-frame
+  `MagickImage.Progress` event** (`MagickImageCollection` has none) and maps each frame's percentage to
+  an overall bar value (throttled ~20 Hz, marshaled). It degrades gracefully — even if an op fires no
+  events, the stage label still changes. New status keys: `Status_Decoding`, `Status_PreparingFrames`,
+  `Status_ConvertingVideo`. **When adding an op, load via `LoadCoalesceWithProgress` and save via
+  `OptimizeAndWriteWithProgress` instead of raw `new MagickImageCollection`/`Optimize`/`Write`.**
+- **FFmpeg** (MP4→GIF, reverse) drives the bar from FFMpegCore's real `NotifyOnProgress(Action<double>,
+  TimeSpan total)` (total = the requested segment, or the FFProbe clip length) — no more fake delays.
 
 ### Async/Await Pattern
 - All long-running operations are async to keep UI responsive

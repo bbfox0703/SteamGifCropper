@@ -83,20 +83,14 @@ namespace GifProcessorApp
                 // main "Split GIF" button (which adds the 100px extension + 0x21 tail).
                 await Task.Run(() =>
                 {
-                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_QuicksandBuilding);
-                    using var source = new MagickImageCollection(settings.InputFilePath);
-                    source.Coalesce();
+                    using var source = LoadCoalesceWithProgress(mainForm, settings.InputFilePath);
 
                     // Auto-resize to 766px wide when the input isn't already a supported width — unless the
                     // user opted to keep the original size (general-purpose use, not Steam prep).
                     uint width = source[0].Width;
                     if (!settings.KeepOriginalSize && !IsValidCanvasWidth(width))
                     {
-                        foreach (var frame in source)
-                        {
-                            frame.ResetPage();
-                            frame.Resize(SupportedWidth1, 0);
-                        }
+                        ResizeAllToWidthWithProgress(mainForm, source, SupportedWidth1);
                         width = source[0].Width;
                     }
 
@@ -114,9 +108,7 @@ namespace GifProcessorApp
                     }
 
                     using var animation = BuildQuicksandAnimation(mainForm, source, settings, (int)width, canvasHeight);
-                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
-                    animation.Optimize();
-                    animation.Write(settings.OutputFilePath);
+                    OptimizeAndWriteWithProgress(mainForm, animation, settings.OutputFilePath);
                 });
 
                 if (!canceled)

@@ -352,11 +352,9 @@ namespace GifProcessorApp
                             staticOverlayX, staticOverlayY);
                     }
 
-                    resultCollection.Quantize();
-                    resultCollection.Optimize();
-
-                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
-                    resultCollection.Write(outputPath);
+                    RunMagickWithProgress(mainForm, resultCollection,
+                        SteamGifCropper.Properties.Resources.Status_MappingSharedPalette, () => resultCollection.Quantize());
+                    OptimizeAndWriteWithProgress(mainForm, resultCollection, outputPath);
                 });
 
                 SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Done);

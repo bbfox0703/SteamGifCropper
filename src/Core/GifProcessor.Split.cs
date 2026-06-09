@@ -153,9 +153,7 @@ namespace GifProcessorApp
         {
             await Task.Run(() =>
             {
-                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_CoalescingFrames);
-                using var collection = new MagickImageCollection(inputFilePath);
-                collection.Coalesce();
+                using var collection = LoadCoalesceWithProgress(mainForm, inputFilePath);
 
                 uint canvasWidth = collection[0].Width;
                 int canvasHeight = (int)collection[0].Height;
@@ -189,10 +187,7 @@ namespace GifProcessorApp
                         }
                     }
 
-                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Optimizing);
-                    collection.Optimize();
-                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
-                    collection.Write(outputFilePath);
+                    OptimizeAndWriteWithProgress(mainForm, collection, outputFilePath);
                 }
                 finally
                 {
@@ -225,9 +220,7 @@ namespace GifProcessorApp
             // helpers; no direct control access happens inside this lambda.
             await Task.Run(async () =>
             {
-                SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_CoalescingFrames);
-                using var collection = new MagickImageCollection(inputFilePath);
-                collection.Coalesce();
+                using var collection = LoadCoalesceWithProgress(mainForm, inputFilePath);
                 int newHeight = canvasHeight + HeightExtension;
 
                 var (recalculatedDelays, ticksPerSecond) = RecalculateGifDelays(collection);
@@ -284,7 +277,8 @@ namespace GifProcessorApp
                         string outputDir = Path.GetDirectoryName(inputFilePath);
                         string outputPath = Path.Combine(outputDir, outputFile);
 
-                        partCollection.Optimize();
+                        RunMagickWithProgress(mainForm, partCollection,
+                            SteamGifCropper.Properties.Resources.Status_Optimizing, () => partCollection.Optimize());
                         partCollection[0].AnimationTicksPerSecond = ticksPerSecond;
                         SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Compressing);
                         int compressFrameCount = 0;
@@ -299,11 +293,10 @@ namespace GifProcessorApp
                             }
                         }
 
-                        SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
-
                         SetProgressVisible(mainForm, true);
 
-                        partCollection.Write(outputPath);
+                        RunMagickWithProgress(mainForm, partCollection,
+                            SteamGifCropper.Properties.Resources.Status_Saving, () => partCollection.Write(outputPath));
 
                         // Keep the overall progress monotonic: each part owns one band of the bar
                         // (e.g. 0-20-40-60-80-100 for 5 parts) instead of spiking to 100% per part,
