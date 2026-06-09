@@ -222,7 +222,7 @@
 #### 主視窗版面（rain + morph 一起）
 - `btnRainStatic`/`btnRainGif`（第 12 列 y=348、TabIndex 27/28）、`btnMorphTransition`（第 13 列 y=379、整寬 606、TabIndex 29）。
 - 下方既有元件統一 **+62px**：語言鈕 349→411、資源標籤 351→413、framerate 列 375→437 / 377→439、gifsicle 面板 400→462、status 519→581、進度條 534→596；`ClientSize` 618→**680**。
-- 在地化新增 **34** 鍵（三語 resx + `Resources.Designer.cs`）：`Button_Rain*`/`Status_RainBuilding`/`RainDialog_*`/`RainDir_*`、`Button_MorphTransition`/`Status_MorphBuilding`/`MorphDialog_*`/`MorphStyle_*`/`FlipDir_*`。`csproj` test 連結新增 5 個純檔（`RainField`/`RainSettings`/`RaindropRevealField`/`MorphSettings`/`TileFlipGeometry`）。全 **214** 例綠燈、build 0 warning。
+- 在地化新增 **34** 鍵（三語 resx + `Resources.Designer.cs`）：`Button_Rain*`/`Status_RainBuilding`/`RainDialog_*`/`RainDir_*`、`Button_MorphTransition`/`Status_MorphBuilding`/`MorphDialog_*`/`MorphStyle_*`/`FlipDir_*`。`csproj` test 連結新增 5 個純檔（`RainField`/`RainSettings`/`RaindropRevealField`/`MorphSettings`/`TileFlipGeometry`）+ 3 個 Magick renderer 做 smoke test（`RainRenderer`/`RaindropRevealRenderer`/`TileFlipRenderer`，見 `MorphRainRendererTests`）。全 **243** 例綠燈、build 0 warning。
 
 ## SIMD 加速評估（本輪：維持 Parallel.For，延後）
 
@@ -231,3 +231,14 @@
 - **熱點候選**（raw RGBA `byte[]`、SIMD 友善）：`RippleRenderer`/`WindRenderer.SampleBilinearRgba`（4-channel 雙線性權重）、`RaindropRevealRenderer` 的逐像素 cross-dissolve。
 - **效益低、不值得**：Rain 雨絲（稀疏 DDA 畫線、非密集像素迴圈）、TileFlip（瓶頸在 Magick `Crop/Resize/Composite`，非自寫迴圈）。
 - **日後若要動手**：`SteamGifCropper.csproj` 加 `<AllowUnsafeBlocks>true</AllowUnsafeBlocks>`，用 `System.Numerics.Vector<T>` 或 `System.Runtime.Intrinsics`（Vector256/Avx2）；**先用 `Stopwatch` benchmark** 確認時間真的花在像素迴圈（而非 ImageMagick 內部 `Composite`，那本身可能已向量化），再決定向量化哪個 kernel。現有 `Parallel.For` 已跨 row 平行，先確保正確性。
+
+## 驗證 & 後續 UI 微調（已實機測試 OK）
+
+- **實機驗證**：使用者已在 app 內實測下雨、雨滴暈染、翻轉拼圖三項，視覺與行為皆正常（OK）；預設值經實測可用，非單純猜測。
+- **Morph 時間語意（實測確認）**：A 先單獨播 `PreRoll`；B 在**轉換開始那一刻才從自身 frame 0 進場**（非與 A 同時起跑），故 B 全長都會被播到、A 的剩餘在轉換後丟棄。`tA=PreRoll+k/fps`（A 接續）、`tB=k/fps`（B 從 0）。
+- **後續 UI 微調**（同批 commit）：
+  - 移除 **流沙/水波紋/風吹** 對話框標題的「（766px）」（`QuickDialog_Title`/`RippleDialog_Title`/`WindDialog_Title`，三語）；拉霸保留（語意為 Steam 5 槽位）。
+  - 加寬被 CJK 截斷的「（秒）」標籤：Rain `時間長度`、Ripple `時間長度`、Morph `先播 A`/`轉換`、Wind `時間長度`、Quicksand `時間長度`（label 寬度按日文最寬語系抓，連帶右移同列數值框）。
+  - Morph「保持原始尺寸（不縮到 766px）」原擠在 PreRoll/Morph/FPS 同列被截斷 → 移到「樣式」那一列、寬度給足。
+  - 下雨播放模式下拉改用 `RainDialog_GifPlayDuring`/`RainDialog_GifFreeze`（原借用 `WindDialog_*` 字串，顯示成「風疊在播放上」）。
+- **最終狀態**：build 0 warning、xUnit **243** 例全綠。
