@@ -92,6 +92,9 @@ namespace GifProcessorApp
         private NumericUpDown numWaterSize = null!;
         private Label lblWaterLayers = null!;
         private NumericUpDown numWaterLayers = null!;
+        private Label lblWaterBubbleColor = null!;
+        private Panel pnlWaterBubbleColor = null!;
+        private Color _waterBubbleColor = Color.White;
 
         private readonly List<Control> _raindropControls = new List<Control>();
         private readonly List<Control> _tileControls = new List<Control>();
@@ -153,6 +156,9 @@ namespace GifProcessorApp
                 WaterWobble = (double)numWaterWobble.Value,
                 WaterBubbleSize = (double)numWaterSize.Value,
                 WaterLayers = (int)numWaterLayers.Value,
+                WaterBubbleColorR = _waterBubbleColor.R,
+                WaterBubbleColorG = _waterBubbleColor.G,
+                WaterBubbleColorB = _waterBubbleColor.B,
             };
         }
 
@@ -181,6 +187,16 @@ namespace GifProcessorApp
             {
                 _jigsawLineColor = cd.Color;
                 pnlJigsawColor.BackColor = cd.Color;
+            }
+        }
+
+        private void PnlWaterBubbleColor_Click(object? sender, EventArgs e)
+        {
+            using var cd = new ColorDialog { Color = _waterBubbleColor, FullOpen = true };
+            if (cd.ShowDialog(this) == DialogResult.OK)
+            {
+                _waterBubbleColor = cd.Color;
+                pnlWaterBubbleColor.BackColor = cd.Color;
             }
         }
 
@@ -218,6 +234,7 @@ namespace GifProcessorApp
             lblWaterWobble.Text = Resources.WaterDialog_Wobble;
             lblWaterSize.Text = Resources.WaterDialog_BubbleSize;
             lblWaterLayers.Text = Resources.WaterDialog_Layers;
+            lblWaterBubbleColor.Text = Resources.WaterDialog_BubbleColor;
             btnBrowseA.Text = Resources.Button_Browse;
             btnBrowseB.Text = Resources.Button_Browse;
             btnBrowseOutput.Text = Resources.Button_Browse;
@@ -527,6 +544,9 @@ namespace GifProcessorApp
             numWaterSize = MakeNum(88, 265, 56, 1, 2.0m, 60.0m, 1.0m, 12.0m);
             lblWaterLayers = new Label { Location = new Point(154, 267), Size = new Size(46, 20), Text = "Layers" };
             numWaterLayers = MakeNum(202, 265, 46, 0, 1m, 8m, 1m, 3m);
+            lblWaterBubbleColor = new Label { Location = new Point(258, 267), Size = new Size(90, 20), Text = "Bubble colour" };
+            pnlWaterBubbleColor = new Panel { Location = new Point(350, 265), Size = new Size(44, 22), BorderStyle = BorderStyle.FixedSingle, BackColor = _waterBubbleColor, Cursor = Cursors.Hand };
+            pnlWaterBubbleColor.Click += PnlWaterBubbleColor_Click;
 
             btnOK = new Button { Location = new Point(363, 312), Size = new Size(75, 25), Text = "OK", UseVisualStyleBackColor = true };
             btnOK.Click += BtnOK_Click;
@@ -555,6 +575,7 @@ namespace GifProcessorApp
             {
                 lblWaterDir, cmbWaterDir, lblWaterRefraction, numWaterRefraction, lblWaterWobble, numWaterWobble,
                 lblWaterSize, numWaterSize, lblWaterLayers, numWaterLayers,
+                lblWaterBubbleColor, pnlWaterBubbleColor,
             });
 
             SuspendLayout();

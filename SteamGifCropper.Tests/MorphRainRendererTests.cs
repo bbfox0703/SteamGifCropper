@@ -148,7 +148,7 @@ public class MorphRainRendererTests
     {
         using var a = new MagickImage(MagickColors.Red, 64, 48);
         using var b = new MagickImage(MagickColors.Blue, 64, 48);
-        var p = new WaterParams { Direction = WaterDirection.Up, RefractionStrength = 4, SurfaceWobble = 6, BubbleSize = 10, Layers = 3, Seed = 3 };
+        var p = new WaterParams { Direction = WaterDirection.Up, RefractionStrength = 4, SurfaceWobble = 6, BubbleSize = 10, Layers = 3, Seed = 3, BubbleR = 255, BubbleG = 255, BubbleB = 255 };
         using var outImg = WaterRenderer.RenderFrame(a, b, fill, 1.2, p, 0.7);
         Assert.Equal(64u, outImg.Width);
         Assert.Equal(48u, outImg.Height);

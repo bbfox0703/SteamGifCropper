@@ -47,6 +47,10 @@ namespace GifProcessorApp
         private Label lblLayers = null!;
         private NumericUpDown numLayers = null!;
 
+        private Label lblBubbleColor = null!;
+        private Panel pnlBubbleColor = null!;
+        private Color _bubbleColor = Color.White;
+
         private CheckBox chkKeepSize = null!;
         private Button btnOK = null!;
         private Button btnCancel = null!;
@@ -81,6 +85,9 @@ namespace GifProcessorApp
                 SurfaceWobble = (double)numWobble.Value,
                 BubbleSize = (double)numBubbleSize.Value,
                 Layers = (int)numLayers.Value,
+                BubbleColorR = _bubbleColor.R,
+                BubbleColorG = _bubbleColor.G,
+                BubbleColorB = _bubbleColor.B,
             };
         }
 
@@ -104,6 +111,7 @@ namespace GifProcessorApp
             lblWobble.Text = Resources.WaterDialog_Wobble;
             lblFadeOut.Text = Resources.WaterDialog_FadeOut;
             lblBubbleSize.Text = Resources.WaterDialog_BubbleSize;
+            lblBubbleColor.Text = Resources.WaterDialog_BubbleColor;
             lblLayers.Text = Resources.WaterDialog_Layers;
             chkKeepSize.Text = Resources.Dialog_KeepOriginalSize;
             btnBrowseInput.Text = Resources.Button_Browse;
@@ -270,6 +278,16 @@ namespace GifProcessorApp
             }
         }
 
+        private void PnlBubbleColor_Click(object? sender, EventArgs e)
+        {
+            using var cd = new ColorDialog { Color = _bubbleColor, FullOpen = true };
+            if (cd.ShowDialog(this) == DialogResult.OK)
+            {
+                _bubbleColor = cd.Color;
+                pnlBubbleColor.BackColor = cd.Color;
+            }
+        }
+
         private void BtnOK_Click(object? sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtInputPath.Text) || !File.Exists(txtInputPath.Text))
@@ -341,6 +359,10 @@ namespace GifProcessorApp
             lblFadeOut = new Label { Location = new Point(260, 215), Size = new Size(88, 20), Text = "Fade out (s)" };
             numFadeOut = MakeNum(350, 213, 56, 2, 0.00m, 30.00m, 0.25m, 0.50m);
 
+            lblBubbleColor = new Label { Location = new Point(360, 247), Size = new Size(96, 20), Text = "Bubble colour" };
+            pnlBubbleColor = new Panel { Location = new Point(458, 245), Size = new Size(44, 22), BorderStyle = BorderStyle.FixedSingle, BackColor = _bubbleColor, Cursor = Cursors.Hand };
+            pnlBubbleColor.Click += PnlBubbleColor_Click;
+
             chkKeepSize = new CheckBox { Location = new Point(14, 247), Size = new Size(340, 22), Text = "Keep original size", UseVisualStyleBackColor = true };
 
             btnOK = new Button { Location = new Point(363, 283), Size = new Size(75, 25), Text = "OK", UseVisualStyleBackColor = true };
@@ -375,6 +397,8 @@ namespace GifProcessorApp
             Controls.Add(numBubbleSize);
             Controls.Add(lblLayers);
             Controls.Add(numLayers);
+            Controls.Add(lblBubbleColor);
+            Controls.Add(pnlBubbleColor);
             Controls.Add(chkKeepSize);
             Controls.Add(btnOK);
             Controls.Add(btnCancel);

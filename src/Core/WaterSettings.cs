@@ -29,6 +29,11 @@ namespace GifProcessorApp
         public int Layers { get; set; } = 3;                   // depth layers (>= 3)
         public int Seed { get; set; } = 20240601;
 
+        // Bubble rim/highlight colour (RGB 0..255); default white preserves the original glassy look.
+        public int BubbleColorR { get; set; } = 255;
+        public int BubbleColorG { get; set; } = 255;
+        public int BubbleColorB { get; set; } = 255;
+
         public WaterParams ToParams()
         {
             return new WaterParams
@@ -39,6 +44,9 @@ namespace GifProcessorApp
                 BubbleSize = BubbleSize,
                 Layers = Math.Max(1, Layers),
                 Seed = Seed,
+                BubbleR = BubbleColorR,
+                BubbleG = BubbleColorG,
+                BubbleB = BubbleColorB,
             };
         }
     }

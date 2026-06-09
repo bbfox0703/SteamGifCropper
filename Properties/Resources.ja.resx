@@ -1450,6 +1450,9 @@ FFmpeg 出力（切り捨て）:
   <data name="WaterDialog_BubbleSize" xml:space="preserve">
     <value>泡の大きさ</value>
   </data>
+  <data name="WaterDialog_BubbleColor" xml:space="preserve">
+    <value>泡の色</value>
+  </data>
   <data name="WaterDialog_Layers" xml:space="preserve">
     <value>層数</value>
   </data>

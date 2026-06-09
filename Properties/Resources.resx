@@ -1449,6 +1449,9 @@ Technical details: {5}</value>
   <data name="WaterDialog_BubbleSize" xml:space="preserve">
     <value>Size</value>
   </data>
+  <data name="WaterDialog_BubbleColor" xml:space="preserve">
+    <value>Bubble colour</value>
+  </data>
   <data name="WaterDialog_Layers" xml:space="preserve">
     <value>Layers</value>
   </data>

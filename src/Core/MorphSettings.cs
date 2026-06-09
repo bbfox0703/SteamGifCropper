@@ -106,6 +106,10 @@ namespace GifProcessorApp
         public double WaterWobble { get; set; } = 6.0;
         public double WaterBubbleSize { get; set; } = 12.0;
         public int WaterLayers { get; set; } = 3;
+        // Bubble rim/highlight colour (RGB 0..255); default white preserves the original glassy look.
+        public int WaterBubbleColorR { get; set; } = 255;
+        public int WaterBubbleColorG { get; set; } = 255;
+        public int WaterBubbleColorB { get; set; } = 255;
 
         public WaterParams ToWaterParams()
         {
@@ -117,6 +121,9 @@ namespace GifProcessorApp
                 BubbleSize = WaterBubbleSize,
                 Layers = Math.Max(1, WaterLayers),
                 Seed = Seed,
+                BubbleR = WaterBubbleColorR,
+                BubbleG = WaterBubbleColorG,
+                BubbleB = WaterBubbleColorB,
             };
         }
     }
