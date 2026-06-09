@@ -3,6 +3,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using ImageMagick;
 using SteamGifCropper.Properties;
 
 namespace GifProcessorApp
@@ -59,6 +60,13 @@ namespace GifProcessorApp
         private Button btnCancel = null!;
         private CheckBox chkKeepSize = null!;
 
+        private readonly Random _rng = new Random();
+        private bool _nativeRandomized;   // native-size X/Y re-roll already done for this input (once)
+        private bool _suppressAutoEnable; // guard so programmatic re-rolls don't tick drops
+        private Bitmap? _pickBitmap;      // cached frame-0 canvas reused across picks (null until first pick)
+        private int _pickW, _pickH;
+        private string? _pickKey;         // cache key: input path + keep-size + file mtime (null = stale)
+
         public RippleDialog(bool gifMode)
         {
             _isGif = gifMode;
@@ -69,12 +77,15 @@ namespace GifProcessorApp
             for (int i = 0; i < DropCount; i++)
             {
                 int idx = i;
-                EventHandler enable = (s, e) => chkDrops[idx].Checked = true;
+                EventHandler enable = (s, e) => { if (!_suppressAutoEnable) chkDrops[idx].Checked = true; };
                 numDropX[i].ValueChanged += enable;
                 numDropY[i].ValueChanged += enable;
                 numDropTime[i].ValueChanged += enable;
                 numDropIntensity[i].ValueChanged += enable;
             }
+            // Toggling "keep original size" changes the working canvas, so re-roll the random drop
+            // positions to the native size (once) and invalidate the cached picker preview.
+            chkKeepSize.CheckedChanged += (s, e) => { _pickKey = null; MaybeRandomizeForNativeSize(); };
             UpdateUIText();
             ApplyTheme();
         }
@@ -266,12 +277,16 @@ namespace GifProcessorApp
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 txtInputPath.Text = ofd.FileName;
+                // New source: forget the previous native re-roll and picker preview cache.
+                _nativeRandomized = false;
+                _pickKey = null;
                 if (string.IsNullOrWhiteSpace(txtOutputPath.Text))
                 {
                     string dir = Path.GetDirectoryName(ofd.FileName) ?? string.Empty;
                     string name = Path.GetFileNameWithoutExtension(ofd.FileName) + "_ripple.gif";
                     txtOutputPath.Text = Path.Combine(dir, name);
                 }
+                MaybeRandomizeForNativeSize();
             }
         }
 
@@ -318,7 +333,8 @@ namespace GifProcessorApp
             }
             try
             {
-                using var picker = new RippleDropPickerForm(txtInputPath.Text, (int)numDropX[i].Value, (int)numDropY[i].Value);
+                EnsurePickBitmap();
+                using var picker = new RippleDropPickerForm(_pickBitmap!, _pickW, _pickH, (int)numDropX[i].Value, (int)numDropY[i].Value);
                 if (picker.ShowDialog(this) == DialogResult.OK)
                 {
                     numDropX[i].Value = ClampToRange(numDropX[i], picker.PickedX);
@@ -338,6 +354,92 @@ namespace GifProcessorApp
             if (d < control.Minimum) return control.Minimum;
             if (d > control.Maximum) return control.Maximum;
             return d;
+        }
+
+        // When "keep original size" is on, the working canvas is the source's native size, so re-roll the
+        // default drop X/Y across the real width/height (once per input). Suppresses the per-field
+        // auto-enable so this doesn't tick drops the user didn't choose. The default 766x300 roll set in
+        // InitializeComponent stays for the normal (fit-to-766) path.
+        private void MaybeRandomizeForNativeSize()
+        {
+            if (_nativeRandomized) return;
+            if (!chkKeepSize.Checked) return;
+            if (string.IsNullOrWhiteSpace(txtInputPath.Text) || !File.Exists(txtInputPath.Text)) return;
+            if (!TryGetSourceSize(out int w, out int h)) return;
+
+            _suppressAutoEnable = true;
+            try
+            {
+                for (int i = 0; i < DropCount; i++)
+                {
+                    numDropX[i].Value = ClampToRange(numDropX[i], _rng.Next(0, Math.Max(1, w)));
+                    numDropY[i].Value = ClampToRange(numDropY[i], _rng.Next(0, Math.Max(1, h)));
+                }
+            }
+            finally
+            {
+                _suppressAutoEnable = false;
+            }
+            _nativeRandomized = true;
+        }
+
+        // Cheap header-only read of the source's pixel dimensions (no full decode).
+        private bool TryGetSourceSize(out int w, out int h)
+        {
+            w = 0; h = 0;
+            try
+            {
+                var info = new MagickImageInfo(txtInputPath.Text);
+                w = (int)info.Width;
+                h = (int)info.Height;
+                return w > 0 && h > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // Builds (and caches) the frame-0 preview the picker shows. The canvas matches what the engine
+        // renders: native size when "keep original size" is on, otherwise resized to 766px wide — so the
+        // picked coordinates line up with the output. Cached by input path + keep-size + file timestamp,
+        // so repeated picks on an unchanged source reuse the bitmap instead of re-decoding.
+        private void EnsurePickBitmap()
+        {
+            string key = txtInputPath.Text + "|" + chkKeepSize.Checked + "|" + File.GetLastWriteTimeUtc(txtInputPath.Text).Ticks;
+            if (_pickBitmap != null && key == _pickKey) return; // cache hit
+
+            _pickBitmap?.Dispose();
+            _pickBitmap = RenderCanvasFrame0(txtInputPath.Text, chkKeepSize.Checked, out _pickW, out _pickH);
+            _pickKey = key;
+        }
+
+        // Decodes only frame 0 (fast — no full coalesce) and resizes to 766 unless keeping native size.
+        private static Bitmap RenderCanvasFrame0(string path, bool keepSize, out int width, out int height)
+        {
+            using var img = new MagickImage(path); // first frame only
+            uint w = img.Width;
+            if (!keepSize && w != 766 && w != 774)
+            {
+                img.Resize(766, 0);
+            }
+            width = (int)img.Width;
+            height = (int)img.Height;
+
+            using var ms = new MemoryStream();
+            img.Write(ms, MagickFormat.Png32);
+            ms.Position = 0;
+            using var loaded = Image.FromStream(ms);
+            return new Bitmap(loaded); // independent of the (disposed) stream
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _pickBitmap?.Dispose();
+            }
+            base.Dispose(disposing);
         }
 
         private static NumericUpDown MakeNum(int x, int y, int width, int decimals, decimal min, decimal max, decimal inc, decimal val)

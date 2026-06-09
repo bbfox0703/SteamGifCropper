@@ -414,11 +414,8 @@ namespace GifProcessorApp
             numDuration = MakeNum(76, 145, 56, 2, 0.10m, 60.00m, 0.25m, 6.00m);
             lblFps = new Label { Location = new Point(140, 147), Size = new Size(30, 20), Text = "FPS" };
             numFps = MakeNum(172, 145, 46, 0, 5m, 60m, 1m, 20m);
-            lblStart = new Label { Location = new Point(226, 147), Size = new Size(54, 20), Text = "Start" };
-            numStart = MakeNum(282, 145, 56, 2, 0.00m, 60.00m, 0.25m, 0.00m);
-
-            // GIF playback mode (GIF only)
-            cmbGifPlayMode = new ComboBox { Location = new Point(346, 145), Size = new Size(180, 23), DropDownStyle = ComboBoxStyle.DropDownList };
+            lblStart = new Label { Location = new Point(232, 147), Size = new Size(84, 20), Text = "Start" };
+            numStart = MakeNum(320, 145, 56, 2, 0.00m, 60.00m, 0.25m, 0.00m);
 
             // Medium row 1
             lblWavelength = new Label { Location = new Point(14, 180), Size = new Size(64, 20), Text = "Wavelen" };
@@ -428,11 +425,12 @@ namespace GifProcessorApp
             lblStrength = new Label { Location = new Point(282, 180), Size = new Size(60, 20), Text = "Sway" };
             numStrength = MakeNum(342, 178, 56, 1, 0.0m, 60.0m, 0.5m, 10.0m);
 
-            // Medium row 2
+            // Medium row 2 (+ GIF playback-mode picker on the right; visible only for GIF input)
             lblBend = new Label { Location = new Point(14, 213), Size = new Size(64, 20), Text = "Bend" };
             numBend = MakeNum(80, 211, 56, 2, 0.00m, 3.00m, 0.10m, 0.40m);
             lblFlutter = new Label { Location = new Point(148, 213), Size = new Size(60, 20), Text = "Flutter" };
             numFlutter = MakeNum(208, 211, 56, 2, 0.00m, 2.00m, 0.05m, 0.20m);
+            cmbGifPlayMode = new ComboBox { Location = new Point(300, 211), Size = new Size(180, 23), DropDownStyle = ComboBoxStyle.DropDownList };
 
             // --- Normal mode: gusts ---
             lblGustsTitle = new Label { Location = new Point(14, 248), Size = new Size(100, 20), Text = "Gusts" };
