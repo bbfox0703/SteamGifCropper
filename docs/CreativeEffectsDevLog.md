@@ -194,3 +194,40 @@
   - `MergeAndSplitFiveGifs`：它更重（`collections`→`resizedCollections`→`syncedCollections`→merged `output` 共 ~4 份 clone）。改成 resize 完就釋放 `collections`、sync 完就釋放 `resizedCollections`（最外層 `finally` 仍會再 dispose 一次——`MagickImageCollection.Dispose` 為 idempotent，安全）。
 - **事前警告**：兩條路徑都在動工前用共用的 `ConfirmLargeMemory(mainForm, estMb, w, h, frames)`（從 `ConfirmLargeCanvas` 抽出）估算（合併=Σ來源像素＋結果像素；合併並切 5≈來源×2 的 clone 重疊），超門檻跳 Yes/No、取消則提前 return（外層 finally 照樣 dispose／還原 0x21）。`ConfirmLargeMemory` 改用 `InvokeRequired` 判斷，UI thread 直接跑、背景 thread 才 marshal（合併的呼叫點在 UI thread）。
 - **結論**：合併不會再失控吃到 24–40GB；最壞是走磁碟變慢或丟可攔截的錯誤。前提仍是 temp 磁碟要有 ~8GB 空間。
+
+---
+
+## 下雨疊層特效（Rain Overlay）— 已實作
+
+在圖片／GIF 上**疊一層半透明雨絲**（注意：是 overlay 合成，**非**像素位移；與 ripple/wind 的折射不同）。比照 wind 的整體骨架（入口/Run/分派/play-along/frozen-then-play、`GifEffectWindow` 時間窗、inline dialog + theme、純函式抽出單測、三語 resx、輸出單一 766px 全寬可串接）。
+
+- **渲染慣例**：repo 刻意不用 Magick `Drawables`（XC 政策 + Q8 量化），故 `RainRenderer` 直接把雨絲以 **DDA 畫線 + alpha-blend 寫進 RGBA `byte[]`**（同 ripple/wind 的 buffer 寫法），非 Drawables。雨色淺藍白、stroke alpha 0.55 × 層淡出。
+- **數學模型**（`RainField.cs`，純函式）：`DropCount(amount,w,h)` 由 0..100 雨量 × 畫布面積換算（夾 40..1500）；每滴用**種子化 hash**（`Hash01(i,salt,seed)`，無 RNG 狀態 → 純函式可重現）取 x/相位/速度因子/長度因子；`Streaks(t,w,h,p)` 回傳線段陣列（head→tail，tail 沿速度反向 = motion-blur），head 在畫布 + 40px 上緣 margin 內**垂直/水平 wrap**（連續且循環）；風向/風強度給橫向 drift → 雨絲傾斜。`FadeAlpha(te,winDur,fadeOut,fadeSeconds)`＝雨停在窗尾 `fadeSeconds` 內 1→0 線性淡出；`AnyRainActive` 讓無雨幀直接複製。
+- **設定**（`RainSettings.cs`，`ToParams(w,h)` 把尺寸無關值解析成 `RainParams`）：`RainAmount`(0..100)、`WindDirection`(None/Left/Right enum→index)、`WindStrength`(px/s)、`DropLength`、`FadeOut`+`FadeOutSeconds`、`Seed`，＋場景 `Fps/DurationSeconds/EffectStartSeconds/PlayGifDuringRain/KeepOriginalSize`。
+- **播放**：`BuildRainPlayAlong`（雨混在 `[EffectStart,+Duration)` 窗內的 live 幀、窗外播原片、**輸出=GIF 全長**；雨絲用**絕對時間** `startSec[i]` 連續移動、淡出用窗內**相對時間** `te`）／`BuildRainFrozenThenPlay`（定格 frame 0 下雨 `Duration` 秒 @ FPS、再播完整 GIF；靜態圖只下雨 `Duration`）。
+- **檔案**：`src/Core/RainField.cs`/`RainSettings.cs`/`RainRenderer.cs`/`GifProcessor.Rain.cs`、`src/Dialogs/RainDialog.cs`（鏡射 `WindDialog`：`MakeNum`/`UpdateUIText`/`ApplyTheme`/dark-light、`BuildSettings(bool)`、`chkFadeOut`→`numFadeSeconds` enable）、主視窗 `btnRainStatic`/`btnRainGif`、`RainFieldTests`（6 例）。
+
+## 疊圖轉換 A→B（Morph Transition）— 已實作
+
+兩個 clip 的轉場，採**全新時間模型**（與既有 concat 的 overlap 模型不同，故獨立 dialog + 單顆按鈕，使用者已同意「另開 topic」）：A 先播 `PreRoll` 秒 → A 在 `Morph` 秒內轉成 B（**轉換結束時 A 已全透明消失、剩餘 A 不播**）→ 播 B 剩餘片段到結束。
+
+- **時間軸恆等式**：`total = PreRoll + Morph + (Bdur − Morph) = PreRoll + Bdur`（當 `Morph ≤ Bdur`；否則 `Morph` 夾到 `Bdur`、無剩餘 B）。例 A=10s/B=11s/PreRoll=4/Morph=6 → 4+6+5 = **15s**。純函式 `MorphTimeline.ClampMorph/TotalSeconds`（在 `MorphSettings.cs`）可單測。
+- **兩風格**（同一 dialog 的 `cmbStyle` 切換兩組控制項，比照 wind 的 Normal/Nuclear）：
+  - **雨滴暈染**（`RaindropRevealField`/`RaindropRevealRenderer`）：種子化雨滴（birth∈[0,0.85)、隨機位置、`MaxR=SpreadRadius×(1±SizeVar%)`）；`Coverage(x,y,t)∈[0,1]`＝各 born 雨滴 `SmoothStep(age)` 成長的 **soft disc union**（soft edge 即「暈開」羽化），疊上 `GlobalFloor(t)`（最後 15% ramp→1，**保證 t=1 全為 B**），對固定像素**單調遞增**。Renderer 逐像素 cross-dissolve `out = A·(1−cov) + B·cov`（`Parallel.For`、RGBA byte[]）。
+  - **翻轉拼圖**（`TileFlipGeometry`/`TileFlipRenderer`）：`ComputeGrid(w,h,divisions)`＝cols=divisions、**rows 自動算成近正方格**；`CellPhase(index,t,seed,flipFraction=0.35)` 用種子 scatter 錯開每格起翻時間（t=1 時全部=1 → 全翻成 B）；`CellScale(phase)=|1−2·phase|`（phase 0.5 時壓成邊緣 sliver）；`CellShowsB(phase)=phase≥0.5`；`CellAxis`（Up/Down 垂直壓、Left/Right 水平壓、Random 種子選軸）。Renderer 逐格 `Crop→ResetPage→Resize(IgnoreAspectRatio 壓扁)→置中 Composite`。
+- **引擎**（`GifProcessor.Morph.cs`）：載入 A/B `Coalesce`；target = A 尺寸（KeepOriginalSize）或 fit 766px 寬；B 各幀以 `FitToCanvas`（保留 aspect、置中、**沿用來源 delay/ticks**）對齊 target，使 morph 能逐像素混合；用 `FrameStartSeconds` 累積秒數 + `GifEffectWindow.NearestFrameIndex` 在 morph 窗內依時間取 A/B 幀（`tA=PreRoll+k/fps` 超過 A 尾自動**凍結最後幀**、`tB=k/fps`）；三段組裝（pre-roll A 原生時序 → N=`round(Morph×fps)` 個 morph 幀 @ delay=`round(100/fps)` → 剩餘 B 原生時序）。
+- **設定**（`MorphSettings.cs`）：`Style`、`PreRollSeconds`、`MorphSeconds`、`Fps`、`KeepOriginalSize`、`Seed`；雨滴組 `RainIntensity/DropSizeVariationPct/SpreadRadius/SoftEdge`（`SpreadVariationPct` 保留未用）；翻轉組 `Divisions/FlipDirection`。
+- **檔案**：`src/Core/MorphSettings.cs`(含 `MorphTimeline`)/`RaindropRevealField.cs`/`RaindropRevealRenderer.cs`/`TileFlipGeometry.cs`/`TileFlipRenderer.cs`/`GifProcessor.Morph.cs`、`src/Dialogs/MorphTransitionDialog.cs`（A/B 兩個輸入 + 輸出、`cmbStyle` 切換 `_raindropControls`/`_tileControls`）、主視窗 `btnMorphTransition`（單顆、整寬）、`RaindropRevealFieldTests`(3)/`TileFlipGeometryTests`(8)/`MorphTimelineTests`(5)。
+
+#### 主視窗版面（rain + morph 一起）
+- `btnRainStatic`/`btnRainGif`（第 12 列 y=348、TabIndex 27/28）、`btnMorphTransition`（第 13 列 y=379、整寬 606、TabIndex 29）。
+- 下方既有元件統一 **+62px**：語言鈕 349→411、資源標籤 351→413、framerate 列 375→437 / 377→439、gifsicle 面板 400→462、status 519→581、進度條 534→596；`ClientSize` 618→**680**。
+- 在地化新增 **34** 鍵（三語 resx + `Resources.Designer.cs`）：`Button_Rain*`/`Status_RainBuilding`/`RainDialog_*`/`RainDir_*`、`Button_MorphTransition`/`Status_MorphBuilding`/`MorphDialog_*`/`MorphStyle_*`/`FlipDir_*`。`csproj` test 連結新增 5 個純檔（`RainField`/`RainSettings`/`RaindropRevealField`/`MorphSettings`/`TileFlipGeometry`）。全 **214** 例綠燈、build 0 warning。
+
+## SIMD 加速評估（本輪：維持 Parallel.For，延後）
+
+決策：本輪**不**做向量化（使用者選「先用 Parallel.For，SIMD 之後再評估」）。
+
+- **熱點候選**（raw RGBA `byte[]`、SIMD 友善）：`RippleRenderer`/`WindRenderer.SampleBilinearRgba`（4-channel 雙線性權重）、`RaindropRevealRenderer` 的逐像素 cross-dissolve。
+- **效益低、不值得**：Rain 雨絲（稀疏 DDA 畫線、非密集像素迴圈）、TileFlip（瓶頸在 Magick `Crop/Resize/Composite`，非自寫迴圈）。
+- **日後若要動手**：`SteamGifCropper.csproj` 加 `<AllowUnsafeBlocks>true</AllowUnsafeBlocks>`，用 `System.Numerics.Vector<T>` 或 `System.Runtime.Intrinsics`（Vector256/Avx2）；**先用 `Stopwatch` benchmark** 確認時間真的花在像素迴圈（而非 ImageMagick 內部 `Composite`，那本身可能已向量化），再決定向量化哪個 kernel。現有 `Parallel.For` 已跨 row 平行，先確保正確性。

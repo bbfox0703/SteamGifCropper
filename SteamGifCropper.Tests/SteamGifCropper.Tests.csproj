@@ -49,6 +49,14 @@
     <Compile Include="..\src\Core\RippleRenderer.cs" Link="RippleRenderer.cs" />
     <Compile Include="..\src\Core\WindField.cs" Link="WindField.cs" />
     <Compile Include="..\src\Core\WindSettings.cs" Link="WindSettings.cs" />
+    <Compile Include="..\src\Core\RainField.cs" Link="RainField.cs" />
+    <Compile Include="..\src\Core\RainSettings.cs" Link="RainSettings.cs" />
+    <Compile Include="..\src\Core\RaindropRevealField.cs" Link="RaindropRevealField.cs" />
+    <Compile Include="..\src\Core\MorphSettings.cs" Link="MorphSettings.cs" />
+    <Compile Include="..\src\Core\TileFlipGeometry.cs" Link="TileFlipGeometry.cs" />
+    <Compile Include="..\src\Core\RainRenderer.cs" Link="RainRenderer.cs" />
+    <Compile Include="..\src\Core\RaindropRevealRenderer.cs" Link="RaindropRevealRenderer.cs" />
+    <Compile Include="..\src\Core\TileFlipRenderer.cs" Link="TileFlipRenderer.cs" />
     <Compile Include="..\src\Core\GridMosaicSettings.cs" Link="GridMosaicSettings.cs" />
     <Compile Include="..\src\Core\GridMosaicRenderer.cs" Link="GridMosaicRenderer.cs" />
     <Compile Include="..\src\Core\GifConcatenationSettings.cs" Link="GifConcatenationSettings.cs" />

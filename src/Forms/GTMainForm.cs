@@ -269,6 +269,21 @@ namespace GifProcessorApp
             await ExecuteWithErrorHandling(async () => await GifProcessor.WindGif(this), "wind sway (GIF)");
         }
 
+        private async void btnRainStatic_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(async () => await GifProcessor.RainStaticImage(this), "rain overlay (image)");
+        }
+
+        private async void btnRainGif_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(async () => await GifProcessor.RainGif(this), "rain overlay (GIF)");
+        }
+
+        private async void btnMorphTransition_Click(object sender, EventArgs e)
+        {
+            await ExecuteWithErrorHandling(async () => await GifProcessor.MorphTransition(this), "morph transition (A→B)");
+        }
+
         private async void btnGifsicleSingle_Click(object sender, EventArgs e)
         {
             await ExecuteWithErrorHandling(async () => await GifProcessor.OptimizeSingleGif(this), "gifsicle optimization");

@@ -412,7 +412,7 @@
     <value>正在建立流沙流動…</value>
   </data>
   <data name="QuickDialog_Title" xml:space="preserve">
-    <value>流沙流動（766px）</value>
+    <value>流沙流動</value>
   </data>
   <data name="QuickDialog_InputLabel" xml:space="preserve">
     <value>輸入圖片或 GIF</value>
@@ -484,7 +484,7 @@
     <value>正在建立水波紋…</value>
   </data>
   <data name="RippleDialog_Title" xml:space="preserve">
-    <value>水波紋（766px）</value>
+    <value>水波紋</value>
   </data>
   <data name="RippleDialog_WaveSpeed" xml:space="preserve">
     <value>波速</value>
@@ -1202,7 +1202,7 @@ FFmpeg 輸出 (部分)：
     <value>正在建立風吹效果…</value>
   </data>
   <data name="WindDialog_Title" xml:space="preserve">
-    <value>風吹效果（766px）</value>
+    <value>風吹效果</value>
   </data>
   <data name="WindDialog_Direction" xml:space="preserve">
     <value>風從</value>
@@ -1294,6 +1294,12 @@ FFmpeg 輸出 (部分)：
   <data name="WindDialog_GifFreeze" xml:space="preserve">
     <value>定格第一幀</value>
   </data>
+  <data name="RainDialog_GifPlayDuring" xml:space="preserve">
+    <value>雨疊在播放上</value>
+  </data>
+  <data name="RainDialog_GifFreeze" xml:space="preserve">
+    <value>定格第一幀</value>
+  </data>
   <data name="Dialog_KeepOriginalSize" xml:space="preserve">
     <value>保持原始尺寸（不縮到 766px）</value>
   </data>
@@ -1302,5 +1308,107 @@ FFmpeg 輸出 (部分)：
   </data>
   <data name="Warn_LargeMemory" xml:space="preserve">
     <value>將以 {1}×{2}、{3} 幀處理，預估佔用約 {0} MB 記憶體，可能很慢或記憶體不足。要繼續嗎？</value>
+  </data>
+  <data name="Button_RainStatic" xml:space="preserve">
+    <value>下雨特效（圖片）</value>
+  </data>
+  <data name="Button_RainGif" xml:space="preserve">
+    <value>下雨特效（GIF）</value>
+  </data>
+  <data name="Status_RainBuilding" xml:space="preserve">
+    <value>正在產生下雨特效…</value>
+  </data>
+  <data name="RainDialog_Title" xml:space="preserve">
+    <value>下雨特效</value>
+  </data>
+  <data name="RainDialog_RainAmount" xml:space="preserve">
+    <value>雨量</value>
+  </data>
+  <data name="RainDialog_WindDir" xml:space="preserve">
+    <value>風向</value>
+  </data>
+  <data name="RainDialog_WindStrength" xml:space="preserve">
+    <value>風強度</value>
+  </data>
+  <data name="RainDialog_DropLength" xml:space="preserve">
+    <value>雨絲長度</value>
+  </data>
+  <data name="RainDialog_FadeOut" xml:space="preserve">
+    <value>雨停淡出</value>
+  </data>
+  <data name="RainDialog_FadeSeconds" xml:space="preserve">
+    <value>淡出秒數</value>
+  </data>
+  <data name="RainDir_None" xml:space="preserve">
+    <value>無風</value>
+  </data>
+  <data name="RainDir_Left" xml:space="preserve">
+    <value>向左</value>
+  </data>
+  <data name="RainDir_Right" xml:space="preserve">
+    <value>向右</value>
+  </data>
+  <data name="Button_MorphTransition" xml:space="preserve">
+    <value>疊圖轉換 A→B（雨滴暈染／翻轉拼圖）</value>
+  </data>
+  <data name="Status_MorphBuilding" xml:space="preserve">
+    <value>正在產生疊圖轉換…</value>
+  </data>
+  <data name="MorphDialog_Title" xml:space="preserve">
+    <value>疊圖轉換 A → B</value>
+  </data>
+  <data name="MorphDialog_InputA" xml:space="preserve">
+    <value>來源 A（基底）</value>
+  </data>
+  <data name="MorphDialog_InputB" xml:space="preserve">
+    <value>來源 B（顯現）</value>
+  </data>
+  <data name="MorphDialog_Style" xml:space="preserve">
+    <value>樣式</value>
+  </data>
+  <data name="MorphStyle_Raindrop" xml:space="preserve">
+    <value>雨滴暈染</value>
+  </data>
+  <data name="MorphStyle_TileFlip" xml:space="preserve">
+    <value>翻轉拼圖</value>
+  </data>
+  <data name="MorphDialog_PreRoll" xml:space="preserve">
+    <value>先播 A（秒）</value>
+  </data>
+  <data name="MorphDialog_MorphSeconds" xml:space="preserve">
+    <value>轉換（秒）</value>
+  </data>
+  <data name="MorphDialog_RainIntensity" xml:space="preserve">
+    <value>雨滴數</value>
+  </data>
+  <data name="MorphDialog_DropSizeVar" xml:space="preserve">
+    <value>大小變化 %</value>
+  </data>
+  <data name="MorphDialog_SpreadRadius" xml:space="preserve">
+    <value>暈染半徑</value>
+  </data>
+  <data name="MorphDialog_SoftEdge" xml:space="preserve">
+    <value>邊緣柔化</value>
+  </data>
+  <data name="MorphDialog_Divisions" xml:space="preserve">
+    <value>切割格數 (X)</value>
+  </data>
+  <data name="MorphDialog_FlipDir" xml:space="preserve">
+    <value>翻轉方向</value>
+  </data>
+  <data name="FlipDir_Random" xml:space="preserve">
+    <value>隨機</value>
+  </data>
+  <data name="FlipDir_Up" xml:space="preserve">
+    <value>向上</value>
+  </data>
+  <data name="FlipDir_Down" xml:space="preserve">
+    <value>向下</value>
+  </data>
+  <data name="FlipDir_Left" xml:space="preserve">
+    <value>向左</value>
+  </data>
+  <data name="FlipDir_Right" xml:space="preserve">
+    <value>向右</value>
   </data>
 </root>

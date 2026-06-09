@@ -438,9 +438,9 @@ namespace GifProcessorApp
             //
             // lblDuration
             //
-            lblDuration.Location = new System.Drawing.Point(168, 126);
+            lblDuration.Location = new System.Drawing.Point(164, 126);
             lblDuration.Name = "lblDuration";
-            lblDuration.Size = new System.Drawing.Size(96, 20);
+            lblDuration.Size = new System.Drawing.Size(100, 20);
             lblDuration.TabIndex = 8;
             lblDuration.Text = "Duration";
             //
