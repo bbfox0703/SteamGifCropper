@@ -1411,6 +1411,63 @@ FFmpeg 輸出 (部分)：
   <data name="BrickDir_Right" xml:space="preserve">
     <value>向右</value>
   </data>
+  <data name="Status_WaterBuilding" xml:space="preserve">
+    <value>正在產生灌水特效…</value>
+  </data>
+  <data name="Button_WaterStatic" xml:space="preserve">
+    <value>灌水特效（圖片）</value>
+  </data>
+  <data name="Button_WaterGif" xml:space="preserve">
+    <value>灌水特效（GIF）</value>
+  </data>
+  <data name="WaterDialog_Title" xml:space="preserve">
+    <value>灌水特效</value>
+  </data>
+  <data name="WaterDialog_Direction" xml:space="preserve">
+    <value>方向</value>
+  </data>
+  <data name="WaterDialog_FullSeconds" xml:space="preserve">
+    <value>滿水位（秒）</value>
+  </data>
+  <data name="WaterDialog_Refraction" xml:space="preserve">
+    <value>折射</value>
+  </data>
+  <data name="WaterDialog_Wobble" xml:space="preserve">
+    <value>水面搖動</value>
+  </data>
+  <data name="WaterDialog_BubbleCount" xml:space="preserve">
+    <value>泡泡數</value>
+  </data>
+  <data name="WaterDialog_BubbleSize" xml:space="preserve">
+    <value>泡泡大小</value>
+  </data>
+  <data name="WaterDialog_Layers" xml:space="preserve">
+    <value>層數</value>
+  </data>
+  <data name="WaterDialog_FadeOut" xml:space="preserve">
+    <value>淡出（秒）</value>
+  </data>
+  <data name="WaterDir_Up" xml:space="preserve">
+    <value>向上</value>
+  </data>
+  <data name="WaterDir_Down" xml:space="preserve">
+    <value>向下</value>
+  </data>
+  <data name="WaterDir_Left" xml:space="preserve">
+    <value>向左</value>
+  </data>
+  <data name="WaterDir_Right" xml:space="preserve">
+    <value>向右</value>
+  </data>
+  <data name="WaterDialog_GifPlayDuring" xml:space="preserve">
+    <value>灌水疊在播放上</value>
+  </data>
+  <data name="WaterDialog_GifFreeze" xml:space="preserve">
+    <value>定格第一幀</value>
+  </data>
+  <data name="MorphStyle_Water" xml:space="preserve">
+    <value>灌水</value>
+  </data>
   <data name="MorphDialog_SpotRadius" xml:space="preserve">
     <value>光圈大小</value>
   </data>

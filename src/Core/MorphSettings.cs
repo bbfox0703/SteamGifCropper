@@ -10,6 +10,7 @@ namespace GifProcessorApp
         Spotlight = 2,      // a bouncing searchlight reveals B, then expands to fill the frame
         Jigsaw = 3,         // puzzle pieces fill in A->B one by one, with fading boundary lines
         Brick = 4,          // planks of B drop in and stack over A with an impact bounce
+        WaterFill = 5,      // water rises over A; below the surface (refracted, with bubbles) shows B
     }
 
     // Tile-flip squash axis / sense. Up/Down squash vertically, Left/Right horizontally; Random picks a
@@ -95,6 +96,27 @@ namespace GifProcessorApp
                 Gravity = BrickGravity,
                 Weight = BrickWeight,
                 Hardness = BrickHardness / 100.0,
+            };
+        }
+
+        // Water-fill style (the fill rises over the morph window; below the surface shows B refracted with
+        // rising bubbles, above shows A).
+        public WaterDirection WaterDirection { get; set; } = WaterDirection.Up;
+        public double WaterRefraction { get; set; } = 4.0;
+        public double WaterWobble { get; set; } = 6.0;
+        public double WaterBubbleSize { get; set; } = 12.0;
+        public int WaterLayers { get; set; } = 3;
+
+        public WaterParams ToWaterParams()
+        {
+            return new WaterParams
+            {
+                Direction = WaterDirection,
+                RefractionStrength = WaterRefraction,
+                SurfaceWobble = WaterWobble,
+                BubbleSize = WaterBubbleSize,
+                Layers = Math.Max(1, WaterLayers),
+                Seed = Seed,
             };
         }
     }

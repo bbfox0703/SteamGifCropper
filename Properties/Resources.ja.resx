@@ -1411,6 +1411,63 @@ FFmpeg 出力（切り捨て）:
   <data name="BrickDir_Right" xml:space="preserve">
     <value>右</value>
   </data>
+  <data name="Status_WaterBuilding" xml:space="preserve">
+    <value>水満たしを生成中…</value>
+  </data>
+  <data name="Button_WaterStatic" xml:space="preserve">
+    <value>水満たし（画像）</value>
+  </data>
+  <data name="Button_WaterGif" xml:space="preserve">
+    <value>水満たし（GIF）</value>
+  </data>
+  <data name="WaterDialog_Title" xml:space="preserve">
+    <value>水満たし</value>
+  </data>
+  <data name="WaterDialog_Direction" xml:space="preserve">
+    <value>方向</value>
+  </data>
+  <data name="WaterDialog_FullSeconds" xml:space="preserve">
+    <value>満水（秒）</value>
+  </data>
+  <data name="WaterDialog_Refraction" xml:space="preserve">
+    <value>屈折</value>
+  </data>
+  <data name="WaterDialog_Wobble" xml:space="preserve">
+    <value>水面の揺れ</value>
+  </data>
+  <data name="WaterDialog_BubbleCount" xml:space="preserve">
+    <value>泡の数</value>
+  </data>
+  <data name="WaterDialog_BubbleSize" xml:space="preserve">
+    <value>泡の大きさ</value>
+  </data>
+  <data name="WaterDialog_Layers" xml:space="preserve">
+    <value>層数</value>
+  </data>
+  <data name="WaterDialog_FadeOut" xml:space="preserve">
+    <value>フェードアウト（秒）</value>
+  </data>
+  <data name="WaterDir_Up" xml:space="preserve">
+    <value>上</value>
+  </data>
+  <data name="WaterDir_Down" xml:space="preserve">
+    <value>下</value>
+  </data>
+  <data name="WaterDir_Left" xml:space="preserve">
+    <value>左</value>
+  </data>
+  <data name="WaterDir_Right" xml:space="preserve">
+    <value>右</value>
+  </data>
+  <data name="WaterDialog_GifPlayDuring" xml:space="preserve">
+    <value>再生に水を重ねる</value>
+  </data>
+  <data name="WaterDialog_GifFreeze" xml:space="preserve">
+    <value>最初のフレームで固定</value>
+  </data>
+  <data name="MorphStyle_Water" xml:space="preserve">
+    <value>水満たし</value>
+  </data>
   <data name="MorphDialog_SpotRadius" xml:space="preserve">
     <value>光の大きさ</value>
   </data>
