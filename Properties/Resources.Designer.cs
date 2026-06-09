@@ -446,16 +446,7 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Mp4Dialog_Seconds", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use GPU acceleration (if available).
-        /// </summary>
-        internal static string Mp4Dialog_UseGPU {
-            get {
-                return ResourceManager.GetString("Mp4Dialog_UseGPU", resourceCulture);
-            }
-        }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Default.
         /// </summary>
@@ -644,25 +635,7 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Status_MergingHorizontally", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to GPU decode + CPU GIF encoding....
-        /// </summary>
-        internal static string Status_Mp4GPU {
-            get {
-                return ResourceManager.GetString("Status_Mp4GPU", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to GPU decode failed, using CPU....
-        /// </summary>
-        internal static string Status_Mp4GPUFailed {
-            get {
-                return ResourceManager.GetString("Status_Mp4GPUFailed", resourceCulture);
-            }
-        }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Optimizing....
         /// </summary>
@@ -1301,52 +1274,7 @@ namespace SteamGifCropper.Properties {
                 return ResourceManager.GetString("Mp4Dialog_Title", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to NVIDIA GPU detected ✓.
-        /// </summary>
-        internal static string Mp4Dialog_NvidiaDetected {
-            get {
-                return ResourceManager.GetString("Mp4Dialog_NvidiaDetected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No NVIDIA GPU detected.
-        /// </summary>
-        internal static string Mp4Dialog_NoNvidiaGPU {
-            get {
-                return ResourceManager.GetString("Mp4Dialog_NoNvidiaGPU", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to GPU detection failed.
-        /// </summary>
-        internal static string Mp4Dialog_GPUDetectionFailed {
-            get {
-                return ResourceManager.GetString("Mp4Dialog_GPUDetectionFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to GPU decode enabled ⚡.
-        /// </summary>
-        internal static string Mp4Dialog_GPUEnabled {
-            get {
-                return ResourceManager.GetString("Mp4Dialog_GPUEnabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to NVIDIA GPU detected (CPU decode) ✓.
-        /// </summary>
-        internal static string Mp4Dialog_NvidiaGPUCPU {
-            get {
-                return ResourceManager.GetString("Mp4Dialog_NvidiaGPUCPU", resourceCulture);
-            }
-        }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to To use MP4 to GIF conversion, you need to install FFmpeg first....
         /// </summary>
@@ -1456,24 +1384,6 @@ namespace SteamGifCropper.Properties {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to GPU decode + CPU GIF encoding....
-        /// </summary>
-        internal static string Mp4ToGif_GpuCpuEncoding {
-            get {
-                return ResourceManager.GetString("Mp4ToGif_GpuCpuEncoding", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to GPU decode failed, using CPU....
-        /// </summary>
-        internal static string Mp4ToGif_GpuDecodeFailed {
-            get {
-                return ResourceManager.GetString("Mp4ToGif_GpuDecodeFailed", resourceCulture);
-            }
-        }
-
-        /// <summary>
         ///   Looks up a localized string similar to MP4 to GIF conversion completed successfully!.
         /// </summary>
         internal static string Mp4ToGif_Success {
@@ -1506,15 +1416,6 @@ namespace SteamGifCropper.Properties {
         internal static string Mp4ToGif_Error_CorruptedInput {
             get {
                 return ResourceManager.GetString("Mp4ToGif_Error_CorruptedInput", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to GPU acceleration failed. The conversion will automatically retry with CPU processing.\n\nThis is normal if your GPU drivers are outdated or CUDA is not properly installed..
-        /// </summary>
-        internal static string Mp4ToGif_Error_GPUFailed {
-            get {
-                return ResourceManager.GetString("Mp4ToGif_Error_GPUFailed", resourceCulture);
             }
         }
 
@@ -2708,6 +2609,12 @@ namespace SteamGifCropper.Properties {
         internal static string WaterDialog_BubbleSize {
             get {
                 return ResourceManager.GetString("WaterDialog_BubbleSize", resourceCulture);
+            }
+        }
+
+        internal static string WaterDialog_BubbleColor {
+            get {
+                return ResourceManager.GetString("WaterDialog_BubbleColor", resourceCulture);
             }
         }
 

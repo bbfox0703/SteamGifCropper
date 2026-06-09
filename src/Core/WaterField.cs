@@ -21,6 +21,7 @@ namespace GifProcessorApp
         public double BubbleSize;         // px: base bubble radius (count is auto from the canvas area)
         public int Layers;                // depth layers (>= 3): far = small/slow/faint, near = big/strong
         public int Seed;
+        public int BubbleR, BubbleG, BubbleB; // bubble rim/highlight colour (0..255); default white (255,255,255)
     }
 
     // One bubble for a single frame (already known to be underwater).

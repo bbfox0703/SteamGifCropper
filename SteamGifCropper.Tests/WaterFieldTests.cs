@@ -87,4 +87,23 @@ public class WaterFieldTests
         Assert.Equal(1.0, WaterField.LensFactor(20.0, 20.0, 0.6), 6); // at the rim
         Assert.Equal(1.0, WaterField.LensFactor(30.0, 20.0, 0.6), 6); // outside
     }
+
+    [Fact]
+    public void MorphSettings_ToWaterParams_CarriesBubbleColor()
+    {
+        var s = new MorphSettings { WaterBubbleColorR = 10, WaterBubbleColorG = 120, WaterBubbleColorB = 240 };
+        var p = s.ToWaterParams();
+        Assert.Equal(10, p.BubbleR);
+        Assert.Equal(120, p.BubbleG);
+        Assert.Equal(240, p.BubbleB);
+    }
+
+    [Fact]
+    public void MorphSettings_ToWaterParams_DefaultsToWhite()
+    {
+        var p = new MorphSettings().ToWaterParams();
+        Assert.Equal(255, p.BubbleR);
+        Assert.Equal(255, p.BubbleG);
+        Assert.Equal(255, p.BubbleB);
+    }
 }

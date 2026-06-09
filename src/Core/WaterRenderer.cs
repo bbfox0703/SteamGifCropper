@@ -122,12 +122,12 @@ namespace GifProcessorApp
                     dst[idx + 2] = (byte)(dst[idx + 2] * binv + tmp[2] * bubbleAlpha + 0.5);
                     dst[idx + 3] = (byte)(dst[idx + 3] * binv + tmp[3] * bubbleAlpha + 0.5);
 
-                    // Bright rim near the edge.
+                    // Bright rim near the edge (tinted by the chosen bubble colour; default white).
                     double rim = dist / b.R;
                     if (rim > 0.82)
                     {
                         double k = (rim - 0.82) / 0.18 * b.Opacity;
-                        BlendWhite(dst, idx, k);
+                        BlendColor(dst, idx, k, p.BubbleR, p.BubbleG, p.BubbleB);
                     }
 
                     // Specular highlight spot.
@@ -136,20 +136,22 @@ namespace GifProcessorApp
                     if (hd < b.R * 0.22)
                     {
                         double k = (1.0 - hd / (b.R * 0.22)) * 0.6 * b.Opacity;
-                        BlendWhite(dst, idx, k);
+                        BlendColor(dst, idx, k, p.BubbleR, p.BubbleG, p.BubbleB);
                     }
                 }
             }
         }
 
-        private static void BlendWhite(byte[] buf, int idx, double a)
+        // Blend the bubble rim/highlight colour (cr,cg,cb) into the pixel by coverage `a`. The pixel buffer
+        // is RGBA (see GetPixels/ReadPixels "RGBA"), so idx=R, idx+1=G, idx+2=B, idx+3=A.
+        private static void BlendColor(byte[] buf, int idx, double a, int cr, int cg, int cb)
         {
             if (a <= 0.0) return;
             if (a > 1.0) a = 1.0;
             double inv = 1.0 - a;
-            buf[idx] = (byte)(buf[idx] * inv + 255 * a + 0.5);
-            buf[idx + 1] = (byte)(buf[idx + 1] * inv + 255 * a + 0.5);
-            buf[idx + 2] = (byte)(buf[idx + 2] * inv + 255 * a + 0.5);
+            buf[idx] = (byte)(buf[idx] * inv + cr * a + 0.5);
+            buf[idx + 1] = (byte)(buf[idx + 1] * inv + cg * a + 0.5);
+            buf[idx + 2] = (byte)(buf[idx + 2] * inv + cb * a + 0.5);
             int na = (int)(buf[idx + 3] + a * 255.0 + 0.5);
             buf[idx + 3] = na > 255 ? (byte)255 : (byte)na;
         }
