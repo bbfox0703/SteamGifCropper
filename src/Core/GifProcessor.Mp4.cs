@@ -59,19 +59,16 @@ namespace GifProcessorApp
                     mainForm.pBarTaskStatus.Visible = true;
                     SetProgressBar(mainForm.pBarTaskStatus, 0, mainForm.pBarTaskStatus.Maximum);
                     
-                    SetStatusText(mainForm, "Analyzing video...");
-                    SetProgressBar(mainForm.pBarTaskStatus, 10, mainForm.pBarTaskStatus.Maximum);
-                    await Task.Delay(100);
-                    
-                    SetStatusText(mainForm, "Generating optimal color palette...");
-                    SetProgressBar(mainForm.pBarTaskStatus, 30, mainForm.pBarTaskStatus.Maximum);
-                    await Task.Delay(100);
-                    
-                    SetStatusText(mainForm, "Converting video to GIF...");
-                    SetProgressBar(mainForm.pBarTaskStatus, 50, mainForm.pBarTaskStatus.Maximum);
-                    await Task.Delay(100);
-                    
-                    await ProcessWithOptimizedCpu(inputPath, outputPath, startTime, duration, targetFramerate);
+                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_ConvertingVideo);
+                    SetProgressBar(mainForm.pBarTaskStatus, 0, 100);
+
+                    // Drive the bar from FFmpeg's real transcode progress (no more fake delays).
+                    await ProcessWithOptimizedCpu(inputPath, outputPath, startTime, duration, targetFramerate,
+                        p =>
+                        {
+                            SetProgressBar(mainForm.pBarTaskStatus, p, 100);
+                            SetStatusText(mainForm, $"{SteamGifCropper.Properties.Resources.Status_ConvertingVideo} ({p}%)");
+                        });
 
                     SetProgressBar(mainForm.pBarTaskStatus, 100, mainForm.pBarTaskStatus.Maximum);
                     SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Mp4ToGif_Success);
@@ -158,13 +155,16 @@ namespace GifProcessorApp
             return isAvailable;
         }
 
-        private static async Task ProcessWithOptimizedCpu(string inputPath, string outputPath, TimeSpan startTime, TimeSpan duration, int targetFramerate = 25)
+        private static async Task ProcessWithOptimizedCpu(string inputPath, string outputPath, TimeSpan startTime, TimeSpan duration, int targetFramerate = 25, Action<int> onProgress = null)
         {
+            // Total length the bar maps against: the requested segment, or the whole clip when no duration.
+            TimeSpan total = await ResolveTotalDuration(inputPath, duration);
+
             // Use direct file input/output instead of pipes for better compatibility
             try
             {
                 var token = CreateFfmpegCancellationToken();
-                await FFMpegArguments
+                var processor = FFMpegArguments
                     .FromFileInput(inputPath)
                     .OutputToFile(outputPath, true, options =>
                     {
@@ -187,8 +187,12 @@ namespace GifProcessorApp
                                .WithCustomArgument("-an");
                         ApplyThreadLimit(options);
                     })
-                    .CancellableThrough(token)
-                    .ProcessAsynchronously();
+                    .CancellableThrough(token);
+                if (onProgress != null && total > TimeSpan.Zero)
+                {
+                    processor = processor.NotifyOnProgress(p => onProgress((int)p), total);
+                }
+                await processor.ProcessAsynchronously();
             }
             catch (FFMpegException ex) when (ex.FFMpegErrorOutput?.Contains("partial file") == true ||
                                            ex.FFMpegErrorOutput?.Contains("Invalid argument") == true ||
@@ -198,7 +202,7 @@ namespace GifProcessorApp
                 // This handles cases where the video file format or codec has issues with seeking
                 // Create a new CancellationToken for the retry attempt
                 var retryToken = CreateFfmpegCancellationToken();
-                await FFMpegArguments
+                var processor = FFMpegArguments
                     .FromFileInput(inputPath)
                     .OutputToFile(outputPath, true, options =>
                     {
@@ -209,9 +213,22 @@ namespace GifProcessorApp
                                .WithCustomArgument("-avoid_negative_ts make_zero"); // Handle timing issues
                         ApplyThreadLimit(options);
                     })
-                    .CancellableThrough(retryToken)
-                    .ProcessAsynchronously();
+                    .CancellableThrough(retryToken);
+                if (onProgress != null && total > TimeSpan.Zero)
+                {
+                    processor = processor.NotifyOnProgress(p => onProgress((int)p), total);
+                }
+                await processor.ProcessAsynchronously();
             }
+        }
+
+        // The duration the progress bar maps against: the requested segment if set, else the clip length
+        // from FFProbe (TimeSpan.Zero if it can't be determined — progress is then skipped, not faked).
+        private static async Task<TimeSpan> ResolveTotalDuration(string inputPath, TimeSpan duration)
+        {
+            if (duration > TimeSpan.FromSeconds(0.1)) return duration;
+            try { var info = await FFProbe.AnalyseAsync(inputPath); return info.Duration; }
+            catch { return TimeSpan.Zero; }
         }
 
         private static (bool isAvailable, string ffmpegPath, string version, string error) GetFFmpegDiagnostics()
@@ -335,7 +352,7 @@ namespace GifProcessorApp
                     await using var reverseInput = File.OpenRead(inputFilePath);
                     await using var reverseOutput = File.Open(outputFilePath, FileMode.Create, FileAccess.Write);
                     var token = CreateFfmpegCancellationToken();
-                    await FFMpegArguments
+                    var reverseProcessor = FFMpegArguments
                         .FromPipeInput(new StreamPipeSource(reverseInput))
                         .OutputToPipe(new StreamPipeSink(reverseOutput), options =>
                             {
@@ -346,8 +363,14 @@ namespace GifProcessorApp
                                        .WithFramerate(targetFramerate);
                                 ApplyThreadLimit(options);
                             })
-                        .CancellableThrough(token)
-                        .ProcessAsynchronously();
+                        .CancellableThrough(token);
+                    if (totalDuration > TimeSpan.Zero)
+                    {
+                        // Drive the bar from FFmpeg's real reverse progress instead of fixed 25/50/75 jumps.
+                        reverseProcessor = reverseProcessor.NotifyOnProgress(
+                            p => SetProgressBar(mainForm.pBarTaskStatus, (int)p, 100), totalDuration);
+                    }
+                    await reverseProcessor.ProcessAsynchronously();
 
                     SetProgressBar(mainForm.pBarTaskStatus, 100, mainForm.pBarTaskStatus.Maximum);
                     await Task.Delay(1);

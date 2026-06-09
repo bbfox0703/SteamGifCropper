@@ -767,12 +767,8 @@ namespace GifProcessorApp
             }
 
             // Write the complete collection to file
-            mainForm.Invoke((Action)(() =>
-            {
-                SetStatusText(mainForm, $"Writing output GIF with {outputCollection.Count} frames...");
-            }));
-
-            outputCollection.Write(outputFilePath);
+            RunMagickWithProgress(mainForm, outputCollection,
+                SteamGifCropper.Properties.Resources.Status_Saving, () => outputCollection.Write(outputFilePath));
 
             // Debug: Show output info
             mainForm.Invoke((Action)(() =>

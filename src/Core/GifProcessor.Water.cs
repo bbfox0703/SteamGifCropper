@@ -45,18 +45,12 @@ namespace GifProcessorApp
             {
                 await Task.Run(() =>
                 {
-                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_WaterBuilding);
-                    using var source = new MagickImageCollection(settings.InputFilePath);
-                    source.Coalesce();
+                    using var source = LoadCoalesceWithProgress(mainForm, settings.InputFilePath);
 
                     uint width = source[0].Width;
                     if (!settings.KeepOriginalSize && !IsValidCanvasWidth(width))
                     {
-                        foreach (var frame in source)
-                        {
-                            frame.ResetPage();
-                            frame.Resize(SupportedWidth1, 0);
-                        }
+                        ResizeAllToWidthWithProgress(mainForm, source, SupportedWidth1);
                         width = source[0].Width;
                     }
 
@@ -70,9 +64,7 @@ namespace GifProcessorApp
                     }
 
                     using var animation = BuildWaterAnimation(mainForm, source, settings);
-                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
-                    animation.Optimize();
-                    animation.Write(settings.OutputFilePath);
+                    OptimizeAndWriteWithProgress(mainForm, animation, settings.OutputFilePath);
                 });
 
                 if (!canceled)

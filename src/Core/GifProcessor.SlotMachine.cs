@@ -81,19 +81,13 @@ namespace GifProcessorApp
                 // ready (that applies the 100px extension + 0x21 tail byte per part).
                 await Task.Run(() =>
                 {
-                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_SlotMachineBuilding);
-                    using var source = new MagickImageCollection(settings.InputFilePath);
-                    source.Coalesce();
+                    using var source = LoadCoalesceWithProgress(mainForm, settings.InputFilePath);
 
                     // Auto-resize to 766px wide when the input isn't already a supported width.
                     uint width = source[0].Width;
                     if (!IsValidCanvasWidth(width))
                     {
-                        foreach (var frame in source)
-                        {
-                            frame.ResetPage();
-                            frame.Resize(SupportedWidth1, 0);
-                        }
+                        ResizeAllToWidthWithProgress(mainForm, source, SupportedWidth1);
                         width = source[0].Width;
                     }
 
@@ -101,9 +95,7 @@ namespace GifProcessorApp
                     int canvasHeight = (int)source[0].Height;
 
                     using var animation = BuildSlotMachineAnimation(mainForm, source, settings, ranges, (int)width, canvasHeight);
-                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
-                    animation.Optimize();
-                    animation.Write(settings.OutputFilePath);
+                    OptimizeAndWriteWithProgress(mainForm, animation, settings.OutputFilePath);
                 });
 
                 SetProgressBar(mainForm.pBarTaskStatus, 100, 100);
@@ -272,6 +264,7 @@ namespace GifProcessorApp
                         if (++built % 5 == 0 || built == totalFrames)
                         {
                             SetProgressBar(mainForm.pBarTaskStatus, built * 100 / totalFrames, 100);
+                            SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_SlotMachineBuilding);
                         }
                     }
                 }

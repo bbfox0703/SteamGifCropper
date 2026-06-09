@@ -192,6 +192,81 @@ namespace GifProcessorApp
             }
         }
 
+        // --- ImageMagick progress -> status bar ---------------------------------------------------------
+        // ImageMagick raises a Progress event on each MagickImage during its long operations
+        // (Coalesce/Optimize/Quantize/Write). RunMagickWithProgress subscribes to every frame, maps the
+        // per-frame percentage to an OVERALL bar value (so a large save animates instead of looking frozen),
+        // throttles to ~20 Hz, and marshals to the UI thread. It degrades gracefully: even if no events fire
+        // for a given op, the stage label still changes so the user sees the phase transitions.
+        private static void RunMagickWithProgress(GifToolMainForm mainForm, MagickImageCollection collection,
+            string stageText, Action action)
+        {
+            SetStatusText(mainForm, stageText);
+            int n = collection?.Count ?? 0;
+            if (n <= 0) { action(); return; }
+
+            var index = new System.Collections.Generic.Dictionary<IMagickImage<byte>, int>(n);
+            for (int i = 0; i < n; i++) index[collection[i]] = i;
+
+            long lastTick = 0;
+            int lastVal = -1;
+            EventHandler<ProgressEventArgs> handler = (s, e) =>
+            {
+                int idx = (s is IMagickImage<byte> img && index.TryGetValue(img, out int ii)) ? ii : 0;
+                double frac = e.Progress.ToDouble() / 100.0; // this frame's progress (0..1)
+                int overall = (int)((idx + frac) / n * 100.0);
+                if (overall < 0) overall = 0; else if (overall > 100) overall = 100;
+                long now = Environment.TickCount64;
+                if (overall == lastVal && now - lastTick < 50) return; // throttle
+                lastVal = overall;
+                lastTick = now;
+                SetProgressBar(mainForm.pBarTaskStatus, overall, 100);
+            };
+
+            foreach (var img in collection) img.Progress += handler;
+            try { action(); }
+            finally { foreach (var img in collection) img.Progress -= handler; }
+        }
+
+        // Load + coalesce a GIF/animation, with accurate stage labels for the decode + coalesce phases.
+        // (Read creates the frames and Coalesce replaces them, so there is no stable per-frame object to
+        // hook for a moving bar here — the labels show the work is happening.) Caller owns the result.
+        private static MagickImageCollection LoadCoalesceWithProgress(GifToolMainForm mainForm, string path)
+        {
+            SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Decoding);
+            var collection = new MagickImageCollection(path);
+            RunMagickWithProgress(mainForm, collection,
+                SteamGifCropper.Properties.Resources.Status_CoalescingFrames, () => collection.Coalesce());
+            return collection;
+        }
+
+        // Optimize + write a result collection with both phases (and their progress) shown on the status bar.
+        private static void OptimizeAndWriteWithProgress(GifToolMainForm mainForm, MagickImageCollection collection, string path)
+        {
+            RunMagickWithProgress(mainForm, collection,
+                SteamGifCropper.Properties.Resources.Status_Optimizing, () => collection.Optimize());
+            RunMagickWithProgress(mainForm, collection,
+                SteamGifCropper.Properties.Resources.Status_Saving, () => collection.Write(path));
+        }
+
+        // Resize every frame to a target width (height auto) with a "preparing frames" stage + progress.
+        private static void ResizeAllToWidthWithProgress(GifToolMainForm mainForm, MagickImageCollection collection, uint width)
+        {
+            int n = collection.Count;
+            if (n <= 0) return;
+            SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_PreparingFrames);
+            int i = 0;
+            foreach (var frame in collection)
+            {
+                frame.ResetPage();
+                frame.Resize(width, 0);
+                if (++i % 5 == 0 || i == n)
+                {
+                    SetProgressBar(mainForm.pBarTaskStatus, i * 100 / n, 100);
+                }
+            }
+        }
+
         // Immutable snapshot of the gifsicle UI settings. Captured ONCE on the UI thread before any
         // Task.Run, so the background worker never touches the controls (which would throw cross-thread).
         private struct GifsicleSnapshot

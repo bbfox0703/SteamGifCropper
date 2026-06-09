@@ -131,8 +131,8 @@ namespace GifProcessorApp
                     SetProgressBar(mainForm.pBarTaskStatus, 90, 100);
 
                     // Step 8: Save result
-                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
-                    result.Write(settings.OutputFilePath);
+                    RunMagickWithProgress(mainForm, result,
+                        SteamGifCropper.Properties.Resources.Status_Saving, () => result.Write(settings.OutputFilePath));
                     SetProgressBar(mainForm.pBarTaskStatus, 95, 100);
 
                     // Step 9: Optional gifsicle optimization (gated + size-thresholded)

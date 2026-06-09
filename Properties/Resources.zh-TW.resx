@@ -171,6 +171,15 @@
   <data name="Status_Loading" xml:space="preserve">
     <value>載入中...</value>
   </data>
+  <data name="Status_Decoding" xml:space="preserve">
+    <value>解碼影格中…</value>
+  </data>
+  <data name="Status_PreparingFrames" xml:space="preserve">
+    <value>準備影格中…</value>
+  </data>
+  <data name="Status_ConvertingVideo" xml:space="preserve">
+    <value>影片轉 GIF 中…</value>
+  </data>
   <data name="Status_Optimizing" xml:space="preserve">
     <value>最佳化中...</value>
   </data>

@@ -205,7 +205,8 @@ namespace GifProcessorApp
                             ColorSpace = ColorSpace.RGB,
                             DitherMethod = DitherMethod.FloydSteinberg
                         };
-                        mergedCollection.Quantize(mapSettings);
+                        RunMagickWithProgress(mainForm, mergedCollection,
+                            SteamGifCropper.Properties.Resources.Status_MappingSharedPalette, () => mergedCollection.Quantize(mapSettings));
                         SetProgressBar(mainForm.pBarTaskStatus, 90, 100);
 
                         // Apply LZW compression
@@ -217,8 +218,8 @@ namespace GifProcessorApp
                         }
 
                         // Save the merged GIF
-                        SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
-                        mergedCollection.Write(outputPath);
+                        RunMagickWithProgress(mainForm, mergedCollection,
+                            SteamGifCropper.Properties.Resources.Status_Saving, () => mergedCollection.Write(outputPath));
                     });
 
                     string successMessage = string.Format(SteamGifCropper.Properties.Resources.Message_GifMergeComplete, outputPath);

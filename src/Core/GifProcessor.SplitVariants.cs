@@ -318,13 +318,9 @@ namespace GifProcessorApp
                         }
                     }
 
-                    // These two steps are a single long blocking call each with no sub-progress; after
-                    // "N/N" the bar would otherwise sit still, so surface the phase in the status text.
-                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Optimizing);
-                    collection.Optimize();
-
-                    SetStatusText(mainForm, SteamGifCropper.Properties.Resources.Status_Saving);
-                    collection.Write(outputFilePath);
+                    // Optimize + write are each a long blocking call; OptimizeAndWriteWithProgress surfaces
+                    // the phase label and animates the bar from ImageMagick's per-frame progress.
+                    OptimizeAndWriteWithProgress(mainForm, collection, outputFilePath);
                 }
             }
             finally
