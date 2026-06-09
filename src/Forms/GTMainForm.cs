@@ -429,6 +429,11 @@ namespace GifProcessorApp
                 btnRippleGif.Text = SteamGifCropper.Properties.Resources.Button_RippleGif;
                 btnWindStatic.Text = SteamGifCropper.Properties.Resources.Button_WindStatic;
                 btnWindGif.Text = SteamGifCropper.Properties.Resources.Button_WindGif;
+                btnRainStatic.Text = SteamGifCropper.Properties.Resources.Button_RainStatic;
+                btnRainGif.Text = SteamGifCropper.Properties.Resources.Button_RainGif;
+                btnWaterStatic.Text = SteamGifCropper.Properties.Resources.Button_WaterStatic;
+                btnWaterGif.Text = SteamGifCropper.Properties.Resources.Button_WaterGif;
+                btnMorphTransition.Text = SteamGifCropper.Properties.Resources.Button_MorphTransition;
                 btnScrollAnimatedGif.Text = SteamGifCropper.Properties.Resources.Button_ScrollAnimatedGif;
                 label1.Text = SteamGifCropper.Properties.Resources.Label_GifsicleNotice;
                 lblFramerate.Text = SteamGifCropper.Properties.Resources.Label_Framerate;
