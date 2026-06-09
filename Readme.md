@@ -18,17 +18,17 @@ SteamGifCropper v0.2.1 で分割した5つの GIF。読み込み差で同期が�
 
 **串接 · Concatenate · 連結**
 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-  <img src="./res/KFC2-0_concatenated_resized.gif" style="flex: 1 1 95%; height: auto;">
+  <img src="./res/KFC2-0_concatenated_resized.gif" style="max-width: 222px; width: 100%; height: auto;">
 </div>
 
 **合併 · Merge · 合成**
 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-  <img src="./res/KFC2-0_merged_resized.gif" style="flex: 1 1 95%; height: auto;">
+  <img src="./res/KFC2-0_merged_resized.gif" style="max-width: 333px; width: 100%; height: auto;">
 </div>
 
 **捲動 · Scroll · スクロール**
 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-  <img src="./res/KFC2-0_merged_scroll_resized.gif" style="flex: 1 1 95%; height: auto;">
+  <img src="./res/KFC2-0_merged_scroll_resized.gif" style="max-width: 333px; width: 100%; height: auto;">
 </div>
 
 ---
