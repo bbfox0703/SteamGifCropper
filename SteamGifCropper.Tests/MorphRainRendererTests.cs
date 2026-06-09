@@ -93,4 +93,33 @@ public class MorphRainRendererTests
         coll.Optimize(); // must not throw
         Assert.Equal(2, coll.Count);
     }
+
+    [Theory]
+    [InlineData(0.0)]
+    [InlineData(0.5)]
+    [InlineData(1.0)]
+    public void SpotlightRenderer_PreservesDimensions(double t)
+    {
+        using var a = new MagickImage(MagickColors.Red, 64, 48);
+        using var b = new MagickImage(MagickColors.Blue, 64, 48);
+        var p = new SpotlightParams { Radius = 20, Speed = 300, ExpandSeconds = 1.0, Soft = 6, Seed = 4 };
+        using var outImg = SpotlightRenderer.RenderFrame(a, b, t, 3.0, p);
+        Assert.Equal(64u, outImg.Width);
+        Assert.Equal(48u, outImg.Height);
+    }
+
+    [Theory]
+    [InlineData(0.0)]
+    [InlineData(0.5)]
+    [InlineData(1.0)]
+    public void JigsawRenderer_PreservesDimensions(double t)
+    {
+        using var a = new MagickImage(MagickColors.Red, 80, 50);
+        using var b = new MagickImage(MagickColors.Blue, 80, 50);
+        var settings = new MorphSettings { Style = MorphStyle.Jigsaw, Divisions = 6, Seed = 9, JigsawShowLines = true, JigsawLineR = 255, JigsawLineG = 255, JigsawLineB = 255 };
+        var grid = TileFlipGeometry.ComputeGrid(80, 50, settings.Divisions);
+        using var outImg = JigsawRenderer.RenderFrame(a, b, t, grid, settings);
+        Assert.Equal(80u, outImg.Width);
+        Assert.Equal(50u, outImg.Height);
+    }
 }

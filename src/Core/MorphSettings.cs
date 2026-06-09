@@ -7,6 +7,8 @@ namespace GifProcessorApp
     {
         RaindropReveal = 0, // raindrops fall on A; their spreading puddles cross-dissolve to B
         TileFlip = 1,       // the canvas is split into cells that flip A->B one by one
+        Spotlight = 2,      // a bouncing searchlight reveals B, then expands to fill the frame
+        Jigsaw = 3,         // puzzle pieces fill in A->B one by one, with fading boundary lines
     }
 
     // Tile-flip squash axis / sense. Up/Down squash vertically, Left/Right horizontally; Random picks a
@@ -44,9 +46,33 @@ namespace GifProcessorApp
         public double SpreadVariationPct { get; set; } = 40.0;   // (reserved) extra growth variation
         public double SoftEdge { get; set; } = 8.0;              // px feather of the puddle edge
 
-        // Tile-flip style.
+        // Tile-flip style (Divisions is also reused by the jigsaw style for the piece count).
         public int Divisions { get; set; } = 8;                                       // cells across the width
         public TileFlipDirection FlipDirection { get; set; } = TileFlipDirection.Random;
+
+        // Spotlight style.
+        public double SpotlightRadius { get; set; } = 120.0;       // px: circle radius while moving
+        public double SpotlightSpeed { get; set; } = 400.0;        // px/sec travel speed
+        public double SpotlightExpandSeconds { get; set; } = 1.0;  // final expand duration (must be > 0 to reach full B)
+        public double SpotlightSoftEdge { get; set; } = 6.0;       // px feather
+
+        // Jigsaw style (uses Divisions for the piece count across the width).
+        public bool JigsawShowLines { get; set; } = true;          // draw piece-boundary lines while assembling
+        public int JigsawLineR { get; set; } = 255;                // boundary line colour (RGB 0..255)
+        public int JigsawLineG { get; set; } = 255;
+        public int JigsawLineB { get; set; } = 255;
+
+        public SpotlightParams ToSpotlightParams()
+        {
+            return new SpotlightParams
+            {
+                Radius = SpotlightRadius,
+                Speed = SpotlightSpeed,
+                ExpandSeconds = SpotlightExpandSeconds,
+                Soft = SpotlightSoftEdge,
+                Seed = Seed,
+            };
+        }
     }
 
     // Pure timeline math for the morph (linked into the test project; GifProcessor.Morph uses it to size

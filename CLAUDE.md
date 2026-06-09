@@ -120,7 +120,7 @@ Each dialog handles one specific operation type:
 - `RippleDropPickerForm` - Click-to-pick a ripple drop position on frame 0
 - `WindDialog` - Wind sway (風吹麥田): travelling-wave displacement, normal/nuclear modes (image / GIF)
 - `RainDialog` - Rain overlay: translucent slanted streaks, wind + "rain stops" fade-out (image / GIF)
-- `MorphTransitionDialog` - A→B morph transition (raindrop-spread reveal / tile flip) with a pre-roll + remaining-B timeline
+- `MorphTransitionDialog` - A→B morph transition (raindrop reveal / tile flip / spotlight / jigsaw) with a pre-roll + remaining-B timeline
 
 > **Creative-effects detail:** these "766px single-output, chainable" effects (grid mosaic, slot
 > machine, quicksand, ripple, wind, rain, A→B morph) — their ideas and completion status live in
@@ -128,9 +128,10 @@ Each dialog handles one specific operation type:
 > semantics, gotchas) lives in `docs/CreativeEffectsDevLog.md`.
 > Their math is extracted into pure, dependency-free files for unit testing — `SlotMachineGeometry.cs`,
 > `QuicksandGeometry.cs`, `GifEffectWindow.cs`, `GridMosaicGeometry.cs`, `RippleField.cs`,
-> `WindField.cs`, `RainField.cs`, `RaindropRevealField.cs`, `TileFlipGeometry.cs`, `MorphSettings.cs`
-> (`MorphTimeline`) (+ the Magick-side `RippleRenderer.cs`, `GridMosaicRenderer.cs`,
-> `RaindropRevealRenderer.cs`, `TileFlipRenderer.cs`) — linked into the test project (pure files only).
+> `WindField.cs`, `RainField.cs`, `RaindropRevealField.cs`, `TileFlipGeometry.cs`, `SpotlightField.cs`,
+> `JigsawGeometry.cs`, `MorphSettings.cs` (`MorphTimeline`) (+ the Magick-side `RippleRenderer.cs`,
+> `GridMosaicRenderer.cs`, `RaindropRevealRenderer.cs`, `TileFlipRenderer.cs`, `SpotlightRenderer.cs`,
+> `JigsawRenderer.cs`) — linked into the test project (pure files only).
 > The A→B morph uses its own `pre-roll + morph window + remaining-B` timeline (total = pre-roll + B
 > duration), distinct from the concat overlap model; it lives in `GifProcessor.Morph.cs` /
 > `MorphTransitionDialog`, not in `TransitionGenerator`.
@@ -324,6 +325,8 @@ SteamGifCropper/
 │   │   ├── MorphSettings.cs                          # A→B morph settings + MorphTimeline (pure)
 │   │   ├── RaindropRevealField/Renderer.cs           # Morph raindrop reveal (Field pure, Renderer Magick)
 │   │   ├── TileFlipGeometry/Renderer.cs              # Morph tile flip (Geometry pure, Renderer Magick)
+│   │   ├── SpotlightField/Renderer.cs               # Morph spotlight (Field pure, Renderer Magick)
+│   │   ├── JigsawGeometry/Renderer.cs              # Morph jigsaw (Geometry pure, Renderer Magick)
 │   │   └── GifProcessor.{Rain,Morph,Wind,...}.cs     # Per-effect engine partials (RunXxx + Build*)
 │   ├── Forms/
 │   │   ├── GTMainForm.cs                   # Main UI form

@@ -51,8 +51,26 @@ namespace GifProcessorApp
         private Label lblFlipDir = null!;
         private ComboBox cmbFlipDir = null!;
 
+        // Spotlight group.
+        private Label lblSpotRadius = null!;
+        private NumericUpDown numSpotRadius = null!;
+        private Label lblSpotSpeed = null!;
+        private NumericUpDown numSpotSpeed = null!;
+        private Label lblSpotExpand = null!;
+        private NumericUpDown numSpotExpand = null!;
+
+        // Jigsaw group.
+        private Label lblJigsawPieces = null!;
+        private NumericUpDown numJigsawPieces = null!;
+        private CheckBox chkJigsawLines = null!;
+        private Label lblJigsawColor = null!;
+        private Panel pnlJigsawColor = null!;
+        private Color _jigsawLineColor = Color.White;
+
         private readonly List<Control> _raindropControls = new List<Control>();
         private readonly List<Control> _tileControls = new List<Control>();
+        private readonly List<Control> _spotlightControls = new List<Control>();
+        private readonly List<Control> _jigsawControls = new List<Control>();
 
         private Button btnOK = null!;
         private Button btnCancel = null!;
@@ -61,19 +79,23 @@ namespace GifProcessorApp
         {
             InitializeComponent();
             cmbStyle.SelectedIndexChanged += (s, e) => RefreshStyleVisibility();
+            chkJigsawLines.CheckedChanged += (s, e) => RefreshJigsawColorEnabled();
             UpdateUIText();
             RefreshStyleVisibility();
+            RefreshJigsawColorEnabled();
             ApplyTheme();
         }
 
         public MorphSettings BuildSettings()
         {
+            int styleIdx = cmbStyle.SelectedIndex < 0 ? 0 : cmbStyle.SelectedIndex;
+            var style = (MorphStyle)styleIdx;
             return new MorphSettings
             {
                 InputAPath = txtInputA.Text,
                 InputBPath = txtInputB.Text,
                 OutputPath = txtOutput.Text,
-                Style = cmbStyle.SelectedIndex == 1 ? MorphStyle.TileFlip : MorphStyle.RaindropReveal,
+                Style = style,
                 PreRollSeconds = (double)numPreRoll.Value,
                 MorphSeconds = (double)numMorph.Value,
                 Fps = (int)numFps.Value,
@@ -82,16 +104,43 @@ namespace GifProcessorApp
                 DropSizeVariationPct = (double)numDropSizeVar.Value,
                 SpreadRadius = (double)numSpreadRadius.Value,
                 SoftEdge = (double)numSoftEdge.Value,
-                Divisions = (int)numDivisions.Value,
+                // Divisions is shared by tile flip and jigsaw; read whichever style's piece box is active.
+                Divisions = style == MorphStyle.Jigsaw ? (int)numJigsawPieces.Value : (int)numDivisions.Value,
                 FlipDirection = (TileFlipDirection)cmbFlipDir.SelectedIndex,
+                SpotlightRadius = (double)numSpotRadius.Value,
+                SpotlightSpeed = (double)numSpotSpeed.Value,
+                SpotlightExpandSeconds = (double)numSpotExpand.Value,
+                JigsawShowLines = chkJigsawLines.Checked,
+                JigsawLineR = _jigsawLineColor.R,
+                JigsawLineG = _jigsawLineColor.G,
+                JigsawLineB = _jigsawLineColor.B,
             };
         }
 
         private void RefreshStyleVisibility()
         {
-            bool tile = cmbStyle.SelectedIndex == 1;
-            foreach (var c in _raindropControls) c.Visible = !tile;
-            foreach (var c in _tileControls) c.Visible = tile;
+            var style = (MorphStyle)(cmbStyle.SelectedIndex < 0 ? 0 : cmbStyle.SelectedIndex);
+            foreach (var c in _raindropControls) c.Visible = style == MorphStyle.RaindropReveal;
+            foreach (var c in _tileControls) c.Visible = style == MorphStyle.TileFlip;
+            foreach (var c in _spotlightControls) c.Visible = style == MorphStyle.Spotlight;
+            foreach (var c in _jigsawControls) c.Visible = style == MorphStyle.Jigsaw;
+        }
+
+        private void RefreshJigsawColorEnabled()
+        {
+            lblJigsawColor.Enabled = chkJigsawLines.Checked;
+            pnlJigsawColor.Enabled = chkJigsawLines.Checked;
+        }
+
+        private void PnlJigsawColor_Click(object? sender, EventArgs e)
+        {
+            if (!chkJigsawLines.Checked) return;
+            using var cd = new ColorDialog { Color = _jigsawLineColor, FullOpen = true };
+            if (cd.ShowDialog(this) == DialogResult.OK)
+            {
+                _jigsawLineColor = cd.Color;
+                pnlJigsawColor.BackColor = cd.Color;
+            }
         }
 
         private void UpdateUIText()
@@ -111,6 +160,12 @@ namespace GifProcessorApp
             lblSoftEdge.Text = Resources.MorphDialog_SoftEdge;
             lblDivisions.Text = Resources.MorphDialog_Divisions;
             lblFlipDir.Text = Resources.MorphDialog_FlipDir;
+            lblSpotRadius.Text = Resources.MorphDialog_SpotRadius;
+            lblSpotSpeed.Text = Resources.MorphDialog_SpotSpeed;
+            lblSpotExpand.Text = Resources.MorphDialog_SpotExpand;
+            lblJigsawPieces.Text = Resources.MorphDialog_JigsawPieces;
+            chkJigsawLines.Text = Resources.MorphDialog_JigsawShowLines;
+            lblJigsawColor.Text = Resources.MorphDialog_JigsawLineColor;
             btnBrowseA.Text = Resources.Button_Browse;
             btnBrowseB.Text = Resources.Button_Browse;
             btnBrowseOutput.Text = Resources.Button_Browse;
@@ -121,6 +176,8 @@ namespace GifProcessorApp
             cmbStyle.Items.Clear();
             cmbStyle.Items.Add(Resources.MorphStyle_Raindrop);
             cmbStyle.Items.Add(Resources.MorphStyle_TileFlip);
+            cmbStyle.Items.Add(Resources.MorphStyle_Spotlight);
+            cmbStyle.Items.Add(Resources.MorphStyle_Jigsaw);
             cmbStyle.SelectedIndex = styleSel;
 
             int dirSel = cmbFlipDir.SelectedIndex < 0 ? 0 : cmbFlipDir.SelectedIndex;
@@ -358,6 +415,22 @@ namespace GifProcessorApp
             lblFlipDir = new Label { Location = new Point(162, 234), Size = new Size(60, 20), Text = "Flip dir" };
             cmbFlipDir = new ComboBox { Location = new Point(228, 232), Size = new Size(140, 23), DropDownStyle = ComboBoxStyle.DropDownList };
 
+            // --- Spotlight group (same vertical band) ---
+            lblSpotRadius = new Label { Location = new Point(14, 234), Size = new Size(82, 20), Text = "Light size" };
+            numSpotRadius = MakeNum(98, 232, 60, 0, 20m, 600m, 5m, 120m);
+            lblSpotSpeed = new Label { Location = new Point(170, 234), Size = new Size(60, 20), Text = "Speed" };
+            numSpotSpeed = MakeNum(236, 232, 64, 0, 50m, 2000m, 10m, 400m);
+            lblSpotExpand = new Label { Location = new Point(14, 267), Size = new Size(82, 20), Text = "Expand (s)" };
+            numSpotExpand = MakeNum(98, 265, 56, 2, 0.10m, 60.00m, 0.25m, 1.00m);
+
+            // --- Jigsaw group (same vertical band) ---
+            lblJigsawPieces = new Label { Location = new Point(14, 234), Size = new Size(82, 20), Text = "Pieces (X)" };
+            numJigsawPieces = MakeNum(98, 232, 56, 0, 2m, 40m, 1m, 8m);
+            chkJigsawLines = new CheckBox { Location = new Point(14, 266), Size = new Size(150, 22), Text = "Show piece edges", Checked = true, UseVisualStyleBackColor = true };
+            lblJigsawColor = new Label { Location = new Point(176, 268), Size = new Size(90, 20), Text = "Edge colour" };
+            pnlJigsawColor = new Panel { Location = new Point(272, 265), Size = new Size(44, 22), BorderStyle = BorderStyle.FixedSingle, BackColor = _jigsawLineColor, Cursor = Cursors.Hand };
+            pnlJigsawColor.Click += PnlJigsawColor_Click;
+
             btnOK = new Button { Location = new Point(363, 312), Size = new Size(75, 25), Text = "OK", UseVisualStyleBackColor = true };
             btnOK.Click += BtnOK_Click;
             btnCancel = new Button { Location = new Point(444, 312), Size = new Size(82, 25), Text = "Cancel", DialogResult = DialogResult.Cancel, UseVisualStyleBackColor = true };
@@ -368,6 +441,14 @@ namespace GifProcessorApp
                 lblSpreadRadius, numSpreadRadius, lblSoftEdge, numSoftEdge,
             });
             _tileControls.AddRange(new Control[] { lblDivisions, numDivisions, lblFlipDir, cmbFlipDir });
+            _spotlightControls.AddRange(new Control[]
+            {
+                lblSpotRadius, numSpotRadius, lblSpotSpeed, numSpotSpeed, lblSpotExpand, numSpotExpand,
+            });
+            _jigsawControls.AddRange(new Control[]
+            {
+                lblJigsawPieces, numJigsawPieces, chkJigsawLines, lblJigsawColor, pnlJigsawColor,
+            });
 
             SuspendLayout();
             Controls.Add(lblInputA);
@@ -390,6 +471,8 @@ namespace GifProcessorApp
             Controls.Add(chkKeepSize);
             foreach (var c in _raindropControls) Controls.Add(c);
             foreach (var c in _tileControls) Controls.Add(c);
+            foreach (var c in _spotlightControls) Controls.Add(c);
+            foreach (var c in _jigsawControls) Controls.Add(c);
             Controls.Add(btnOK);
             Controls.Add(btnCancel);
 

@@ -1371,6 +1371,30 @@ Technical details: {5}</value>
   <data name="MorphStyle_TileFlip" xml:space="preserve">
     <value>Tile flip</value>
   </data>
+  <data name="MorphStyle_Spotlight" xml:space="preserve">
+    <value>Spotlight</value>
+  </data>
+  <data name="MorphStyle_Jigsaw" xml:space="preserve">
+    <value>Jigsaw</value>
+  </data>
+  <data name="MorphDialog_SpotRadius" xml:space="preserve">
+    <value>Light size</value>
+  </data>
+  <data name="MorphDialog_SpotSpeed" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="MorphDialog_SpotExpand" xml:space="preserve">
+    <value>Expand (s)</value>
+  </data>
+  <data name="MorphDialog_JigsawPieces" xml:space="preserve">
+    <value>Pieces (X)</value>
+  </data>
+  <data name="MorphDialog_JigsawShowLines" xml:space="preserve">
+    <value>Show piece edges</value>
+  </data>
+  <data name="MorphDialog_JigsawLineColor" xml:space="preserve">
+    <value>Edge colour</value>
+  </data>
   <data name="MorphDialog_PreRoll" xml:space="preserve">
     <value>Pre-roll A (s)</value>
   </data>
