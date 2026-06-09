@@ -118,14 +118,22 @@ Each dialog handles one specific operation type:
 - `QuicksandDialog` - Horizontal/vertical viscous band flow (image / GIF)
 - `RippleDialog` - Water ripple: up to 3 interfering drops (image / GIF)
 - `RippleDropPickerForm` - Click-to-pick a ripple drop position on frame 0
+- `WindDialog` - Wind sway (風吹麥田): travelling-wave displacement, normal/nuclear modes (image / GIF)
+- `RainDialog` - Rain overlay: translucent slanted streaks, wind + "rain stops" fade-out (image / GIF)
+- `MorphTransitionDialog` - A→B morph transition (raindrop-spread reveal / tile flip) with a pre-roll + remaining-B timeline
 
 > **Creative-effects detail:** these "766px single-output, chainable" effects (grid mosaic, slot
-> machine, quicksand, ripple) — their ideas and completion status live in
+> machine, quicksand, ripple, wind, rain, A→B morph) — their ideas and completion status live in
 > `docs/CreativeFeatureIdeas.md`; the detailed implementation/handoff dev log (file lists, commits,
 > semantics, gotchas) lives in `docs/CreativeEffectsDevLog.md`.
 > Their math is extracted into pure, dependency-free files for unit testing — `SlotMachineGeometry.cs`,
-> `QuicksandGeometry.cs`, `GifEffectWindow.cs`, `GridMosaicGeometry.cs`, `RippleField.cs` (+ the
-> Magick-side `RippleRenderer.cs`, `GridMosaicRenderer.cs`) — linked into the test project.
+> `QuicksandGeometry.cs`, `GifEffectWindow.cs`, `GridMosaicGeometry.cs`, `RippleField.cs`,
+> `WindField.cs`, `RainField.cs`, `RaindropRevealField.cs`, `TileFlipGeometry.cs`, `MorphSettings.cs`
+> (`MorphTimeline`) (+ the Magick-side `RippleRenderer.cs`, `GridMosaicRenderer.cs`,
+> `RaindropRevealRenderer.cs`, `TileFlipRenderer.cs`) — linked into the test project (pure files only).
+> The A→B morph uses its own `pre-roll + morph window + remaining-B` timeline (total = pre-roll + B
+> duration), distinct from the concat overlap model; it lives in `GifProcessor.Morph.cs` /
+> `MorphTransitionDialog`, not in `TransitionGenerator`.
 
 ### Magick.NET (ImageMagick) Integration
 
@@ -310,7 +318,13 @@ SteamGifCropper/
 │   │   ├── GridMosaicSettings/Geometry/Renderer.cs   # Grid mosaic (geometry pure, renderer Magick)
 │   │   ├── SlotMachineSettings/Geometry.cs           # Slot machine (geometry pure)
 │   │   ├── QuicksandSettings/Geometry.cs             # Quicksand flow (geometry pure)
-│   │   └── RippleSettings/Field/Renderer.cs          # Water ripple (Field pure, Renderer Magick)
+│   │   ├── RippleSettings/Field/Renderer.cs          # Water ripple (Field pure, Renderer Magick)
+│   │   ├── WindSettings/Field/Renderer.cs            # Wind sway (Field pure, Renderer Magick)
+│   │   ├── RainSettings/Field/Renderer.cs            # Rain overlay (Field pure, Renderer draws streaks into RGBA buffer)
+│   │   ├── MorphSettings.cs                          # A→B morph settings + MorphTimeline (pure)
+│   │   ├── RaindropRevealField/Renderer.cs           # Morph raindrop reveal (Field pure, Renderer Magick)
+│   │   ├── TileFlipGeometry/Renderer.cs              # Morph tile flip (Geometry pure, Renderer Magick)
+│   │   └── GifProcessor.{Rain,Morph,Wind,...}.cs     # Per-effect engine partials (RunXxx + Build*)
 │   ├── Forms/
 │   │   ├── GTMainForm.cs                   # Main UI form
 │   │   ├── GTMainForm.Designer.cs
@@ -327,7 +341,10 @@ SteamGifCropper/
 │   │   ├── SlotMachineDialog.cs
 │   │   ├── QuicksandDialog.cs
 │   │   ├── RippleDialog.cs
-│   │   └── RippleDropPickerForm.cs         # Click-to-pick ripple drop position
+│   │   ├── RippleDropPickerForm.cs         # Click-to-pick ripple drop position
+│   │   ├── WindDialog.cs
+│   │   ├── RainDialog.cs                   # Rain overlay (translucent streaks)
+│   │   └── MorphTransitionDialog.cs        # A→B morph (raindrop reveal / tile flip)
 │   └── Platform/                           # Windows integration
 │       ├── WindowsThemeManager.cs
 │       └── RegistryProvider.cs

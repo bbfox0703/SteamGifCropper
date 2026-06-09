@@ -22,6 +22,9 @@
 - ✅ **合併 2–5 GIF：來源檔尾 0x21 自動處理** — 載入前自動把 Steam 檔尾 0x21 翻回 0x3B、處理後還原，並回報中途動到/無法還原的檔。
 - ✅ **微/強風吹襲（Wind Sway，風吹麥田）** — 沿風向掃過畫面的行進波 + 陣風時間漲落（Hann 包絡），視覺如風吹過麥田起伏；水波紋的方向版（平面波取代徑向波，渲染管線獨立複本）。共用 8 方向風向 + 總時間；每陣風（最多 3）各有起始/時長/強度。核爆版（dialog 模式切換、單一事件）先正向短吹→靜止→反向強風持續。GIF 同步混合（影片 15s/風 6s → 前 6s mixing + 後 9s 原片）或定格再播。
 - ✅ **通用尺寸開關（保持原始尺寸 / 不縮到 766px）** — 水波紋/風/流沙底層 math 本就尺寸無關，加 per-dialog 勾選框把它們當通用 GIF 特效用（非 Steam 前置）；大檔先估記憶體、超門檻跳警告可取消。拉霸/格網維持 766-only（語意是 5 槽位）。
+- ✅ **下雨疊層特效（Rain Overlay）** — 在 GIF 上疊一層半透明雨絲（overlay 合成，非位移）：雨量、風強度、風向、開始秒數、長度、雨停 fade-out + 淡出秒數；比照 wind 的 play-along / frozen-then-play 與時間窗。雨絲用種子化 hash + 畫布 wrap、DDA 畫線 alpha-blend 寫進 RGBA buffer（沿 repo 不用 Drawables 慣例）。
+- ✅ **疊圖轉換 A→B（Morph Transition）** — 兩 clip 全新時間模型（先播 A → A 在窗內轉成 B、A 結束全透明消失 → 播 B 剩餘；總長 = PreRoll + Bdur）。兩風格同一 dialog 切換：**雨滴暈染**（種子化雨滴 soft-disc coverage cross-dissolve A→B、GlobalFloor 保證收尾全 B）與**翻轉拼圖**（近正方格、種子錯開逐格 squash 翻面 A→B、方向隨機/固定）。math 抽純函式單測（`RaindropRevealField`/`TileFlipGeometry`/`MorphTimeline`）。
+- ✅ **SIMD 評估（延後）** — 維持 `Parallel.For`；熱點（bilinear 取樣、raindrop cross-dissolve）與動手條件（`AllowUnsafeBlocks` + `System.Numerics.Vector`/`Intrinsics`、先 benchmark）記於 dev log。
 
 ---
 

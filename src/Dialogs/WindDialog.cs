@@ -410,12 +410,12 @@ namespace GifProcessorApp
             cmbMode = new ComboBox { Location = new Point(320, 112), Size = new Size(150, 23), DropDownStyle = ComboBoxStyle.DropDownList };
 
             // Scene row
-            lblDuration = new Label { Location = new Point(14, 147), Size = new Size(60, 20), Text = "Duration" };
-            numDuration = MakeNum(76, 145, 56, 2, 0.10m, 60.00m, 0.25m, 6.00m);
-            lblFps = new Label { Location = new Point(140, 147), Size = new Size(30, 20), Text = "FPS" };
-            numFps = MakeNum(172, 145, 46, 0, 5m, 60m, 1m, 20m);
-            lblStart = new Label { Location = new Point(232, 147), Size = new Size(84, 20), Text = "Start" };
-            numStart = MakeNum(320, 145, 56, 2, 0.00m, 60.00m, 0.25m, 0.00m);
+            lblDuration = new Label { Location = new Point(14, 147), Size = new Size(100, 20), Text = "Duration" };
+            numDuration = MakeNum(116, 145, 56, 2, 0.10m, 60.00m, 0.25m, 6.00m);
+            lblFps = new Label { Location = new Point(178, 147), Size = new Size(30, 20), Text = "FPS" };
+            numFps = MakeNum(210, 145, 46, 0, 5m, 60m, 1m, 20m);
+            lblStart = new Label { Location = new Point(262, 147), Size = new Size(84, 20), Text = "Start" };
+            numStart = MakeNum(348, 145, 56, 2, 0.00m, 60.00m, 0.25m, 0.00m);
 
             // Medium row 1
             lblWavelength = new Label { Location = new Point(14, 180), Size = new Size(64, 20), Text = "Wavelen" };

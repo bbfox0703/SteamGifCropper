@@ -2417,6 +2417,222 @@ namespace SteamGifCropper.Properties {
             }
         }
 
+        internal static string Button_RainStatic {
+            get {
+                return ResourceManager.GetString("Button_RainStatic", resourceCulture);
+            }
+        }
+
+        internal static string Button_RainGif {
+            get {
+                return ResourceManager.GetString("Button_RainGif", resourceCulture);
+            }
+        }
+
+        internal static string Status_RainBuilding {
+            get {
+                return ResourceManager.GetString("Status_RainBuilding", resourceCulture);
+            }
+        }
+
+        internal static string RainDialog_Title {
+            get {
+                return ResourceManager.GetString("RainDialog_Title", resourceCulture);
+            }
+        }
+
+        internal static string RainDialog_RainAmount {
+            get {
+                return ResourceManager.GetString("RainDialog_RainAmount", resourceCulture);
+            }
+        }
+
+        internal static string RainDialog_WindDir {
+            get {
+                return ResourceManager.GetString("RainDialog_WindDir", resourceCulture);
+            }
+        }
+
+        internal static string RainDialog_WindStrength {
+            get {
+                return ResourceManager.GetString("RainDialog_WindStrength", resourceCulture);
+            }
+        }
+
+        internal static string RainDialog_DropLength {
+            get {
+                return ResourceManager.GetString("RainDialog_DropLength", resourceCulture);
+            }
+        }
+
+        internal static string RainDialog_FadeOut {
+            get {
+                return ResourceManager.GetString("RainDialog_FadeOut", resourceCulture);
+            }
+        }
+
+        internal static string RainDialog_FadeSeconds {
+            get {
+                return ResourceManager.GetString("RainDialog_FadeSeconds", resourceCulture);
+            }
+        }
+
+        internal static string RainDialog_GifPlayDuring {
+            get {
+                return ResourceManager.GetString("RainDialog_GifPlayDuring", resourceCulture);
+            }
+        }
+
+        internal static string RainDialog_GifFreeze {
+            get {
+                return ResourceManager.GetString("RainDialog_GifFreeze", resourceCulture);
+            }
+        }
+
+        internal static string RainDir_None {
+            get {
+                return ResourceManager.GetString("RainDir_None", resourceCulture);
+            }
+        }
+
+        internal static string RainDir_Left {
+            get {
+                return ResourceManager.GetString("RainDir_Left", resourceCulture);
+            }
+        }
+
+        internal static string RainDir_Right {
+            get {
+                return ResourceManager.GetString("RainDir_Right", resourceCulture);
+            }
+        }
+
+        internal static string Button_MorphTransition {
+            get {
+                return ResourceManager.GetString("Button_MorphTransition", resourceCulture);
+            }
+        }
+
+        internal static string Status_MorphBuilding {
+            get {
+                return ResourceManager.GetString("Status_MorphBuilding", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_Title {
+            get {
+                return ResourceManager.GetString("MorphDialog_Title", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_InputA {
+            get {
+                return ResourceManager.GetString("MorphDialog_InputA", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_InputB {
+            get {
+                return ResourceManager.GetString("MorphDialog_InputB", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_Style {
+            get {
+                return ResourceManager.GetString("MorphDialog_Style", resourceCulture);
+            }
+        }
+
+        internal static string MorphStyle_Raindrop {
+            get {
+                return ResourceManager.GetString("MorphStyle_Raindrop", resourceCulture);
+            }
+        }
+
+        internal static string MorphStyle_TileFlip {
+            get {
+                return ResourceManager.GetString("MorphStyle_TileFlip", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_PreRoll {
+            get {
+                return ResourceManager.GetString("MorphDialog_PreRoll", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_MorphSeconds {
+            get {
+                return ResourceManager.GetString("MorphDialog_MorphSeconds", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_RainIntensity {
+            get {
+                return ResourceManager.GetString("MorphDialog_RainIntensity", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_DropSizeVar {
+            get {
+                return ResourceManager.GetString("MorphDialog_DropSizeVar", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_SpreadRadius {
+            get {
+                return ResourceManager.GetString("MorphDialog_SpreadRadius", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_SoftEdge {
+            get {
+                return ResourceManager.GetString("MorphDialog_SoftEdge", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_Divisions {
+            get {
+                return ResourceManager.GetString("MorphDialog_Divisions", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_FlipDir {
+            get {
+                return ResourceManager.GetString("MorphDialog_FlipDir", resourceCulture);
+            }
+        }
+
+        internal static string FlipDir_Random {
+            get {
+                return ResourceManager.GetString("FlipDir_Random", resourceCulture);
+            }
+        }
+
+        internal static string FlipDir_Up {
+            get {
+                return ResourceManager.GetString("FlipDir_Up", resourceCulture);
+            }
+        }
+
+        internal static string FlipDir_Down {
+            get {
+                return ResourceManager.GetString("FlipDir_Down", resourceCulture);
+            }
+        }
+
+        internal static string FlipDir_Left {
+            get {
+                return ResourceManager.GetString("FlipDir_Left", resourceCulture);
+            }
+        }
+
+        internal static string FlipDir_Right {
+            get {
+                return ResourceManager.GetString("FlipDir_Right", resourceCulture);
+            }
+        }
+
         internal static string Warn_LargeMemoryTitle {
             get {
                 return ResourceManager.GetString("Warn_LargeMemoryTitle", resourceCulture);

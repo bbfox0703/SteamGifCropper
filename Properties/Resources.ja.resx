@@ -412,7 +412,7 @@
     <value>流砂アニメーションを生成中…</value>
   </data>
   <data name="QuickDialog_Title" xml:space="preserve">
-    <value>流砂フロー（766px）</value>
+    <value>流砂フロー</value>
   </data>
   <data name="QuickDialog_InputLabel" xml:space="preserve">
     <value>入力画像または GIF</value>
@@ -484,7 +484,7 @@
     <value>水波紋を生成中…</value>
   </data>
   <data name="RippleDialog_Title" xml:space="preserve">
-    <value>水波紋（766px）</value>
+    <value>水波紋</value>
   </data>
   <data name="RippleDialog_WaveSpeed" xml:space="preserve">
     <value>波速</value>
@@ -1202,7 +1202,7 @@ FFmpeg 出力（切り捨て）:
     <value>風効果を生成中…</value>
   </data>
   <data name="WindDialog_Title" xml:space="preserve">
-    <value>風効果（766px）</value>
+    <value>風効果</value>
   </data>
   <data name="WindDialog_Direction" xml:space="preserve">
     <value>風向</value>
@@ -1294,6 +1294,12 @@ FFmpeg 出力（切り捨て）:
   <data name="WindDialog_GifFreeze" xml:space="preserve">
     <value>最初のフレームで固定</value>
   </data>
+  <data name="RainDialog_GifPlayDuring" xml:space="preserve">
+    <value>再生に雨を重ねる</value>
+  </data>
+  <data name="RainDialog_GifFreeze" xml:space="preserve">
+    <value>最初のフレームで固定</value>
+  </data>
   <data name="Dialog_KeepOriginalSize" xml:space="preserve">
     <value>元のサイズを維持（766pxに縮小しない）</value>
   </data>
@@ -1302,5 +1308,107 @@ FFmpeg 出力（切り捨て）:
   </data>
   <data name="Warn_LargeMemory" xml:space="preserve">
     <value>{1}×{2}、{3} フレームで処理し、約 {0} MB のメモリを使用します。遅くなるかメモリ不足になる可能性があります。続行しますか？</value>
+  </data>
+  <data name="Button_RainStatic" xml:space="preserve">
+    <value>雨エフェクト（画像）</value>
+  </data>
+  <data name="Button_RainGif" xml:space="preserve">
+    <value>雨エフェクト（GIF）</value>
+  </data>
+  <data name="Status_RainBuilding" xml:space="preserve">
+    <value>雨エフェクトを生成中…</value>
+  </data>
+  <data name="RainDialog_Title" xml:space="preserve">
+    <value>雨エフェクト</value>
+  </data>
+  <data name="RainDialog_RainAmount" xml:space="preserve">
+    <value>雨量</value>
+  </data>
+  <data name="RainDialog_WindDir" xml:space="preserve">
+    <value>風向</value>
+  </data>
+  <data name="RainDialog_WindStrength" xml:space="preserve">
+    <value>風の強さ</value>
+  </data>
+  <data name="RainDialog_DropLength" xml:space="preserve">
+    <value>雨筋の長さ</value>
+  </data>
+  <data name="RainDialog_FadeOut" xml:space="preserve">
+    <value>雨上がりフェード</value>
+  </data>
+  <data name="RainDialog_FadeSeconds" xml:space="preserve">
+    <value>フェード秒数</value>
+  </data>
+  <data name="RainDir_None" xml:space="preserve">
+    <value>無風</value>
+  </data>
+  <data name="RainDir_Left" xml:space="preserve">
+    <value>左へ</value>
+  </data>
+  <data name="RainDir_Right" xml:space="preserve">
+    <value>右へ</value>
+  </data>
+  <data name="Button_MorphTransition" xml:space="preserve">
+    <value>重ね変換 A→B（雨だれ／タイル反転）</value>
+  </data>
+  <data name="Status_MorphBuilding" xml:space="preserve">
+    <value>重ね変換を生成中…</value>
+  </data>
+  <data name="MorphDialog_Title" xml:space="preserve">
+    <value>重ね変換 A → B</value>
+  </data>
+  <data name="MorphDialog_InputA" xml:space="preserve">
+    <value>クリップ A（ベース）</value>
+  </data>
+  <data name="MorphDialog_InputB" xml:space="preserve">
+    <value>クリップ B（出現）</value>
+  </data>
+  <data name="MorphDialog_Style" xml:space="preserve">
+    <value>スタイル</value>
+  </data>
+  <data name="MorphStyle_Raindrop" xml:space="preserve">
+    <value>雨だれ拡散</value>
+  </data>
+  <data name="MorphStyle_TileFlip" xml:space="preserve">
+    <value>タイル反転</value>
+  </data>
+  <data name="MorphDialog_PreRoll" xml:space="preserve">
+    <value>先行再生 A（秒）</value>
+  </data>
+  <data name="MorphDialog_MorphSeconds" xml:space="preserve">
+    <value>変換（秒）</value>
+  </data>
+  <data name="MorphDialog_RainIntensity" xml:space="preserve">
+    <value>雨だれ数</value>
+  </data>
+  <data name="MorphDialog_DropSizeVar" xml:space="preserve">
+    <value>サイズ変動 %</value>
+  </data>
+  <data name="MorphDialog_SpreadRadius" xml:space="preserve">
+    <value>拡散半径</value>
+  </data>
+  <data name="MorphDialog_SoftEdge" xml:space="preserve">
+    <value>縁のぼかし</value>
+  </data>
+  <data name="MorphDialog_Divisions" xml:space="preserve">
+    <value>分割数 (X)</value>
+  </data>
+  <data name="MorphDialog_FlipDir" xml:space="preserve">
+    <value>反転方向</value>
+  </data>
+  <data name="FlipDir_Random" xml:space="preserve">
+    <value>ランダム</value>
+  </data>
+  <data name="FlipDir_Up" xml:space="preserve">
+    <value>上</value>
+  </data>
+  <data name="FlipDir_Down" xml:space="preserve">
+    <value>下</value>
+  </data>
+  <data name="FlipDir_Left" xml:space="preserve">
+    <value>左</value>
+  </data>
+  <data name="FlipDir_Right" xml:space="preserve">
+    <value>右</value>
   </data>
 </root>

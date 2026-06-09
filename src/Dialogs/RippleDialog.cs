@@ -469,11 +469,11 @@ namespace GifProcessorApp
             btnBrowseOutput.Click += BtnBrowseOutput_Click;
 
             // Scene row
-            lblDuration = new Label { Location = new Point(14, 114), Size = new Size(70, 20), Text = "Duration" };
-            numDuration = MakeNum(88, 112, 56, 2, 0.10m, 30.00m, 0.25m, 4.00m);
-            lblFps = new Label { Location = new Point(152, 114), Size = new Size(34, 20), Text = "FPS" };
-            numFps = MakeNum(188, 112, 46, 0, 5m, 60m, 1m, 20m);
-            cmbGifPlayMode = new ComboBox { Location = new Point(244, 112), Size = new Size(200, 23), DropDownStyle = ComboBoxStyle.DropDownList };
+            lblDuration = new Label { Location = new Point(14, 114), Size = new Size(100, 20), Text = "Duration" };
+            numDuration = MakeNum(116, 112, 56, 2, 0.10m, 30.00m, 0.25m, 4.00m);
+            lblFps = new Label { Location = new Point(178, 114), Size = new Size(34, 20), Text = "FPS" };
+            numFps = MakeNum(214, 112, 46, 0, 5m, 60m, 1m, 20m);
+            cmbGifPlayMode = new ComboBox { Location = new Point(266, 112), Size = new Size(200, 23), DropDownStyle = ComboBoxStyle.DropDownList };
 
             // Medium A
             lblWaveSpeed = new Label { Location = new Point(14, 147), Size = new Size(66, 20), Text = "Speed" };

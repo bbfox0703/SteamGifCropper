@@ -411,7 +411,7 @@ Files skipped (not 0x21): {1}</value>
     <value>Building quicksand flow...</value>
   </data>
   <data name="QuickDialog_Title" xml:space="preserve">
-    <value>Quicksand Flow (766px)</value>
+    <value>Quicksand Flow</value>
   </data>
   <data name="QuickDialog_InputLabel" xml:space="preserve">
     <value>Input image or GIF</value>
@@ -483,7 +483,7 @@ Files skipped (not 0x21): {1}</value>
     <value>Building water ripple...</value>
   </data>
   <data name="RippleDialog_Title" xml:space="preserve">
-    <value>Water Ripple (766px)</value>
+    <value>Water Ripple</value>
   </data>
   <data name="RippleDialog_WaveSpeed" xml:space="preserve">
     <value>Speed</value>
@@ -1201,7 +1201,7 @@ Technical details: {5}</value>
     <value>Building wind sway...</value>
   </data>
   <data name="WindDialog_Title" xml:space="preserve">
-    <value>Wind Sway (766px)</value>
+    <value>Wind Sway</value>
   </data>
   <data name="WindDialog_Direction" xml:space="preserve">
     <value>From</value>
@@ -1293,6 +1293,12 @@ Technical details: {5}</value>
   <data name="WindDialog_GifFreeze" xml:space="preserve">
     <value>Freeze on frame 0</value>
   </data>
+  <data name="RainDialog_GifPlayDuring" xml:space="preserve">
+    <value>Rain over playback</value>
+  </data>
+  <data name="RainDialog_GifFreeze" xml:space="preserve">
+    <value>Freeze on frame 0</value>
+  </data>
   <data name="Dialog_KeepOriginalSize" xml:space="preserve">
     <value>Keep original size (no 766px fit)</value>
   </data>
@@ -1301,5 +1307,107 @@ Technical details: {5}</value>
   </data>
   <data name="Warn_LargeMemory" xml:space="preserve">
     <value>This will process at {1}×{2} for {3} frames, using roughly {0} MB of memory. It may be slow or run out of memory. Continue?</value>
+  </data>
+  <data name="Button_RainStatic" xml:space="preserve">
+    <value>Rain Overlay (Image)</value>
+  </data>
+  <data name="Button_RainGif" xml:space="preserve">
+    <value>Rain Overlay (GIF)</value>
+  </data>
+  <data name="Status_RainBuilding" xml:space="preserve">
+    <value>Building rain overlay...</value>
+  </data>
+  <data name="RainDialog_Title" xml:space="preserve">
+    <value>Rain Overlay</value>
+  </data>
+  <data name="RainDialog_RainAmount" xml:space="preserve">
+    <value>Rain amount</value>
+  </data>
+  <data name="RainDialog_WindDir" xml:space="preserve">
+    <value>Wind</value>
+  </data>
+  <data name="RainDialog_WindStrength" xml:space="preserve">
+    <value>Strength</value>
+  </data>
+  <data name="RainDialog_DropLength" xml:space="preserve">
+    <value>Streak len</value>
+  </data>
+  <data name="RainDialog_FadeOut" xml:space="preserve">
+    <value>Rain stops (fade out)</value>
+  </data>
+  <data name="RainDialog_FadeSeconds" xml:space="preserve">
+    <value>Fade (s)</value>
+  </data>
+  <data name="RainDir_None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="RainDir_Left" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="RainDir_Right" xml:space="preserve">
+    <value>Right</value>
+  </data>
+  <data name="Button_MorphTransition" xml:space="preserve">
+    <value>Morph A→B (Raindrop / Tile Flip)</value>
+  </data>
+  <data name="Status_MorphBuilding" xml:space="preserve">
+    <value>Building morph transition...</value>
+  </data>
+  <data name="MorphDialog_Title" xml:space="preserve">
+    <value>Morph A → B</value>
+  </data>
+  <data name="MorphDialog_InputA" xml:space="preserve">
+    <value>Clip A (base)</value>
+  </data>
+  <data name="MorphDialog_InputB" xml:space="preserve">
+    <value>Clip B (reveal)</value>
+  </data>
+  <data name="MorphDialog_Style" xml:space="preserve">
+    <value>Style</value>
+  </data>
+  <data name="MorphStyle_Raindrop" xml:space="preserve">
+    <value>Raindrop spread</value>
+  </data>
+  <data name="MorphStyle_TileFlip" xml:space="preserve">
+    <value>Tile flip</value>
+  </data>
+  <data name="MorphDialog_PreRoll" xml:space="preserve">
+    <value>Pre-roll A (s)</value>
+  </data>
+  <data name="MorphDialog_MorphSeconds" xml:space="preserve">
+    <value>Morph (s)</value>
+  </data>
+  <data name="MorphDialog_RainIntensity" xml:space="preserve">
+    <value>Drops</value>
+  </data>
+  <data name="MorphDialog_DropSizeVar" xml:space="preserve">
+    <value>Size var %</value>
+  </data>
+  <data name="MorphDialog_SpreadRadius" xml:space="preserve">
+    <value>Spread radius</value>
+  </data>
+  <data name="MorphDialog_SoftEdge" xml:space="preserve">
+    <value>Soft edge</value>
+  </data>
+  <data name="MorphDialog_Divisions" xml:space="preserve">
+    <value>Divisions (X)</value>
+  </data>
+  <data name="MorphDialog_FlipDir" xml:space="preserve">
+    <value>Flip dir</value>
+  </data>
+  <data name="FlipDir_Random" xml:space="preserve">
+    <value>Random</value>
+  </data>
+  <data name="FlipDir_Up" xml:space="preserve">
+    <value>Up</value>
+  </data>
+  <data name="FlipDir_Down" xml:space="preserve">
+    <value>Down</value>
+  </data>
+  <data name="FlipDir_Left" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="FlipDir_Right" xml:space="preserve">
+    <value>Right</value>
   </data>
 </root>
