@@ -272,3 +272,13 @@
 - `MorphTransitionDialog`：`cmbStyle` 加 2 項（enum 順序＝combo 順序，`Style=(MorphStyle)SelectedIndex`）；`_spotlightControls`/`_jigsawControls` 兩組與既有兩組共用同一 y 帶、依 style 顯示；Jigsaw 色票 `pnlJigsawColor`（`chkJigsawLines` 連動 enable）。
 - 新增 **8** 鍵（三語 + Designer）：`MorphStyle_Spotlight/Jigsaw`、`MorphDialog_SpotRadius/SpotSpeed/SpotExpand/JigsawPieces/JigsawShowLines/JigsawLineColor`。
 - 測試：`SpotlightFieldTests`(6：bounce 範圍、center 邊界、expand 凍結、末幀半徑=對角線、coverage 內/外、末幀全 B)、`JigsawGeometryTests`(3：piece phase 起迄+單調、line alpha)、`MorphRainRendererTests` 加 spotlight/jigsaw 各 3 例 smoke。test csproj 連結 `SpotlightField`/`JigsawGeometry`(純) + `SpotlightRenderer`/`JigsawRenderer`。build 0 warning、全 **236** 例綠燈。
+
+## 疊圖轉換再加 1 風格：Brick（疊磚／木板掉落）
+
+`MorphStyle` 第 5 種。把畫面沿掉落軸切成 N 片「木板」，**底圖 A 持續播放**，B 的木板由遠端一片片掉下來、撞底**彈跳**後疊好，全部疊完＝全 B。每片木板畫的是**它最終位置的 B 切片**（掉落過程中內容固定，不是掃過區段的內容）。
+
+- **`BrickField.cs`（純函式物理）**：每片 drop order `d` 的掉落距離 `dist(d)=|dest−start|`（最遠的先掉、掉最久），fall 時間 ∝ `sqrt(dist)`（自由落體），錯開成 stagger（**前一片落到定位、下一片就開始掉**，故下一片起掉時前一片還在彈）。落地後 `τ` 內阻尼彈跳 `amp·e^(−decay·τ)·|sin|`：`amp` 由**衝擊速度**（`g`＋掉落高度 `H_m` → `v=sqrt(2g·dist_m)`）× **硬度** 決定、`decay` 由**重量**決定（愈重愈快靜止）。**最後 20%（最後掉的那幾片）不彈**。整段 normalize 到 morph 窗 `[0,1]`（**`MorphSeconds` 定整體節奏**、物理參數塑形「加速度＋彈跳手感」），故 `t=1` 必全片定位＝全 B。4 方向（上下左右）：`forward=(Down||Right)` 由低座標端掉入、堆在高端；`!forward` 反之；公式統一。
+- **`BrickRenderer.cs`（Magick）**：clone A 當底，對每片 started 的木板 `Crop` B 的目的切片、`Composite` 到目前位置（掉落中可在畫面外，Magick 自動裁切；負偏移可用，比照 slide transition）。依 drop order 畫 → 正在空中的（最晚起掉）疊在已堆好的上面。
+- **設定**（`MorphSettings` 的 brick 欄位，`ToBrickParams()`）：`BrickPieces`(塊數)、`BrickDirection`(上下左右)、`BrickTotalHeightM`(高度 m)、`BrickGravity`(g)、`BrickWeight`(重量)、`BrickHardness`(硬度 0..100→0..1)。dialog 第 5 組控制項 + `cmbBrickDir`（4 方向，enum 序＝combo 序）。
+- **設計決定**：採「`MorphSeconds`＝整體掉落時長（normalize）、物理只塑形落速曲線＋彈跳」而非「物理回推絕對總長」——這樣 morph 窗語意對所有風格一致、不必停用 `轉換（秒）` 欄；`g`／高度主要透過**彈跳大小**（衝擊速度）展現（掉得高/重力大→撞擊大→彈得大），符合「重物丟下來」的手感。
+- **測試**：`BrickFieldTests`(6：末幀全定位、切片無縫鋪滿、起始第一片在畫面外其餘未起、stagger 隨時間增多起掉數、方向決定先掉哪片、IsVertical)、`MorphRainRendererTests` 加 brick 4 方向 smoke。test csproj 連結 `BrickField`(純) + `BrickRenderer`。build 0 warning、測試全綠。

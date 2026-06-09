@@ -1377,6 +1377,39 @@ Technical details: {5}</value>
   <data name="MorphStyle_Jigsaw" xml:space="preserve">
     <value>Jigsaw</value>
   </data>
+  <data name="MorphStyle_Brick" xml:space="preserve">
+    <value>Brick drop</value>
+  </data>
+  <data name="MorphDialog_BrickPieces" xml:space="preserve">
+    <value>Pieces</value>
+  </data>
+  <data name="MorphDialog_BrickDir" xml:space="preserve">
+    <value>Dir</value>
+  </data>
+  <data name="MorphDialog_BrickHeight" xml:space="preserve">
+    <value>Height m</value>
+  </data>
+  <data name="MorphDialog_BrickGravity" xml:space="preserve">
+    <value>g</value>
+  </data>
+  <data name="MorphDialog_BrickWeight" xml:space="preserve">
+    <value>Weight</value>
+  </data>
+  <data name="MorphDialog_BrickHardness" xml:space="preserve">
+    <value>Hardness</value>
+  </data>
+  <data name="BrickDir_Down" xml:space="preserve">
+    <value>Down</value>
+  </data>
+  <data name="BrickDir_Up" xml:space="preserve">
+    <value>Up</value>
+  </data>
+  <data name="BrickDir_Left" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="BrickDir_Right" xml:space="preserve">
+    <value>Right</value>
+  </data>
   <data name="MorphDialog_SpotRadius" xml:space="preserve">
     <value>Light size</value>
   </data>

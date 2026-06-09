@@ -9,6 +9,7 @@ namespace GifProcessorApp
         TileFlip = 1,       // the canvas is split into cells that flip A->B one by one
         Spotlight = 2,      // a bouncing searchlight reveals B, then expands to fill the frame
         Jigsaw = 3,         // puzzle pieces fill in A->B one by one, with fading boundary lines
+        Brick = 4,          // planks of B drop in and stack over A with an impact bounce
     }
 
     // Tile-flip squash axis / sense. Up/Down squash vertically, Left/Right horizontally; Random picks a
@@ -71,6 +72,29 @@ namespace GifProcessorApp
                 ExpandSeconds = SpotlightExpandSeconds,
                 Soft = SpotlightSoftEdge,
                 Seed = Seed,
+            };
+        }
+
+        // Brick (plank-drop) style. The overall pace is the shared MorphSeconds; these physics inputs shape
+        // the fall acceleration and the impact bounce (height + g -> impact velocity -> bounce size;
+        // hardness -> bounce amount; weight -> settle rate).
+        public int BrickPieces { get; set; } = 10;                                  // planks along the fall axis
+        public BrickDirection BrickDirection { get; set; } = BrickDirection.Down;
+        public double BrickTotalHeightM { get; set; } = 5.0;                         // canvas height in metres
+        public double BrickGravity { get; set; } = 9.8;                             // g (m/s^2)
+        public double BrickWeight { get; set; } = 1.0;                              // heavier -> settles faster
+        public double BrickHardness { get; set; } = 50.0;                           // 0..100 (%) -> bounce amount
+
+        public BrickParams ToBrickParams()
+        {
+            return new BrickParams
+            {
+                Pieces = BrickPieces,
+                Direction = BrickDirection,
+                TotalHeightM = BrickTotalHeightM,
+                Gravity = BrickGravity,
+                Weight = BrickWeight,
+                Hardness = BrickHardness / 100.0,
             };
         }
     }

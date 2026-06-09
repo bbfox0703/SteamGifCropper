@@ -1378,6 +1378,39 @@ FFmpeg 出力（切り捨て）:
   <data name="MorphStyle_Jigsaw" xml:space="preserve">
     <value>ジグソー</value>
   </data>
+  <data name="MorphStyle_Brick" xml:space="preserve">
+    <value>ブロック落下</value>
+  </data>
+  <data name="MorphDialog_BrickPieces" xml:space="preserve">
+    <value>枚数</value>
+  </data>
+  <data name="MorphDialog_BrickDir" xml:space="preserve">
+    <value>方向</value>
+  </data>
+  <data name="MorphDialog_BrickHeight" xml:space="preserve">
+    <value>高さm</value>
+  </data>
+  <data name="MorphDialog_BrickGravity" xml:space="preserve">
+    <value>g</value>
+  </data>
+  <data name="MorphDialog_BrickWeight" xml:space="preserve">
+    <value>重さ</value>
+  </data>
+  <data name="MorphDialog_BrickHardness" xml:space="preserve">
+    <value>硬さ</value>
+  </data>
+  <data name="BrickDir_Down" xml:space="preserve">
+    <value>下</value>
+  </data>
+  <data name="BrickDir_Up" xml:space="preserve">
+    <value>上</value>
+  </data>
+  <data name="BrickDir_Left" xml:space="preserve">
+    <value>左</value>
+  </data>
+  <data name="BrickDir_Right" xml:space="preserve">
+    <value>右</value>
+  </data>
   <data name="MorphDialog_SpotRadius" xml:space="preserve">
     <value>光の大きさ</value>
   </data>

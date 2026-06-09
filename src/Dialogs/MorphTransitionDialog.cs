@@ -67,10 +67,25 @@ namespace GifProcessorApp
         private Panel pnlJigsawColor = null!;
         private Color _jigsawLineColor = Color.White;
 
+        // Brick group.
+        private Label lblBrickPieces = null!;
+        private NumericUpDown numBrickPieces = null!;
+        private Label lblBrickDir = null!;
+        private ComboBox cmbBrickDir = null!;
+        private Label lblBrickHeight = null!;
+        private NumericUpDown numBrickHeight = null!;
+        private Label lblBrickG = null!;
+        private NumericUpDown numBrickG = null!;
+        private Label lblBrickWeight = null!;
+        private NumericUpDown numBrickWeight = null!;
+        private Label lblBrickHardness = null!;
+        private NumericUpDown numBrickHardness = null!;
+
         private readonly List<Control> _raindropControls = new List<Control>();
         private readonly List<Control> _tileControls = new List<Control>();
         private readonly List<Control> _spotlightControls = new List<Control>();
         private readonly List<Control> _jigsawControls = new List<Control>();
+        private readonly List<Control> _brickControls = new List<Control>();
 
         private Button btnOK = null!;
         private Button btnCancel = null!;
@@ -114,6 +129,12 @@ namespace GifProcessorApp
                 JigsawLineR = _jigsawLineColor.R,
                 JigsawLineG = _jigsawLineColor.G,
                 JigsawLineB = _jigsawLineColor.B,
+                BrickPieces = (int)numBrickPieces.Value,
+                BrickDirection = (BrickDirection)cmbBrickDir.SelectedIndex,
+                BrickTotalHeightM = (double)numBrickHeight.Value,
+                BrickGravity = (double)numBrickG.Value,
+                BrickWeight = (double)numBrickWeight.Value,
+                BrickHardness = (double)numBrickHardness.Value,
             };
         }
 
@@ -124,6 +145,7 @@ namespace GifProcessorApp
             foreach (var c in _tileControls) c.Visible = style == MorphStyle.TileFlip;
             foreach (var c in _spotlightControls) c.Visible = style == MorphStyle.Spotlight;
             foreach (var c in _jigsawControls) c.Visible = style == MorphStyle.Jigsaw;
+            foreach (var c in _brickControls) c.Visible = style == MorphStyle.Brick;
         }
 
         private void RefreshJigsawColorEnabled()
@@ -166,6 +188,12 @@ namespace GifProcessorApp
             lblJigsawPieces.Text = Resources.MorphDialog_JigsawPieces;
             chkJigsawLines.Text = Resources.MorphDialog_JigsawShowLines;
             lblJigsawColor.Text = Resources.MorphDialog_JigsawLineColor;
+            lblBrickPieces.Text = Resources.MorphDialog_BrickPieces;
+            lblBrickDir.Text = Resources.MorphDialog_BrickDir;
+            lblBrickHeight.Text = Resources.MorphDialog_BrickHeight;
+            lblBrickG.Text = Resources.MorphDialog_BrickGravity;
+            lblBrickWeight.Text = Resources.MorphDialog_BrickWeight;
+            lblBrickHardness.Text = Resources.MorphDialog_BrickHardness;
             btnBrowseA.Text = Resources.Button_Browse;
             btnBrowseB.Text = Resources.Button_Browse;
             btnBrowseOutput.Text = Resources.Button_Browse;
@@ -178,6 +206,7 @@ namespace GifProcessorApp
             cmbStyle.Items.Add(Resources.MorphStyle_TileFlip);
             cmbStyle.Items.Add(Resources.MorphStyle_Spotlight);
             cmbStyle.Items.Add(Resources.MorphStyle_Jigsaw);
+            cmbStyle.Items.Add(Resources.MorphStyle_Brick);
             cmbStyle.SelectedIndex = styleSel;
 
             int dirSel = cmbFlipDir.SelectedIndex < 0 ? 0 : cmbFlipDir.SelectedIndex;
@@ -188,6 +217,14 @@ namespace GifProcessorApp
             cmbFlipDir.Items.Add(Resources.FlipDir_Left);
             cmbFlipDir.Items.Add(Resources.FlipDir_Right);
             cmbFlipDir.SelectedIndex = dirSel;
+
+            int brickDirSel = cmbBrickDir.SelectedIndex < 0 ? 0 : cmbBrickDir.SelectedIndex;
+            cmbBrickDir.Items.Clear();
+            cmbBrickDir.Items.Add(Resources.BrickDir_Down);
+            cmbBrickDir.Items.Add(Resources.BrickDir_Up);
+            cmbBrickDir.Items.Add(Resources.BrickDir_Left);
+            cmbBrickDir.Items.Add(Resources.BrickDir_Right);
+            cmbBrickDir.SelectedIndex = brickDirSel;
         }
 
         private void ApplyTheme()
@@ -431,6 +468,21 @@ namespace GifProcessorApp
             pnlJigsawColor = new Panel { Location = new Point(272, 265), Size = new Size(44, 22), BorderStyle = BorderStyle.FixedSingle, BackColor = _jigsawLineColor, Cursor = Cursors.Hand };
             pnlJigsawColor.Click += PnlJigsawColor_Click;
 
+            // --- Brick group (same vertical band; the shared "Morph (s)" sets the overall pace, these
+            //     physics inputs shape the fall acceleration + impact bounce) ---
+            lblBrickPieces = new Label { Location = new Point(14, 234), Size = new Size(46, 20), Text = "Pieces" };
+            numBrickPieces = MakeNum(62, 232, 46, 0, 2m, 30m, 1m, 10m);
+            lblBrickDir = new Label { Location = new Point(116, 234), Size = new Size(40, 20), Text = "Dir" };
+            cmbBrickDir = new ComboBox { Location = new Point(158, 232), Size = new Size(96, 23), DropDownStyle = ComboBoxStyle.DropDownList };
+            lblBrickHeight = new Label { Location = new Point(262, 234), Size = new Size(58, 20), Text = "Height m" };
+            numBrickHeight = MakeNum(322, 232, 56, 1, 0.5m, 50.0m, 0.5m, 5.0m);
+            lblBrickG = new Label { Location = new Point(14, 267), Size = new Size(18, 20), Text = "g" };
+            numBrickG = MakeNum(36, 265, 56, 1, 1.0m, 30.0m, 0.1m, 9.8m);
+            lblBrickWeight = new Label { Location = new Point(100, 267), Size = new Size(46, 20), Text = "Weight" };
+            numBrickWeight = MakeNum(150, 265, 56, 1, 0.1m, 20.0m, 0.1m, 1.0m);
+            lblBrickHardness = new Label { Location = new Point(214, 267), Size = new Size(58, 20), Text = "Hardness" };
+            numBrickHardness = MakeNum(276, 265, 56, 0, 0m, 100m, 5m, 50m);
+
             btnOK = new Button { Location = new Point(363, 312), Size = new Size(75, 25), Text = "OK", UseVisualStyleBackColor = true };
             btnOK.Click += BtnOK_Click;
             btnCancel = new Button { Location = new Point(444, 312), Size = new Size(82, 25), Text = "Cancel", DialogResult = DialogResult.Cancel, UseVisualStyleBackColor = true };
@@ -448,6 +500,11 @@ namespace GifProcessorApp
             _jigsawControls.AddRange(new Control[]
             {
                 lblJigsawPieces, numJigsawPieces, chkJigsawLines, lblJigsawColor, pnlJigsawColor,
+            });
+            _brickControls.AddRange(new Control[]
+            {
+                lblBrickPieces, numBrickPieces, lblBrickDir, cmbBrickDir, lblBrickHeight, numBrickHeight,
+                lblBrickG, numBrickG, lblBrickWeight, numBrickWeight, lblBrickHardness, numBrickHardness,
             });
 
             SuspendLayout();
@@ -473,6 +530,7 @@ namespace GifProcessorApp
             foreach (var c in _tileControls) Controls.Add(c);
             foreach (var c in _spotlightControls) Controls.Add(c);
             foreach (var c in _jigsawControls) Controls.Add(c);
+            foreach (var c in _brickControls) Controls.Add(c);
             Controls.Add(btnOK);
             Controls.Add(btnCancel);
 

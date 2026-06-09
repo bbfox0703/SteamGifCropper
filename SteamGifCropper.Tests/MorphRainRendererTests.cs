@@ -122,4 +122,21 @@ public class MorphRainRendererTests
         Assert.Equal(80u, outImg.Width);
         Assert.Equal(50u, outImg.Height);
     }
+
+    [Theory]
+    [InlineData(BrickDirection.Down, 0.0)]
+    [InlineData(BrickDirection.Down, 0.5)]
+    [InlineData(BrickDirection.Down, 1.0)]
+    [InlineData(BrickDirection.Up, 0.5)]
+    [InlineData(BrickDirection.Left, 0.5)]
+    [InlineData(BrickDirection.Right, 0.5)]
+    public void BrickRenderer_PreservesDimensions(BrickDirection dir, double t)
+    {
+        using var a = new MagickImage(MagickColors.Red, 80, 50);
+        using var b = new MagickImage(MagickColors.Blue, 80, 50);
+        var p = new BrickParams { Pieces = 8, Direction = dir, TotalHeightM = 5, Gravity = 9.8, Weight = 1, Hardness = 0.5 };
+        using var outImg = BrickRenderer.RenderFrame(a, b, t, p);
+        Assert.Equal(80u, outImg.Width);
+        Assert.Equal(50u, outImg.Height);
+    }
 }
