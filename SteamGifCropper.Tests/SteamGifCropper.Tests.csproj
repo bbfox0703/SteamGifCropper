@@ -61,6 +61,8 @@
     <Compile Include="..\src\Core\JigsawGeometry.cs" Link="JigsawGeometry.cs" />
     <Compile Include="..\src\Core\SpotlightRenderer.cs" Link="SpotlightRenderer.cs" />
     <Compile Include="..\src\Core\JigsawRenderer.cs" Link="JigsawRenderer.cs" />
+    <Compile Include="..\src\Core\BrickField.cs" Link="BrickField.cs" />
+    <Compile Include="..\src\Core\BrickRenderer.cs" Link="BrickRenderer.cs" />
     <Compile Include="..\src\Core\GridMosaicSettings.cs" Link="GridMosaicSettings.cs" />
     <Compile Include="..\src\Core\GridMosaicRenderer.cs" Link="GridMosaicRenderer.cs" />
     <Compile Include="..\src\Core\GifConcatenationSettings.cs" Link="GifConcatenationSettings.cs" />

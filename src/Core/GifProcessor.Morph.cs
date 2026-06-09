@@ -187,6 +187,9 @@ namespace GifProcessorApp
             SpotlightParams spot = settings.Style == MorphStyle.Spotlight
                 ? settings.ToSpotlightParams()
                 : default;
+            BrickParams brick = settings.Style == MorphStyle.Brick
+                ? settings.ToBrickParams()
+                : default;
 
             var result = new MagickImageCollection();
             int built = 0;
@@ -225,6 +228,9 @@ namespace GifProcessorApp
                         break;
                     case MorphStyle.Jigsaw:
                         frame = JigsawRenderer.RenderFrame(aSrc[idxA], bFit[idxB], t, grid, settings);
+                        break;
+                    case MorphStyle.Brick:
+                        frame = BrickRenderer.RenderFrame(aSrc[idxA], bFit[idxB], t, brick);
                         break;
                     default:
                         frame = RaindropRevealRenderer.RenderFrame(aSrc[idxA], bFit[idxB], t, drops, settings.SoftEdge);

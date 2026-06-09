@@ -2567,6 +2567,72 @@ namespace SteamGifCropper.Properties {
             }
         }
 
+        internal static string MorphStyle_Brick {
+            get {
+                return ResourceManager.GetString("MorphStyle_Brick", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_BrickPieces {
+            get {
+                return ResourceManager.GetString("MorphDialog_BrickPieces", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_BrickDir {
+            get {
+                return ResourceManager.GetString("MorphDialog_BrickDir", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_BrickHeight {
+            get {
+                return ResourceManager.GetString("MorphDialog_BrickHeight", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_BrickGravity {
+            get {
+                return ResourceManager.GetString("MorphDialog_BrickGravity", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_BrickWeight {
+            get {
+                return ResourceManager.GetString("MorphDialog_BrickWeight", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_BrickHardness {
+            get {
+                return ResourceManager.GetString("MorphDialog_BrickHardness", resourceCulture);
+            }
+        }
+
+        internal static string BrickDir_Down {
+            get {
+                return ResourceManager.GetString("BrickDir_Down", resourceCulture);
+            }
+        }
+
+        internal static string BrickDir_Up {
+            get {
+                return ResourceManager.GetString("BrickDir_Up", resourceCulture);
+            }
+        }
+
+        internal static string BrickDir_Left {
+            get {
+                return ResourceManager.GetString("BrickDir_Left", resourceCulture);
+            }
+        }
+
+        internal static string BrickDir_Right {
+            get {
+                return ResourceManager.GetString("BrickDir_Right", resourceCulture);
+            }
+        }
+
         internal static string MorphDialog_SpotRadius {
             get {
                 return ResourceManager.GetString("MorphDialog_SpotRadius", resourceCulture);
