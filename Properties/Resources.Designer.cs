@@ -2555,6 +2555,54 @@ namespace SteamGifCropper.Properties {
             }
         }
 
+        internal static string MorphStyle_Spotlight {
+            get {
+                return ResourceManager.GetString("MorphStyle_Spotlight", resourceCulture);
+            }
+        }
+
+        internal static string MorphStyle_Jigsaw {
+            get {
+                return ResourceManager.GetString("MorphStyle_Jigsaw", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_SpotRadius {
+            get {
+                return ResourceManager.GetString("MorphDialog_SpotRadius", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_SpotSpeed {
+            get {
+                return ResourceManager.GetString("MorphDialog_SpotSpeed", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_SpotExpand {
+            get {
+                return ResourceManager.GetString("MorphDialog_SpotExpand", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_JigsawPieces {
+            get {
+                return ResourceManager.GetString("MorphDialog_JigsawPieces", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_JigsawShowLines {
+            get {
+                return ResourceManager.GetString("MorphDialog_JigsawShowLines", resourceCulture);
+            }
+        }
+
+        internal static string MorphDialog_JigsawLineColor {
+            get {
+                return ResourceManager.GetString("MorphDialog_JigsawLineColor", resourceCulture);
+            }
+        }
+
         internal static string MorphDialog_PreRoll {
             get {
                 return ResourceManager.GetString("MorphDialog_PreRoll", resourceCulture);

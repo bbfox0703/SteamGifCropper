@@ -1372,6 +1372,30 @@ FFmpeg 出力（切り捨て）:
   <data name="MorphStyle_TileFlip" xml:space="preserve">
     <value>タイル反転</value>
   </data>
+  <data name="MorphStyle_Spotlight" xml:space="preserve">
+    <value>スポットライト</value>
+  </data>
+  <data name="MorphStyle_Jigsaw" xml:space="preserve">
+    <value>ジグソー</value>
+  </data>
+  <data name="MorphDialog_SpotRadius" xml:space="preserve">
+    <value>光の大きさ</value>
+  </data>
+  <data name="MorphDialog_SpotSpeed" xml:space="preserve">
+    <value>移動速度</value>
+  </data>
+  <data name="MorphDialog_SpotExpand" xml:space="preserve">
+    <value>拡大（秒）</value>
+  </data>
+  <data name="MorphDialog_JigsawPieces" xml:space="preserve">
+    <value>ピース数 (X)</value>
+  </data>
+  <data name="MorphDialog_JigsawShowLines" xml:space="preserve">
+    <value>境界線を表示</value>
+  </data>
+  <data name="MorphDialog_JigsawLineColor" xml:space="preserve">
+    <value>境界線の色</value>
+  </data>
   <data name="MorphDialog_PreRoll" xml:space="preserve">
     <value>先行再生 A（秒）</value>
   </data>

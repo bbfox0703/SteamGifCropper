@@ -57,6 +57,10 @@
     <Compile Include="..\src\Core\RainRenderer.cs" Link="RainRenderer.cs" />
     <Compile Include="..\src\Core\RaindropRevealRenderer.cs" Link="RaindropRevealRenderer.cs" />
     <Compile Include="..\src\Core\TileFlipRenderer.cs" Link="TileFlipRenderer.cs" />
+    <Compile Include="..\src\Core\SpotlightField.cs" Link="SpotlightField.cs" />
+    <Compile Include="..\src\Core\JigsawGeometry.cs" Link="JigsawGeometry.cs" />
+    <Compile Include="..\src\Core\SpotlightRenderer.cs" Link="SpotlightRenderer.cs" />
+    <Compile Include="..\src\Core\JigsawRenderer.cs" Link="JigsawRenderer.cs" />
     <Compile Include="..\src\Core\GridMosaicSettings.cs" Link="GridMosaicSettings.cs" />
     <Compile Include="..\src\Core\GridMosaicRenderer.cs" Link="GridMosaicRenderer.cs" />
     <Compile Include="..\src\Core\GifConcatenationSettings.cs" Link="GifConcatenationSettings.cs" />

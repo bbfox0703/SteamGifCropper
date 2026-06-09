@@ -181,8 +181,11 @@ namespace GifProcessorApp
             RaindropSeed[] drops = settings.Style == MorphStyle.RaindropReveal
                 ? RaindropRevealField.BuildDrops(settings, targetW, targetH)
                 : null;
-            TileGrid grid = settings.Style == MorphStyle.TileFlip
+            TileGrid grid = (settings.Style == MorphStyle.TileFlip || settings.Style == MorphStyle.Jigsaw)
                 ? TileFlipGeometry.ComputeGrid(targetW, targetH, settings.Divisions)
+                : default;
+            SpotlightParams spot = settings.Style == MorphStyle.Spotlight
+                ? settings.ToSpotlightParams()
                 : default;
 
             var result = new MagickImageCollection();
@@ -211,9 +214,22 @@ namespace GifProcessorApp
                 int idxB = GifEffectWindow.NearestFrameIndex(bStart, tB);
                 double t = n == 1 ? 1.0 : (double)k / (n - 1);
 
-                MagickImage frame = settings.Style == MorphStyle.RaindropReveal
-                    ? RaindropRevealRenderer.RenderFrame(aSrc[idxA], bFit[idxB], t, drops, settings.SoftEdge)
-                    : TileFlipRenderer.RenderFrame(aSrc[idxA], bFit[idxB], t, grid, settings);
+                MagickImage frame;
+                switch (settings.Style)
+                {
+                    case MorphStyle.TileFlip:
+                        frame = TileFlipRenderer.RenderFrame(aSrc[idxA], bFit[idxB], t, grid, settings);
+                        break;
+                    case MorphStyle.Spotlight:
+                        frame = SpotlightRenderer.RenderFrame(aSrc[idxA], bFit[idxB], t, morph, spot);
+                        break;
+                    case MorphStyle.Jigsaw:
+                        frame = JigsawRenderer.RenderFrame(aSrc[idxA], bFit[idxB], t, grid, settings);
+                        break;
+                    default:
+                        frame = RaindropRevealRenderer.RenderFrame(aSrc[idxA], bFit[idxB], t, drops, settings.SoftEdge);
+                        break;
+                }
                 frame.AnimationDelay = (uint)delay;
                 frame.AnimationTicksPerSecond = 100;
                 frame.GifDisposeMethod = GifDisposeMethod.Background;

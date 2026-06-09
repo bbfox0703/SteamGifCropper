@@ -1372,6 +1372,30 @@ FFmpeg 輸出 (部分)：
   <data name="MorphStyle_TileFlip" xml:space="preserve">
     <value>翻轉拼圖</value>
   </data>
+  <data name="MorphStyle_Spotlight" xml:space="preserve">
+    <value>聚光燈</value>
+  </data>
+  <data name="MorphStyle_Jigsaw" xml:space="preserve">
+    <value>拼圖</value>
+  </data>
+  <data name="MorphDialog_SpotRadius" xml:space="preserve">
+    <value>光圈大小</value>
+  </data>
+  <data name="MorphDialog_SpotSpeed" xml:space="preserve">
+    <value>移動速度</value>
+  </data>
+  <data name="MorphDialog_SpotExpand" xml:space="preserve">
+    <value>擴大（秒）</value>
+  </data>
+  <data name="MorphDialog_JigsawPieces" xml:space="preserve">
+    <value>區塊數 (X)</value>
+  </data>
+  <data name="MorphDialog_JigsawShowLines" xml:space="preserve">
+    <value>顯示邊界線</value>
+  </data>
+  <data name="MorphDialog_JigsawLineColor" xml:space="preserve">
+    <value>邊界線顏色</value>
+  </data>
   <data name="MorphDialog_PreRoll" xml:space="preserve">
     <value>先播 A（秒）</value>
   </data>

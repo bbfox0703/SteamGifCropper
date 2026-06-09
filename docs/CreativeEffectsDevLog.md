@@ -222,7 +222,7 @@
 #### 主視窗版面（rain + morph 一起）
 - `btnRainStatic`/`btnRainGif`（第 12 列 y=348、TabIndex 27/28）、`btnMorphTransition`（第 13 列 y=379、整寬 606、TabIndex 29）。
 - 下方既有元件統一 **+62px**：語言鈕 349→411、資源標籤 351→413、framerate 列 375→437 / 377→439、gifsicle 面板 400→462、status 519→581、進度條 534→596；`ClientSize` 618→**680**。
-- 在地化新增 **34** 鍵（三語 resx + `Resources.Designer.cs`）：`Button_Rain*`/`Status_RainBuilding`/`RainDialog_*`/`RainDir_*`、`Button_MorphTransition`/`Status_MorphBuilding`/`MorphDialog_*`/`MorphStyle_*`/`FlipDir_*`。`csproj` test 連結新增 5 個純檔（`RainField`/`RainSettings`/`RaindropRevealField`/`MorphSettings`/`TileFlipGeometry`）+ 3 個 Magick renderer 做 smoke test（`RainRenderer`/`RaindropRevealRenderer`/`TileFlipRenderer`，見 `MorphRainRendererTests`）。全 **243** 例綠燈、build 0 warning。
+- 在地化新增 **34** 鍵（三語 resx + `Resources.Designer.cs`）：`Button_Rain*`/`Status_RainBuilding`/`RainDialog_*`/`RainDir_*`、`Button_MorphTransition`/`Status_MorphBuilding`/`MorphDialog_*`/`MorphStyle_*`/`FlipDir_*`。`csproj` test 連結新增 5 個純檔（`RainField`/`RainSettings`/`RaindropRevealField`/`MorphSettings`/`TileFlipGeometry`）+ 3 個 Magick renderer 做 smoke test（`RainRenderer`/`RaindropRevealRenderer`/`TileFlipRenderer`，見 `MorphRainRendererTests`）。build 0 warning、測試全綠。
 
 ## SIMD 加速評估（本輪：維持 Parallel.For，延後）
 
@@ -241,4 +241,26 @@
   - 加寬被 CJK 截斷的「（秒）」標籤：Rain `時間長度`、Ripple `時間長度`、Morph `先播 A`/`轉換`、Wind `時間長度`、Quicksand `時間長度`（label 寬度按日文最寬語系抓，連帶右移同列數值框）。
   - Morph「保持原始尺寸（不縮到 766px）」原擠在 PreRoll/Morph/FPS 同列被截斷 → 移到「樣式」那一列、寬度給足。
   - 下雨播放模式下拉改用 `RainDialog_GifPlayDuring`/`RainDialog_GifFreeze`（原借用 `WindDialog_*` 字串，顯示成「風疊在播放上」）。
-- **最終狀態**：build 0 warning、xUnit **243** 例全綠。
+- **最終狀態**：build 0 warning、xUnit 測試全綠。
+
+## 疊圖轉換再加 2 風格：Spotlight / Jigsaw（已實機測試前）
+
+延伸 `MorphStyle`（現 4 種：RaindropReveal / TileFlip / **Spotlight** / **Jigsaw**），共用既有 morph 引擎（PreRoll + 轉換窗 + 剩餘 B 三段、`GifProcessor.Morph.cs` 的 `switch(Style)` 分派、同一 `MorphTransitionDialog` 用 `cmbStyle` 切 4 組控制項）。兩者都是逐像素 cross-dissolve（RGBA byte[] + `Parallel.For`），t=1 保證全 B。
+
+### Spotlight（聚光燈）
+一顆圓形聚光燈像撞球般在畫面內等速移動、撞四邊反彈，**只在照到處顯示 B**（非累積——光移開該處回到 A）；最後 `ExpandSeconds` 內圓心凍結、半徑長到畫布對角線把整面填成 B。
+- **`SpotlightField.cs`（純函式）**：`Bounce(startFrac,v,tSec,lo,hi)` 用三角波解析式做 1D 反彈（無逐步漂移、可重現）；`Center` 對 x/y 各跑一條（vy 乘上種子係數讓 x/y 週期不同 → 掃得較像隨機而非單一對角線），進入 expand 後凍結；`RadiusAt` 移動期＝設定半徑、expand 期 SmoothStep 長到 `sqrt(w²+h²)`（**從任何圓心都覆蓋整面 → 末幀全 B**）；`Coverage` 為 soft 圓。`ExpandFrac=1−ExpandSeconds/MorphSeconds`。半徑用 `ClampRadius` 夾到 `min(w,h)/2−1`（圓心仍可達各邊）。
+- **`SpotlightRenderer.cs`（Magick）**：每幀算一次 center/radius，逐像素 `out=A·(1−cov)+B·cov`。
+- **設定**：`SpotlightRadius`(光圈大小 px)、`SpotlightSpeed`(px/sec)、`SpotlightExpandSeconds`(末段擴大秒數，須>0 才會收尾全 B)、`SpotlightSoftEdge`。速度用 px/sec → 引擎傳 `tNorm` 與 `morphSeconds`，內部 `tau=tNorm·morphSeconds`。
+- **語意決策**：採「移動式探照（非累積）+ 末段擴大填滿」（spec「到設定秒數後圓形擴大、最後顯示整個 B」即暗示非累積，否則擴大多餘）。
+
+### Jigsaw（拼圖）
+底層 A，拼圖區塊以**種子 scatter 順序逐塊**淡入顯示 B（每塊在自己的小 fill 窗 cross-fade），組裝過程畫出區塊邊界線（可指定色或不顯示＝透明），**全拼完時邊界線淡出消失**。
+- **`JigsawGeometry.cs`（純函式）**：`PiecePhase(index,t,seed,fill)`（錯開起拼、t=1 全為 1＝全 B，salt 與 tile flip 不同）、`LineAlpha(t,fadeStart)`（fadeStart 前全亮、之後 1→0、t=1 為 0）。格子共用 `TileFlipGeometry.ComputeGrid`（近正方、`Divisions` 即區塊數，與翻轉共用該欄位）。
+- **`JigsawRenderer.cs`（Magick）**：預建整數邊界 `colEdge/rowEdge` + 每像素 `colOf/rowOf` 查表 → 取 `PiecePhase` 當 cov 混合；之後若 `JigsawShowLines` 才在內部邊界畫線（色 `JigsawLineR/G/B`、alpha=`LineOpacity×LineAlpha(t)`），寫進同一 RGBA buffer。
+- **設定**：`Divisions`（區塊數，dialog 用獨立 `numJigsawPieces` 但寫回同一 `Divisions`）、`JigsawShowLines`、`JigsawLineR/G/B`。dialog 用 `ColorDialog` + 一個 `Panel` 色票（Panel 不在 theme 切換內 → 色票顏色不被深色主題蓋掉）；取消勾選＝透明（不畫線）。
+
+### Dialog / 在地化 / 測試
+- `MorphTransitionDialog`：`cmbStyle` 加 2 項（enum 順序＝combo 順序，`Style=(MorphStyle)SelectedIndex`）；`_spotlightControls`/`_jigsawControls` 兩組與既有兩組共用同一 y 帶、依 style 顯示；Jigsaw 色票 `pnlJigsawColor`（`chkJigsawLines` 連動 enable）。
+- 新增 **8** 鍵（三語 + Designer）：`MorphStyle_Spotlight/Jigsaw`、`MorphDialog_SpotRadius/SpotSpeed/SpotExpand/JigsawPieces/JigsawShowLines/JigsawLineColor`。
+- 測試：`SpotlightFieldTests`(6：bounce 範圍、center 邊界、expand 凍結、末幀半徑=對角線、coverage 內/外、末幀全 B)、`JigsawGeometryTests`(3：piece phase 起迄+單調、line alpha)、`MorphRainRendererTests` 加 spotlight/jigsaw 各 3 例 smoke。test csproj 連結 `SpotlightField`/`JigsawGeometry`(純) + `SpotlightRenderer`/`JigsawRenderer`。build 0 warning、全 **236** 例綠燈。
