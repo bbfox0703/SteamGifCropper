@@ -1410,6 +1410,63 @@ Technical details: {5}</value>
   <data name="BrickDir_Right" xml:space="preserve">
     <value>Right</value>
   </data>
+  <data name="Status_WaterBuilding" xml:space="preserve">
+    <value>Building water fill...</value>
+  </data>
+  <data name="Button_WaterStatic" xml:space="preserve">
+    <value>Water Fill (Image)</value>
+  </data>
+  <data name="Button_WaterGif" xml:space="preserve">
+    <value>Water Fill (GIF)</value>
+  </data>
+  <data name="WaterDialog_Title" xml:space="preserve">
+    <value>Water Fill</value>
+  </data>
+  <data name="WaterDialog_Direction" xml:space="preserve">
+    <value>Dir</value>
+  </data>
+  <data name="WaterDialog_FullSeconds" xml:space="preserve">
+    <value>Full level</value>
+  </data>
+  <data name="WaterDialog_Refraction" xml:space="preserve">
+    <value>Refract</value>
+  </data>
+  <data name="WaterDialog_Wobble" xml:space="preserve">
+    <value>Wobble</value>
+  </data>
+  <data name="WaterDialog_BubbleCount" xml:space="preserve">
+    <value>Bubbles</value>
+  </data>
+  <data name="WaterDialog_BubbleSize" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="WaterDialog_Layers" xml:space="preserve">
+    <value>Layers</value>
+  </data>
+  <data name="WaterDialog_FadeOut" xml:space="preserve">
+    <value>Fade out (s)</value>
+  </data>
+  <data name="WaterDir_Up" xml:space="preserve">
+    <value>Up</value>
+  </data>
+  <data name="WaterDir_Down" xml:space="preserve">
+    <value>Down</value>
+  </data>
+  <data name="WaterDir_Left" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="WaterDir_Right" xml:space="preserve">
+    <value>Right</value>
+  </data>
+  <data name="WaterDialog_GifPlayDuring" xml:space="preserve">
+    <value>Fill over playback</value>
+  </data>
+  <data name="WaterDialog_GifFreeze" xml:space="preserve">
+    <value>Freeze on frame 0</value>
+  </data>
+  <data name="MorphStyle_Water" xml:space="preserve">
+    <value>Water fill</value>
+  </data>
   <data name="MorphDialog_SpotRadius" xml:space="preserve">
     <value>Light size</value>
   </data>

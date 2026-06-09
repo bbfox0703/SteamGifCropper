@@ -86,6 +86,8 @@
             btnWindGif = new System.Windows.Forms.Button();
             btnRainStatic = new System.Windows.Forms.Button();
             btnRainGif = new System.Windows.Forms.Button();
+            btnWaterStatic = new System.Windows.Forms.Button();
+            btnWaterGif = new System.Windows.Forms.Button();
             btnMorphTransition = new System.Windows.Forms.Button();
             chkAutoFitSplit = new System.Windows.Forms.CheckBox();
             numUpDownTargetKB = new System.Windows.Forms.NumericUpDown();
@@ -153,7 +155,7 @@
             // pBarTaskStatus
             // 
             pBarTaskStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            pBarTaskStatus.Location = new System.Drawing.Point(0, 596);
+            pBarTaskStatus.Location = new System.Drawing.Point(0, 627);
             pBarTaskStatus.Margin = new System.Windows.Forms.Padding(2);
             pBarTaskStatus.Name = "pBarTaskStatus";
             pBarTaskStatus.Size = new System.Drawing.Size(619, 20);
@@ -162,7 +164,7 @@
             // lblStatus
             // 
             lblStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            lblStatus.Location = new System.Drawing.Point(0, 581);
+            lblStatus.Location = new System.Drawing.Point(0, 612);
             lblStatus.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new System.Drawing.Size(619, 15);
@@ -215,7 +217,7 @@
             panelGifsicle.Controls.Add(numUpDownPalette);
             panelGifsicle.Controls.Add(lblPaletteDesc);
             panelGifsicle.Dock = System.Windows.Forms.DockStyle.Bottom;
-            panelGifsicle.Location = new System.Drawing.Point(0, 462);
+            panelGifsicle.Location = new System.Drawing.Point(0, 493);
             panelGifsicle.Margin = new System.Windows.Forms.Padding(2);
             panelGifsicle.Name = "panelGifsicle";
             panelGifsicle.Size = new System.Drawing.Size(619, 175);
@@ -503,7 +505,7 @@
             // lblFramerate
             // 
             lblFramerate.AutoSize = true;
-            lblFramerate.Location = new System.Drawing.Point(11, 439);
+            lblFramerate.Location = new System.Drawing.Point(11, 470);
             lblFramerate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFramerate.Name = "lblFramerate";
             lblFramerate.Size = new System.Drawing.Size(0, 15);
@@ -512,7 +514,7 @@
             // lblFPS
             // 
             lblFPS.AutoSize = true;
-            lblFPS.Location = new System.Drawing.Point(310, 439);
+            lblFPS.Location = new System.Drawing.Point(310, 470);
             lblFPS.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             lblFPS.Name = "lblFPS";
             lblFPS.Size = new System.Drawing.Size(0, 15);
@@ -540,7 +542,7 @@
             // 
             // btnLanguageChange
             // 
-            btnLanguageChange.Location = new System.Drawing.Point(548, 411);
+            btnLanguageChange.Location = new System.Drawing.Point(548, 442);
             btnLanguageChange.Name = "btnLanguageChange";
             btnLanguageChange.Size = new System.Drawing.Size(64, 26);
             btnLanguageChange.TabIndex = 16;
@@ -618,7 +620,7 @@
             // lblResourceLimitDesc
             // 
             lblResourceLimitDesc.AutoSize = true;
-            lblResourceLimitDesc.Location = new System.Drawing.Point(7, 413);
+            lblResourceLimitDesc.Location = new System.Drawing.Point(7, 444);
             lblResourceLimitDesc.Name = "lblResourceLimitDesc";
             lblResourceLimitDesc.Size = new System.Drawing.Size(234, 15);
             lblResourceLimitDesc.TabIndex = 15;
@@ -626,7 +628,7 @@
             // 
             // numUpDownFramerate
             // 
-            numUpDownFramerate.Location = new System.Drawing.Point(255, 437);
+            numUpDownFramerate.Location = new System.Drawing.Point(255, 468);
             numUpDownFramerate.Margin = new System.Windows.Forms.Padding(2);
             numUpDownFramerate.Maximum = new decimal(new int[] { 30, 0, 0, 0 });
             numUpDownFramerate.Minimum = new decimal(new int[] { 5, 0, 0, 0 });
@@ -755,12 +757,32 @@
             btnRainGif.UseVisualStyleBackColor = true;
             btnRainGif.Click += btnRainGif_Click;
             //
+            // btnWaterStatic
+            //
+            btnWaterStatic.Location = new System.Drawing.Point(7, 379);
+            btnWaterStatic.Name = "btnWaterStatic";
+            btnWaterStatic.Size = new System.Drawing.Size(300, 26);
+            btnWaterStatic.TabIndex = 30;
+            btnWaterStatic.Text = SteamGifCropper.Properties.Resources.Button_WaterStatic;
+            btnWaterStatic.UseVisualStyleBackColor = true;
+            btnWaterStatic.Click += btnWaterStatic_Click;
+            //
+            // btnWaterGif
+            //
+            btnWaterGif.Location = new System.Drawing.Point(313, 379);
+            btnWaterGif.Name = "btnWaterGif";
+            btnWaterGif.Size = new System.Drawing.Size(300, 26);
+            btnWaterGif.TabIndex = 31;
+            btnWaterGif.Text = SteamGifCropper.Properties.Resources.Button_WaterGif;
+            btnWaterGif.UseVisualStyleBackColor = true;
+            btnWaterGif.Click += btnWaterGif_Click;
+            //
             // btnMorphTransition
             //
-            btnMorphTransition.Location = new System.Drawing.Point(7, 379);
+            btnMorphTransition.Location = new System.Drawing.Point(7, 410);
             btnMorphTransition.Name = "btnMorphTransition";
             btnMorphTransition.Size = new System.Drawing.Size(606, 26);
-            btnMorphTransition.TabIndex = 29;
+            btnMorphTransition.TabIndex = 32;
             btnMorphTransition.Text = SteamGifCropper.Properties.Resources.Button_MorphTransition;
             btnMorphTransition.UseVisualStyleBackColor = true;
             btnMorphTransition.Click += btnMorphTransition_Click;
@@ -770,7 +792,7 @@
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            ClientSize = new System.Drawing.Size(619, 680);
+            ClientSize = new System.Drawing.Size(619, 711);
             Controls.Add(lblResourceLimitDesc);
             Controls.Add(btnResizeNfpsGIF);
             Controls.Add(btnOverlayGIF);
@@ -803,6 +825,8 @@
             Controls.Add(btnWindGif);
             Controls.Add(btnRainStatic);
             Controls.Add(btnRainGif);
+            Controls.Add(btnWaterStatic);
+            Controls.Add(btnWaterGif);
             Controls.Add(btnMorphTransition);
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new System.Windows.Forms.Padding(2);
@@ -886,6 +910,8 @@
         private System.Windows.Forms.Button btnWindGif;
         private System.Windows.Forms.Button btnRainStatic;
         private System.Windows.Forms.Button btnRainGif;
+        private System.Windows.Forms.Button btnWaterStatic;
+        private System.Windows.Forms.Button btnWaterGif;
         private System.Windows.Forms.Button btnMorphTransition;
         public System.Windows.Forms.CheckBox chkAutoFitSplit;
         public System.Windows.Forms.NumericUpDown numUpDownTargetKB;

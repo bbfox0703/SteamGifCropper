@@ -190,6 +190,9 @@ namespace GifProcessorApp
             BrickParams brick = settings.Style == MorphStyle.Brick
                 ? settings.ToBrickParams()
                 : default;
+            WaterParams water = settings.Style == MorphStyle.WaterFill
+                ? settings.ToWaterParams()
+                : default;
 
             var result = new MagickImageCollection();
             int built = 0;
@@ -231,6 +234,10 @@ namespace GifProcessorApp
                         break;
                     case MorphStyle.Brick:
                         frame = BrickRenderer.RenderFrame(aSrc[idxA], bFit[idxB], t, brick);
+                        break;
+                    case MorphStyle.WaterFill:
+                        // Fill rises over the morph window (t); te (elapsed seconds) animates the bubbles.
+                        frame = WaterRenderer.RenderFrame(aSrc[idxA], bFit[idxB], t, (double)k / fps, water);
                         break;
                     default:
                         frame = RaindropRevealRenderer.RenderFrame(aSrc[idxA], bFit[idxB], t, drops, settings.SoftEdge);

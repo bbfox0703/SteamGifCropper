@@ -282,3 +282,22 @@
 - **設定**（`MorphSettings` 的 brick 欄位，`ToBrickParams()`）：`BrickPieces`(塊數)、`BrickDirection`(上下左右)、`BrickTotalHeightM`(高度 m)、`BrickGravity`(g)、`BrickWeight`(重量)、`BrickHardness`(硬度 0..100→0..1)。dialog 第 5 組控制項 + `cmbBrickDir`（4 方向，enum 序＝combo 序）。
 - **設計決定**：採「`MorphSeconds`＝整體掉落時長（normalize）、物理只塑形落速曲線＋彈跳」而非「物理回推絕對總長」——這樣 morph 窗語意對所有風格一致、不必停用 `轉換（秒）` 欄；`g`／高度主要透過**彈跳大小**（衝擊速度）展現（掉得高/重力大→撞擊大→彈得大），符合「重物丟下來」的手感。
 - **測試**：`BrickFieldTests`(6：末幀全定位、切片無縫鋪滿、起始第一片在畫面外其餘未起、stagger 隨時間增多起掉數、方向決定先掉哪片、IsVertical)、`MorphRainRendererTests` 加 brick 4 方向 smoke。test csproj 連結 `BrickField`(純) + `BrickRenderer`。build 0 warning、測試全綠。
+
+## 灌滿水 + 水中氣泡（Water Fill）— 主UI 特效 + 疊圖轉換風格（共用 core）
+
+水由某方向**逐漸灌滿**畫布；水面下＝來源經**折射扭曲**＋透過**上升氣泡（透鏡）**看到的影像，水面上＝原樣不變；水面是**會搖動的波浪線**。氣泡分 **≥3 個遠近層**（自動近大快強／遠小慢弱）、升到水面就**移出**。同一套 core 同時服務「單一 GIF 特效」與「A→B 疊圖轉換」——差別只在水面下看到誰。
+
+- **`WaterField.cs`（純函式）**：`FillFrac(te,start,full)`（0→1，滿後維持）；`Surface(perp,te,fill,...)` 波浪＋搖動水面線（兩端 fade 成平）；`IsUnderwater`（4 方向：Up 由下淹、Down 由上、Left 由左、Right 由右；`fromLow=Down||Left`）；`Shimmer`（水面下正弦折射位移）；`Bubbles`（種子化、每顆 layer→深度→大小/速度/不透明/透鏡強度，沿軸朝水面移動、過水面即不畫＝移出，wrap 重生）；`LensFactor`（圓內放大、邊緣回 1）。
+- **`WaterRenderer.cs`（Magick）**：參數化 `aboveSrc`/`belowSrc`（單一 GIF 兩者同幀；morph above=A、below=B）。Pass 1 逐像素：水面上＝aboveSrc 原樣、水面下＝belowSrc 加 shimmer 雙線性取樣。Pass 2 逐氣泡（依半徑排序，近大後畫）：bbox 內 lens 重取樣 belowSrc（朝泡心放大）＋亮邊 rim＋左上 specular highlight。皆寫進 RGBA buffer。
+- **主UI 特效**（`WaterSettings`/`GifProcessor.Water.cs`/`WaterDialog`，比照 wind/rain）：play-along＝水在 `[Start,Full]` 窗內淹過 live 幀、滿後維持（其餘片段**全淹沒折射**播完＝符合不截斷不變式、輸出＝GIF 全長）；frozen-then-play＝定格 frame0 淹滿 `Duration` 秒、再播完整 GIF（全淹沒）。主視窗 `btnWaterStatic`/`btnWaterGif`（第 14 列 y=379；morph 鈕下移到 410、下方元件 +31、`ClientSize` 680→**711**）。
+- **疊圖轉換風格**（`MorphStyle.WaterFill`，第 6 種）：`fill = morph 進度 t`（窗內由 0 淹到 1→全 B）、`te = k/fps`（氣泡動畫時間）；above=A、below=B。dialog 第 6 組控制項（方向/折射/水面搖動/泡泡數/泡泡大小/層數，`cmbWaterDir`）。
+- **設定**：方向、`StartSeconds`/`FullSeconds`（主UI）、折射強度、水面搖動、泡泡數、泡泡大小、層數（≥3）。
+- **效能**：Pass 1 = O(W·H)；Pass 2 = O(Σ 泡泡 bbox)（有界，泡泡 lens 只在自己 bbox 內重取樣，避免逐像素掃所有泡泡）。
+- **設計取捨／待調**：morph 在 `t=1` 整面是「折射的 B」，下一段 phase 3 是「原樣 B」，理論上有一格輕微跳變（折射僅數 px、gentle，可調小折射或日後在末段淡出折射）。氣泡視覺（rim/highlight/lens 強度）為起始猜測、待實機調校。
+- **測試**：`WaterFieldTests`(7：FillFrac 斜坡+維持、Up/Down 淹沒方向、泡泡皆在水下且自動數、AutoBubbleCount 範圍、EffectAlpha 滿後淡出、無水無泡、LensFactor)、`MorphRainRendererTests` 加 water 3 fill smoke。test csproj 連結 `WaterField`(純) + `WaterRenderer`。build 0 warning、測試全綠。
+
+#### 修訂（依實機回饋）
+1. **滿水後整個特效淡出**：新增 `FadeOutSeconds`（主UI，預設 0.5）。`EffectAlpha(te,full,fade)`＝滿水前/當下＝1、滿後 `fade` 秒內 1→0、之後 0；renderer 收尾把整張往 `aboveSrc`（原樣）blend → 折射＋泡泡一起消失。engine 在 `fill<=0 || alpha<=0` 時直接 clone（純原片）。morph 不淡出（`effectAlpha` 預設 1）。
+2. **泡泡不再被水面硬切**：改「永不抵達水面、接近時淡出」——每顆算 `distToSurface`，在抵達前一個 band 內 `surfaceFade` 1→0（`distToSurface<=r` 即為 0），故畫到時早已淡掉、不會出現被水平線切掉的半圓。renderer 的 lens 也依泡泡可見度 blend 回 pass1（淡的泡泡不會還在全力扭曲）。
+3. **泡泡更像潛水吐氣**：升速大幅放慢（`riseSpeed≈0.12·(0.55+0.9·depth)` canvas/sec）、**左右漂動**加大（兩條慢正弦）、**水壓膨脹**（接近水面半徑×(1+0.45·rise)）。
+4. **泡泡數自動**：移除使用者設定，`AutoBubbleCount(w,h)=clamp(w·h/16000, 4, 20)`（不多、悠閒）。主UI dialog 的「泡泡數」改成「淡出（秒）」；morph 水組移除泡泡數欄。`WaterDialog_BubbleCount` resx 鍵留著未用（無害）。

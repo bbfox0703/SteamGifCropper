@@ -2633,6 +2633,120 @@ namespace SteamGifCropper.Properties {
             }
         }
 
+        internal static string Status_WaterBuilding {
+            get {
+                return ResourceManager.GetString("Status_WaterBuilding", resourceCulture);
+            }
+        }
+
+        internal static string Button_WaterStatic {
+            get {
+                return ResourceManager.GetString("Button_WaterStatic", resourceCulture);
+            }
+        }
+
+        internal static string Button_WaterGif {
+            get {
+                return ResourceManager.GetString("Button_WaterGif", resourceCulture);
+            }
+        }
+
+        internal static string WaterDialog_Title {
+            get {
+                return ResourceManager.GetString("WaterDialog_Title", resourceCulture);
+            }
+        }
+
+        internal static string WaterDialog_Direction {
+            get {
+                return ResourceManager.GetString("WaterDialog_Direction", resourceCulture);
+            }
+        }
+
+        internal static string WaterDialog_FullSeconds {
+            get {
+                return ResourceManager.GetString("WaterDialog_FullSeconds", resourceCulture);
+            }
+        }
+
+        internal static string WaterDialog_Refraction {
+            get {
+                return ResourceManager.GetString("WaterDialog_Refraction", resourceCulture);
+            }
+        }
+
+        internal static string WaterDialog_Wobble {
+            get {
+                return ResourceManager.GetString("WaterDialog_Wobble", resourceCulture);
+            }
+        }
+
+        internal static string WaterDialog_BubbleCount {
+            get {
+                return ResourceManager.GetString("WaterDialog_BubbleCount", resourceCulture);
+            }
+        }
+
+        internal static string WaterDialog_BubbleSize {
+            get {
+                return ResourceManager.GetString("WaterDialog_BubbleSize", resourceCulture);
+            }
+        }
+
+        internal static string WaterDialog_Layers {
+            get {
+                return ResourceManager.GetString("WaterDialog_Layers", resourceCulture);
+            }
+        }
+
+        internal static string WaterDialog_FadeOut {
+            get {
+                return ResourceManager.GetString("WaterDialog_FadeOut", resourceCulture);
+            }
+        }
+
+        internal static string WaterDir_Up {
+            get {
+                return ResourceManager.GetString("WaterDir_Up", resourceCulture);
+            }
+        }
+
+        internal static string WaterDir_Down {
+            get {
+                return ResourceManager.GetString("WaterDir_Down", resourceCulture);
+            }
+        }
+
+        internal static string WaterDir_Left {
+            get {
+                return ResourceManager.GetString("WaterDir_Left", resourceCulture);
+            }
+        }
+
+        internal static string WaterDir_Right {
+            get {
+                return ResourceManager.GetString("WaterDir_Right", resourceCulture);
+            }
+        }
+
+        internal static string WaterDialog_GifPlayDuring {
+            get {
+                return ResourceManager.GetString("WaterDialog_GifPlayDuring", resourceCulture);
+            }
+        }
+
+        internal static string WaterDialog_GifFreeze {
+            get {
+                return ResourceManager.GetString("WaterDialog_GifFreeze", resourceCulture);
+            }
+        }
+
+        internal static string MorphStyle_Water {
+            get {
+                return ResourceManager.GetString("MorphStyle_Water", resourceCulture);
+            }
+        }
+
         internal static string MorphDialog_SpotRadius {
             get {
                 return ResourceManager.GetString("MorphDialog_SpotRadius", resourceCulture);

@@ -81,11 +81,24 @@ namespace GifProcessorApp
         private Label lblBrickHardness = null!;
         private NumericUpDown numBrickHardness = null!;
 
+        // Water-fill group.
+        private Label lblWaterDir = null!;
+        private ComboBox cmbWaterDir = null!;
+        private Label lblWaterRefraction = null!;
+        private NumericUpDown numWaterRefraction = null!;
+        private Label lblWaterWobble = null!;
+        private NumericUpDown numWaterWobble = null!;
+        private Label lblWaterSize = null!;
+        private NumericUpDown numWaterSize = null!;
+        private Label lblWaterLayers = null!;
+        private NumericUpDown numWaterLayers = null!;
+
         private readonly List<Control> _raindropControls = new List<Control>();
         private readonly List<Control> _tileControls = new List<Control>();
         private readonly List<Control> _spotlightControls = new List<Control>();
         private readonly List<Control> _jigsawControls = new List<Control>();
         private readonly List<Control> _brickControls = new List<Control>();
+        private readonly List<Control> _waterControls = new List<Control>();
 
         private Button btnOK = null!;
         private Button btnCancel = null!;
@@ -135,6 +148,11 @@ namespace GifProcessorApp
                 BrickGravity = (double)numBrickG.Value,
                 BrickWeight = (double)numBrickWeight.Value,
                 BrickHardness = (double)numBrickHardness.Value,
+                WaterDirection = (WaterDirection)cmbWaterDir.SelectedIndex,
+                WaterRefraction = (double)numWaterRefraction.Value,
+                WaterWobble = (double)numWaterWobble.Value,
+                WaterBubbleSize = (double)numWaterSize.Value,
+                WaterLayers = (int)numWaterLayers.Value,
             };
         }
 
@@ -146,6 +164,7 @@ namespace GifProcessorApp
             foreach (var c in _spotlightControls) c.Visible = style == MorphStyle.Spotlight;
             foreach (var c in _jigsawControls) c.Visible = style == MorphStyle.Jigsaw;
             foreach (var c in _brickControls) c.Visible = style == MorphStyle.Brick;
+            foreach (var c in _waterControls) c.Visible = style == MorphStyle.WaterFill;
         }
 
         private void RefreshJigsawColorEnabled()
@@ -194,6 +213,11 @@ namespace GifProcessorApp
             lblBrickG.Text = Resources.MorphDialog_BrickGravity;
             lblBrickWeight.Text = Resources.MorphDialog_BrickWeight;
             lblBrickHardness.Text = Resources.MorphDialog_BrickHardness;
+            lblWaterDir.Text = Resources.WaterDialog_Direction;
+            lblWaterRefraction.Text = Resources.WaterDialog_Refraction;
+            lblWaterWobble.Text = Resources.WaterDialog_Wobble;
+            lblWaterSize.Text = Resources.WaterDialog_BubbleSize;
+            lblWaterLayers.Text = Resources.WaterDialog_Layers;
             btnBrowseA.Text = Resources.Button_Browse;
             btnBrowseB.Text = Resources.Button_Browse;
             btnBrowseOutput.Text = Resources.Button_Browse;
@@ -207,6 +231,7 @@ namespace GifProcessorApp
             cmbStyle.Items.Add(Resources.MorphStyle_Spotlight);
             cmbStyle.Items.Add(Resources.MorphStyle_Jigsaw);
             cmbStyle.Items.Add(Resources.MorphStyle_Brick);
+            cmbStyle.Items.Add(Resources.MorphStyle_Water);
             cmbStyle.SelectedIndex = styleSel;
 
             int dirSel = cmbFlipDir.SelectedIndex < 0 ? 0 : cmbFlipDir.SelectedIndex;
@@ -225,6 +250,14 @@ namespace GifProcessorApp
             cmbBrickDir.Items.Add(Resources.BrickDir_Left);
             cmbBrickDir.Items.Add(Resources.BrickDir_Right);
             cmbBrickDir.SelectedIndex = brickDirSel;
+
+            int waterDirSel = cmbWaterDir.SelectedIndex < 0 ? 0 : cmbWaterDir.SelectedIndex;
+            cmbWaterDir.Items.Clear();
+            cmbWaterDir.Items.Add(Resources.WaterDir_Up);
+            cmbWaterDir.Items.Add(Resources.WaterDir_Down);
+            cmbWaterDir.Items.Add(Resources.WaterDir_Left);
+            cmbWaterDir.Items.Add(Resources.WaterDir_Right);
+            cmbWaterDir.SelectedIndex = waterDirSel;
         }
 
         private void ApplyTheme()
@@ -483,6 +516,18 @@ namespace GifProcessorApp
             lblBrickHardness = new Label { Location = new Point(214, 267), Size = new Size(58, 20), Text = "Hardness" };
             numBrickHardness = MakeNum(276, 265, 56, 0, 0m, 100m, 5m, 50m);
 
+            // --- Water-fill group (same vertical band; fill rises over the morph window) ---
+            lblWaterDir = new Label { Location = new Point(14, 234), Size = new Size(40, 20), Text = "Dir" };
+            cmbWaterDir = new ComboBox { Location = new Point(56, 232), Size = new Size(92, 23), DropDownStyle = ComboBoxStyle.DropDownList };
+            lblWaterRefraction = new Label { Location = new Point(158, 234), Size = new Size(50, 20), Text = "Refract" };
+            numWaterRefraction = MakeNum(210, 232, 56, 1, 0.0m, 30.0m, 0.5m, 4.0m);
+            lblWaterWobble = new Label { Location = new Point(276, 234), Size = new Size(64, 20), Text = "Wobble" };
+            numWaterWobble = MakeNum(342, 232, 56, 1, 0.0m, 40.0m, 0.5m, 6.0m);
+            lblWaterSize = new Label { Location = new Point(14, 267), Size = new Size(72, 20), Text = "Bubble size" };
+            numWaterSize = MakeNum(88, 265, 56, 1, 2.0m, 60.0m, 1.0m, 12.0m);
+            lblWaterLayers = new Label { Location = new Point(154, 267), Size = new Size(46, 20), Text = "Layers" };
+            numWaterLayers = MakeNum(202, 265, 46, 0, 1m, 8m, 1m, 3m);
+
             btnOK = new Button { Location = new Point(363, 312), Size = new Size(75, 25), Text = "OK", UseVisualStyleBackColor = true };
             btnOK.Click += BtnOK_Click;
             btnCancel = new Button { Location = new Point(444, 312), Size = new Size(82, 25), Text = "Cancel", DialogResult = DialogResult.Cancel, UseVisualStyleBackColor = true };
@@ -505,6 +550,11 @@ namespace GifProcessorApp
             {
                 lblBrickPieces, numBrickPieces, lblBrickDir, cmbBrickDir, lblBrickHeight, numBrickHeight,
                 lblBrickG, numBrickG, lblBrickWeight, numBrickWeight, lblBrickHardness, numBrickHardness,
+            });
+            _waterControls.AddRange(new Control[]
+            {
+                lblWaterDir, cmbWaterDir, lblWaterRefraction, numWaterRefraction, lblWaterWobble, numWaterWobble,
+                lblWaterSize, numWaterSize, lblWaterLayers, numWaterLayers,
             });
 
             SuspendLayout();
@@ -531,6 +581,7 @@ namespace GifProcessorApp
             foreach (var c in _spotlightControls) Controls.Add(c);
             foreach (var c in _jigsawControls) Controls.Add(c);
             foreach (var c in _brickControls) Controls.Add(c);
+            foreach (var c in _waterControls) Controls.Add(c);
             Controls.Add(btnOK);
             Controls.Add(btnCancel);
 

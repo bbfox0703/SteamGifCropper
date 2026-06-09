@@ -120,18 +120,20 @@ Each dialog handles one specific operation type:
 - `RippleDropPickerForm` - Click-to-pick a ripple drop position on frame 0
 - `WindDialog` - Wind sway (風吹麥田): travelling-wave displacement, normal/nuclear modes (image / GIF)
 - `RainDialog` - Rain overlay: translucent slanted streaks, wind + "rain stops" fade-out (image / GIF)
-- `MorphTransitionDialog` - A→B morph transition (raindrop reveal / tile flip / spotlight / jigsaw / brick drop) with a pre-roll + remaining-B timeline
+- `WaterDialog` - Water fill: rising water with refraction + multi-layer lensing bubbles (image / GIF)
+- `MorphTransitionDialog` - A→B morph transition (raindrop reveal / tile flip / spotlight / jigsaw / brick drop / water fill) with a pre-roll + remaining-B timeline
 
 > **Creative-effects detail:** these "766px single-output, chainable" effects (grid mosaic, slot
-> machine, quicksand, ripple, wind, rain, A→B morph) — their ideas and completion status live in
+> machine, quicksand, ripple, wind, rain, water fill, A→B morph) — their ideas and completion status live in
 > `docs/CreativeFeatureIdeas.md`; the detailed implementation/handoff dev log (file lists, commits,
 > semantics, gotchas) lives in `docs/CreativeEffectsDevLog.md`.
 > Their math is extracted into pure, dependency-free files for unit testing — `SlotMachineGeometry.cs`,
 > `QuicksandGeometry.cs`, `GifEffectWindow.cs`, `GridMosaicGeometry.cs`, `RippleField.cs`,
 > `WindField.cs`, `RainField.cs`, `RaindropRevealField.cs`, `TileFlipGeometry.cs`, `SpotlightField.cs`,
-> `JigsawGeometry.cs`, `BrickField.cs`, `MorphSettings.cs` (`MorphTimeline`) (+ the Magick-side
-> `RippleRenderer.cs`, `GridMosaicRenderer.cs`, `RaindropRevealRenderer.cs`, `TileFlipRenderer.cs`,
-> `SpotlightRenderer.cs`, `JigsawRenderer.cs`, `BrickRenderer.cs`) — linked into the test project (pure files only).
+> `JigsawGeometry.cs`, `BrickField.cs`, `WaterField.cs`, `MorphSettings.cs` (`MorphTimeline`) (+ the
+> Magick-side `RippleRenderer.cs`, `GridMosaicRenderer.cs`, `RaindropRevealRenderer.cs`,
+> `TileFlipRenderer.cs`, `SpotlightRenderer.cs`, `JigsawRenderer.cs`, `BrickRenderer.cs`,
+> `WaterRenderer.cs`) — linked into the test project (pure files only).
 > The A→B morph uses its own `pre-roll + morph window + remaining-B` timeline (total = pre-roll + B
 > duration), distinct from the concat overlap model; it lives in `GifProcessor.Morph.cs` /
 > `MorphTransitionDialog`, not in `TransitionGenerator`.
@@ -329,6 +331,7 @@ SteamGifCropper/
 │   │   ├── RippleSettings/Field/Renderer.cs          # Water ripple (Field pure, Renderer Magick)
 │   │   ├── WindSettings/Field/Renderer.cs            # Wind sway (Field pure, Renderer Magick)
 │   │   ├── RainSettings/Field/Renderer.cs            # Rain overlay (Field pure, Renderer draws streaks into RGBA buffer)
+│   │   ├── WaterSettings/Field/Renderer.cs           # Water fill + bubbles (Field pure, Renderer above/below sampler)
 │   │   ├── MorphSettings.cs                          # A→B morph settings + MorphTimeline (pure)
 │   │   ├── RaindropRevealField/Renderer.cs           # Morph raindrop reveal (Field pure, Renderer Magick)
 │   │   ├── TileFlipGeometry/Renderer.cs              # Morph tile flip (Geometry pure, Renderer Magick)
@@ -355,7 +358,8 @@ SteamGifCropper/
 │   │   ├── RippleDropPickerForm.cs         # Click-to-pick ripple drop position
 │   │   ├── WindDialog.cs
 │   │   ├── RainDialog.cs                   # Rain overlay (translucent streaks)
-│   │   └── MorphTransitionDialog.cs        # A→B morph (raindrop reveal / tile flip)
+│   │   ├── WaterDialog.cs                  # Water fill + bubbles
+│   │   └── MorphTransitionDialog.cs        # A→B morph (raindrop / tile flip / spotlight / jigsaw / brick / water)
 │   └── Platform/                           # Windows integration
 │       ├── WindowsThemeManager.cs
 │       └── RegistryProvider.cs
