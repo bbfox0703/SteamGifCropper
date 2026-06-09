@@ -8,23 +8,28 @@
 Five GIFs split with SteamGifCropper v0.2.1 — they may look slightly out of sync due to load timing, refresh (F5) to re-sync.  
 SteamGifCropper v0.2.1 で分割した5つの GIF。読み込み差で同期がずれて見える場合があります（F5 で再同期）。
 
-<img src="./res/new_shiny1_766px_Part1.gif" width="18%">
-<img src="./res/new_shiny1_766px_Part2.gif" width="18%">
-<img src="./res/new_shiny1_766px_Part3.gif" width="18%">
-<img src="./res/new_shiny1_766px_Part4.gif" width="18%">
-<img src="./res/new_shiny1_766px_Part5.gif" width="18%">
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/new_shiny1_766px_Part1.gif" style="flex: 1 1 18%; height: auto;">
+  <img src="./res/new_shiny1_766px_Part2.gif" style="flex: 1 1 18%; height: auto;">
+  <img src="./res/new_shiny1_766px_Part3.gif" style="flex: 1 1 18%; height: auto;">
+  <img src="./res/new_shiny1_766px_Part4.gif" style="flex: 1 1 18%; height: auto;">
+  <img src="./res/new_shiny1_766px_Part5.gif" style="flex: 1 1 18%; height: auto;">
+</div>
 
 **串接 · Concatenate · 連結**
-
-<img src="./res/KFC2-0_concatenated_resized.gif" width="95%">
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/KFC2-0_concatenated_resized.gif" style="flex: 1 1 95%; height: auto;">
+</div>
 
 **合併 · Merge · 合成**
-
-<img src="./res/KFC2-0_merged_resized.gif" width="95%">
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/KFC2-0_merged_resized.gif" style="flex: 1 1 95%; height: auto;">
+</div>
 
 **捲動 · Scroll · スクロール**
-
-<img src="./res/KFC2-0_merged_scroll_resized.gif" width="95%">
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/KFC2-0_merged_scroll_resized.gif" style="flex: 1 1 95%; height: auto;">
+</div>
 
 ---
 
@@ -33,7 +38,9 @@ SteamGifCropper v0.2.1 で分割した5つの GIF。読み込み差で同期が�
 
 <br>
 
-<img src="./res/screenshots/MainWindow.png" width="75%">
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/screenshots/MainWindow.png" style="width: 75%; height: auto;">
+</div>
 
 SteamGifCropper 是一個設計為 **Steam 工作坊個人展示櫃**的小工具，用於對 GIF 檔案進行裁切和處理。此程式可以將寬度為 766 / 774 像素的 GIF 動畫分割成多個部分、將Gif寬度調整為 **766px** 、或是把GIF檔案最後一個位元組由0x3B改為0x21。支援 gifsicle 後段處理。
 
@@ -229,7 +236,9 @@ document.getElementsByName("image_width")[0].value= num\*100;
 
 <br>
 
-<img src="./res/screenshots/MainWindowEn.png" width="75%">
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/screenshots/MainWindowEn.png" style="width: 75%; height: auto;">
+</div>
 
 SteamGifCropper is a small tool designed for the **Steam Workshop Personal Showcase**. It crops and processes GIF files to split wide GIFs (766px or 774px width) into 5 parts, resize GIFs to 766px width, and modify GIF byte data for Steam compatibility. Supports gifsicle post-processing.
 
@@ -418,7 +427,9 @@ document.getElementsByName("image_width")[0].value= num*100;
 
 <br>
 
-<img src="./res/screenshots/MainWindowJa.png" width="75%">
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="./res/screenshots/MainWindowJa.png" style="width: 75%; height: auto;">
+</div>
 
 SteamGifCropper は **Steam ワークショップ個人ショーケース** 用に設計された小さなツールです。GIF ファイルを切り分けて処理し、幅の広い GIF（766px または 774px 幅）を 5 つの部分に分割したり、GIF を 766px 幅にリサイズしたり、Steam 互換性のために GIF バイトデータを変更したりできます。gifsicle の後処理をサポートしています。
 
