@@ -5,6 +5,8 @@
 
 這些「766px 單輸出、可串接」效果（格網馬賽克、拉霸、流沙、水波紋）的共同精神：把 Steam 展示櫃那 5 個並排槽位當成一整塊寬螢幕來玩，輸出單一 766px 全寬 GIF（不分割），最後再用主頁「切割 GIF」切成 5 份（切割時才加 100px 延伸 + 檔尾 0x21）。
 
+> **基本不變式（所有特效／轉換共通）：不截斷來源影片。** 進行任何特效或轉換後，**剩下尚未播放完的 GIF 影片片段一定要繼續播到結束**。這是所有特效／轉換都必須遵守的基本條件，詳見下方「實作要點 / 踩雷紀錄」第 9 點。
+
 ---
 
 ## 已實作功能的實作細節
@@ -104,6 +106,12 @@
 6. **在地化**：新字串要同時加到 `Properties/Resources.resx`、`Resources.zh-TW.resx`、`Resources.ja.resx`，並在 `Resources.Designer.cs` 補強型別屬性才能編譯。
 7. **建置 / 測試**：`dotnet build SteamGifCropper.sln`；測試用 `dotnet build` 後直接跑 `SteamGifCropper.Tests/bin/Debug/net10.0-windows/SteamGifCropper.Tests.exe`（`-class <Name>` 過濾）。`dotnet test` 在 .NET 10 SDK 不支援。
 8. **合併共通調色盤**：要把多個不同調色盤的 GIF 併到單一 256 色而不失真，**先把所有 frame 合成進一個 `MagickImageCollection`，再對整個 collection 跑一次 `Quantize(256, FloydSteinberg)`**（採樣所有 frame 的實際輸出像素 → 單一最佳共通調色盤）。這是 overlay 一直在用的做法。**別自己用單一 frame／單一裁切去建調色盤再 `Remap`**（舊 `BuildSharedPalette` bug，整張只剩約 20 色、嚴重退色）。串接是循序播放、每段保留各自調色盤即可，不需共通調色盤。
+9. **不截斷來源影片（基本不變式，所有特效／轉換必守）**：任何特效或轉換都**不得把來源影片砍短**；效果／轉換窗結束後，**尚未播放的片段必須播完**。各模式怎麼展現這條：
+   - ripple / wind / quicksand / rain「同步播放」＝效果只混在 `[start, start+duration)` 窗內的 live 幀、窗外與其後照播原片（**輸出長度＝GIF 全長**）。
+   - 「定格再播」＝效果做完後，再從頭播**完整**的 GIF（輸出＝效果秒數＋GIF 全長）。
+   - morph A→B＝先播 A 的 PreRoll → 轉換 → 再播 **B 的剩餘片段**到結束。**唯一例外**：轉換中 A 已完全變透明消失，故 A 的剩餘不播；但接手的 B 一定要播完（總長＝PreRoll + B 全長）。
+   - concat 串接＝每段都完整播放，只有 transition 的 overlap 處兩段重疊共享。
+   - **早期 ripple/quicksand 曾誤把「同步播放」做成「重取樣成 `Duration×fps` 幀、截斷 GIF」（檔案異常小、4 秒就結束），已修正——這正是此不變式要防的回歸。新效果一律遵守。**
 
 ---
 

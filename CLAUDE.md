@@ -135,6 +135,13 @@ Each dialog handles one specific operation type:
 > The A→B morph uses its own `pre-roll + morph window + remaining-B` timeline (total = pre-roll + B
 > duration), distinct from the concat overlap model; it lives in `GifProcessor.Morph.cs` /
 > `MorphTransitionDialog`, not in `TransitionGenerator`.
+>
+> **Invariant — effects/transitions never truncate the source footage.** After any effect or transition
+> window ends, the remaining unplayed footage must still play to the end. Play-along effects mix only
+> inside `[start, start+duration)` and pass the rest through (output length = full GIF length);
+> frozen-then-play runs the effect, then plays the **whole** GIF; the A→B morph plays A's pre-roll, the
+> morph, then **B's remaining** footage (A's leftover is the lone exception — it has already gone fully
+> transparent). Any new effect must preserve this (see `docs/CreativeEffectsDevLog.md` rule #9).
 
 ### Magick.NET (ImageMagick) Integration
 
