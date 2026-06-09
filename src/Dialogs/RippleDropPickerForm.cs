@@ -1,17 +1,15 @@
 #nullable enable
 using System;
 using System.Drawing;
-using System.IO;
 using System.Windows.Forms;
-using ImageMagick;
 using SteamGifCropper.Properties;
 
 namespace GifProcessorApp
 {
-    // Click-to-pick the drop position on top of frame 0 of the input. Shows the SAME canvas the ripple
-    // engine uses (frame 0, resized to 766px wide when the source isn't already 766/774) so the picked
-    // coordinates line up with what the engine renders. Static frame — no playback — which is all a
-    // position picker needs and keeps it cheap. The caller can still type X/Y afterwards (e.g. off-screen).
+    // Click-to-pick the drop position on a pre-rendered frame-0 canvas supplied by RippleDialog (which
+    // builds + caches it at the SAME size the engine renders — native when "keep original size" is on,
+    // otherwise 766px wide — so the picked coordinates line up with the output). Static frame, no
+    // playback. The bitmap is borrowed (owned + cached by the dialog); this form never disposes it.
     public class RippleDropPickerForm : Form
     {
         public int PickedX { get; private set; }
@@ -29,9 +27,11 @@ namespace GifProcessorApp
         private Button _btnCancel = null!;
         private Point _cursorDisp = new Point(-1, -1);
 
-        public RippleDropPickerForm(string inputPath, int initialX, int initialY)
+        public RippleDropPickerForm(Bitmap canvasFrame0, int imgW, int imgH, int initialX, int initialY)
         {
-            _bitmap = LoadCanvasFrame0(inputPath, out _imgW, out _imgH);
+            _bitmap = canvasFrame0; // borrowed: owned + cached by RippleDialog, not disposed here
+            _imgW = imgW;
+            _imgH = imgH;
             _initialX = initialX;
             _initialY = initialY;
             PickedX = initialX;
@@ -44,28 +44,6 @@ namespace GifProcessorApp
 
             InitializeComponent();
             ApplyTheme();
-        }
-
-        // Loads frame 0 and mirrors the engine's auto-resize (766 width unless already 766/774) so the
-        // picked coordinates are in the engine's canvas space. Returns a self-contained bitmap.
-        private static Bitmap LoadCanvasFrame0(string inputPath, out int width, out int height)
-        {
-            using var collection = new MagickImageCollection(inputPath);
-            collection.Coalesce();
-            IMagickImage<byte> frame = collection[0];
-            uint w = frame.Width;
-            if (w != 766 && w != 774)
-            {
-                frame.Resize(766, 0);
-            }
-            width = (int)frame.Width;
-            height = (int)frame.Height;
-
-            using var ms = new MemoryStream();
-            frame.Write(ms, MagickFormat.Png32);
-            ms.Position = 0;
-            using var loaded = Image.FromStream(ms);
-            return new Bitmap(loaded); // independent of the (disposed) stream
         }
 
         private static int Clamp(int v, int lo, int hi) => v < lo ? lo : (v > hi ? hi : v);
@@ -197,9 +175,9 @@ namespace GifProcessorApp
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            if (disposing && _pic != null)
             {
-                _bitmap?.Dispose();
+                _pic.Image = null; // the bitmap is owned + cached by RippleDialog, not by this form
             }
             base.Dispose(disposing);
         }
