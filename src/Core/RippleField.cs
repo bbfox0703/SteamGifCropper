@@ -73,6 +73,15 @@ namespace GifProcessorApp
             return max;
         }
 
+        // Effective scene/window length: never shorter than the user's duration, but always long enough to
+        // cover every drop's start + lifetime — so a drop landing after `duration` (e.g. drops at 15.5s
+        // with the default 4s duration) is not silently swallowed. Drops with no temporal decay have an
+        // unbounded life and don't extend it (TotalSeconds skips them); the duration cap still applies.
+        public static double EffectiveDuration(double duration, RippleDrop[] drops, RippleMedium m)
+        {
+            return Math.Max(duration, TotalSeconds(drops, m.TimeDamping, m.Threshold));
+        }
+
         // Whether any drop is contributing at time t (landed and not yet faded below threshold). Lets the
         // caller skip the per-pixel resample for frames where nothing is rippling (just copy the source).
         public static bool AnyDropActive(double t, RippleDrop[] drops, RippleMedium m)

@@ -300,6 +300,13 @@ namespace GifProcessorApp
                 MessageBox.Show(this, Resources.ScrollDialog_OutputRequired, Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            if (numFull.Value <= numStart.Value)
+            {
+                // A Full at or before Start would make the fade-out complete before the water even starts
+                // (the engine clamps it, but guide the user to the intended config instead).
+                MessageBox.Show(this, Resources.WaterDialog_FullAfterStart, Resources.Title_Error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             DialogResult = DialogResult.OK;
             Close();
         }

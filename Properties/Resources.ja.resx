@@ -1453,6 +1453,9 @@ FFmpeg 出力（切り捨て）:
   <data name="WaterDialog_BubbleColor" xml:space="preserve">
     <value>泡の色</value>
   </data>
+  <data name="WaterDialog_FullAfterStart" xml:space="preserve">
+    <value>満水時間は開始時間より後である必要があります。</value>
+  </data>
   <data name="WaterDialog_Layers" xml:space="preserve">
     <value>層数</value>
   </data>

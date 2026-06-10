@@ -1452,6 +1452,9 @@ Technical details: {5}</value>
   <data name="WaterDialog_BubbleColor" xml:space="preserve">
     <value>Bubble colour</value>
   </data>
+  <data name="WaterDialog_FullAfterStart" xml:space="preserve">
+    <value>Full level time must be later than the start time.</value>
+  </data>
   <data name="WaterDialog_Layers" xml:space="preserve">
     <value>Layers</value>
   </data>
