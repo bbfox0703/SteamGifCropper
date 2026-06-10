@@ -52,6 +52,23 @@ public class RippleFieldTests
     }
 
     [Fact]
+    public void EffectiveDuration_ExtendsToCoverLateDrops()
+    {
+        var m = GeometricMedium();
+        m.TimeDamping = Math.Log(2.0); // lifetime = 1.0 for intensity 1 / threshold 0.5
+        m.Threshold = 0.5;
+        // Drop at 15.5s with the default 4s duration (the reported bug): window must reach 16.5s.
+        var late = new[] { new RippleDrop(0, 0, 15.5, 1.0) };
+        Assert.Equal(16.5, RippleField.EffectiveDuration(4.0, late, m), 6);
+        // Drops inside the duration leave it unchanged.
+        var early = new[] { new RippleDrop(0, 0, 0.5, 1.0) };
+        Assert.Equal(4.0, RippleField.EffectiveDuration(4.0, early, m), 6);
+        // No temporal decay -> unbounded life doesn't extend the window (duration cap applies).
+        var m0 = GeometricMedium(); // TimeDamping = 0
+        Assert.Equal(4.0, RippleField.EffectiveDuration(4.0, late, m0), 6);
+    }
+
+    [Fact]
     public void AnyDropActive_TrueOnlyWhileLanded_AndNotFaded()
     {
         var m = GeometricMedium();

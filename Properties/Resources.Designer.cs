@@ -2618,6 +2618,12 @@ namespace SteamGifCropper.Properties {
             }
         }
 
+        internal static string WaterDialog_FullAfterStart {
+            get {
+                return ResourceManager.GetString("WaterDialog_FullAfterStart", resourceCulture);
+            }
+        }
+
         internal static string WaterDialog_Layers {
             get {
                 return ResourceManager.GetString("WaterDialog_Layers", resourceCulture);

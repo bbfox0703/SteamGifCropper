@@ -69,10 +69,13 @@ namespace GifProcessorApp
                     }
 
                     // Warn before running at a large native size (output frame count: ripple-over-playback
-                    // keeps the GIF length; frozen / static add the ripple frames).
+                    // keeps the GIF length; frozen / static add the ripple frames — sized by the effective
+                    // duration, which auto-extends to cover drops landing after the set duration).
+                    double sceneSeconds = RippleField.EffectiveDuration(
+                        Math.Max(0.1, settings.DurationSeconds), settings.Drops.ToArray(), settings.ToMedium());
                     int outFrames = (settings.IsGif && settings.PlayGifDuringRipple)
                         ? source.Count
-                        : (int)Math.Round(Math.Max(0.1, settings.DurationSeconds) * Math.Max(1, settings.Fps)) + (settings.IsGif ? source.Count : 0);
+                        : (int)Math.Round(sceneSeconds * Math.Max(1, settings.Fps)) + (settings.IsGif ? source.Count : 0);
                     if (!ConfirmLargeCanvas(mainForm, Math.Max(source.Count, outFrames), width, source[0].Height))
                     {
                         canceled = true;
@@ -139,7 +142,9 @@ namespace GifProcessorApp
             MagickImageCollection source, RippleSettings settings, RippleDrop[] drops, RippleMedium medium, int srcTicks)
         {
             int n = source.Count;
-            double duration = settings.DurationSeconds;
+            // The mix window must reach every drop (start + lifetime), not just the dialog's Duration —
+            // otherwise drops landing after the default 4s would silently never render.
+            double duration = RippleField.EffectiveDuration(settings.DurationSeconds, drops, medium);
             if (duration < 0.1) duration = 0.1;
 
             // Cumulative native start time (seconds) of each source frame.
@@ -190,11 +195,9 @@ namespace GifProcessorApp
             int fps = Math.Max(1, settings.Fps);
             int delay = Math.Max(1, (int)Math.Round(100.0 / fps));
 
-            double duration = settings.DurationSeconds;
-            if (duration <= 0.0)
-            {
-                duration = RippleField.TotalSeconds(drops, medium.TimeDamping, medium.Threshold);
-            }
+            // The frozen scene must reach every drop (start + lifetime), not just the dialog's Duration —
+            // a drop landing after the set duration would otherwise be silently cut off.
+            double duration = RippleField.EffectiveDuration(Math.Max(0.0, settings.DurationSeconds), drops, medium);
             if (duration < 0.1) duration = 0.1;
             int rippleFrames = Math.Max(1, (int)Math.Round(duration * fps));
             int playFrames = settings.IsGif ? source.Count : 0;

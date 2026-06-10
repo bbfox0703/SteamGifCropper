@@ -50,6 +50,15 @@ namespace GifProcessorApp
             return f < 0.0 ? 0.0 : f > 1.0 ? 1.0 : f;
         }
 
+        // Effective full-level time: Full must come after Start. A Full at or before Start (e.g. the
+        // default 4.0 left untouched while Start was raised to 15.5) means "instantly full at Start" —
+        // and, critically, the fade-out must also count from that moment, not from the stale FullSeconds
+        // (otherwise EffectAlpha hits 0 before the water even starts and nothing ever shows).
+        public static double EffectiveFull(double startSec, double fullSec)
+        {
+            return fullSec > startSec ? fullSec : startSec;
+        }
+
         // Overall effect opacity at elapsed time te: 1 while filling and full, then fading 1 -> 0 over
         // fadeSeconds once the tank is full, so the whole water effect (refraction + bubbles) disappears
         // and the source returns to normal. fadeSeconds <= 0 keeps the water to the end (no fade).

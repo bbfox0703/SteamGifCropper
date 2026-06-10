@@ -54,9 +54,13 @@ namespace GifProcessorApp
                         width = source[0].Width;
                     }
 
+                    // Frozen-scene length matches BuildWaterFrozenThenPlay: extended to reach the (effective)
+                    // full-level time when Start/Full lie beyond the set Duration.
+                    double sceneSeconds = Math.Max(Math.Max(0.1, settings.DurationSeconds),
+                        WaterField.EffectiveFull(settings.StartSeconds, settings.FullSeconds));
                     int outFrames = (settings.IsGif && settings.PlayGifDuringWater)
                         ? source.Count
-                        : (int)Math.Round(Math.Max(0.1, settings.DurationSeconds) * Math.Max(1, settings.Fps)) + (settings.IsGif ? source.Count : 0);
+                        : (int)Math.Round(sceneSeconds * Math.Max(1, settings.Fps)) + (settings.IsGif ? source.Count : 0);
                     if (!ConfirmLargeCanvas(mainForm, Math.Max(source.Count, outFrames), width, source[0].Height))
                     {
                         canceled = true;
@@ -123,13 +127,17 @@ namespace GifProcessorApp
                 acc += (double)source[i].AnimationDelay / srcTicks;
             }
 
+            // Full must come after Start, or the fade-out (counted from Full) completes before the water
+            // even starts and the whole effect is invisible.
+            double fullSec = WaterField.EffectiveFull(settings.StartSeconds, settings.FullSeconds);
+
             var result = new MagickImageCollection();
             int built = 0;
             for (int i = 0; i < n; i++)
             {
                 double te = startSec[i];
-                double fill = WaterField.FillFrac(te, settings.StartSeconds, settings.FullSeconds);
-                double alpha = WaterField.EffectAlpha(te, settings.FullSeconds, settings.FadeOutSeconds);
+                double fill = WaterField.FillFrac(te, settings.StartSeconds, fullSec);
+                double alpha = WaterField.EffectAlpha(te, fullSec, settings.FadeOutSeconds);
                 MagickImage frame;
                 if (fill > 0.0 && alpha > 0.0)
                 {
@@ -161,7 +169,10 @@ namespace GifProcessorApp
         {
             int fps = Math.Max(1, settings.Fps);
             int delay = Math.Max(1, (int)Math.Round(100.0 / fps));
-            double duration = settings.DurationSeconds;
+            // Full must come after Start (see EffectiveFull), and the fill phase must reach it — otherwise
+            // a Start/Full beyond the set Duration would be silently cut off and no water would ever show.
+            double fullSec = WaterField.EffectiveFull(settings.StartSeconds, settings.FullSeconds);
+            double duration = Math.Max(settings.DurationSeconds, fullSec);
             if (duration < 0.1) duration = 0.1;
             int fillFrames = Math.Max(1, (int)Math.Round(duration * fps));
             int playFrames = settings.IsGif ? source.Count : 0;
@@ -174,8 +185,8 @@ namespace GifProcessorApp
             for (int f = 0; f < fillFrames; f++)
             {
                 double te = (double)f / fps;
-                double fill = WaterField.FillFrac(te, settings.StartSeconds, settings.FullSeconds);
-                double alpha = WaterField.EffectAlpha(te, settings.FullSeconds, settings.FadeOutSeconds);
+                double fill = WaterField.FillFrac(te, settings.StartSeconds, fullSec);
+                double alpha = WaterField.EffectAlpha(te, fullSec, settings.FadeOutSeconds);
                 MagickImage frame = (fill > 0.0 && alpha > 0.0)
                     ? WaterRenderer.RenderFrame(source[0], source[0], fill, te, water, alpha)
                     : (MagickImage)source[0].Clone();
@@ -199,7 +210,7 @@ namespace GifProcessorApp
                 double te = duration;
                 for (int i = 0; i < source.Count; i++)
                 {
-                    double alpha = WaterField.EffectAlpha(te, settings.FullSeconds, settings.FadeOutSeconds);
+                    double alpha = WaterField.EffectAlpha(te, fullSec, settings.FadeOutSeconds);
                     MagickImage play = alpha > 0.0
                         ? WaterRenderer.RenderFrame(source[i], source[i], 1.0, te, water, alpha)
                         : (MagickImage)source[i].Clone();

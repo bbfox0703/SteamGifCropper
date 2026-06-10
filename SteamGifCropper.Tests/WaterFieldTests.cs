@@ -89,6 +89,24 @@ public class WaterFieldTests
     }
 
     [Fact]
+    public void EffectiveFull_ClampsFullToStart()
+    {
+        // The reported bug: Start raised to 15.5 with Full left at the default 4.0 -> the fade-out
+        // (counted from Full) completed before the water started and nothing ever showed. The effective
+        // full must never precede the start.
+        Assert.Equal(15.5, WaterField.EffectiveFull(15.5, 4.0), 9);  // stale Full -> instant full at Start
+        Assert.Equal(16.0, WaterField.EffectiveFull(15.5, 16.0), 9); // valid Full passes through
+        Assert.Equal(15.5, WaterField.EffectiveFull(15.5, 15.5), 9); // equal -> instant full at Start
+
+        // With the clamp, the effect is actually visible: full water right at Start, fading afterwards.
+        double full = WaterField.EffectiveFull(15.5, 4.0);
+        Assert.Equal(1.0, WaterField.FillFrac(15.6, 15.5, full), 6);
+        Assert.True(WaterField.EffectAlpha(15.6, full, 0.5) > 0.0);
+        // Without it (the old behaviour), alpha was already 0 there while fill was 0 before 15.5.
+        Assert.Equal(0.0, WaterField.EffectAlpha(15.6, 4.0, 0.5), 6);
+    }
+
+    [Fact]
     public void MorphSettings_ToWaterParams_CarriesBubbleColor()
     {
         var s = new MorphSettings { WaterBubbleColorR = 10, WaterBubbleColorG = 120, WaterBubbleColorB = 240 };
