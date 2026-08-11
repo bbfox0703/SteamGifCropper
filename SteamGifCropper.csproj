@@ -37,8 +37,8 @@
 
   <ItemGroup>
     <PackageReference Include="FFMpegCore" Version="5.4.0" />
-    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.14.0" />
-    <PackageReference Include="Magick.NET.Core" Version="14.14.0" />
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.16.0" />
+    <PackageReference Include="Magick.NET.Core" Version="14.16.0" />
   </ItemGroup>
 
   <ItemGroup>
