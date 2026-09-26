@@ -102,7 +102,7 @@
 2. **新 dialog 樣式**：鏡射 `ScrollStaticImageDialog`（inline `InitializeComponent`、無 `.Designer.cs`、`namespace GifProcessorApp : Form`、含 `UpdateUIText()` + `ApplyTheme()` + 複製 `ApplyDark/LightThemeToControls`）。流程：dialog 開在 `GifProcessor.<Op>()` 裡，`ShowDialog()==OK` 後讀公開屬性再呼叫處理方法。
 3. **單元測試**：測試專案用 **stub**（`GifProcessor.Stub.cs`），並非編譯真正的 `GifProcessor.cs`，而是逐檔 `<Compile Include>` 連結無重依賴的小檔。要單測新邏輯，**把純函式抽到無依賴的獨立檔**（如 `GridMosaicGeometry.cs`），並在 `SteamGifCropper.Tests.csproj` 加一行 `<Compile Include>` 連結它。
 4. **進度條**：一律用 `FlatProgressBar`（`src/Forms/FlatProgressBar.cs`），別用原生 `ProgressBar`（深色主題下填滿邊緣會有黑線/動畫殘影）。全 app 只有主視窗一條 `pBarTaskStatus`，進度都呼叫 `GifProcessor.SetProgressBar(...)`。
-5. **Steam 切割座標**：`Ranges766`/`Ranges774` + `GetCropRanges()` + `SplitGif()` 都在 `GifProcessor.cs`；新「切成 5 份」類功能直接重用（`SplitGif` 已支援選用 `GridMosaicSettings grid` 參數的擴充模式，可比照加其他選用參數）。
+5. **Steam 切割座標**：`Ranges766`/`Ranges774` + `GetCropRanges()` 在 `GifProcessor.cs`，`SplitGif()` 在 `GifProcessor.Split.cs`；新「切成 5 份」類功能直接重用。
 6. **在地化**：新字串要同時加到 `Properties/Resources.resx`、`Resources.zh-TW.resx`、`Resources.ja.resx`，並在 `Resources.Designer.cs` 補強型別屬性才能編譯。
 7. **建置 / 測試**：`dotnet build SteamGifCropper.sln`；測試用 `dotnet build` 後直接跑 `SteamGifCropper.Tests/bin/Debug/net10.0-windows/SteamGifCropper.Tests.exe`（`-class <Name>` 過濾）。`dotnet test` 在 .NET 10 SDK 不支援。
 8. **合併共通調色盤**：要把多個不同調色盤的 GIF 併到單一 256 色而不失真，**先把所有 frame 合成進一個 `MagickImageCollection`，再對整個 collection 跑一次 `Quantize(256, FloydSteinberg)`**（採樣所有 frame 的實際輸出像素 → 單一最佳共通調色盤）。這是 overlay 一直在用的做法。**別自己用單一 frame／單一裁切去建調色盤再 `Remap`**（舊 `BuildSharedPalette` bug，整張只剩約 20 色、嚴重退色）。串接是循序播放、每段保留各自調色盤即可，不需共通調色盤。

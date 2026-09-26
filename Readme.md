@@ -78,7 +78,7 @@ SteamGifCropper 是一個設計為 **Steam 工作坊個人展示櫃**的小工�
 
 ## 系統需求
 
-- **操作系統**：Windows 10 1904 或更高版本
+- **操作系統**：Windows 10 1809（build 17763）或更高版本
 - **Runtime**：.NET 10 runtime
 - **依賴函式庫**：Magick.NET（基於 ImageMagick）-- 已經內含於zip檔中
 - **FFMPEG**：使用FFMPEG功能的部份，系統要先裝好FFMPEG，並設定在OS系統環境變數 **PATH** 中，否則會無法呼叫。可以直接使用 Powershell 7 下指令：`winget install ffmpeg` 安裝。
@@ -276,7 +276,7 @@ SteamGifCropper is a small tool designed for the **Steam Workshop Personal Showc
 
 ## System Requirements
 
-- **Operating System**: Windows 10 1904 or higher
+- **Operating System**: Windows 10 1809 (build 17763) or higher
 - **Runtime**: .NET 10 runtime
 - **Dependencies**: Magick.NET (based on ImageMagick) -- already included in zip file
 - **FFMPEG**: For features using FFMPEG functionality, the system must have FFMPEG installed and set in the OS system environment variable **PATH**, otherwise it cannot be called. You can directly install using PowerShell 7 command: `winget install ffmpeg`.
@@ -467,7 +467,7 @@ SteamGifCropper は **Steam ワークショップ個人ショーケース** 用�
 
 ## 動作環境
 
-- **オペレーティングシステム**: Windows 10 1904 以降
+- **オペレーティングシステム**: Windows 10 1809（ビルド 17763）以降
 - **ランタイム**: .NET 10 runtime
 - **依存ライブラリ**: Magick.NET（ImageMagick ベース）-- zip ファイルに既に含まれています
 - **FFMPEG**: FFMPEG 機能を使用する部分では、システムに FFMPEG がインストールされ、OS システム環境変数 **PATH** に設定されている必要があります。そうでないと呼び出すことができません。PowerShell 7 で直接コマンドを使用してインストールできます: `winget install ffmpeg`。
