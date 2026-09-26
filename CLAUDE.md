@@ -6,11 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 SteamGifCropper is a .NET 10 Windows Forms application designed to process GIF files for Steam Workshop Personal Showcase. It provides extensive GIF manipulation capabilities including cropping, resizing, merging, concatenating, and applying effects.
 
-**Target Platform:** Windows 10 1904+ with .NET 10 runtime (x64)
+**Target Platform:** Windows 10 1809+ (build 17763) with .NET 10 runtime (x64)
 **Primary Language:** C# (ImplicitUsings disabled, Nullable disabled)
-**Root Namespace:** `GifProcessorApp` (legacy — the assembly name is `SteamGifCropper` but all source files declare `namespace GifProcessorApp`; `ImageInputValidator.cs` is the lone exception, declaring `namespace SteamGifCropper`)
+**Root Namespace:** `GifProcessorApp` (legacy — the assembly name is `SteamGifCropper` but hand-written source files declare `namespace GifProcessorApp`; `ImageInputValidator.cs` is the lone exception, declaring `namespace SteamGifCropper`; the generated `Properties/*.Designer.cs` use `SteamGifCropper.Properties`)
 **Main Dependencies:** Magick.NET-Q8 (ImageMagick), FFMpegCore
-**External Tools:** FFmpeg (optional, must be in PATH), gifsicle (optional, must be in PATH)
+**External Tools:** FFmpeg (optional, must be in PATH), gifsicle (optional; bundled from `tools/gifsicle/`, falls back to PATH)
 
 ## Build and Development Commands
 
@@ -82,8 +82,8 @@ The application follows a specific initialization sequence:
 ### Core Components
 
 #### GifProcessor (Static Processing Engine)
-- **Location:** `src/Core/GifProcessor.cs` (~3200+ lines)
-- **Pattern:** Static class - all methods accept `GifToolMainForm` parameter for UI updates
+- **Location:** `src/Core/GifProcessor.cs` (shared helpers: progress, load/write, Steam crop ranges) plus per-operation partials `src/Core/GifProcessor.<Op>.cs`
+- **Pattern:** `static partial class` - operation entry points take a `GifToolMainForm` parameter for UI updates
 - **Responsibilities:**
   - All GIF manipulation operations (crop, resize, merge, concatenate, overlay, scroll, etc.)
   - Frame-by-frame processing with progress reporting
@@ -191,9 +191,9 @@ GifProcessor → MagickImageCollection → MagickImage (per frame)
 - Lossy compression: 0-200 factor
 - Optimization levels: 1-3
 - Dithering: None, ro64, o8, or default
-- Timeout: 30 seconds with cancellation support
+- Timeout: `GifsicleWrapper.ProcessTimeout` (default 30 s, adjustable from the main form's gifsicle panel) with cancellation support
 
-**Requirements:** `gifsicle.exe` must be in system PATH
+**Location:** bundled — `tools/gifsicle/gifsicle.exe` (GPL, shipped with its `COPYING`) is copied next to the app; `GifsicleWrapper` uses it when present and falls back to `gifsicle` on PATH
 
 **Usage:** Optional post-processing step after ImageMagick operations
 
@@ -292,11 +292,11 @@ IProgress<(int current, int total, string status)>
   `OptimizeAndWriteWithProgress`. `RunMagickWithProgress` subscribes to **ImageMagick's per-frame
   `MagickImage.Progress` event** (`MagickImageCollection` has none) and maps each frame's percentage to
   an overall bar value (throttled ~20 Hz, marshaled). It degrades gracefully — even if an op fires no
-  events, the stage label still changes. New status keys: `Status_Decoding`, `Status_PreparingFrames`,
+  events, the stage label still changes. Stage status keys: `Status_Decoding`, `Status_PreparingFrames`,
   `Status_ConvertingVideo`. **When adding an op, load via `LoadCoalesceWithProgress` and save via
   `OptimizeAndWriteWithProgress` instead of raw `new MagickImageCollection`/`Optimize`/`Write`.**
-- **FFmpeg** (MP4→GIF, reverse) drives the bar from FFMpegCore's real `NotifyOnProgress(Action<double>,
-  TimeSpan total)` (total = the requested segment, or the FFProbe clip length) — no more fake delays.
+- **FFmpeg** (MP4→GIF, reverse) drives the bar from FFMpegCore's `NotifyOnProgress(Action<double>,
+  TimeSpan total)` (total = the requested segment, or the FFProbe clip length).
 
 ### Async/Await Pattern
 - All long-running operations are async to keep UI responsive
@@ -328,7 +328,7 @@ SteamGifCropper/
 ├── src/
 │   ├── Program.cs                          # Entry point & initialization
 │   ├── Core/                               # Processing engine & settings types
-│   │   ├── GifProcessor.cs                 # Core processing engine (5000+ lines; all effects)
+│   │   ├── GifProcessor.cs                 # Core engine: shared helpers; operations live in the GifProcessor.<Op>.cs partials
 │   │   ├── GifsicleWrapper.cs              # Gifsicle integration
 │   │   ├── GifSizeFitter.cs                # Auto-fit-to-≤5MB pipe for gifsicle
 │   │   ├── GifWriteDefines.cs              # Custom GIF write settings
@@ -419,4 +419,4 @@ SteamGifCropper/
 ### External Dependencies
 - **Required:** Magick.NET-Q8 (included in release)
 - **Optional:** FFmpeg (user must install via `winget install ffmpeg`)
-- **Optional:** gifsicle for Windows (user must download and add to PATH)
+- **Bundled:** gifsicle for Windows (`tools/gifsicle/`, GPL; a PATH install is only a fallback)
